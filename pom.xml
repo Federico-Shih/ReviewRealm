@@ -22,15 +22,12 @@
     <jstl.version>1.2</jstl.version>
   </properties>
   <modules>
-      
     <module>webapp</module>
     <module>models</module>
     <module>interfaces</module>
     <module>persistence</module>
     <module>services</module>
-
   </modules>
-
   <dependencyManagement>
     <dependencies>
       <dependency>
@@ -54,8 +51,6 @@
         <artifactId>jstl</artifactId>
         <version>${jstl.version}</version>
       </dependency>
-
     </dependencies>
   </dependencyManagement>
-
 </project>
