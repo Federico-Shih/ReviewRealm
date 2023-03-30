@@ -23,7 +23,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>interfaces</artifactId>
+            <artifactId>persistence-interfaces</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

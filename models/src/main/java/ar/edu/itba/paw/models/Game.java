@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 public class Game {
+    private final Integer id;
     private final String name;
     private final String developer;
     private final String publisher;
@@ -11,13 +12,18 @@ public class Game {
     private final List<Category> categories;
     private final Date publishDate;
 
-    public Game(String name, String developer, String publisher, String imageUrl, List<Category> categories, Date publishDate) {
+    public Game(Integer id, String name, String developer, String publisher, String imageUrl, List<Category> categories, Date publishDate) {
+        this.id = id;
         this.name = name;
         this.developer = developer;
         this.publisher = publisher;
         this.imageUrl = imageUrl;
         this.categories = categories;
         this.publishDate = publishDate;
+    }
+
+    public Integer getId() {
+        return id;
     }
 
     public String getDeveloper() {
