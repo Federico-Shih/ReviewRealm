@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.models;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 public class Review {
@@ -7,11 +8,11 @@ public class Review {
     private final User author;
     private final String title;
     private final String content;
-    private final Date created;
+    private final LocalDate created;
     private final Integer rating;
     private final Game reviewedGame;
 
-    public Review(Integer id, User author, String title, String content, Date created, Integer rating, Game reviewedGame) {
+    public Review(Integer id, User author, String title, String content, LocalDate created, Integer rating, Game reviewedGame) {
         this.id = id;
         this.author = author;
         this.title = title;
@@ -37,7 +38,7 @@ public class Review {
         return content;
     }
 
-    public Date getCreated() {
+    public LocalDate getCreated() {
         return created;
     }
 

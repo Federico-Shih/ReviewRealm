@@ -1,6 +1,6 @@
 package ar.edu.itba.paw.models;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 public class Game {
@@ -10,9 +10,9 @@ public class Game {
     private final String publisher;
     private final String imageUrl;
     private final List<Category> categories;
-    private final Date publishDate;
+    private final LocalDate publishDate;
 
-    public Game(Integer id, String name, String developer, String publisher, String imageUrl, List<Category> categories, Date publishDate) {
+    public Game(Integer id, String name, String developer, String publisher, String imageUrl, List<Category> categories, LocalDate publishDate) {
         this.id = id;
         this.name = name;
         this.developer = developer;
@@ -46,7 +46,7 @@ public class Game {
         return categories;
     }
 
-    public Date getPublishDate() {
+    public LocalDate getPublishDate() {
         return publishDate;
     }
 }

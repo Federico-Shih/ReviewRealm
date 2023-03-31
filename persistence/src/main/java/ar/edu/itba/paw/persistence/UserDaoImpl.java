@@ -11,5 +11,11 @@ public class UserDaoImpl implements UserDao {
     @Override
     public User create(String email, String password) {
         return new User(0, email, password);
-    } //TODO: id hardcodeado
+    }
+
+    @Override
+    public User getByEmail(String email) {
+        return new User(123, email, "12345678");
+    }
+
 }
