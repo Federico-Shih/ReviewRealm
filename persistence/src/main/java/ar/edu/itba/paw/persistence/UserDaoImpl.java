@@ -10,6 +10,6 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public User create(String email, String password) {
-        return new User(email, password);
-    }
+        return new User(0, email, password);
+    } //TODO: id hardcodeado
 }
