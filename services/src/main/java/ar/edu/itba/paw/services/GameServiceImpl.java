@@ -1,6 +1,6 @@
 package ar.edu.itba.paw.services;
 
-import ar.edu.itba.paw.models.Category;
+import ar.edu.itba.paw.models.Genre;
 import ar.edu.itba.paw.models.Game;
 import ar.edu.itba.paw.persistenceinterfaces.GameDao;
 import ar.edu.itba.paw.servicesinterfaces.GameService;
@@ -22,12 +22,12 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public Game createGame(String name, String developer, String publisher, String imageUrl, List<Integer> categories, LocalDate publishedDate) {
-        List<Category> categoryList = new ArrayList<>();
-        for (Integer c : categories) {
-            //categoryList.add(categoryDao.getById(c)) TODO categoryDao
+    public Game createGame(String name, String developer, String publisher, String imageUrl, List<Integer> genres, LocalDate publishedDate) {
+        List<Genre> genreList = new ArrayList<>();
+        for (Integer c : genres) {
+            //genreList.add(genreDao.getById(c))
         }
-        return gameDao.create(name,developer,publisher,imageUrl,categoryList, publishedDate);
+        return gameDao.create(name,developer,publisher,imageUrl, genreList, publishedDate);
     }
 
     @Override

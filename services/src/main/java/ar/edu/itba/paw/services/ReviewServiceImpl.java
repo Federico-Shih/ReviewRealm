@@ -1,6 +1,6 @@
 package ar.edu.itba.paw.services;
 
-import ar.edu.itba.paw.dtos.CategoryFilter;
+import ar.edu.itba.paw.dtos.ReviewFilter;
 import ar.edu.itba.paw.models.Review;
 import ar.edu.itba.paw.persistenceinterfaces.GameDao;
 import ar.edu.itba.paw.persistenceinterfaces.ReviewDao;
@@ -36,7 +36,7 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public List<Review> getAllReviews(CategoryFilter filter) {
+    public List<Review> getAllReviews(ReviewFilter filter) {
         return reviewDao.getAll(filter);
     }
 }

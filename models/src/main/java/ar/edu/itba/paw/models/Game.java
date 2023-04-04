@@ -9,16 +9,16 @@ public class Game {
     private final String developer;
     private final String publisher;
     private final String imageUrl;
-    private final List<Category> categories;
+    private final List<Genre> genres;
     private final LocalDate publishDate;
 
-    public Game(Integer id, String name, String developer, String publisher, String imageUrl, List<Category> categories, LocalDate publishDate) {
+    public Game(Integer id, String name, String developer, String publisher, String imageUrl, List<Genre> genres, LocalDate publishDate) {
         this.id = id;
         this.name = name;
         this.developer = developer;
         this.publisher = publisher;
         this.imageUrl = imageUrl;
-        this.categories = categories;
+        this.genres = genres;
         this.publishDate = publishDate;
     }
 
@@ -42,8 +42,8 @@ public class Game {
         return imageUrl;
     }
 
-    public List<Category> getCategories() {
-        return categories;
+    public List<Genre> getGenres() {
+        return genres;
     }
 
     public LocalDate getPublishDate() {

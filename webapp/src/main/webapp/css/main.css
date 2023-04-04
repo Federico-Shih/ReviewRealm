@@ -1,4 +1,22 @@
 
-h2 {
-    color: red;
+body {
+    background: #191716;
+    color: white;
+}
+
+.card {
+    background: #13112D;
+}
+
+.chip {
+    background: #13112D;
+}
+
+.chip-small {
+    background: #13112D;
+}
+
+.chip-small-inverted {
+    background: #DDD7FF;
+    color: #13112D;
 }
