@@ -27,7 +27,7 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public Review createReview(String title, String content, Integer rating, String userEmail, Integer gameId) {
-        return reviewDao.create(title, content, rating, gameDao.getById(gameId),userDao.getByEmail(userEmail));
+        return reviewDao.create(title, content, rating, gameDao.getById(gameId), userDao.getByEmail(userEmail));
     }
 
     @Override

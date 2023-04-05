@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.services;
 
+import ar.edu.itba.paw.exceptions.ObjectNotFoundException;
 import ar.edu.itba.paw.models.Genre;
 import ar.edu.itba.paw.models.Game;
 import ar.edu.itba.paw.persistenceinterfaces.GameDao;
@@ -31,7 +32,7 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public Game getGameById(Integer id) {
+    public Game getGameById(Integer id){
         return gameDao.getById(id);
     }
 

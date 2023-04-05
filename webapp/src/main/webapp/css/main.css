@@ -20,3 +20,7 @@ body {
     background: #DDD7FF;
     color: #13112D;
 }
+
+* {
+    box-sizing: border-box;
+}

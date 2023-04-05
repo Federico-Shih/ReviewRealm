@@ -1,0 +1,53 @@
+.card-background {
+    background-color: #13112D;
+    color: white;
+}
+
+.review-content-input {
+    height: 300px !important;
+}
+
+.game-image {
+    width: 100%;
+    object-fit: contain;
+}
+
+.line {
+    border: 1px solid #FFFFFF;
+    width: 100%;
+}
+
+.rating-input {
+    display: flex;
+    flex-direction: row;
+}
+
+.number-input {
+    width: 2em;
+    font-size: 24px;
+}
+
+.submit-btn {
+    background-color: #070A18;
+    color: white;
+}
+
+.input-general {
+    box-sizing: border-box !important;
+    padding: 2px !important;
+    color: white !important;
+    background-color: #13112D !important;
+}
+
+.input-general ::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+    color: white !important;
+    opacity: 1; /* Firefox */
+}
+
+.input-general :-ms-input-placeholder { /* Internet Explorer 10-11 */
+    color: white !important;
+}
+
+.input-general ::-ms-input-placeholder { /* Microsoft Edge */
+    color: white !important;
+}
