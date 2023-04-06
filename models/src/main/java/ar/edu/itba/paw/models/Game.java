@@ -6,15 +6,18 @@ import java.util.List;
 public class Game {
     private final Integer id;
     private final String name;
+
+    private final String description;
     private final String developer;
     private final String publisher;
     private final String imageUrl;
     private final List<Genre> genres;
     private final LocalDate publishDate;
 
-    public Game(Integer id, String name, String developer, String publisher, String imageUrl, List<Genre> genres, LocalDate publishDate) {
+    public Game(Integer id, String name,String description,String developer, String publisher, String imageUrl, List<Genre> genres, LocalDate publishDate) {
         this.id = id;
         this.name = name;
+        this.description = description;
         this.developer = developer;
         this.publisher = publisher;
         this.imageUrl = imageUrl;
@@ -22,6 +25,9 @@ public class Game {
         this.publishDate = publishDate;
     }
 
+    public String getDescription() {
+        return description;
+    }
     public Integer getId() {
         return id;
     }
