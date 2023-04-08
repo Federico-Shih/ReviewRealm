@@ -3,15 +3,17 @@ package ar.edu.itba.paw.dtos;
 import java.util.Objects;
 
 public enum OrderDirection {
-    DESCENDING(0,"Descendente"),
-    ASCENDING(1,"Ascendente");
+    DESCENDING(0,"Descendente", "DESC"),
+    ASCENDING(1,"Ascendente", "ASC");
 
     final Integer value;
     final String name;
+    final String altName;
 
-    OrderDirection(int value, String name) {
+    OrderDirection(int value, String name, String altName) {
         this.value = value;
         this.name = name;
+        this.altName = altName;
     }
 
     public Integer getValue() {
@@ -21,6 +23,10 @@ public enum OrderDirection {
     @Override
     public String toString() {
         return name;
+    }
+
+    public String getAltName() {
+        return this.altName;
     }
 
     public static OrderDirection fromValue(Integer value) {

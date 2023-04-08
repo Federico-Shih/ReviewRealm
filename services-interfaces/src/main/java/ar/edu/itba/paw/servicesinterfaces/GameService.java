@@ -6,13 +6,15 @@ import ar.edu.itba.paw.models.Review;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 public interface GameService {
     Game createGame(String name, String description,String developer, String publisher, String imageUrl, List<Integer> genres,
                     LocalDate publishedDate);
 
-    Game getGameById(Integer id);
+    Optional<Game> getGameById(Long id);
+
     List<Game> getAllGames();
 
-    List<Review> getReviewsByGameId(Integer id);
+    Optional<List<Review>> getReviewsByGameId(Long id);
 }

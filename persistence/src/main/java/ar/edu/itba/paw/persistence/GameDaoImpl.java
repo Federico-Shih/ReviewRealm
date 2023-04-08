@@ -5,36 +5,88 @@ import ar.edu.itba.paw.models.Game;
 import ar.edu.itba.paw.models.Review;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.persistenceinterfaces.GameDao;
+import ar.edu.itba.paw.persistenceinterfaces.GenreDao;
 import ar.edu.itba.paw.persistenceinterfaces.ReviewDao;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
+import javax.sql.DataSource;
 import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 @Repository
 public class GameDaoImpl implements GameDao {
+    private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert jdbcInsertGames;
+
+    private final SimpleJdbcInsert jdbcInsertGenreForGames;
+
+    @Autowired
+    public GameDaoImpl(DataSource ds) {
+        this.jdbcTemplate = new JdbcTemplate(ds);
+        this.jdbcInsertGames = new SimpleJdbcInsert(ds).withTableName("games")
+                .usingGeneratedKeyColumns("id");
+        this.jdbcInsertGenreForGames = new SimpleJdbcInsert(ds).withTableName("genreForGames");
+    }
+
+    private final static RowMapper<Game> GAME_ROW_MAPPER = (resultSet, i) -> {
+        return new Game(resultSet.getLong("id"),
+                resultSet.getString("name"),
+                resultSet.getString("description"),
+                resultSet.getString("developer"),
+                resultSet.getString("publisher"),
+                resultSet.getString("imageUrl"),
+                new ArrayList<>(),// despues manualmente tenes que formar los generos que tiene
+                resultSet.getDate("publishDate").toLocalDate());
+    };
+    private final static RowMapper  <Genre> GAME_GENRE_ROW_MAPPER = (resultSet, i) -> {
+        return new Genre(resultSet.getInt("g.genreId"),resultSet.getString("gr.name"));
+    };
 
     @Override
     public List<Game> getAll() {
-        return Arrays.asList(getById(0), getById(0));
-    }
+        return jdbcTemplate.query("SELECT * FROM games",GAME_ROW_MAPPER);
+    } //TODO PAGINAR PARA QUE NO REVIENTE
 
     @Override
     public Game create(String name,String description,String developer, String publisher, String imageUrl, List<Genre> genres, LocalDate publishDate) {
-        return new Game(1984,description,name, developer, publisher, imageUrl, genres, publishDate);
+        Map<String,Object> args = new HashMap<>();
+        args.put("name",name);
+        args.put("description",description);
+        args.put("developer",developer);
+        args.put("publisher",publisher);
+        args.put("imageUrl",imageUrl);
+        args.put("publishDate",publishDate);
+
+        final Number id = jdbcInsertGames.executeAndReturnKey(args);
+
+        for(Genre g : genres){
+            args = new HashMap<>();
+
+            args.put("gameId",id.longValue());
+            args.put("genreId",g.getId());
+
+            jdbcInsertGenreForGames.execute(args);
+        }
+        return new Game(id.longValue(),name,description,developer,publisher,imageUrl,genres,publishDate);
     }
 
     @Override
-    public Game getById(Integer id) {
-        return new Game(1984,"Jugando con Hugo", "El famoso juego de jugando con Hugo amado por todas las familias argentina, tambien tiene la posibildad de Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo " +
-                "dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.","Juan Domingo Peron","La Campora","https://th.bing.com/th/id/R.f3bf42bb11207b145468dfe80c65cbc6?rik=4VSBbo0k4fimEQ&pid=ImgRaw&r=0",
-                Arrays.asList(new Genre(1,"FPS"),new Genre(2,"RogueLike")),LocalDate.now());
+    public Optional<Game> getById(Long id) {
+        Optional<Game> game = jdbcTemplate.query("SELECT * FROM games where id = ?",GAME_ROW_MAPPER,id).stream().findFirst();
+        if(game.isPresent()){//Busco los genres directamente, no paso por genreID
+            List<Genre> genres = jdbcTemplate.query("SELECT * FROM genreforgames g join genres gr on g.genreid = gr.id " +
+                                                        "WHERE g.gameid = ?",GAME_GENRE_ROW_MAPPER,id);
+            game.get().setGenres(genres);
+        }
+        return game;
     }
 
     @Override
-    public List<Review> getReviewsById(Integer id) {
-        return Arrays.asList(new Review( id, new User(89,"Perotti@email.com","123213123"), "No me gusto", "Muy bueno", LocalDate.now(),9,getById(id)),
-                new Review( id, new User(89,"Perotti@email.com","123213123"), "No me gusto", "Muy bueno", LocalDate.now(),9,getById(id)));
+    public Optional<List<Review>> getReviewsById(Long id) {
+      return null; //TODO FALTA TABLA REVIEWS
     }
 }

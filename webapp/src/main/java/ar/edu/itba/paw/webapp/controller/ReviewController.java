@@ -18,6 +18,8 @@ import org.springframework.web.servlet.ModelAndView;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import java.util.Optional;
+
 @Controller
 public class ReviewController {
     private final GameService gameService;
@@ -32,9 +34,9 @@ public class ReviewController {
     }
 
     @RequestMapping(value="/review/submit", method = RequestMethod.GET)
-    public ModelAndView createReviewForm(@RequestParam(value = "gameId", required = false) Integer gameId) {
-        Game reviewedGame = gameService.getGameById(gameId);
-        if (reviewedGame == null) {
+    public ModelAndView createReviewForm(@RequestParam(value = "gameId", required = false) Long gameId) {
+        Optional<Game> reviewedGame = gameService.getGameById(gameId);
+        if (!reviewedGame.isPresent()) {
             return new ModelAndView("not-found");
         }
         ModelAndView mav = new ModelAndView("/review/submit-review");
@@ -44,7 +46,7 @@ public class ReviewController {
 
     @RequestMapping(value="/review/submit/{id:\\d+}", method = RequestMethod.POST)
     public ModelAndView submitReview(
-            @PathVariable(value = "id") Integer gameId,
+            @PathVariable(value = "id") Long gameId,
             @RequestParam(value = "review-title") String title,
             @RequestParam(value = "review-content") String content,
             @RequestParam(value = "review-author") String email,
@@ -52,7 +54,7 @@ public class ReviewController {
             ) {
         reviewService.createReview(title, content, rating, email, gameId);
         ModelAndView mav = new ModelAndView("/review/submit-review");
-        mav.addObject("game", gameService.getGameById(gameId));
+        mav.addObject("game", gameService.getGameById(gameId).get());
         return mav;
     }
 

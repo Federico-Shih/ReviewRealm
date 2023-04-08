@@ -1,37 +1,46 @@
 package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.dtos.ReviewFilter;
+import ar.edu.itba.paw.models.Game;
 import ar.edu.itba.paw.models.Review;
-import ar.edu.itba.paw.persistenceinterfaces.GameDao;
+import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.persistenceinterfaces.ReviewDao;
-import ar.edu.itba.paw.persistenceinterfaces.UserDao;
+import ar.edu.itba.paw.servicesinterfaces.GameService;
 import ar.edu.itba.paw.servicesinterfaces.ReviewService;
+import ar.edu.itba.paw.servicesinterfaces.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ReviewServiceImpl implements ReviewService {
 
     private final ReviewDao reviewDao;
-    private final UserDao userDao;
-    private final GameDao gameDao;
+    private final UserService userService;
+    private final GameService gameService;
 
     @Autowired
-    public ReviewServiceImpl(ReviewDao reviewDao, UserDao userDao, GameDao gameDao) {
+    public ReviewServiceImpl(ReviewDao reviewDao, UserService userService, GameService gameService) {
         this.reviewDao = reviewDao;
-        this.userDao = userDao;
-        this.gameDao = gameDao;
+        this.userService = userService;
+        this.gameService = gameService;
+    }
+
+
+    @Override
+    public Review createReview(String title, String content, Integer rating, String userEmail, Long gameId) {
+        Optional<User> user = userService.getUserByEmail(userEmail);
+        Optional<Game> game = gameService.getGameById(gameId);
+        if (!user.isPresent() || !game.isPresent()) {
+            return null;
+        }
+        return reviewDao.create(title, content, rating, game.get(), user.get());
     }
 
     @Override
-    public Review createReview(String title, String content, Integer rating, String userEmail, Integer gameId) {
-        return reviewDao.create(title, content, rating, gameDao.getById(gameId), userDao.getByEmail(userEmail));
-    }
-
-    @Override
-    public Review getReviewById(Integer id) {
+    public Optional<Review> getReviewById(Long id) {
         return reviewDao.getById(id);
     }
 

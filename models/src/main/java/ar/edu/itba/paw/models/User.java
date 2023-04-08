@@ -5,13 +5,13 @@ import java.util.List;
 
 public class User {
 
-    private final Integer id;
     private String username;
+    private final Long id;
     private final String email;
     private String password;
     private List<Genre> preferences;
 
-    public User(Integer id, String username, String email, String password, List<Genre> preferences) {
+    public User(Long id, String username, String email, String password, List<Genre> preferences) {
         this.id = id;
         this.username = username;
         this.email = email;
@@ -19,11 +19,11 @@ public class User {
         this.preferences = preferences;
     }
 
-    public User(Integer id, String email, String password) {
+    public User(Long id, String email, String password) {
         this(id, email.split("@")[0], email, password, new ArrayList<>());
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
@@ -55,3 +55,4 @@ public class User {
         this.preferences = preferences;
     }
 }
+

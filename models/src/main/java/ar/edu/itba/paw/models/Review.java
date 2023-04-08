@@ -5,7 +5,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 public class Review {
-    private final Integer id;
+    private final Long id;
     private final User author;
     private final String title;
     private final String content;
@@ -13,7 +13,7 @@ public class Review {
     private final Integer rating;
     private final Game reviewedGame;
 
-    public Review(Integer id, User author, String title, String content, LocalDate created, Integer rating, Game reviewedGame) {
+    public Review(Long id, User author, String title, String content, LocalDate created, Integer rating, Game reviewedGame) {
         this.id = id;
         this.author = author;
         this.title = title;
@@ -23,7 +23,7 @@ public class Review {
         this.reviewedGame = reviewedGame;
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 

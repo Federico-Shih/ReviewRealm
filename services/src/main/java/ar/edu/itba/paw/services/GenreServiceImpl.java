@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
+
 @Service
 public class GenreServiceImpl implements GenreService {
 
@@ -22,7 +24,7 @@ public class GenreServiceImpl implements GenreService {
     }
 
     @Override
-    public Genre getGenreById(Integer id) {
+    public Optional<Genre> getGenreById(Integer id) {
         return genreDao.getById(id);
     }
 

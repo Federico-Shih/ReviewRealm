@@ -7,14 +7,15 @@ import ar.edu.itba.paw.models.Review;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 public interface GameDao {
 
     Game create(String name,String description,String developer, String publisher, String imageUrl, List<Genre> genres, LocalDate publishDate);
 
-    Game getById(Integer id) throws ObjectNotFoundException;
+    Optional<Game> getById(Long id) throws ObjectNotFoundException;
 
     List<Game> getAll();
 
-    List<Review> getReviewsById(Integer id);
+    Optional<List<Review>> getReviewsById(Long id);
 }

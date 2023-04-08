@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class GameServiceImpl implements GameService {
@@ -28,14 +29,20 @@ public class GameServiceImpl implements GameService {
     @Override
     public Game createGame(String name,String description ,String developer, String publisher, String imageUrl, List<Integer> genres, LocalDate publishedDate) {
         List<Genre> genreList = new ArrayList<>();
+        Optional<Genre> g;
         for (Integer c : genres) {
-            genreList.add(genreServ.getGenreById(c));
+             g = genreServ.getGenreById(c);
+             if(g.isPresent()){
+                 genreList.add(g.get());
+             }else{
+                 //TODO ver que hacemos aca
+             }
         }
         return gameDao.create(name,description,developer,publisher,imageUrl, genreList, publishedDate);
     }
 
     @Override
-    public Game getGameById(Integer id){
+    public Optional<Game> getGameById(Long id) {
         return gameDao.getById(id);
     }
 
@@ -45,7 +52,7 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public List<Review> getReviewsByGameId(Integer id) {
+    public Optional<List<Review>> getReviewsByGameId(Long id) {
         return gameDao.getReviewsById(id);
     }
 }

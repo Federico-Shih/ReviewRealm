@@ -21,7 +21,6 @@ public class HelloWorldController {
     @RequestMapping("/")
     public ModelAndView helloWorld(){
         final ModelAndView mav =  new ModelAndView("helloworld/index");
-        mav.addObject("user",us.createUser("paw@itba.edu.ar","mysecret"));
 
         return mav;
     }
@@ -42,7 +41,8 @@ public class HelloWorldController {
     @RequestMapping("/{id:\\d+}")
     public ModelAndView profile(@PathVariable("id") final Long userId){
         ModelAndView mav= new ModelAndView("helloworld/profile");
-        mav.addObject("userid",userId);
+        final User user = us.getUserById(userId).get();
+        mav.addObject("user",user);
         return mav;
     }
 }

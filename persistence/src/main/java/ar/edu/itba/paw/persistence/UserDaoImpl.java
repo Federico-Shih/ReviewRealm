@@ -2,20 +2,57 @@ package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.persistenceinterfaces.UserDao;
 import ar.edu.itba.paw.models.User;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+
+import javax.sql.DataSource;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 
 @Repository
 public class UserDaoImpl implements UserDao {
+    private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert jdbcInsert;
 
-    @Override
-    public User create(String email, String password) {
-        return new User(0, email, password);
+    private final static RowMapper<User> ROW_MAPPER = (resultSet, i) -> {
+        return new User(resultSet.getLong("id"),
+                resultSet.getString("email"),
+                resultSet.getString("password"));
+                // TODO: Agregar username
+    };
+
+    @Autowired
+    public UserDaoImpl(final DataSource ds) {
+        this.jdbcTemplate = new JdbcTemplate(ds);
+        this.jdbcInsert = new SimpleJdbcInsert(ds).
+                withTableName("users").usingGeneratedKeyColumns("id");
     }
 
     @Override
-    public User getByEmail(String email) {
-        return new User(123, email, "12345678");
+    public Optional<User> findById(final long id) {
+        return jdbcTemplate.query("SELECT * FROM users WHERE id = ?", ROW_MAPPER, id).stream().findFirst();
+    }
+
+    @Override
+    public User create(String email, String password) {
+        final Map<String, Object> args = new HashMap<>();
+        args.put("email",email);
+        args.put("password",password);
+
+        // todo: add username
+        final Number id = jdbcInsert.executeAndReturnKey(args);
+        return new User(id.longValue(), email, password);
+        //todo: pasar ID a long en todos lados
+    }
+
+    @Override
+    public Optional<User> getByEmail(String email) {
+        return jdbcTemplate.query("SELECT * FROM users WHERE email = ?", ROW_MAPPER, email).stream().findFirst();
     }
 
 }
