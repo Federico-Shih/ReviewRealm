@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.models;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 public class Review {
@@ -40,6 +41,10 @@ public class Review {
 
     public LocalDate getCreated() {
         return created;
+    }
+
+    public String getCreatedFormatted() {
+        return created.format(DateTimeFormatter.ofPattern("dd MMM yyyy"));
     }
 
     public Integer getRating() {

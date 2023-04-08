@@ -3,9 +3,9 @@
 <html>
 <head>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link type="text/css" rel="stylesheet" href="css/materialize.min.css" media="screen,projection"/>
-    <link rel="stylesheet" href="css/main.css">
-    <link rel="stylesheet" href="css/game.css">
+    <link type="text/css" rel="stylesheet" href="../css/materialize.min.css" media="screen,projection"/>
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/game.css">
     <title>Details of <c:out value="${game.name}"/> </title> <!--TODO-->
 </head>
 <body>

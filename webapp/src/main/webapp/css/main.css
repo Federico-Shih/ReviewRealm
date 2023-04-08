@@ -1,21 +1,58 @@
 
 body {
-    background: #191716;
+    background: #070A18;
     color: white;
 }
 
+.card {
+    background: #13112D;
+    border: 1px solid #444155;
+    border-radius: 10px;
+}
+
+.divider-h {
+    border-top: 1px solid #444155;
+    position: relative;
+    left: 2.5%;
+    width: 95%;
+}
+
+.divider-v {
+    border-left: 1px solid #444155;
+    position: relative;
+    top: 2.5%;
+    height: 95%;
+}
 
 .chip {
     background: #13112D;
+    border: 1px solid #444155;
+    border-radius: 12px;
+    font-size: 18px;
+    font-weight: 700;
+    padding: 2px 8px;
+    white-space: nowrap;
 }
 
 .chip-small {
     background: #13112D;
+    border: 1px solid #444155;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 2px 6px;
+    white-space: nowrap;
 }
 
 .chip-small-inverted {
     background: #DDD7FF;
     color: #13112D;
+    border: 1px solid #444155;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 2px 6px;
+    white-space: nowrap;
 }
 
 * {

@@ -6,13 +6,13 @@
   Time: 2:30 AM
   To change this template use File | Settings | File Templates.
 --%>
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html;charset=UTF-8" %>
 <html>
 <head>
     <title>Crear reseña</title> <!-- Compiled and minified CSS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
-    <link rel="stylesheet" href="/css/review/review-page.css">
-    <link href="/css/main.css" rel="stylesheet"/>
+    <link rel="stylesheet" type="text/css" href="../css/materialize.min.css" media="screen,projection"/>
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/review/review-page.css">
     <!-- Compiled and minified JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1" />

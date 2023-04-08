@@ -1,29 +1,34 @@
 package ar.edu.itba.paw.webapp.controller;
 
-import ar.edu.itba.paw.exceptions.ObjectNotFoundException;
-import ar.edu.itba.paw.models.Game;
-import ar.edu.itba.paw.servicesinterfaces.GameService;
+import ar.edu.itba.paw.dtos.OrderDirection;
+import ar.edu.itba.paw.dtos.ReviewFilter;
+import ar.edu.itba.paw.dtos.ReviewOrderCriteria;
+import ar.edu.itba.paw.models.Genre;
+import ar.edu.itba.paw.servicesinterfaces.GenreService;
 import ar.edu.itba.paw.servicesinterfaces.ReviewService;
-import ar.edu.itba.paw.servicesinterfaces.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import ar.edu.itba.paw.models.Game;
+import ar.edu.itba.paw.servicesinterfaces.GameService;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 public class ReviewController {
-    private UserService userService;
-    private GameService gameService;
-    private ReviewService reviewService;
+    private final GameService gameService;
+    private final ReviewService reviewService;
+    private final GenreService genreService;
 
     @Autowired
-    public ReviewController(UserService userService, GameService gameService, ReviewService reviewService) {
-        this.userService = userService;
+    public ReviewController(GameService gameService, ReviewService reviewService, GenreService genreService) {
         this.gameService = gameService;
         this.reviewService = reviewService;
+        this.genreService = genreService;
     }
 
     @RequestMapping(value="/review/submit", method = RequestMethod.GET)
@@ -50,4 +55,29 @@ public class ReviewController {
         mav.addObject("game", gameService.getGameById(gameId));
         return mav;
     }
+
+    @RequestMapping(value = "/reviews", method = RequestMethod.GET)
+    public ModelAndView reviewList(
+            @RequestParam(value = "o-crit", defaultValue = "0") Integer orderCriteria,
+            @RequestParam(value = "o-dir", defaultValue = "0") Integer orderDirection,
+            @RequestParam(value = "f-gen", defaultValue = "") List<Integer> genresFilter,
+            @RequestParam(value = "f-pref", defaultValue = "") List<Integer> preferencesFilter
+    ) {
+        final ModelAndView mav = new ModelAndView("review/review_list");
+        ReviewFilter filters = new ReviewFilter(genresFilter, preferencesFilter, ReviewOrderCriteria.fromValue(orderCriteria), OrderDirection.fromValue(orderDirection));
+        List<Genre> allGenres = genreService.getAllGenres();
+        mav.addObject("reviews", reviewService.getAllReviews(filters));
+        mav.addObject("orderCriteria", ReviewOrderCriteria.values());
+        mav.addObject("orderDirections", OrderDirection.values());
+
+        mav.addObject("selectedOrderCriteria", orderCriteria);
+        mav.addObject("selectedOrderDirection", orderDirection);
+        mav.addObject("selectedGenres", allGenres.stream().filter((g) -> genresFilter.contains(g.getId())).collect(Collectors.toList()));
+        mav.addObject("unselectedGenres", allGenres.stream().filter((g) -> !genresFilter.contains(g.getId())).collect(Collectors.toList()));
+        mav.addObject("selectedPreferences", allGenres.stream().filter((g) -> preferencesFilter.contains(g.getId())).collect(Collectors.toList()));
+        mav.addObject("unselectedPreferences", allGenres.stream().filter((g) -> !preferencesFilter.contains(g.getId())).collect(Collectors.toList()));
+
+        return mav;
+    }
+
 }
