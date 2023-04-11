@@ -65,7 +65,7 @@ public class ReviewController {
             @RequestParam(value = "f-gen", defaultValue = "") List<Integer> genresFilter,
             @RequestParam(value = "f-pref", defaultValue = "") List<Integer> preferencesFilter
     ) {
-        final ModelAndView mav = new ModelAndView("review/review_list");
+        final ModelAndView mav = new ModelAndView("review/review-list");
         ReviewFilter filters = new ReviewFilter(genresFilter, preferencesFilter, ReviewOrderCriteria.fromValue(orderCriteria), OrderDirection.fromValue(orderDirection));
         List<Genre> allGenres = genreService.getAllGenres();
         mav.addObject("reviews", reviewService.getAllReviews(filters));

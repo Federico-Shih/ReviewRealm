@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,16 +28,24 @@ public class GameController {
 
     @RequestMapping("/game/{id:\\d+}")
     public ModelAndView game_details(@PathVariable("id") final Long gameId){
-        final ModelAndView mav =  new ModelAndView("games/game_details");
+        final ModelAndView mav =  new ModelAndView("games/game-details");
         Optional<Game> game = gs.getGameById(gameId);
         if(game.isPresent()){
-            mav.addObject("game",game);
-            Optional<List<Review>> reviewList = gs.getReviewsByGameId(gameId);
+            mav.addObject("game",game.get());
+            Optional<List<Review>> reviewList = gs.getReviewsByGameId(gameId); //TODO getReviewsByGameId
             //Si esta el juego entonces si o si estan las reviews aunque sean vacias, no hay que chequear
-            mav.addObject("reviews",reviewList.get());
+            mav.addObject("reviews", /*reviewList.orElseGet(ArrayList::new)*/ new ArrayList<Review>());
+
         }else{
             return new ModelAndView("not-found");
         }
+        return mav;
+    }
+
+    @RequestMapping("/games")
+    public ModelAndView gameList(){
+        final ModelAndView mav = new ModelAndView("games/game-list");
+        mav.addObject("games", gs.getAllGames());
         return mav;
     }
 }

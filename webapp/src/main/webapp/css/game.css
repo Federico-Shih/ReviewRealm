@@ -1,5 +1,17 @@
 
 
+.game-card-for-list{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    background: #13112D;
+    margin-right: 5%;
+    padding: 2%;
+    border: 1px solid #444155;
+    border-radius: 25px;
+}
+
+
 .game-img{
     width: 100%;
     height: 50%;
