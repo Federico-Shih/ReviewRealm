@@ -1,20 +1,19 @@
 
-
 .game-card-for-list{
     display: flex;
     flex-direction: column;
-    justify-content: space-around;
+    justify-content: flex-start;
     background: #13112D;
-    margin-right: 5%;
-    padding: 2%;
+    padding: 4%;
     border: 1px solid #444155;
-    border-radius: 25px;
+    border-radius: 10px;
+    color: white;
+    margin-top: 2%
 }
-
 
 .game-img{
     width: 100%;
-    height: 50%;
+    /*height: 50%;*/
 }
 
 .game-details-page{
@@ -48,45 +47,58 @@
     flex-direction: column;
     justify-content: space-around;
     width: 35%;
-    height: 100%;
+    /*height: 100%;*/
     background: #13112D;
     margin-right: 5%;
     padding: 2%;
     border: 1px solid #444155;
     border-radius: 25px;
 }
+
+.game-card-title{
+    margin-top: 2%;
+    font-size: 24px;
+    font-weight: 600;
+}
+
 .game-card-text{
     font-size: 16px;
     font-weight: 400;
 }
+
 .game-genres{
     display: flex;
     flex-direction: row;
     justify-content: flex-start;
     align-items: baseline;
 }
+
 .game-title{
     font-size: 36px;
     font-weight: 600;
     white-space: nowrap;
 }
+
 .game-category{
     font-size: 24px;
     font-weight: 600;
     white-space: nowrap;
     margin-right: 10px;
 }
-.review-header{
+
+.game-review-section-header{
     font-size: 30px;
     font-weight: 600;
     white-space: nowrap;
     margin-right: 10px;
 }
+
 .game-description {
     font-size: 16px;
     font-weight: 400;
     overflow: hidden;
 }
+
 .game-review-section{
     display: flex;
     flex-direction: column;
@@ -95,6 +107,7 @@
     height: 60%;
     margin: 2%
 }
+
 .game-review-header{
     display: flex;
     flex-direction: row;
@@ -103,93 +116,13 @@
     width: 100%
 }
 
-.card {
-    background: #13112D;
-    border: 1px solid #444155;
-    border-radius: 10px;
-}
-.review-card-list {
+.game-review-card-list {
     width: 100%;
     display: flex;
     flex-direction: row;
     justify-content: space-evenly;
     align-items: flex-start;
     flex-wrap: wrap;
-}
-
-.review-card {
-    width: 48%;
-}
-.review-card-header {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 4%;
-}
-.review-card-header-start {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 10px 0;
-}
-
-.review-card-header-end {
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-end;
-    align-items: baseline;
-}
-
-.review-card-body {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 1% 4%;
-}
-
-.review-card-footer {
-    padding: 2% 4%;
-}
-
-#review-card-game-title {
-    font-size: 24px;
-    font-weight: 600; /* semibold */
-    white-space: nowrap;
-    margin-bottom: 2px;
-}
-
-#review-card-score {
-    font-size: 40px;
-    font-weight: 700; /* bold */
-}
-
-#review-card-score-outof {
-    font-size: 16px;
-    font-weight: 400; /* regular */
-    margin-right: 4px;
-}
-
-#review-card-title {
-    font-size: 18px;
-    font-weight: 600;
-    margin: 4px 0;
-}
-
-#review-card-content {
-    font-size: 14px;
-    font-weight: 400;
-}
-
-#review-card-date {
-    font-size: 11px;
-    font-weight: 300; /* light */
-    align-self: flex-end;
-}
-
-#review-card-bottom-text {
-    font-size: 12px;
-    font-weight: 300;
 }
 
 

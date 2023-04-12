@@ -42,7 +42,7 @@ public class GameController {
         return mav;
     }
 
-    @RequestMapping("/games")
+    @RequestMapping("/game/list")
     public ModelAndView gameList(){
         final ModelAndView mav = new ModelAndView("games/game-list");
         mav.addObject("games", gs.getAllGames());

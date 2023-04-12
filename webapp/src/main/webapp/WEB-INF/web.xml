@@ -32,6 +32,11 @@ http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
     <servlet-name>dispatcher</servlet-name>
     <url-pattern>/</url-pattern>
   </servlet-mapping>
+  <!-- Error page mappings -->
+  <error-page>
+    <error-code>404</error-code>
+    <location>/WEB-INF/jsp/not-found.jsp</location>
+  </error-page>
 
 
 </web-app>

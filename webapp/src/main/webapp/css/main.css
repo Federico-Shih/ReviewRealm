@@ -4,6 +4,42 @@ body {
     color: white;
 }
 
+nav {
+    background-color: #35325e;
+}
+
+.navbar {
+    display: flex;
+    width: 100%;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 0 2%;
+}
+
+.navbar-logo {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 4%;
+}
+
+.navbar-logo-image {
+    width: 50px;
+}
+
+.navbar-logo-title {
+    font-size: 40px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.navbar-options {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    gap: 4%;
+}
+
 .card {
     background: #13112D;
     border: 1px solid #444155;

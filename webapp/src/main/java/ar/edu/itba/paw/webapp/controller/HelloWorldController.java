@@ -12,7 +12,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 @Controller
 public class HelloWorldController {
-
+/*
     private UserService us;
     @Autowired
     public HelloWorldController(UserService us) {
@@ -44,5 +44,5 @@ public class HelloWorldController {
         final User user = us.getUserById(userId).get();
         mav.addObject("user",user);
         return mav;
-    }
+    }*/
 }
