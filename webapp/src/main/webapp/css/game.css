@@ -124,5 +124,13 @@
     align-items: flex-start;
     flex-wrap: wrap;
 }
-
-
+.no-reviews{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+}
+#no-reviews-text{
+    font-size: 20px;
+    font-weight: 500;
+}

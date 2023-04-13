@@ -88,7 +88,7 @@
             </div>
         </c:if>
         <c:forEach var="review" items="${reviews}">
-            <div class="card review-card darken-1">
+            <div class="card review-card">
                 <div class="review-card-header">
                     <div class="review-card-header-start">
                         <span id="review-card-game-title"><c:out value="${review.reviewedGame.name}"/></span>
@@ -113,10 +113,11 @@
                 <div class="divider-h"></div>
                 <div class="review-card-footer">
                 <span id="review-card-bottom-text"> por <span id="review-card-author">@<c:out
-                        value="${review.author.username}"/></span>, quien prefiere: </span>
-                    <c:forEach var="genre" items="${review.author.preferences}">
-                        <span class="chip-small-inverted"><c:out value="${genre.name}"/></span>
-                    </c:forEach>
+                        value="${review.author.username}"/></span><%--, quien prefiere:--%> </span>
+<%--                    TODO: PREFERENCIAS DE USUARIO--%>
+<%--                    <c:forEach var="genre" items="${review.author.preferences}">--%>
+<%--                        <span class="chip-small-inverted"><c:out value="${genre.name}"/></span>--%>
+<%--                    </c:forEach>--%>
                 </div>
             </div>
         </c:forEach>

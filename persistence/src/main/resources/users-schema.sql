@@ -1,23 +1,23 @@
 CREATE TABLE IF NOT EXISTS users (
-    id SERIAL primary key,
-    email VARCHAR(100) not null unique,
-    password varchar(100) not null
+    id serial PRIMARY KEY ,
+    email varchar(100) NOT NULL UNIQUE ,
+    password varchar(100) NOT NULL
     -- todo: username
     );
 
 CREATE TABLE IF NOT EXISTS genres (
-    id SERIAL primary key,
-    name VARCHAR(100) not null
+    id serial PRIMARY KEY ,
+    name varchar(100) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS games (
     id SERIAL primary key,
-    name VARCHAR(100) not null,
+    name varchar(100) NOT NULL,
     description text,
-    developer VARCHAR(100) not null,
-    publisher VARCHAR(100) not null,
-    imageUrl text not null,
-    publishDate timestamp not null
+    developer varchar(100) NOT NULL,
+    publisher varchar(100) NOT NULL,
+    imageUrl text NOT NULL,
+    publishDate timestamp NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS genreForGames (
@@ -29,13 +29,13 @@ CREATE TABLE IF NOT EXISTS genreForGames (
 );
 
 CREATE TABLE IF NOT EXISTS reviews(
-    id SERIAL PRIMARY KEY,
-    authorId INT NOT NULL,
-    gameId INT NOT NULL,
-    title VARCHAR(100) not null,
-    content text not null,
-    createdDate DATE not null,
-    rating int not null check (rating > 0 and rating <= 10),
+    id serial PRIMARY KEY,
+    authorId int NOT NULL,
+    gameId int NOT NULL,
+    title varchar(100) NOT NULL,
+    content text NOT NULL,
+    createdDate timestamp NOT NULL,
+    rating int NOT NULL CHECK (rating > 0 and rating <= 10),
     FOREIGN KEY(authorId) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY(gameId) REFERENCES games(id) ON DELETE CASCADE
 );

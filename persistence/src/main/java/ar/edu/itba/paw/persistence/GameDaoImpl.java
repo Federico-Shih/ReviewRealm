@@ -46,6 +46,24 @@ public class GameDaoImpl implements GameDao {
     private final static RowMapper  <Genre> GAME_GENRE_ROW_MAPPER = (resultSet, i) -> {
         return new Genre(resultSet.getLong("genreId"),resultSet.getString("name"));
     };
+    private final static RowMapper<Review> REVIEW_ROW_MAPPER = ((resultSet, i) -> new Review(
+            resultSet.getLong("id"),
+            new User(resultSet.getLong("authorId"), resultSet.getString("email"), "-"),
+            resultSet.getString("title"),
+            resultSet.getString("content"),
+            resultSet.getDate("createddate").toLocalDate(),
+            resultSet.getInt("rating"),
+            new Game(
+                    resultSet.getLong("gameId"),
+                    resultSet.getString("name"),
+                    resultSet.getString("description"),
+                    resultSet.getString("developer"),
+                    resultSet.getString("publisher"),
+                    resultSet.getString("imageUrl"),
+                    new ArrayList<>(),
+                    resultSet.getTimestamp("publishDate").toLocalDateTime().toLocalDate()
+            )
+    ));
 
     @Override
     public List<Game> getAll() {
@@ -84,8 +102,12 @@ public class GameDaoImpl implements GameDao {
     }
 
     @Override
-    public Optional<List<Review>> getReviewsById(Long id) {
-      return null; //TODO FALTA TABLA REVIEWS
+    public List<Review> getReviewsById(Long id) {
+       return jdbcTemplate.query("SELECT * FROM reviews " +
+                "JOIN games as g ON g.id = reviews.gameid " +
+                "JOIN users as u ON u.id = reviews.authorid " +
+                "WHERE g.id = ?", REVIEW_ROW_MAPPER, id);
+        //No buscamos los generos de lo juegos pues por ahora no se usan en ningun momento y es mejor hacer menos cant de querys
     }
 
     @Override

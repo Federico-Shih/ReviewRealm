@@ -52,7 +52,7 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public Optional<List<Review>> getReviewsByGameId(Long id) {
+    public List<Review> getReviewsByGameId(Long id) {
         return gameDao.getReviewsById(id);
     }
 }

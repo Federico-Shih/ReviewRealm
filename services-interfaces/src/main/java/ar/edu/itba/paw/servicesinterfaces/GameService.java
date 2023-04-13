@@ -16,5 +16,5 @@ public interface GameService {
 
     List<Game> getAllGames();
 
-    Optional<List<Review>> getReviewsByGameId(Long id);
+    List<Review> getReviewsByGameId(Long id);
 }

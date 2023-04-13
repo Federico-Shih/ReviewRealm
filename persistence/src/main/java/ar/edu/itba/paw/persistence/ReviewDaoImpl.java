@@ -88,16 +88,17 @@ public class ReviewDaoImpl implements ReviewDao {
 
 
     private String toReviewFilterString(ReviewFilter filter) {
-        String gamesAmount = String.join(",", Collections.nCopies(filter.getReviewerPreferencesFilter().size(), "?"));
+        String gamesAmount = String.join(",", Collections.nCopies(filter.getGameGenresFilter().size(), "?"));
         StringBuilder str = new StringBuilder();
         if (!filter.getGameGenresFilter().isEmpty()) {
-            str.append("JOIN genresForGames as gg ON reviews.gameid = gg.gameid " +
-                    "JOIN genres ON genres.id = gg.genreid");
-            str.append("WHERE genres.id IN ");
+            str.append("JOIN genreforgames as gg ON r.gameid = gg.gameid " +
+                    "JOIN genres ON genres.id = gg.genreid ");
+            str.append("WHERE genres.id IN (");
             str.append(gamesAmount);
+            str.append(" )");
             // TODO: filters
         }
-        str.append("ORDER BY ");
+        str.append(" ORDER BY ");
         str.append(toReviewOrderString(filter.getReviewOrderCriteria()));
         str.append(" ");
         str.append(filter.getOrderDirection().getAltName());
@@ -106,7 +107,7 @@ public class ReviewDaoImpl implements ReviewDao {
     @Override
     public List<Review> getAll(ReviewFilter filter) {
         List<Review> reviews = jdbcTemplate.query(
-                "SELECT DISTINCT r.id, r.title, r.content, r.createddate, r.rating, g.name, gameId, g.description, g.developer, g.publisher, g.publishdate, g.imageUrl, u.email, authorid FROM reviews as r JOIN games as g ON g.id = r.gameid JOIN users as u ON u.id = r.authorid " +
+                "SELECT DISTINCT r.id, r.title, r.content, r.createddate, r.rating, g.name, r.gameid, g.description, g.developer, g.publisher, g.publishdate, g.imageUrl, u.email, authorid FROM reviews as r JOIN games as g ON g.id = r.gameid JOIN users as u ON u.id = r.authorid " +
                         toReviewFilterString(filter)
         , REVIEW_ROW_MAPPER, filter.getGameGenresFilter().toArray());
         reviews.forEach((review -> {

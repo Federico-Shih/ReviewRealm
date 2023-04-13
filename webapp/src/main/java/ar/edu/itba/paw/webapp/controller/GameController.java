@@ -32,9 +32,9 @@ public class GameController {
         Optional<Game> game = gs.getGameById(gameId);
         if(game.isPresent()){
             mav.addObject("game",game.get());
-            Optional<List<Review>> reviewList = gs.getReviewsByGameId(gameId); //TODO getReviewsByGameId
+            List<Review> reviewList = gs.getReviewsByGameId(gameId);
             //Si esta el juego entonces si o si estan las reviews aunque sean vacias, no hay que chequear
-            mav.addObject("reviews", /*reviewList.orElseGet(ArrayList::new)*/ new ArrayList<Review>());
+            mav.addObject("reviews", reviewList);
 
         }else{
             return new ModelAndView("not-found");

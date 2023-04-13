@@ -12,6 +12,7 @@
     <title>Details of <c:out value="${game.name}"/></title> <!--TODO-->
 </head>
 <body>
+<c:url value="/review/submit?gameId=${game.id}" var="sumbitReview"/>
 <jsp:include page="../static-components/navbar.jsp"/>
 <div class="game-details-section">
     <div class="game-details">
@@ -42,34 +43,44 @@
 <div class="game-review-section">
     <div class="game-review-header">
         <span class="game-review-section-header">Reseñas de otros usuarios</span>
+        <a class="btn waves-effect-light" href="${sumbitReview}">Nueva Reseña</a>
     </div>
     <div class="game-review-card-list">
-        <c:forEach var="review" items="${reviews}">
-            <div class="card review-card">
-                <div class="review-card-header">
-                    <div class="review-card-header-start">
-                        <span id="review-card-title"><c:out value="${review.title}"/></span>
-                    </div>
-                    <div class="review-card-header-end">
-                        <span id="review-card-score"><c:out value="${review.rating}"/></span>
-                        <span id="review-card-score-outof">/10</span>
-                        <i class="material-icons small">star</i>
-                    </div>
-                </div>
-                <div class="review-card-body">
-                    <span id="review-card-content"><c:out value="${review.content}"/></span>
-                    <span id="review-card-date"><c:out value="${review.created}"/></span>
-                </div>
-                <div class="divider"></div>
-                <div class="review-card-footer">
-                    <span id="review-card-bottom-text"> por <span id="review-card-author">@<c:out
-                            value="${review.author.email}"/></span>, quien prefiere: </span>
-                        <%--                            <c:forEach var="genre" items="${review.author.}">--%>
-                        <%--                                <span class="chip-small-inverted"><c:out value="${genre.name}"/></span>--%>
-                        <%--                            </c:forEach>--%>
-                </div>
+        <c:if test="${reviews.size() == 0 }">
+            <div class="no-reviews">
+                <div class="s"></div>
+                <p id="no-reviews-text">Parece que todavia no hay reseñas para este juego
+                    ¿Quieres realizar la primera reseña?</p>
             </div>
-        </c:forEach>
+        </c:if>
+        <c:if test="${reviews.size() > 0}">
+            <c:forEach var="review" items="${reviews}">
+                <div class="card review-card">
+                    <div class="review-card-header">
+                        <div class="review-card-header-start">
+                            <span id="review-card-title"><c:out value="${review.title}"/></span>
+                        </div>
+                        <div class="review-card-header-end">
+                            <span id="review-card-score"><c:out value="${review.rating}"/></span>
+                            <span id="review-card-score-outof">/10</span>
+                            <i class="material-icons small">star</i>
+                        </div>
+                    </div>
+                    <div class="review-card-body">
+                        <span id="review-card-content"><c:out value="${review.content}"/></span>
+                        <span id="review-card-date"><c:out value="${review.created}"/></span>
+                    </div>
+                    <div class="divider"></div>
+                    <div class="review-card-footer">
+                        <span id="review-card-bottom-text"> por <span id="review-card-author">@<c:out
+                                value="${review.author.email}"/></span><%--, quien prefiere: --%> </span>
+                            <%--                            <c:forEach var="genre" items="${review.author.}">--%>
+                            <%--                                <span class="chip-small-inverted"><c:out value="${genre.name}"/></span>--%>
+                            <%--                            </c:forEach>--%>
+                    </div>
+                </div>
+            </c:forEach>
+        </c:if>
     </div>
 </div>
 </body>
