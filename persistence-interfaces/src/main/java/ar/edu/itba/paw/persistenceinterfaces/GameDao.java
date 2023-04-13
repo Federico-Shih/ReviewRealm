@@ -18,4 +18,6 @@ public interface GameDao {
     List<Game> getAll();
 
     Optional<List<Review>> getReviewsById(Long id);
+
+    List<Genre> getGenresByGame(Long id);
 }

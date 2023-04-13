@@ -4,6 +4,7 @@ import ar.edu.itba.paw.dtos.OrderDirection;
 import ar.edu.itba.paw.dtos.ReviewFilter;
 import ar.edu.itba.paw.dtos.ReviewOrderCriteria;
 import ar.edu.itba.paw.models.Genre;
+import ar.edu.itba.paw.models.Review;
 import ar.edu.itba.paw.servicesinterfaces.GenreService;
 import ar.edu.itba.paw.servicesinterfaces.ReviewService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,9 +55,12 @@ public class ReviewController {
             @RequestParam(value = "review-author") String email,
             @RequestParam(value = "review-rating") Integer rating
             ) {
-        reviewService.createReview(title, content, rating, email, gameId);
+        Review createdReview = reviewService.createReview(title, content, rating, email, gameId);
+        if (createdReview == null) {
+            return new ModelAndView("not-found");
+        }
         ModelAndView mav = new ModelAndView("/review/submit-review");
-        mav.addObject("game", gameService.getGameById(gameId).get());
+        mav.addObject("game", createdReview.getReviewedGame());
         return mav;
     }
 

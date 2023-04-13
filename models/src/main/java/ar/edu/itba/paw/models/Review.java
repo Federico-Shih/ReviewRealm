@@ -54,4 +54,17 @@ public class Review {
     public Game getReviewedGame() {
         return reviewedGame;
     }
+
+    @Override
+    public String toString() {
+        return "Review{" +
+                "id=" + id +
+                ", author=" + author +
+                ", title='" + title + '\'' +
+                ", content='" + content + '\'' +
+                ", created=" + created +
+                ", rating=" + rating +
+                ", reviewedGame=" + reviewedGame +
+                '}';
+    }
 }

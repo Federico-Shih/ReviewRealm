@@ -26,7 +26,7 @@ public class GenreDaoImpl implements GenreDao {
 
     }
     private final static RowMapper<Genre> GENRE_ROW_MAPPER = (resultSet, i) -> {
-        return new Genre(resultSet.getInt("id"),resultSet.getString("name"));
+        return new Genre(resultSet.getLong("id"),resultSet.getString("name"));
     };
 
     @Override
@@ -35,7 +35,7 @@ public class GenreDaoImpl implements GenreDao {
         args.put("name",name);
 
         final Number id = jdbcInsertGenres.executeAndReturnKey(args);
-        return new Genre(id.intValue(),name);
+        return new Genre(id.longValue(),name);
     }
 
     @Override

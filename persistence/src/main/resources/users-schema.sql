@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS games (
     developer VARCHAR(100) not null,
     publisher VARCHAR(100) not null,
     imageUrl text not null,
-    publishDate date not null
+    publishDate timestamp not null
 );
 
 CREATE TABLE IF NOT EXISTS genreForGames (

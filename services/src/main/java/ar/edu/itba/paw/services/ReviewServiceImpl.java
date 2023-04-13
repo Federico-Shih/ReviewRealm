@@ -33,10 +33,11 @@ public class ReviewServiceImpl implements ReviewService {
     public Review createReview(String title, String content, Integer rating, String userEmail, Long gameId) {
         Optional<User> user = userService.getUserByEmail(userEmail);
         Optional<Game> game = gameService.getGameById(gameId);
-        if (!user.isPresent() || !game.isPresent()) {
+        if (!game.isPresent()) {
             return null;
         }
-        return reviewDao.create(title, content, rating, game.get(), user.get());
+        User presentUser = user.orElseGet(() -> userService.createUser(userEmail, ""));
+        return reviewDao.create(title, content, rating, game.get(), presentUser);
     }
 
     @Override

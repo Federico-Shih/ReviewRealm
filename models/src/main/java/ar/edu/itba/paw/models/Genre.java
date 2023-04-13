@@ -1,11 +1,11 @@
 package ar.edu.itba.paw.models;
 
 public class Genre {
-    private final Integer id;
+    private final Long id;
 
     private final String name;
 
-    public Genre(Integer id, String name) {
+    public Genre(Long id, String name) {
         this.id = id;
         this.name = name;
     }
@@ -14,7 +14,7 @@ public class Genre {
         return name;
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 }

@@ -14,6 +14,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -40,10 +41,10 @@ public class GameDaoImpl implements GameDao {
                 resultSet.getString("publisher"),
                 resultSet.getString("imageUrl"),
                 new ArrayList<>(),// despues manualmente tenes que formar los generos que tiene
-                resultSet.getDate("publishDate").toLocalDate());
+                resultSet.getTimestamp("publishDate").toLocalDateTime().toLocalDate());
     };
     private final static RowMapper  <Genre> GAME_GENRE_ROW_MAPPER = (resultSet, i) -> {
-        return new Genre(resultSet.getInt("g.genreId"),resultSet.getString("gr.name"));
+        return new Genre(resultSet.getLong("genreId"),resultSet.getString("name"));
     };
 
     @Override
@@ -59,7 +60,7 @@ public class GameDaoImpl implements GameDao {
         args.put("developer",developer);
         args.put("publisher",publisher);
         args.put("imageUrl",imageUrl);
-        args.put("publishDate",publishDate);
+        args.put("publishDate", new Timestamp(publishDate.toEpochDay()));
 
         final Number id = jdbcInsertGames.executeAndReturnKey(args);
 
@@ -77,16 +78,19 @@ public class GameDaoImpl implements GameDao {
     @Override
     public Optional<Game> getById(Long id) {
         Optional<Game> game = jdbcTemplate.query("SELECT * FROM games where id = ?",GAME_ROW_MAPPER,id).stream().findFirst();
-        if(game.isPresent()){//Busco los genres directamente, no paso por genreID
-            List<Genre> genres = jdbcTemplate.query("SELECT * FROM genreforgames g join genres gr on g.genreid = gr.id " +
-                                                        "WHERE g.gameid = ?",GAME_GENRE_ROW_MAPPER,id);
-            game.get().setGenres(genres);
-        }
+        //Busco los genres directamente, no paso por genreID
+        game.ifPresent(value -> value.setGenres(this.getGenresByGame(id)));
         return game;
     }
 
     @Override
     public Optional<List<Review>> getReviewsById(Long id) {
       return null; //TODO FALTA TABLA REVIEWS
+    }
+
+    @Override
+    public List<Genre> getGenresByGame(Long id) {
+        return jdbcTemplate.query("SELECT * FROM genreforgames g join genres gr on g.genreid = gr.id " +
+                "WHERE g.gameid = ?",GAME_GENRE_ROW_MAPPER,id);
     }
 }
