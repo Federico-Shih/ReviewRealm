@@ -1,3 +1,4 @@
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ page contentType="text/html; charset=UTF-8" %>
 
 <div>
@@ -10,9 +11,9 @@
                 </a>
             </div>
             <div>
-                <ul class="navbar-options">
-                    <li><a href="${pageContext.request.contextPath}/game/list">Juegos</a></li>
-                    <li><a href="${pageContext.request.contextPath}/">Reseñas</a></li>
+                <ul class="navbar-options center">
+                    <li><a href="${pageContext.request.contextPath}/game/list"><spring:message code="navbar.games"/></a></li>
+                    <li><a href="${pageContext.request.contextPath}/"><spring:message code="navbar.reviews"/></a></li>
                 </ul>
             </div>
         </div>

@@ -7,16 +7,16 @@ import ar.edu.itba.paw.models.Genre;
 import ar.edu.itba.paw.models.Review;
 import ar.edu.itba.paw.servicesinterfaces.GenreService;
 import ar.edu.itba.paw.servicesinterfaces.ReviewService;
+import ar.edu.itba.paw.webapp.form.SubmitReviewForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import ar.edu.itba.paw.models.Game;
 import ar.edu.itba.paw.servicesinterfaces.GameService;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -37,7 +37,8 @@ public class ReviewController {
     }
 
     @RequestMapping(value="/review/submit", method = RequestMethod.GET)
-    public ModelAndView createReviewForm(@RequestParam(value = "gameId", required = false) Long gameId) {
+    public ModelAndView createReviewForm(@RequestParam(value = "gameId", required = false) Long gameId,
+                                         @ModelAttribute("reviewForm") final SubmitReviewForm form) {
         Optional<Game> reviewedGame = gameService.getGameById(gameId);
         if (!reviewedGame.isPresent()) {
             return new ModelAndView("not-found");
@@ -47,21 +48,24 @@ public class ReviewController {
         return mav;
     }
 
+    // de no utilizar ModelAttribute, habría que hacer otro mav.addObject("form",form)
     @RequestMapping(value="/review/submit/{id:\\d+}", method = RequestMethod.POST)
     public ModelAndView submitReview(
             @PathVariable(value = "id") Long gameId,
-            @RequestParam(value = "review-title") String title,
-            @RequestParam(value = "review-content") String content,
-            @RequestParam(value = "review-author") String email,
-            @RequestParam(value = "review-rating") Integer rating
+            @Valid @ModelAttribute("reviewForm") final SubmitReviewForm form,
+            final BindingResult errors
             ) {
-        Review createdReview = reviewService.createReview(title, content, rating, email, gameId);
-        if (createdReview == null) {
-            return new ModelAndView("not-found");
+        if(errors.hasErrors())
+        {
+            return createReviewForm(gameId, form);
         }
-        ModelAndView mav = new ModelAndView("/review/submit-review");
-        mav.addObject("game", createdReview.getReviewedGame());
-        return mav;
+
+        Review createdReview = reviewService.createReview(form.getReviewTitle(),
+                form.getReviewContent(), form.getReviewRating(), form.getReviewAuthor(), gameId);
+
+        reviewService.createReview(form.getReviewTitle(), form.getReviewContent(),
+                form.getReviewRating(), form.getReviewAuthor(), gameId);
+        return new ModelAndView("/review/submit-review").addObject("game", createdReview.getReviewedGame());
     }
 
     @RequestMapping(value = "/", method = RequestMethod.GET)

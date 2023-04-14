@@ -1,5 +1,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+
 <html>
 <head>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -8,7 +10,7 @@
     <link rel="stylesheet" href="css/review.css">
     <link rel="shortcut icon" type="image/png" href="static/review_realm_logo_white_32px.png">
     <script src="js/materialize.min.js"></script>
-    <title>Review Realm - Reseñas</title>
+    <title><spring:message code="review.list.title"/></title>
 </head>
 <c:url value="/" var="applyFilters"/>
 <body class="background has-background-black">
@@ -17,11 +19,11 @@
     <div>
         <form action="${applyFilters}" class="review-filters-panel">
             <div class="review-filters-panel-section">
-                <button type="submit" class="btn">Aplicar Filtros</button>
-                <span class="review-filters-panel-title">Ordenar por</span>
+                <button type="submit" class="btn"><spring:message code="apply.filters"/></button>
+                <span class="review-filters-panel-title"><spring:message code="order.by"/></span>
                 <div>
                     <c:forEach var="criteria" items="${orderCriteria}">
-                        <p>
+                        <p>     <!-- TODO: Hacer que cosas como ascendente y descendente puedan ser localizados -->
                             <label>
                                 <input name="o-crit" value="${criteria.value}" type="radio" <c:if
                                         test="${selectedOrderCriteria == criteria.value}"> checked </c:if>/>
@@ -42,8 +44,8 @@
             </div>
             <div class="divider-h"></div>
             <div class="review-filters-panel-section">
-                <span class="review-filters-panel-title">Filtros</span>
-                <span class="review-filters-panel-subtitle">Género del juego reseñado</span>
+                <span class="review-filters-panel-title"><spring:message code="review.filters"/></span>
+                <span class="review-filters-panel-subtitle"><spring:message code="review.genres"/></span>
                 <c:forEach var="genre" items="${selectedGenres}">
                     <p>
                         <label>
@@ -84,7 +86,7 @@
     <div class="review-card-list">
         <c:if test="${empty reviews}">
             <div>
-                <span>No se encontraron reseñas</span>
+                <span><spring:message code="review.list.notfound"/></span>
             </div>
         </c:if>
         <c:forEach var="review" items="${reviews}">
@@ -112,7 +114,7 @@
                 </div>
                 <div class="divider-h"></div>
                 <div class="review-card-footer">
-                <span id="review-card-bottom-text"> por <span id="review-card-author">@<c:out
+                <span id="review-card-bottom-text"> <spring:message code="review.by"/> <span id="review-card-author">@<c:out
                         value="${review.author.username}"/></span><%--, quien prefiere:--%> </span>
 <%--                    TODO: PREFERENCIAS DE USUARIO--%>
 <%--                    <c:forEach var="genre" items="${review.author.preferences}">--%>

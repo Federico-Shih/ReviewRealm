@@ -1,5 +1,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+
 <html>
 <head>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -18,7 +20,7 @@
     <div class="game-details">
         <span class="game-title"><c:out value="${game.name}"/></span>
         <div class="game-genres">
-            <span class="game-category">Categorias:</span>
+            <span class="game-category"><spring:message code="categories"/></span>
             <c:forEach items="${game.genres}" var="genre">
                 <div class="chip white-text"><c:out value="${genre.name}"/></div>
             </c:forEach>
@@ -30,27 +32,26 @@
     <div class="game-card">
         <img class="game-img" src="${game.imageUrl}" alt="Game image">
         <span class="game-card-text">
-                            Fecha de publicacion: <c:out value="${game.publishDate}"/>
+                            <spring:message code="publishing.date" arguments='<c:out value="${game.publishDate}"/>'/> <!-- quizás haya que sacar el c:out acá -->
                         </span>
         <span class="game-card-text">
-                            Desarollador: <c:out value="${game.developer}"/>
+                            <spring:message code="developer" arguments='<c:out value="${game.developer}'/>
                         </span>
         <span class="game-card-text">
-                            Editor: <c:out value="${game.publisher}"/>
+                            <spring:message code="editor" arguments='<c:out value="${game.publisher}"/>'/>
                         </span>
     </div>
 </div>
 <div class="game-review-section">
     <div class="game-review-header">
-        <span class="game-review-section-header">Reseñas de otros usuarios</span>
-        <a class="btn waves-effect-light" href="${sumbitReview}">Nueva Reseña</a>
+        <span class="game-review-section-header"><spring:message code="game.details.other.reviews"/></span>
+        <a class="btn waves-effect-light" href="${sumbitReview}"><spring:message code="game.details.new.review"/></a>
     </div>
     <div class="game-review-card-list">
         <c:if test="${reviews.size() == 0 }">
             <div class="no-reviews">
                 <div class="s"></div>
-                <p id="no-reviews-text">Parece que todavia no hay reseñas para este juego
-                    ¿Quieres realizar la primera reseña?</p>
+                <p id="no-reviews-text"><spring:message code="game.details.first.review"/></p>
             </div>
         </c:if>
         <c:if test="${reviews.size() > 0}">
