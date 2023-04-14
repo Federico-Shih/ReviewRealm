@@ -114,8 +114,11 @@
                 </div>
                 <div class="divider-h"></div>
                 <div class="review-card-footer">
-                <span id="review-card-bottom-text"> <spring:message code="review.by"/> <span id="review-card-author">@<c:out
-                        value="${review.author.username}"/></span><%--, quien prefiere:--%> </span>
+                    <span id="review-card-bottom-text"> <spring:message code="review.by"/>
+                        <span id="review-card-author">
+                            @<c:out value="${review.author.username}"/>
+                        </span><%--, quien prefiere:--%>
+                    </span>
 <%--                    TODO: PREFERENCIAS DE USUARIO--%>
 <%--                    <c:forEach var="genre" items="${review.author.preferences}">--%>
 <%--                        <span class="chip-small-inverted"><c:out value="${genre.name}"/></span>--%>

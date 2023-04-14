@@ -11,14 +11,16 @@
 .review-card-list {
     padding-top: 2%;
     width: 80%;
+    height: fit-content;
     display: flex;
     flex-direction: row;
-    justify-content: space-evenly;
+    justify-content: space-between;
     flex-wrap: wrap;
 }
 
 .review-card {
     width: 48%;
+    height: fit-content;
 }
 
 .review-card-header {

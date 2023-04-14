@@ -28,7 +28,7 @@
                         <img class="game-img" src="<c:out value="${game.imageUrl}"/>"
                              alt="<c:out value="${game.name}"/>">
                         <span class="game-card-title"><c:out value="${game.name}"/></span>
-                        <span> class="game-card-text"><spring:message code="publishing.date" arguments="${game.publishDate}"/></span>
+                        <span class="game-card-text"><spring:message code="publishing.date" arguments="${game.publishDate}"/></span>
                         <span class="game-card-text"><spring:message code="developer" arguments="${game.developer}"/></span>
                         <div class="game-genres">
                             <c:forEach items="${game.genres}" var="genre">
