@@ -9,7 +9,7 @@
 }
 
 .review-card-list {
-    padding-top: 2%;
+    padding: 1%;
     width: 80%;
     height: fit-content;
     display: flex;

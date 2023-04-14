@@ -12,7 +12,7 @@
             </div>
             <div>
                 <ul class="navbar-options center">
-                    <li><a href="${pageContext.request.contextPath}/game/list"><spring:message code="navbar.games"/></a></li>
+                    <li><a href="${pageContext.request.contextPath}/game/list"><span><spring:message code="navbar.games"/></span></a></li>
                     <li><a href="${pageContext.request.contextPath}/"><spring:message code="navbar.reviews"/></a></li>
                 </ul>
             </div>

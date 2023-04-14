@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -63,8 +64,6 @@ public class ReviewController {
         Review createdReview = reviewService.createReview(form.getReviewTitle(),
                 form.getReviewContent(), form.getReviewRating(), form.getReviewAuthor(), gameId);
 
-        reviewService.createReview(form.getReviewTitle(), form.getReviewContent(),
-                form.getReviewRating(), form.getReviewAuthor(), gameId);
         return new ModelAndView("/review/submit-review").addObject("game", createdReview.getReviewedGame());
     }
 

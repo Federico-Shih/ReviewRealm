@@ -44,6 +44,8 @@ nav {
     background: #13112D;
     border: 1px solid #444155;
     border-radius: 10px;
+    overflow-wrap: anywhere;
+    word-wrap: anywhere;
 }
 
 .divider-h {
