@@ -4,13 +4,13 @@
 <html>
 <head>
     <title><spring:message code="game.list.title"/></title>
-    <link rel="stylesheet" href="../css/materialize.min.css">
+    <link rel="stylesheet" href="<c:url value="/css/materialize.min.css" />">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <script src="../js/materialize.min.js"></script>
-    <link rel="shortcut icon" type="image/png" href="../static/review_realm_logo_white_32px.png">
+    <script src="<c:url value="/js/materialize.min.js" />"></script>
+    <link rel="shortcut icon" type="image/png" href="<c:url value="/static/review_realm_logo_white_32px.png" />">
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
-    <link href="../css/game.css" rel="stylesheet"/>
-    <link rel="stylesheet" href="../css/main.css">
+    <link href="<c:url value="/css/game.css" />" rel="stylesheet"/>
+    <link rel="stylesheet" href="<c:url value="/css/main.css" />">
 </head>
 <body>
 <jsp:include page="../static-components/navbar.jsp"/>

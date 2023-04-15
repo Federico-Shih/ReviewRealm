@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -37,7 +36,7 @@ public class ReviewController {
         this.genreService = genreService;
     }
 
-    @RequestMapping(value="/review/submit", method = RequestMethod.GET)
+    @RequestMapping(value = "/review/submit", method = RequestMethod.GET)
     public ModelAndView createReviewForm(@RequestParam(value = "gameId", required = false) Long gameId,
                                          @ModelAttribute("reviewForm") final SubmitReviewForm form) {
         Optional<Game> reviewedGame = gameService.getGameById(gameId);
@@ -50,14 +49,13 @@ public class ReviewController {
     }
 
     // de no utilizar ModelAttribute, habría que hacer otro mav.addObject("form",form)
-    @RequestMapping(value="/review/submit/{id:\\d+}", method = RequestMethod.POST)
+    @RequestMapping(value = "/review/submit/{id:\\d+}", method = RequestMethod.POST)
     public ModelAndView submitReview(
             @PathVariable(value = "id") Long gameId,
             @Valid @ModelAttribute("reviewForm") final SubmitReviewForm form,
             final BindingResult errors
-            ) {
-        if(errors.hasErrors())
-        {
+    ) {
+        if (errors.hasErrors()) {
             return createReviewForm(gameId, form);
         }
 
@@ -71,25 +69,54 @@ public class ReviewController {
     public ModelAndView reviewList(
             @RequestParam(value = "o-crit", defaultValue = "0") Integer orderCriteria,
             @RequestParam(value = "o-dir", defaultValue = "0") Integer orderDirection,
-            @RequestParam(value = "f-gen", defaultValue = "") List<Integer> genresFilter
-            /*,@RequestParam(value = "f-pref", defaultValue = "") List<Integer> preferencesFilter*/
+            @RequestParam(value = "f-gen", defaultValue = "") List<Long> genresFilter
+            /*,@RequestParam(value = "f-pref", defaultValue = "") List<Long> preferencesFilter*/
     ) {
         final ModelAndView mav = new ModelAndView("review/review-list");
-        ReviewFilter filters = new ReviewFilter(genresFilter, new ArrayList<>(), ReviewOrderCriteria.fromValue(orderCriteria), OrderDirection.fromValue(orderDirection));
         List<Genre> allGenres = genreService.getAllGenres();
+        CalculatedReviewFilter filters = new CalculatedReviewFilter(genresFilter, new ArrayList<>(), ReviewOrderCriteria.fromValue(orderCriteria), OrderDirection.fromValue(orderDirection), allGenres);
+
         mav.addObject("reviews", reviewService.getAllReviews(filters));
         mav.addObject("orderCriteria", ReviewOrderCriteria.values());
         mav.addObject("orderDirections", OrderDirection.values());
-
-        mav.addObject("selectedOrderCriteria", orderCriteria);
-        mav.addObject("selectedOrderDirection", orderDirection);
-        mav.addObject("selectedGenres", allGenres.stream().filter((g) -> genresFilter.contains(g.getId())).collect(Collectors.toList()));
-        mav.addObject("unselectedGenres", allGenres.stream().filter((g) -> !genresFilter.contains(g.getId())).collect(Collectors.toList()));
-        /*
-        mav.addObject("selectedPreferences", allGenres.stream().filter((g) -> preferencesFilter.contains(g.getId())).collect(Collectors.toList()));
-        mav.addObject("unselectedPreferences", allGenres.stream().filter((g) -> !preferencesFilter.contains(g.getId())).collect(Collectors.toList()));
-        */
+        mav.addObject("filters", filters);
         return mav;
+    }
+
+    public static class CalculatedReviewFilter extends ReviewFilter {
+        private final List<Genre> unselectedGenres;
+        private final List<Genre> selectedGenres;
+        private final List<Genre> unselectedPreferences;
+        private final List<Genre> selectedPreferences;
+
+        public CalculatedReviewFilter(
+                List<Long> gameGenresFilter,
+                List<Long> reviewerPreferencesFilter,
+                ReviewOrderCriteria reviewOrderCriteria,
+                OrderDirection orderDirection,
+                List<Genre> allGenres) {
+            super(gameGenresFilter, reviewerPreferencesFilter, reviewOrderCriteria, orderDirection);
+            this.unselectedGenres = allGenres.stream().filter((g) -> !gameGenresFilter.contains(g.getId())).collect(Collectors.toList());
+            this.selectedGenres = allGenres.stream().filter((g) -> gameGenresFilter.contains(g.getId())).collect(Collectors.toList());
+            this.unselectedPreferences = allGenres.stream().filter((g) -> !reviewerPreferencesFilter.contains(g.getId())).collect(Collectors.toList());
+            this.selectedPreferences = allGenres.stream().filter((g) -> reviewerPreferencesFilter.contains(g.getId())).collect(Collectors.toList());
+        }
+
+        public List<Genre> getUnselectedGenres() {
+            return unselectedGenres;
+        }
+
+        public List<Genre> getSelectedGenres() {
+            return selectedGenres;
+        }
+
+        public List<Genre> getUnselectedPreferences() {
+            return unselectedPreferences;
+        }
+
+        public List<Genre> getSelectedPreferences() {
+            return selectedPreferences;
+        }
     }
 
 }

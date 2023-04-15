@@ -3,24 +3,23 @@ package ar.edu.itba.paw.dtos;
 import java.util.Objects;
 
 public enum ReviewOrderCriteria {
-    REVIEW_DATE(0, "Fecha"),
-    REVIEW_SCORE(1, "Puntaje");
+    REVIEW_DATE(0, "order.criteria.review.date"),
+    REVIEW_SCORE(1, "order.criteria.review.score");
 
     final Integer value;
-    final String name;
+    final String localizedNameCode;
 
-    ReviewOrderCriteria(Integer value, String name) {
+    ReviewOrderCriteria(Integer value, String localizedNameCode) {
         this.value = value;
-        this.name = name;
+        this.localizedNameCode = localizedNameCode;
     }
 
     public Integer getValue() {
         return value;
     }
 
-    @Override
-    public String toString() {
-        return name;
+    public String getLocalizedNameCode() {
+        return localizedNameCode;
     }
 
     public static ReviewOrderCriteria fromValue(Integer value) {

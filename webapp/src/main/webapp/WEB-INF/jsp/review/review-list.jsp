@@ -5,11 +5,11 @@
 <html>
 <head>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="css/materialize.min.css" media="screen,projection"/>
-    <link rel="stylesheet" href="css/main.css">
-    <link rel="stylesheet" href="css/review.css">
-    <link rel="shortcut icon" type="image/png" href="static/review_realm_logo_white_32px.png">
-    <script src="js/materialize.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="<c:url value="/css/materialize.min.css" />" media="screen,projection"/>
+    <link rel="stylesheet" href="<c:url value="/css/main.css" />">
+    <link rel="stylesheet" href="<c:url value="/css/review.css" />">
+    <link rel="shortcut icon" type="image/png" href="<c:url value="/static/review_realm_logo_white_32px.png" />">
+    <script src="<c:url value="/js/materialize.min.js" />"></script>
     <title><spring:message code="review.list.title"/></title>
 </head>
 <c:url value="/" var="applyFilters"/>
@@ -23,11 +23,11 @@
                 <span class="review-filters-panel-title"><spring:message code="order.by"/></span>
                 <div>
                     <c:forEach var="criteria" items="${orderCriteria}">
-                        <p>     <!-- TODO: Hacer que cosas como ascendente y descendente puedan ser localizados -->
+                        <p>
                             <label>
                                 <input name="o-crit" value="${criteria.value}" type="radio" <c:if
-                                        test="${selectedOrderCriteria == criteria.value}"> checked </c:if>/>
-                                <span><c:out value="${criteria}"/></span>
+                                        test="${filters.reviewOrderCriteria.value == criteria.value}"> checked </c:if>/>
+                                <span><spring:message code="${criteria.localizedNameCode}"/></span>
                             </label>
                         </p>
                     </c:forEach>
@@ -35,8 +35,8 @@
                         <p>
                             <label>
                                 <input name="o-dir" value="${direction.value}" type="radio" <c:if
-                                        test="${selectedOrderDirection == direction.value}"> checked </c:if>/>
-                                <span><c:out value="${direction}"/></span>
+                                        test="${filters.orderDirection.value == direction.value}"> checked </c:if>/>
+                                <span><spring:message code="${direction.localizedNameCode}"/></span>
                             </label>
                         </p>
                     </c:forEach>
@@ -46,7 +46,7 @@
             <div class="review-filters-panel-section">
                 <span class="review-filters-panel-title"><spring:message code="review.filters"/></span>
                 <span class="review-filters-panel-subtitle"><spring:message code="review.genres"/></span>
-                <c:forEach var="genre" items="${selectedGenres}">
+                <c:forEach var="genre" items="${filters.selectedGenres}">
                     <p>
                         <label>
                             <input name="f-gen" value="${genre.id}" type="checkbox" class="filled-in" checked/>
@@ -54,7 +54,7 @@
                         </label>
                     </p>
                 </c:forEach>
-                <c:forEach var="genre" items="${unselectedGenres}">
+                <c:forEach var="genre" items="${filters.unselectedGenres}">
                     <p>
                         <label>
                             <input name="f-gen" value="${genre.id}" type="checkbox" class="filled-in"/>
@@ -63,7 +63,7 @@
                     </p>
                 </c:forEach>
                 <%--<span class="review-filters-panel-subtitle">Preferencias del reseñador</span>
-                <c:forEach var="genre" items="${selectedPreferences}">
+                <c:forEach var="genre" items="${filters.selectedPreferences}">
                     <p>
                         <label>
                             <input name="f-pref" value="${genre.id}" type="checkbox" class="filled-in" checked/>
@@ -71,7 +71,7 @@
                         </label>
                     </p>
                 </c:forEach>
-                <c:forEach var="genre" items="${unselectedPreferences}">
+                <c:forEach var="genre" items="${filters.unselectedPreferences}">
                     <p>
                         <label>
                             <input name="f-pref" value="${genre.id}" type="checkbox" class="filled-in"/>
