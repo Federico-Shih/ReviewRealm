@@ -13,8 +13,8 @@ public class SubmitReviewForm {
     @Email
     private String reviewAuthor;
 
-    @Max(10)
-    @Min(1)
+    @Max(value=10)
+    @Min(value=1)
     private Integer reviewRating;
 
     public String getReviewTitle() {

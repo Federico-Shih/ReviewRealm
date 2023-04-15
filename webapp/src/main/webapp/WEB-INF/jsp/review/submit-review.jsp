@@ -36,8 +36,6 @@
                                     type="number"
                                     class="white-text"
                                     placeholder="10"
-                                    min="1"
-                                    max="10"
                             />
                         </div>
                         <div>/10</div>
