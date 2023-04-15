@@ -5,7 +5,6 @@ import javax.validation.constraints.*;
 public class SubmitReviewForm {
 
     @Size(min=8, max=100)
-    @Pattern(regexp = "^[a-zA-Z0-9!¡¿?$&/#]+$")
     private String reviewTitle;
 
     @Size(min=8, max=420)
@@ -14,8 +13,8 @@ public class SubmitReviewForm {
     @Email
     private String reviewAuthor;
 
-    @Max(value=10)
-    @Min(value=1)
+    @Max(10)
+    @Min(1)
     private Integer reviewRating;
 
     public String getReviewTitle() {

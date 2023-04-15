@@ -1,6 +1,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
 <html>
 <head>
@@ -32,14 +32,15 @@
     <div class="game-card">
         <img class="game-img" src="${game.imageUrl}" alt="Game image">
         <span class="game-card-text">
-                            <spring:message code="publishing.date" arguments='<c:out value="${game.publishDate}"/>'/> <!-- quizás haya que sacar el c:out acá -->
-                        </span>
+            <spring:message code="publishing.date" arguments='${game.publishDate}'/>
+            <!-- quizás haya que sacar el c:out acá -->
+        </span>
         <span class="game-card-text">
-                            <spring:message code="developer" arguments='<c:out value="${game.developer}'/>
-                        </span>
+            <spring:message code="developer" arguments='${game.developer}'/>
+        </span>
         <span class="game-card-text">
-                            <spring:message code="editor" arguments='<c:out value="${game.publisher}"/>'/>
-                        </span>
+            <spring:message code="editor" arguments='${game.publisher}'/>
+        </span>
     </div>
 </div>
 <div class="game-review-section">
@@ -47,7 +48,7 @@
         <span class="game-review-section-header"><spring:message code="game.details.other.reviews"/></span>
         <a class="btn waves-effect-light" href="${sumbitReview}"><spring:message code="game.details.new.review"/></a>
     </div>
-    <div class="game-review-card-list">
+    <div class="game-review-card-list row">
         <c:if test="${reviews.size() == 0 }">
             <div class="no-reviews">
                 <div class="s"></div>
@@ -56,7 +57,7 @@
         </c:if>
         <c:if test="${reviews.size() > 0}">
             <c:forEach var="review" items="${reviews}">
-                <div class="card review-card">
+                <div class="card col s12 m6">
                     <div class="review-card-header">
                         <div class="review-card-header-start">
                             <span id="review-card-title"><c:out value="${review.title}"/></span>
@@ -81,6 +82,9 @@
                     </div>
                 </div>
             </c:forEach>
+        </c:if>
+        <c:if test="${reviews.size() % 2 == 1}">
+            <div class="col m6"></div>
         </c:if>
     </div>
 </div>

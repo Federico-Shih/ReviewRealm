@@ -64,7 +64,7 @@ public class ReviewController {
         Review createdReview = reviewService.createReview(form.getReviewTitle(),
                 form.getReviewContent(), form.getReviewRating(), form.getReviewAuthor(), gameId);
 
-        return new ModelAndView("/review/submit-review").addObject("game", createdReview.getReviewedGame());
+        return new ModelAndView("redirect:/game/" + createdReview.getReviewedGame().getId());
     }
 
     @RequestMapping(value = "/", method = RequestMethod.GET)

@@ -6,16 +6,21 @@
 <html>
 <head>
     <title>Crear reseña</title> <!-- Compiled and minified CSS -->
-    <link rel="stylesheet" type="text/css" href="../css/materialize.min.css" media="screen,projection"/>
-    <link rel="stylesheet" href="../css/main.css">
-    <link rel="stylesheet" href="../css/review/review-page.css">
+    <link rel="stylesheet" type="text/css" href="<c:url value="/css/materialize.min.css" />" media="screen,projection"/>
+    <link rel="stylesheet" href="<c:url value="/css/main.css" />">
+    <link rel="stylesheet" href="<c:url value="/css/review/review-page.css" />">
     <!-- Compiled and minified JavaScript -->
-    <script src="../js/materialize.min.js"></script>
-    <link rel="shortcut icon" type="image/png" href="../static/review_realm_logo_white_32px.png">
+    <script src="<c:url value="/js/materialize.min.js" />"></script>
+    <link rel="shortcut icon" type="image/png" href="<c:url value="/static/review_realm_logo_white_32px.png" />">
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
 </head>
 
+<spring:message code="reviewForm.title.placeholder" var="titlePlaceholder"/>
+<spring:message code="reviewForm.content.placeholder" var="contentPlaceholder"/>
+<spring:message code="review.author.generic" var="authorPlaceholder"/>
 <c:url value="/review/submit/${game.id}" var="submitEndpoint"/>
+<c:url value="/game/${game.id}" var="gameUrl" />
+
 <body>
 <jsp:include page="/WEB-INF/jsp/static-components/navbar.jsp"/>
 <div class="container">
@@ -23,55 +28,62 @@
         <div class="col s8">
             <div class="card card-background">
                 <form:form modelAttribute="reviewForm" action="${submitEndpoint}" method="post">
+                    <div class="rating-input valign-wrapper">
+                        <div class="number-input">
+                            <form:input
+                                    path="reviewRating"
+                                    id="review-rating"
+                                    type="number"
+                                    class="white-text"
+                                    placeholder="10"
+                                    min="1"
+                                    max="10"
+                            />
+                        </div>
+                        <div>/10</div>
+                    </div>
                     <div class="card-content">
-                        <div class="row valign-wrapper">
-                            <div class="card-title col s10"><spring:message code="review.title" arguments='<c:out value="${game.name}/>'/></div>
-                            <div class="col s2 rating-input valign-wrapper">
-                                <form:errors path="reviewRating" element="p"/>
-                                <form:label path="reviewRating"><!--Creo que debería haber algo como -> Rating:--></form:label> <!-- no sé por qué está esto así -->
-                                <div class="input-field number-input">
-                                    <form:input
-                                            path="reviewRating"
-                                            id="review-rating"
-                                            type="number"
-                                            class="white-text"
-                                            placeholder="10"
-                                    />
-                                </div>
-                                <div>/10</div>
+                        <div class="card-title row valign-wrapper">
+                            <div class="col s12 flow-text">
+                                <spring:message code="review.title" arguments="${game.name}"/>
                             </div>
                         </div>
-                        <div class="line"></div>
+                        <div class="divider"></div>
                         <div class="input-field">
-                            <form:errors path="reviewTitle" element="p"/>
-                            <form:label path="reviewTitle"></form:label>
+                            <form:label path="reviewTitle"><spring:message code="review.titleInput"/></form:label>
                             <form:input
                                     path="reviewTitle"
                                     id="review-title"
-                                    placeholder='<spring:message code="reviewForm.title.placeholder"/>'
+                                    placeholder='${titlePlaceholder}'
                                     type="text"
                                     class="input-general"
                                     style="color: black;"
                             />
                         </div>
                         <div class="input-field">
-                            <form:errors path="reviewContent" element="p"/>
-                            <form:label path="reviewContent"></form:label>
+                            <form:label path="reviewContent"><spring:message code="review.ContentInput"/></form:label>
                             <form:textarea
-                                    placeholder='<spring:message code="reviewForm.content.placeholder"/>'
+                                    placeholder='${contentPlaceholder}'
                                     path="reviewContent"
                                     id="review-content"
                                     class="materialize-textarea review-content-input input-general"
                                     style="color: black;"/>
                         </div>
                         <div class="input-field">
-                            <form:errors path="reviewAuthor" element="p"/>
                             <form:label path="reviewAuthor"><spring:message code="review.author"/></form:label>
-                            <form:input id="review-author" path="reviewAuthor" placeholder='<spring:message code="review.author.generic"/>' type="text"
+                            <form:input id="review-author" path="reviewAuthor" placeholder='${authorPlaceholder}' type="text"
                                    class="input-general" style="color: black;"/>
                         </div>
                         <div class="row">
-                            <button class="waves-effect waves-light btn submit-btn s2 offset-s9 col" type="submit">
+                            <div class="col s12">
+                                <form:errors path="reviewTitle" cssClass="error" element="p"/>
+                                <form:errors path="reviewContent" cssClass="error" element="p"/>
+                                <form:errors path="reviewAuthor" cssClass="error" element="p"/>
+                                <form:errors path="reviewRating" cssClass="error" element="p"/>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <button class="waves-effect waves-light btn submit-btn s2 offset-s10 col" type="submit">
                                 <spring:message code="reviewForm.create"/>
                             </button>
                         </div>
@@ -85,7 +97,9 @@
                     <div>
                         <img src="${game.imageUrl}" alt="game-image" class="game-image"/>
                     </div>
-                    <h5><c:out value="${game.name}"/></h5>
+                    <a href="${gameUrl}">
+                        <h5><c:out value="${game.name}"/></h5>
+                    </a>
                     <div>
                         <span><spring:message code="categories"/> </span>
                         <c:forEach var="genre" items="${game.genres}">
