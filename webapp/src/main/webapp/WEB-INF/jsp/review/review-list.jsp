@@ -82,7 +82,10 @@
             </div>
         </form>
     </div>
-    <div class="divider-v"></div>
+    <div>
+        <div class="divider-v" id="filter-panel-divider"></div>
+    </div>
+
     <div class="review-card-list">
         <c:if test="${empty reviews}">
             <div>
@@ -93,7 +96,11 @@
             <div class="card review-card">
                 <div class="review-card-header">
                     <div class="review-card-header-start">
-                        <span id="review-card-game-title"><c:out value="${review.reviewedGame.name}"/></span>
+                        <a href="./game/<c:out value="${review.reviewedGame.id}"/>">
+                            <span id="review-card-game-title">
+                                <c:out value="${review.reviewedGame.name}"/>
+                            </span>
+                        </a>
                         <div>
                             <c:forEach var="genre" items="${review.reviewedGame.genres}">
                                 <span class="chip-small"><spring:message code="${genre.name}"/></span>

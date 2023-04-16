@@ -101,7 +101,7 @@
                     <div>
                         <span><spring:message code="genres"/> </span>
                         <c:forEach var="genre" items="${game.genres}">
-                            <span class="chip blue-grey lighten-3 "><spring:message code="${genre.name}"/> </span>
+                            <span class="chip-small"><spring:message code="${genre.name}"/> </span>
                         </c:forEach>
                     </div>
                 </div>
