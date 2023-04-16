@@ -9,8 +9,8 @@ public class SubmitReviewForm {
 
     @Size(min=8, max=420)
     private String reviewContent;
-    @NotBlank
-    @Email
+
+    @Pattern(regexp = "^[a-zA-Z0-9]+(?:\\.[a-zA-Z0-9]+)*@[a-zA-Z0-9]+(?:\\.[a-zA-Z0-9]+)*$")
     private String reviewAuthor;
 
     @NotNull
