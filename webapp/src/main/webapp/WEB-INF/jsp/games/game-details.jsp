@@ -56,30 +56,33 @@
             </div>
         </c:if>
         <c:forEach var="review" items="${reviews}">
-            <div class="card col s12 m6">
-                <div class="review-card-header">
-                    <div class="review-card-header-start">
-                        <span id="review-card-title"><c:out value="${review.title}"/></span>
+            <div class="col s12 m6">
+                <div class="card">
+                    <div class="review-card-header">
+                        <div class="review-card-header-start">
+                            <span id="review-card-title"><c:out value="${review.title}"/></span>
+                        </div>
+                        <div class="review-card-header-end">
+                            <span id="review-card-score"><c:out value="${review.rating}"/></span>
+                            <span id="review-card-score-outof">/10</span>
+                            <i class="material-icons small">star</i>
+                        </div>
                     </div>
-                    <div class="review-card-header-end">
-                        <span id="review-card-score"><c:out value="${review.rating}"/></span>
-                        <span id="review-card-score-outof">/10</span>
-                        <i class="material-icons small">star</i>
+                    <div class="review-card-body">
+                        <span id="review-card-content"><c:out value="${review.content}"/></span>
+                        <span id="review-card-date"><c:out value="${review.createdFormatted}"/></span>
                     </div>
-                </div>
-                <div class="review-card-body">
-                    <span id="review-card-content"><c:out value="${review.content}"/></span>
-                    <span id="review-card-date"><c:out value="${review.createdFormatted}"/></span>
-                </div>
-                <div class="divider"></div>
-                <div class="review-card-footer">
+                    <div class="divider"></div>
+                    <div class="review-card-footer">
                     <span id="review-card-bottom-text"> por <span id="review-card-author">@<c:out
                             value="${review.author.email}"/></span><%--, quien prefiere: --%> </span>
-                        <%--                            <c:forEach var="genre" items="${review.author.}">--%>
-                        <%--                                <span class="chip-small-inverted"><c:out value="${genre.name}"/></span>--%>
-                        <%--                            </c:forEach>--%>
+                            <%--                            <c:forEach var="genre" items="${review.author.}">--%>
+                            <%--                                <span class="chip-small-inverted"><c:out value="${genre.name}"/></span>--%>
+                            <%--                            </c:forEach>--%>
+                    </div>
                 </div>
             </div>
+
         </c:forEach>
         <c:if test="${fn:length(reviews) % 2 == 1}">
             <div class="col m6"></div>

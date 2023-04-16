@@ -118,7 +118,6 @@
 
 .game-review-card-list {
     width: 100%;
-    display: flex;
 }
 .no-reviews{
     display: flex;
