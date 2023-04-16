@@ -43,7 +43,7 @@ public class Review {
     }
 
     public String getCreatedFormatted() {
-        return created.format(DateTimeFormatter.ofPattern("dd MMM yyyy hh:mm"));
+        return created.format(DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm"));
     }
 
     public Integer getRating() {

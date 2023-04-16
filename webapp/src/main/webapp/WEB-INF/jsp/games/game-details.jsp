@@ -75,7 +75,7 @@
                     <div class="divider"></div>
                     <div class="review-card-footer">
                     <span id="review-card-bottom-text"> por <span id="review-card-author">@<c:out
-                            value="${review.author.email}"/></span><%--, quien prefiere: --%> </span>
+                            value="${review.author.username}"/></span><%--, quien prefiere: --%> </span>
                             <%--                            <c:forEach var="genre" items="${review.author.}">--%>
                             <%--                                <span class="chip-small-inverted"><c:out value="${genre.name}"/></span>--%>
                             <%--                            </c:forEach>--%>
