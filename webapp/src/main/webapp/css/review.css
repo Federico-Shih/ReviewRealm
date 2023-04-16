@@ -36,6 +36,7 @@
     flex-direction: column;
     align-items: flex-start;
     padding: 10px 0;
+    width: 80%;
 }
 
 .review-card-header-end {
@@ -62,6 +63,9 @@
     font-weight: 600; /* semibold */
     white-space: nowrap;
     margin-bottom: 2px;
+    width: 100%;
+    text-overflow: ellipsis;
+    overflow: hidden;
 }
 
 #review-card-score {

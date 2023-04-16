@@ -31,16 +31,15 @@ public class GameDaoImpl implements GameDao {
         this.jdbcInsertGenreForGames = new SimpleJdbcInsert(ds).withTableName("genreForGames");
     }
 
-    private final static RowMapper<Game> GAME_ROW_MAPPER = (resultSet, i) -> {
-        return new Game(resultSet.getLong("id"),
-                resultSet.getString("name"),
-                resultSet.getString("description"),
-                resultSet.getString("developer"),
-                resultSet.getString("publisher"),
-                resultSet.getString("imageUrl"),
-                new ArrayList<>(),// despues manualmente tenes que formar los generos que tiene
-                resultSet.getTimestamp("publishDate").toLocalDateTime().toLocalDate());
-    };
+    private final static RowMapper<Game> GAME_ROW_MAPPER = (resultSet, i) ->
+            new Game(resultSet.getLong("id"),
+            resultSet.getString("name"),
+            resultSet.getString("description"),
+            resultSet.getString("developer"),
+            resultSet.getString("publisher"),
+            resultSet.getString("imageUrl"),
+            new ArrayList<>(),// despues manualmente tenes que formar los generos que tiene
+            resultSet.getTimestamp("publishDate").toLocalDateTime().toLocalDate());
     private final static RowMapper  <Genre> GAME_GENRE_ROW_MAPPER = (resultSet, i) -> {
         Optional<Genre> genre = Genre.getById(resultSet.getInt("genreId"));
         if (!genre.isPresent()) throw new IllegalStateException();
@@ -51,7 +50,7 @@ public class GameDaoImpl implements GameDao {
             new User(resultSet.getLong("authorId"), resultSet.getString("email"), "-"),
             resultSet.getString("title"),
             resultSet.getString("content"),
-            resultSet.getDate("createddate").toLocalDate(),
+            resultSet.getTimestamp("createddate").toLocalDateTime(),
             resultSet.getInt("rating"),
             new Game(
                     resultSet.getLong("gameId"),

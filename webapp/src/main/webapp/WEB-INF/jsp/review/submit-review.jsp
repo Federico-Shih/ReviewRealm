@@ -41,7 +41,7 @@
                         <div>/10</div>
                     </div>
                     <div class="card-content">
-                        <div class="card-title row valign-wrapper">
+                        <div class="card-title review-card-title row valign-wrapper">
                             <div class="col s12 flow-text">
                                 <spring:message code="review.title" arguments="${game.name}"/>
                             </div>

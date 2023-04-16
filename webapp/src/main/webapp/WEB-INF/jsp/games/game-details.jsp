@@ -69,7 +69,7 @@
                 </div>
                 <div class="review-card-body">
                     <span id="review-card-content"><c:out value="${review.content}"/></span>
-                    <span id="review-card-date"><c:out value="${review.created}"/></span>
+                    <span id="review-card-date"><c:out value="${review.createdFormatted}"/></span>
                 </div>
                 <div class="divider"></div>
                 <div class="review-card-footer">

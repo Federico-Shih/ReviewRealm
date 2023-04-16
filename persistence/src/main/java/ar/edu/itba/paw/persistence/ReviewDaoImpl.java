@@ -15,7 +15,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.sql.Timestamp;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Repository
@@ -29,7 +29,7 @@ public class ReviewDaoImpl implements ReviewDao {
             new User(resultSet.getLong("authorId"), resultSet.getString("email"), "-"),
             resultSet.getString("title"),
             resultSet.getString("content"),
-            resultSet.getDate("createddate").toLocalDate(),
+            resultSet.getTimestamp("createddate").toLocalDateTime(),
             resultSet.getInt("rating"),
             new Game(
                     resultSet.getLong("gameId"),
@@ -58,9 +58,9 @@ public class ReviewDaoImpl implements ReviewDao {
         args.put("rating", rating);
         args.put("gameId", reviewedGame.getId());
         args.put("authorId", author.getId());
-        args.put("createddate", Timestamp.valueOf(LocalDate.now().atStartOfDay()));
+        args.put("createddate", Timestamp.valueOf(LocalDateTime.now()));
         final Number id = jdbcInsertReview.executeAndReturnKey(args);
-        return new Review(id.longValue(), author, title, content, LocalDate.now(), rating, reviewedGame);
+        return new Review(id.longValue(), author, title, content, LocalDateTime.now(), rating, reviewedGame);
     }
 
     @Override
@@ -68,7 +68,7 @@ public class ReviewDaoImpl implements ReviewDao {
         Optional<Review> review = jdbcTemplate.query("SELECT * FROM reviews " +
                 "JOIN games as g ON g.id = reviews.gameid " +
                 "JOIN users as u ON u.id = reviews.authorid " +
-                "WHERE id = ?", REVIEW_ROW_MAPPER, id)
+                "WHERE reviews.id = ?", REVIEW_ROW_MAPPER, id)
                 .stream()
                 .findFirst();
         if (review.isPresent()) {
@@ -109,9 +109,7 @@ public class ReviewDaoImpl implements ReviewDao {
                 "SELECT DISTINCT r.id, r.title, r.content, r.createddate, r.rating, g.name, r.gameid, g.description, g.developer, g.publisher, g.publishdate, g.imageUrl, u.email, authorid FROM reviews as r JOIN games as g ON g.id = r.gameid JOIN users as u ON u.id = r.authorid " +
                         toReviewFilterString(filter)
         , REVIEW_ROW_MAPPER, filter.getGameGenresFilter().toArray());
-        reviews.forEach((review -> {
-            review.getReviewedGame().setGenres(gameDao.getGenresByGame(review.getReviewedGame().getId()));
-        }));
+        reviews.forEach((review -> review.getReviewedGame().setGenres(gameDao.getGenresByGame(review.getReviewedGame().getId()))));
         return reviews;
     }
 }

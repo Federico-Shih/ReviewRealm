@@ -13,7 +13,7 @@
             </div>
             <div>
                 <ul class="navbar-options center">
-                    <li><a href="<c:url value="/game/list"/>"><span class="<c:if test="">navbar-selected-option</c:if>"><spring:message code="navbar.games"/></span></a></li>
+                    <li><a href="<c:url value="/game/list"/>"><span><spring:message code="navbar.games"/></span></a></li>
                     <li><a href="<c:url value="/"/>"><span><spring:message code="navbar.reviews"/></span></a></li>
                 </ul>
             </div>

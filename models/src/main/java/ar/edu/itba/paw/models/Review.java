@@ -1,19 +1,18 @@
 package ar.edu.itba.paw.models;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 
 public class Review {
     private final Long id;
     private final User author;
     private final String title;
     private final String content;
-    private final LocalDate created;
+    private final LocalDateTime created;
     private final Integer rating;
     private final Game reviewedGame;
 
-    public Review(Long id, User author, String title, String content, LocalDate created, Integer rating, Game reviewedGame) {
+    public Review(Long id, User author, String title, String content, LocalDateTime created, Integer rating, Game reviewedGame) {
         this.id = id;
         this.author = author;
         this.title = title;
@@ -39,12 +38,12 @@ public class Review {
         return content;
     }
 
-    public LocalDate getCreated() {
+    public LocalDateTime getCreated() {
         return created;
     }
 
     public String getCreatedFormatted() {
-        return created.format(DateTimeFormatter.ofPattern("dd MMM yyyy"));
+        return created.format(DateTimeFormatter.ofPattern("dd MMM yyyy hh:mm"));
     }
 
     public Integer getRating() {

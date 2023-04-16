@@ -96,8 +96,8 @@
             <div class="card review-card">
                 <div class="review-card-header">
                     <div class="review-card-header-start">
-                        <a href="./game/<c:out value="${review.reviewedGame.id}"/>">
-                            <span id="review-card-game-title">
+                        <a id="review-card-game-title" href="./game/<c:out value="${review.reviewedGame.id}"/>">
+                            <span >
                                 <c:out value="${review.reviewedGame.name}"/>
                             </span>
                         </a>
