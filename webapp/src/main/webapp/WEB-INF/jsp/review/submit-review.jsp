@@ -25,7 +25,7 @@
 <jsp:include page="/WEB-INF/jsp/static-components/navbar.jsp"/>
 <div class="container">
     <div class="row">
-        <div class="col s8">
+        <div class="col s12 m8">
             <div class="card card-background">
                 <form:form modelAttribute="reviewForm" action="${submitEndpoint}" method="post">
                     <div class="rating-input valign-wrapper">
@@ -89,7 +89,7 @@
                 </form:form>
             </div>
         </div>
-        <div class="col s4">
+        <div class="col s12 m4">
             <div class="card card-background">
                 <div class="card-content">
                     <div>
@@ -99,9 +99,9 @@
                         <h5><c:out value="${game.name}"/></h5>
                     </a>
                     <div>
-                        <span><spring:message code="categories"/> </span>
+                        <span><spring:message code="genres"/> </span>
                         <c:forEach var="genre" items="${game.genres}">
-                            <span class="chip blue-grey lighten-3 "><c:out value="${genre.name}"/> </span>
+                            <span class="chip blue-grey lighten-3 "><spring:message code="${genre.name}"/> </span>
                         </c:forEach>
                     </div>
                 </div>

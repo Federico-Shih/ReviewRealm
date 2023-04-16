@@ -32,7 +32,7 @@
                         <span class="game-card-text"><spring:message code="developer" arguments="${game.developer}"/></span>
                         <div class="game-genres">
                             <c:forEach items="${game.genres}" var="genre">
-                                <span class="chip-small"><c:out value="${genre.name}"/></span>
+                                <span class="chip-small"><spring:message code="${genre.name}"/></span>
                             </c:forEach>
                         </div>
 

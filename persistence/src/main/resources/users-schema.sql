@@ -5,11 +5,6 @@ CREATE TABLE IF NOT EXISTS users (
     -- todo: username
     );
 
-CREATE TABLE IF NOT EXISTS genres (
-    id serial PRIMARY KEY ,
-    name varchar(100) NOT NULL
-);
-
 CREATE TABLE IF NOT EXISTS games (
     id SERIAL primary key,
     name varchar(100) NOT NULL,
@@ -23,7 +18,6 @@ CREATE TABLE IF NOT EXISTS games (
 CREATE TABLE IF NOT EXISTS genreForGames (
     genreId int,
     gameId int,
-    FOREIGN KEY(genreId) REFERENCES genres(id) ON DELETE CASCADE,
     FOREIGN KEY(gameId) REFERENCES games(id) ON DELETE CASCADE,
     PRIMARY KEY(genreId, gameId)
 );

@@ -50,7 +50,7 @@
                     <p>
                         <label>
                             <input name="f-gen" value="${genre.id}" type="checkbox" class="filled-in" checked/>
-                            <span><c:out value="${genre.name}"/></span>
+                            <span><spring:message code="${genre.name}"/></span>
                         </label>
                     </p>
                 </c:forEach>
@@ -58,7 +58,7 @@
                     <p>
                         <label>
                             <input name="f-gen" value="${genre.id}" type="checkbox" class="filled-in"/>
-                            <span><c:out value="${genre.name}"/></span>
+                            <span><spring:message code="${genre.name}"/></span>
                         </label>
                     </p>
                 </c:forEach>
@@ -96,7 +96,7 @@
                         <span id="review-card-game-title"><c:out value="${review.reviewedGame.name}"/></span>
                         <div>
                             <c:forEach var="genre" items="${review.reviewedGame.genres}">
-                                <span class="chip-small"><c:out value="${genre.name}"/></span>
+                                <span class="chip-small"><spring:message code="${genre.name}"/></span>
                             </c:forEach>
                         </div>
                     </div>

@@ -1,12 +1,10 @@
 package ar.edu.itba.paw.persistence;
 
-import ar.edu.itba.paw.models.Genre;
+import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.models.Game;
 import ar.edu.itba.paw.models.Review;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.persistenceinterfaces.GameDao;
-import ar.edu.itba.paw.persistenceinterfaces.GenreDao;
-import ar.edu.itba.paw.persistenceinterfaces.ReviewDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -44,7 +42,9 @@ public class GameDaoImpl implements GameDao {
                 resultSet.getTimestamp("publishDate").toLocalDateTime().toLocalDate());
     };
     private final static RowMapper  <Genre> GAME_GENRE_ROW_MAPPER = (resultSet, i) -> {
-        return new Genre(resultSet.getLong("genreId"),resultSet.getString("name"));
+        Optional<Genre> genre = Genre.getById(resultSet.getInt("genreId"));
+        if (!genre.isPresent()) throw new IllegalStateException();
+        return genre.get();
     };
     private final static RowMapper<Review> REVIEW_ROW_MAPPER = ((resultSet, i) -> new Review(
             resultSet.getLong("id"),
@@ -112,7 +112,7 @@ public class GameDaoImpl implements GameDao {
 
     @Override
     public List<Genre> getGenresByGame(Long id) {
-        return jdbcTemplate.query("SELECT * FROM genreforgames g join genres gr on g.genreid = gr.id " +
+        return jdbcTemplate.query("SELECT * FROM genreforgames g " +
                 "WHERE g.gameid = ?",GAME_GENRE_ROW_MAPPER,id);
     }
 }

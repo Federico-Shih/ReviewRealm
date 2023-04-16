@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="<c:url value="/css/review.css" />">
     <script src="<c:url value="/js/materialize.min.js" />"></script>
     <link rel="shortcut icon" type="image/png" href="<c:url value="/static/review_realm_logo_white_32px.png" />">
-    <title>Details of <c:out value="${game.name}"/></title> <!--TODO-->
+    <title><spring:message code="game.details.title" arguments="${game.name}"/></title>
 </head>
 <body>
 <c:url value="/review/submit?gameId=${game.id}" var="sumbitReview"/>
@@ -21,9 +21,9 @@
     <div class="game-details">
         <span class="game-title"><c:out value="${game.name}"/></span>
         <div class="game-genres">
-            <span class="game-category"><spring:message code="categories"/></span>
+            <span class="game-genre"><spring:message code="genres"/></span>
             <c:forEach items="${game.genres}" var="genre">
-                <div class="chip white-text"><c:out value="${genre.name}"/></div>
+                <div class="chip white-text"><spring:message code="${genre.name}"/></div>
             </c:forEach>
         </div>
         <div class="divider"></div>

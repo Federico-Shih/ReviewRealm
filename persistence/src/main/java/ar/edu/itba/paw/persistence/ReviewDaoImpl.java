@@ -91,9 +91,8 @@ public class ReviewDaoImpl implements ReviewDao {
         String gamesAmount = String.join(",", Collections.nCopies(filter.getGameGenresFilter().size(), "?"));
         StringBuilder str = new StringBuilder();
         if (!filter.getGameGenresFilter().isEmpty()) {
-            str.append("JOIN genreforgames as gg ON r.gameid = gg.gameid " +
-                    "JOIN genres ON genres.id = gg.genreid ");
-            str.append("WHERE genres.id IN (");
+            str.append("JOIN genreforgames as gg ON r.gameid = gg.gameid ");
+            str.append("WHERE gg.genreid IN (");
             str.append(gamesAmount);
             str.append(" )");
             // TODO: filters

@@ -9,10 +9,11 @@ public class SubmitReviewForm {
 
     @Size(min=8, max=420)
     private String reviewContent;
-
+    @NotBlank
     @Email
     private String reviewAuthor;
 
+    @NotNull
     @Max(value=10)
     @Min(value=1)
     private Integer reviewRating;

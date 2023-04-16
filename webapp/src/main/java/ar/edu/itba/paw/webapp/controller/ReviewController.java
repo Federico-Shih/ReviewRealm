@@ -3,7 +3,7 @@ package ar.edu.itba.paw.webapp.controller;
 import ar.edu.itba.paw.dtos.OrderDirection;
 import ar.edu.itba.paw.dtos.ReviewFilter;
 import ar.edu.itba.paw.dtos.ReviewOrderCriteria;
-import ar.edu.itba.paw.models.Genre;
+import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.models.Review;
 import ar.edu.itba.paw.servicesinterfaces.GenreService;
 import ar.edu.itba.paw.servicesinterfaces.ReviewService;
@@ -69,7 +69,7 @@ public class ReviewController {
     public ModelAndView reviewList(
             @RequestParam(value = "o-crit", defaultValue = "0") Integer orderCriteria,
             @RequestParam(value = "o-dir", defaultValue = "0") Integer orderDirection,
-            @RequestParam(value = "f-gen", defaultValue = "") List<Long> genresFilter
+            @RequestParam(value = "f-gen", defaultValue = "") List<Integer> genresFilter
             /*,@RequestParam(value = "f-pref", defaultValue = "") List<Long> preferencesFilter*/
     ) {
         final ModelAndView mav = new ModelAndView("review/review-list");
@@ -90,8 +90,8 @@ public class ReviewController {
         private final List<Genre> selectedPreferences;
 
         public CalculatedReviewFilter(
-                List<Long> gameGenresFilter,
-                List<Long> reviewerPreferencesFilter,
+                List<Integer> gameGenresFilter,
+                List<Integer> reviewerPreferencesFilter,
                 ReviewOrderCriteria reviewOrderCriteria,
                 OrderDirection orderDirection,
                 List<Genre> allGenres) {

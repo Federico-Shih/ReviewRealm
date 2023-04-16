@@ -1,6 +1,6 @@
 package ar.edu.itba.paw.services;
 
-import ar.edu.itba.paw.models.Genre;
+import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.persistenceinterfaces.GenreDao;
 import ar.edu.itba.paw.servicesinterfaces.GenreService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,11 +16,6 @@ public class GenreServiceImpl implements GenreService {
     @Autowired
     public GenreServiceImpl(GenreDao genreDao) {
         this.genreDao = genreDao;
-    }
-
-    @Override
-    public Genre createGenre(String name) {
-        return genreDao.create(name);
     }
 
     @Override
