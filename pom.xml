@@ -41,7 +41,7 @@
         <javax.validation-api.version>2.0.1.Final</javax.validation-api.version>
 
         <org.hibernate.validator>6.2.4.Final</org.hibernate.validator>
-
+        <flyway.version>8.5.13</flyway.version>
     </properties>
 
     <modules>
@@ -63,7 +63,6 @@
     <dependencyManagement>
 
         <dependencies>
-
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-jdbc</artifactId>
@@ -129,5 +128,42 @@
         </dependencies>
 
     </dependencyManagement>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.0.0</version>
+                <configuration>
+                    <classpathDependencyExcludes>
+                        <classpathDependencyExclude>org.postgresql:postgresql</classpathDependencyExclude>
+                    </classpathDependencyExcludes>
+                    <additionalClasspathElements>
+                        <additionalClasspathElement>${project.build.directory}/dependency/postgresql-${org.postgresql.version}.jar</additionalClasspathElement>
+                    </additionalClasspathElements>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.flywaydb</groupId>
+                <artifactId>flyway-maven-plugin</artifactId>
+                <version>8.4.4</version>
+                <configuration>
+                    <url>jdbc:postgresql://localhost:5432/paw-2023a-04</url>
+                    <user>root</user>
+                    <password>root</password>
+                    <locations>
+                        <location>filesystem:./db</location>
+                    </locations>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.postgresql</groupId>
+                        <artifactId>postgresql</artifactId>
+                        <version>${org.postgresql.version}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
 
+        </plugins>
+    </build>
 </project>
