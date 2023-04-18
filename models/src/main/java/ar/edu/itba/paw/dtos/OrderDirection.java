@@ -3,16 +3,16 @@ package ar.edu.itba.paw.dtos;
 import java.util.Objects;
 
 public enum OrderDirection {
-    DESCENDING(0,"Descendente", "DESC"),
-    ASCENDING(1,"Ascendente", "ASC");
+    DESCENDING(0,"order.direction.desc", "DESC"),
+    ASCENDING(1,"order.direction.asc", "ASC");
 
     final Integer value;
-    final String name;
+    final String localizedNameCode;
     final String altName;
 
-    OrderDirection(int value, String name, String altName) {
+    OrderDirection(int value, String localizedNameCode, String altName) {
         this.value = value;
-        this.name = name;
+        this.localizedNameCode = localizedNameCode;
         this.altName = altName;
     }
 
@@ -20,9 +20,8 @@ public enum OrderDirection {
         return value;
     }
 
-    @Override
-    public String toString() {
-        return name;
+    public String getLocalizedNameCode() {
+        return localizedNameCode;
     }
 
     public String getAltName() {

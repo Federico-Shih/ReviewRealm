@@ -5,15 +5,15 @@ import javax.validation.constraints.*;
 public class SubmitReviewForm {
 
     @Size(min=8, max=100)
-    @Pattern(regexp = "^[a-zA-Z0-9!¡¿?$&/#]+$")
     private String reviewTitle;
 
     @Size(min=8, max=420)
     private String reviewContent;
 
-    @Email
+    @Pattern(regexp = "^[a-zA-Z0-9]+(?:\\.[a-zA-Z0-9]+)*@[a-zA-Z0-9]+(?:\\.[a-zA-Z0-9]+)*$")
     private String reviewAuthor;
 
+    @NotNull
     @Max(value=10)
     @Min(value=1)
     private Integer reviewRating;

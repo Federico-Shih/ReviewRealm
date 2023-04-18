@@ -7,6 +7,10 @@
     height: 300px !important;
 }
 
+.review-card-title {
+    width: 90%;
+}
+
 .game-image {
     width: 100%;
     object-fit: contain;
@@ -20,6 +24,14 @@
 .rating-input {
     display: flex;
     flex-direction: row;
+    position: absolute;
+    top: 20px;
+    right: 15px;
+    height: 40px;
+    padding-left: 5px;
+    padding-right: 5px;
+    border: 2px solid white;
+    border-radius: 15px;
 }
 
 .number-input {
@@ -50,4 +62,19 @@
 
 .input-general ::-ms-input-placeholder { /* Microsoft Edge */
     color: white !important;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+    -moz-appearance: textfield;
+}
+
+.pt-4 {
+    padding-top: 4px;
 }

@@ -1,7 +1,6 @@
 package ar.edu.itba.paw.services;
 
-import ar.edu.itba.paw.exceptions.ObjectNotFoundException;
-import ar.edu.itba.paw.models.Genre;
+import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.models.Game;
 import ar.edu.itba.paw.models.Review;
 import ar.edu.itba.paw.persistenceinterfaces.GameDao;

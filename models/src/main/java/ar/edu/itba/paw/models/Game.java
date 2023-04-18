@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.models;
 
+import ar.edu.itba.paw.enums.Genre;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -12,14 +13,6 @@ public class Game {
     private final String publisher;
     private final String imageUrl;
     private List<Genre> genres;
-
-    public void setGenres(List<Genre> genres) {
-        if(this.genres.isEmpty()){ // You can only change the list once as the game
-                            // starts out with an empty list once it is retrieved from the db
-            this.genres = genres;
-        }
-    }
-
     private final LocalDate publishDate;
 
     public Game(Long id, String name, String description, String developer, String publisher, String imageUrl, List<Genre> genres, LocalDate publishDate) {
@@ -36,6 +29,7 @@ public class Game {
     public String getDescription() {
         return description;
     }
+
     public Long getId() {
         return id;
     }
@@ -62,5 +56,12 @@ public class Game {
 
     public LocalDate getPublishDate() {
         return publishDate;
+    }
+
+    public void setGenres(List<Genre> genres) {
+        if(this.genres.isEmpty()){ // You can only change the list once as the game
+            // starts out with an empty list once it is retrieved from the db
+            this.genres = genres;
+        }
     }
 }
