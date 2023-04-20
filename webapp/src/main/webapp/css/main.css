@@ -100,3 +100,8 @@ nav {
 .error {
     color: red;
 }
+
+.chosen-tab {
+    text-underline: blueviolet;
+    color:  blueviolet;
+}
