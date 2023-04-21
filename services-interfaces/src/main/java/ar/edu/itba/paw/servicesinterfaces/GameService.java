@@ -2,7 +2,9 @@ package ar.edu.itba.paw.servicesinterfaces;
 
 import ar.edu.itba.paw.exceptions.ObjectNotFoundException;
 import ar.edu.itba.paw.models.Game;
+import ar.edu.itba.paw.models.Paginated;
 import ar.edu.itba.paw.models.Review;
+import javafx.util.Pair;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -14,7 +16,7 @@ public interface GameService {
 
     Optional<Game> getGameById(Long id);
 
-    List<Game> getAllGames();
+    Paginated<Game> getAllGames(Integer page, Integer pageSize);
 
     List<Review> getReviewsByGameId(Long id);
 }

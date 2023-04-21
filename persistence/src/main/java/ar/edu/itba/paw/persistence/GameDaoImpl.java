@@ -4,10 +4,13 @@ import ar.edu.itba.paw.enums.Difficulty;
 import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.enums.Platform;
 import ar.edu.itba.paw.models.Game;
+import ar.edu.itba.paw.models.Paginated;
 import ar.edu.itba.paw.models.Review;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.persistenceinterfaces.GameDao;
+import javafx.util.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -24,6 +27,7 @@ public class GameDaoImpl implements GameDao {
     private final SimpleJdbcInsert jdbcInsertGames;
 
     private final SimpleJdbcInsert jdbcInsertGenreForGames;
+
 
     @Autowired
     public GameDaoImpl(DataSource ds) {
@@ -76,9 +80,15 @@ public class GameDaoImpl implements GameDao {
         );
     });
     @Override
-    public List<Game> getAll() {
-        return jdbcTemplate.query("SELECT * FROM games",GAME_ROW_MAPPER);
-    } //TODO PAGINAR PARA QUE NO REVIENTE
+    public Paginated<Game> getAll(int page,Integer pageSize) {
+        Long totalGames = getTotalAmountOfGames();
+        int pages = (int) Math.ceil(totalGames/pageSize.doubleValue());
+        if(page > pages){
+            return new Paginated<>(page,pageSize,pages,new ArrayList<>());
+        }
+        Long offset = (long) (page-1) * 10;
+        return new Paginated<>(page,pageSize,pages,jdbcTemplate.query("SELECT * FROM games LIMIT ? OFFSET ?",GAME_ROW_MAPPER,pageSize,offset));
+    }
 
     @Override
     public Game create(String name,String description,String developer, String publisher, String imageUrl, List<Genre> genres, LocalDate publishDate) {
@@ -124,5 +134,9 @@ public class GameDaoImpl implements GameDao {
     public List<Genre> getGenresByGame(Long id) {
         return jdbcTemplate.query("SELECT * FROM genreforgames g " +
                 "WHERE g.gameid = ?",GAME_GENRE_ROW_MAPPER,id);
+    }
+
+    private Long getTotalAmountOfGames(){
+        return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM games",Long.class);
     }
 }

@@ -33,7 +33,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     @Autowired
     private Environment env;
 
-    @Value("classpath:users-schema.sql")
+    @Value("classpath:sql/users-schema.sql")
     private Resource usersSchema;
     @Bean
     public ViewResolver viewResolver() {

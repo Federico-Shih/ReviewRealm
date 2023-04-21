@@ -105,3 +105,9 @@ nav {
     text-underline: blueviolet;
     color:  blueviolet;
 }
+
+.pagination-active{
+    background-color: #DDD7FF;
+    color: #13112D;
+    border-radius: 5px;
+}

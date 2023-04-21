@@ -2,10 +2,12 @@ package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.models.Game;
+import ar.edu.itba.paw.models.Paginated;
 import ar.edu.itba.paw.models.Review;
 import ar.edu.itba.paw.persistenceinterfaces.GameDao;
 import ar.edu.itba.paw.servicesinterfaces.GameService;
 import ar.edu.itba.paw.servicesinterfaces.GenreService;
+import javafx.util.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -46,8 +48,8 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public List<Game> getAllGames() {
-        return gameDao.getAll();
+    public Paginated<Game> getAllGames(Integer page, Integer pageSize) {
+        return gameDao.getAll(page,pageSize);
     }
 
     @Override
