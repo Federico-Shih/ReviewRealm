@@ -4,7 +4,7 @@
 }
 
 .review-content-input {
-    height: 300px !important;
+    height: 250px !important;
 }
 
 .review-card-title {
@@ -77,4 +77,10 @@ input[type=number] {
 
 .pt-4 {
     padding-top: 4px;
+}
+
+.card-content-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }

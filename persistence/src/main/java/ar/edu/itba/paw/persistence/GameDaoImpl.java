@@ -1,6 +1,8 @@
 package ar.edu.itba.paw.persistence;
 
+import ar.edu.itba.paw.enums.Difficulty;
 import ar.edu.itba.paw.enums.Genre;
+import ar.edu.itba.paw.enums.Platform;
 import ar.edu.itba.paw.models.Game;
 import ar.edu.itba.paw.models.Review;
 import ar.edu.itba.paw.models.User;
@@ -45,25 +47,34 @@ public class GameDaoImpl implements GameDao {
         if (!genre.isPresent()) throw new IllegalStateException();
         return genre.get();
     };
-    private final static RowMapper<Review> REVIEW_ROW_MAPPER = ((resultSet, i) -> new Review(
-            resultSet.getLong("id"),
-            new User(resultSet.getLong("authorId"), resultSet.getString("email"), "-"),
-            resultSet.getString("title"),
-            resultSet.getString("content"),
-            resultSet.getTimestamp("createddate").toLocalDateTime(),
-            resultSet.getInt("rating"),
-            new Game(
-                    resultSet.getLong("gameId"),
-                    resultSet.getString("name"),
-                    resultSet.getString("description"),
-                    resultSet.getString("developer"),
-                    resultSet.getString("publisher"),
-                    resultSet.getString("imageUrl"),
-                    new ArrayList<>(),
-                    resultSet.getTimestamp("publishDate").toLocalDateTime().toLocalDate()
-            )
-    ));
+    private final static RowMapper<Review> REVIEW_ROW_MAPPER = ((resultSet, i) -> {
+        String difficulty = resultSet.getString("difficulty");
+        String platform = resultSet.getString("platform");
 
+        return new Review(
+                resultSet.getLong("id"),
+                new User(resultSet.getLong("authorId"), resultSet.getString("email"), "-"),
+                resultSet.getString("title"),
+                resultSet.getString("content"),
+                resultSet.getTimestamp("createddate").toLocalDateTime(),
+                resultSet.getInt("rating"),
+                new Game(
+                        resultSet.getLong("gameId"),
+                        resultSet.getString("name"),
+                        resultSet.getString("description"),
+                        resultSet.getString("developer"),
+                        resultSet.getString("publisher"),
+                        resultSet.getString("imageUrl"),
+                        new ArrayList<>(),
+                        resultSet.getTimestamp("publishDate").toLocalDateTime().toLocalDate()
+                ),
+                difficulty != null ? Difficulty.valueOf(difficulty.toUpperCase()) : null,
+                resultSet.getDouble("gamelength"),
+                platform != null ? Platform.valueOf(platform.toUpperCase()) : null,
+                resultSet.getBoolean("completed"),
+                resultSet.getBoolean("replayability")
+        );
+    });
     @Override
     public List<Game> getAll() {
         return jdbcTemplate.query("SELECT * FROM games",GAME_ROW_MAPPER);

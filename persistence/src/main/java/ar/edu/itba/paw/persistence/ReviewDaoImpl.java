@@ -2,6 +2,8 @@ package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.dtos.ReviewFilter;
 import ar.edu.itba.paw.dtos.ReviewOrderCriteria;
+import ar.edu.itba.paw.enums.Difficulty;
+import ar.edu.itba.paw.enums.Platform;
 import ar.edu.itba.paw.models.Game;
 import ar.edu.itba.paw.models.Review;
 import ar.edu.itba.paw.models.User;
@@ -24,24 +26,34 @@ public class ReviewDaoImpl implements ReviewDao {
     private final SimpleJdbcInsert jdbcInsertReview;
     private final GameDao gameDao;
 
-    private final static RowMapper<Review> REVIEW_ROW_MAPPER = ((resultSet, i) -> new Review(
-            resultSet.getLong("id"),
-            new User(resultSet.getLong("authorId"), resultSet.getString("email"), "-"),
-            resultSet.getString("title"),
-            resultSet.getString("content"),
-            resultSet.getTimestamp("createddate").toLocalDateTime(),
-            resultSet.getInt("rating"),
-            new Game(
-                    resultSet.getLong("gameId"),
-                    resultSet.getString("name"),
-                    resultSet.getString("description"),
-                    resultSet.getString("developer"),
-                    resultSet.getString("publisher"),
-                    resultSet.getString("imageUrl"),
-                    new ArrayList<>(),
-                    resultSet.getTimestamp("publishDate").toLocalDateTime().toLocalDate()
-            )
-    ));
+    private final static RowMapper<Review> REVIEW_ROW_MAPPER = ((resultSet, i) -> {
+        String difficulty = resultSet.getString("difficulty");
+        String platform = resultSet.getString("platform");
+
+        return new Review(
+                resultSet.getLong("id"),
+                new User(resultSet.getLong("authorId"), resultSet.getString("email"), "-"),
+                resultSet.getString("title"),
+                resultSet.getString("content"),
+                resultSet.getTimestamp("createddate").toLocalDateTime(),
+                resultSet.getInt("rating"),
+                new Game(
+                        resultSet.getLong("gameId"),
+                        resultSet.getString("name"),
+                        resultSet.getString("description"),
+                        resultSet.getString("developer"),
+                        resultSet.getString("publisher"),
+                        resultSet.getString("imageUrl"),
+                        new ArrayList<>(),
+                        resultSet.getTimestamp("publishDate").toLocalDateTime().toLocalDate()
+                ),
+                difficulty != null ? Difficulty.valueOf(difficulty.toUpperCase()) : null,
+                resultSet.getDouble("gamelength"),
+                platform != null ? Platform.valueOf(platform.toUpperCase()) : null,
+                resultSet.getBoolean("completed"),
+                resultSet.getBoolean("replayability")
+        );
+    });
     @Autowired
     public ReviewDaoImpl(DataSource ds, GameDao gameDao) {
         this.jdbcTemplate = new JdbcTemplate(ds);
@@ -50,8 +62,16 @@ public class ReviewDaoImpl implements ReviewDao {
         this.gameDao = gameDao;
     }
 
-    @Override
-    public Review create(String title, String content, Integer rating, Game reviewedGame, User author) {
+    public Review create(String title,
+                         String content,
+                         Integer rating,
+                         Game reviewedGame,
+                         User author,
+                         Difficulty difficulty,
+                         Double gameLength,
+                         Platform platform,
+                         Boolean completed,
+                         Boolean replayable) {
         Map<String, Object> args = new HashMap<>();
         args.put("title", title);
         args.put("content", content);
@@ -59,8 +79,23 @@ public class ReviewDaoImpl implements ReviewDao {
         args.put("gameId", reviewedGame.getId());
         args.put("authorId", author.getId());
         args.put("createddate", Timestamp.valueOf(LocalDateTime.now()));
+        if (difficulty != null) {
+            args.put("difficulty", difficulty.toString());
+        }
+        if (replayable != null) {
+            args.put("replayability", replayable);
+        }
+        if (completed != null) {
+            args.put("completed", completed);
+        }
+        if (platform != null) {
+            args.put("platform", platform.toString());
+        }
+        if (gameLength != null) {
+            args.put("gamelength", gameLength);
+        }
         final Number id = jdbcInsertReview.executeAndReturnKey(args);
-        return new Review(id.longValue(), author, title, content, LocalDateTime.now(), rating, reviewedGame);
+        return new Review(id.longValue(), author, title, content, LocalDateTime.now(), rating, reviewedGame, difficulty, gameLength, platform, completed, replayable);
     }
 
     @Override
@@ -106,7 +141,7 @@ public class ReviewDaoImpl implements ReviewDao {
     @Override
     public List<Review> getAll(ReviewFilter filter) {
         List<Review> reviews = jdbcTemplate.query(
-                "SELECT DISTINCT r.id, r.title, r.content, r.createddate, r.rating, g.name, r.gameid, g.description, g.developer, g.publisher, g.publishdate, g.imageUrl, u.email, authorid FROM reviews as r JOIN games as g ON g.id = r.gameid JOIN users as u ON u.id = r.authorid " +
+                "SELECT DISTINCT * FROM reviews as r JOIN games as g ON g.id = r.gameid JOIN users as u ON u.id = r.authorid " +
                         toReviewFilterString(filter)
         , REVIEW_ROW_MAPPER, filter.getGameGenresFilter().toArray());
         reviews.forEach((review -> review.getReviewedGame().setGenres(gameDao.getGenresByGame(review.getReviewedGame().getId()))));

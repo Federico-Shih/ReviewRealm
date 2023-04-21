@@ -1,6 +1,8 @@
 package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.dtos.ReviewFilter;
+import ar.edu.itba.paw.enums.Difficulty;
+import ar.edu.itba.paw.enums.Platform;
 import ar.edu.itba.paw.models.Game;
 import ar.edu.itba.paw.models.Review;
 import ar.edu.itba.paw.models.User;
@@ -30,14 +32,23 @@ public class ReviewServiceImpl implements ReviewService {
 
 
     @Override
-    public Review createReview(String title, String content, Integer rating, String userEmail, Long gameId) {
+    public Review createReview(String title,
+                               String content,
+                               Integer rating,
+                               String userEmail,
+                               Long gameId,
+                               Difficulty difficulty,
+                               Double gameLength,
+                               Platform platform,
+                               Boolean completed,
+                               Boolean replayable) {
         Optional<User> user = userService.getUserByEmail(userEmail);
         Optional<Game> game = gameService.getGameById(gameId);
         if (!game.isPresent()) {
             return null;
         }
         User presentUser = user.orElseGet(() -> userService.createUser(userEmail, ""));
-        return reviewDao.create(title, content, rating, game.get(), presentUser);
+        return reviewDao.create(title, content, rating, game.get(), presentUser, difficulty, gameLength, platform, completed, replayable);
     }
 
     @Override

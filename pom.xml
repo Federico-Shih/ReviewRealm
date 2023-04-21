@@ -148,12 +148,13 @@
                 <artifactId>flyway-maven-plugin</artifactId>
                 <version>8.4.4</version>
                 <configuration>
-                    <url>jdbc:postgresql://localhost:5432/paw-2023a-04</url>
+                    <url>jdbc:postgresql://localhost:5432/paw</url>
                     <user>root</user>
                     <password>root</password>
                     <locations>
                         <location>filesystem:./db</location>
                     </locations>
+                    <baselineOnMigrate>true</baselineOnMigrate>
                 </configuration>
                 <dependencies>
                     <dependency>

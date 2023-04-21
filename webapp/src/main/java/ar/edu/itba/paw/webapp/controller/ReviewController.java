@@ -3,11 +3,14 @@ package ar.edu.itba.paw.webapp.controller;
 import ar.edu.itba.paw.dtos.OrderDirection;
 import ar.edu.itba.paw.dtos.ReviewFilter;
 import ar.edu.itba.paw.dtos.ReviewOrderCriteria;
+import ar.edu.itba.paw.enums.Difficulty;
+import ar.edu.itba.paw.enums.GamelengthUnit;
 import ar.edu.itba.paw.enums.Genre;
+import ar.edu.itba.paw.enums.Platform;
 import ar.edu.itba.paw.models.Review;
 import ar.edu.itba.paw.servicesinterfaces.GenreService;
 import ar.edu.itba.paw.servicesinterfaces.ReviewService;
-import ar.edu.itba.paw.webapp.form.SubmitReviewForm;
+import ar.edu.itba.paw.forms.SubmitReviewForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import ar.edu.itba.paw.models.Game;
@@ -45,6 +48,9 @@ public class ReviewController {
         }
         ModelAndView mav = new ModelAndView("/review/submit-review");
         mav.addObject("game", reviewedGame.get());
+        mav.addObject("platforms", Platform.values());
+        mav.addObject("difficulties", Difficulty.values());
+        mav.addObject("units", GamelengthUnit.values());
         return mav;
     }
 
@@ -55,12 +61,20 @@ public class ReviewController {
             @Valid @ModelAttribute("reviewForm") final SubmitReviewForm form,
             final BindingResult errors
     ) {
+        System.out.println(form);
         if (errors.hasErrors()) {
             return createReviewForm(gameId, form);
         }
-
         Review createdReview = reviewService.createReview(form.getReviewTitle(),
-                form.getReviewContent(), form.getReviewRating(), form.getReviewAuthor(), gameId);
+                form.getReviewContent(),
+                form.getReviewRating(),
+                form.getReviewAuthor(),
+                gameId,
+                form.getDifficultyEnum(),
+                form.getGameLengthSeconds(),
+                form.getPlatformEnum(),
+                form.getCompleted(),
+                form.getReplayability());
 
         return new ModelAndView("redirect:/game/" + createdReview.getReviewedGame().getId());
     }

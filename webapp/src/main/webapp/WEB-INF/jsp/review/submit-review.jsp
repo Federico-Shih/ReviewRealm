@@ -11,6 +11,12 @@
     <link rel="stylesheet" href="<c:url value="/css/review/review-page.css" />">
     <!-- Compiled and minified JavaScript -->
     <script src="<c:url value="/js/materialize.min.js" />"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const elems = document.querySelectorAll('select');
+            var instances = M.FormSelect.init(elems, {});
+        });
+    </script>
     <link rel="shortcut icon" type="image/png" href="<c:url value="/static/review_realm_logo_white_32px.png" />">
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
 </head>
@@ -40,7 +46,7 @@
                         </div>
                         <div>/10</div>
                     </div>
-                    <div class="card-content">
+                    <div class="card-content card-content-container">
                         <div class="card-title review-card-title row valign-wrapper">
                             <div class="col s12 flow-text">
                                 <spring:message code="review.title" arguments="${game.name}"/>
@@ -72,12 +78,76 @@
                             <form:input id="review-author" path="reviewAuthor" placeholder='${authorPlaceholder}' type="text"
                                    class="input-general" style="color: black;"/>
                         </div>
+                        <div>
+                            <form:label path="platform"><spring:message code="review.platform" /></form:label>
+                            <form:select name="platform" path="platform" id="platform" cssClass="browser-default">
+                                <option value="">
+                                    <spring:message code="reviewForm.platform.placeholder" />
+                                </option>
+                                <c:forEach items="${platforms}" var="platform">
+                                    <option value="${platform}">
+                                        <spring:message code="${platform.code}" />
+                                    </option>
+                                </c:forEach>
+                            </form:select>
+                        </div>
+                        <div>
+                            <form:label path="difficulty"><spring:message code="review.difficulty" /></form:label>
+                            <form:select name="difficulty" path="difficulty" id="difficulty" cssClass="browser-default">
+                                <option value="">
+                                    <spring:message code="reviewForm.difficulty.placeholder" />
+                                </option>
+                                <c:forEach items="${difficulties}" var="platform">
+                                    <form:option value="${platform}">
+                                        <spring:message code="${platform.code}" />
+                                    </form:option>
+                                </c:forEach>
+                            </form:select>
+                        </div>
+                        <div class="row">
+                            <div class="col s12">
+                                <form:label for="gamelength" path="gameLength"><spring:message code="review.gameLength" /></form:label>
+                            </div>
+                            <div class="col s10">
+                                <form:input
+                                        path="gameLength"
+                                        id="gamelength"
+                                        type="number"
+                                        class="white-text"
+                                        step="0.01"
+                                />
+                            </div>
+                            <div class="col s2">
+                                <form:select name="unit" path="unit" id="unit" cssClass="browser-default">
+                                    <c:forEach items="${units}" var="unit">
+                                        <option value="${unit}">
+                                            <spring:message code="${unit.code}" />
+                                        </option>
+                                    </c:forEach>
+                                </form:select>
+                            </div>
+                        </div>
+                        <div>
+                            <label for="completed">
+                                <input type="checkbox" name="completed" id="completed" />
+                                <span> <spring:message code="reviewForm.completed" /></span>
+                            </label>
+                        </div>
+                        <div>
+                            <label for="replayable">
+                                <input type="checkbox" name="replayability" id="replayable"/>
+                                <span><spring:message code="reviewForm.replayability" /></span>
+                            </label>
+                        </div>
                         <div class="row">
                             <div class="col s12">
                                 <form:errors path="reviewTitle" cssClass="error" element="p"/>
                                 <form:errors path="reviewContent" cssClass="error" element="p"/>
                                 <form:errors path="reviewAuthor" cssClass="error" element="p"/>
                                 <form:errors path="reviewRating" cssClass="error" element="p"/>
+                                <form:errors path="difficulty" cssClass="error" element="p" />
+                                <form:errors path="platform" cssClass="error" element="p" />
+                                <form:errors path="gameLength" cssClass="error" element="p" />
                             </div>
                         </div>
                         <div class="row">

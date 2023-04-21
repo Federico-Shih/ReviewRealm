@@ -1,5 +1,9 @@
 package ar.edu.itba.paw.models;
 
+import ar.edu.itba.paw.enums.Difficulty;
+import ar.edu.itba.paw.enums.Platform;
+import com.sun.istack.internal.Nullable;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -11,8 +15,18 @@ public class Review {
     private final LocalDateTime created;
     private final Integer rating;
     private final Game reviewedGame;
+    @Nullable
+    private final Difficulty difficulty;
+    @Nullable
+    private final Double gameLength;
+    @Nullable
+    private final Platform platform;
+    @Nullable
+    private final Boolean completed;
+    @Nullable
+    private final Boolean replayability;
 
-    public Review(Long id, User author, String title, String content, LocalDateTime created, Integer rating, Game reviewedGame) {
+    public Review(Long id, User author, String title, String content, LocalDateTime created, Integer rating, Game reviewedGame, Difficulty difficulty, Double gameLength, Platform platform, Boolean completed, Boolean replayability) {
         this.id = id;
         this.author = author;
         this.title = title;
@@ -20,6 +34,11 @@ public class Review {
         this.created = created;
         this.rating = rating;
         this.reviewedGame = reviewedGame;
+        this.difficulty = difficulty;
+        this.gameLength = gameLength;
+        this.platform = platform;
+        this.completed = completed;
+        this.replayability = replayability;
     }
 
     public Long getId() {
@@ -54,16 +73,23 @@ public class Review {
         return reviewedGame;
     }
 
-    @Override
-    public String toString() {
-        return "Review{" +
-                "id=" + id +
-                ", author=" + author +
-                ", title='" + title + '\'' +
-                ", content='" + content + '\'' +
-                ", created=" + created +
-                ", rating=" + rating +
-                ", reviewedGame=" + reviewedGame +
-                '}';
+    public Difficulty getDifficulty() {
+        return difficulty;
+    }
+
+    public Double getGameLength() {
+        return gameLength;
+    }
+
+    public Platform getPlatform() {
+        return platform;
+    }
+
+    public Boolean getCompleted() {
+        return completed;
+    }
+
+    public Boolean getReplayability() {
+        return replayability;
     }
 }
