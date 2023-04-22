@@ -42,6 +42,7 @@
 
         <org.hibernate.validator>5.4.3.Final</org.hibernate.validator>
 
+        <org.jetbrains.version>13.0</org.jetbrains.version>
     </properties>
 
     <modules>
@@ -125,6 +126,11 @@
                 <version>${org.hibernate.validator}</version>
             </dependency>
 
+            <dependency>
+                <groupId>org.jetbrains</groupId>
+                <artifactId>annotations</artifactId>
+                <version>${org.jetbrains.version}</version>
+            </dependency>
         </dependencies>
 
     </dependencyManagement>
