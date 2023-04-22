@@ -35,7 +35,7 @@ http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
   <!-- Error page mappings -->
   <error-page>
     <error-code>404</error-code>
-    <location>/WEB-INF/jsp/not-found.jsp</location>
+    <location>/WEB-INF/jsp/static-components/not-found.jsp</location>
   </error-page>
 
 
