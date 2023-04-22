@@ -44,7 +44,7 @@ public class ReviewController {
                                          @ModelAttribute("reviewForm") final SubmitReviewForm form) {
         Optional<Game> reviewedGame = gameService.getGameById(gameId);
         if (!reviewedGame.isPresent()) {
-            return new ModelAndView("not-found");
+            return new ModelAndView("static-components/not-found");
         }
         ModelAndView mav = new ModelAndView("/review/submit-review");
         mav.addObject("game", reviewedGame.get());

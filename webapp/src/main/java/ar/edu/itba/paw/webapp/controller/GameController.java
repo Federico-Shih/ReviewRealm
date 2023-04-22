@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -45,7 +44,7 @@ public class GameController {
             mav.addObject("reviews", reviewList);
 
         }else{
-            return new ModelAndView("not-found");
+            return new ModelAndView("static-components/not-found");
         }
         return mav;
     }

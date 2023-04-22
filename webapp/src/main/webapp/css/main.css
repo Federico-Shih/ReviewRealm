@@ -111,3 +111,9 @@ nav {
     color: #13112D;
     border-radius: 5px;
 }
+
+.middle-column {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
