@@ -84,3 +84,16 @@ input[type=number] {
     flex-direction: column;
     gap: 10px;
 }
+
+.chip-color {
+    background-color: darkgray !important;
+    color: rgba(0, 0, 0, 0.6) !important;
+    vertical-align: center;
+}
+
+.card-content-container-detail {
+    padding: 5px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    min-height: 200px;
+}

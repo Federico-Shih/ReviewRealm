@@ -54,6 +54,19 @@ public class ReviewController {
         return mav;
     }
 
+    @RequestMapping(value = "/review/{id:\\d+}", method = RequestMethod.GET)
+    public ModelAndView reviewDetails(@PathVariable(value = "id") Long reviewId) {
+        Optional<Review> review = reviewService.getReviewById(reviewId);
+        if (!review.isPresent()) {
+            return new ModelAndView("not-found");
+        }
+        ModelAndView mav = new ModelAndView("/review/review-details");
+        mav.addObject("review", review.get());
+        mav.addObject("game", review.get().getReviewedGame());
+        mav.addObject("reviewExtra", ComputedReviewData.factory(review.get()));
+        return mav;
+    }
+
     // de no utilizar ModelAttribute, habría que hacer otro mav.addObject("form",form)
     @RequestMapping(value = "/review/submit/{id:\\d+}", method = RequestMethod.POST)
     public ModelAndView submitReview(
@@ -61,7 +74,6 @@ public class ReviewController {
             @Valid @ModelAttribute("reviewForm") final SubmitReviewForm form,
             final BindingResult errors
     ) {
-        System.out.println(form);
         if (errors.hasErrors()) {
             return createReviewForm(gameId, form);
         }
@@ -76,7 +88,7 @@ public class ReviewController {
                 form.getCompleted(),
                 form.getReplayability());
 
-        return new ModelAndView("redirect:/game/" + createdReview.getReviewedGame().getId());
+        return new ModelAndView("redirect:/review/" + createdReview.getId());
     }
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
@@ -95,6 +107,38 @@ public class ReviewController {
         mav.addObject("orderDirections", OrderDirection.values());
         mav.addObject("filters", filters);
         return mav;
+    }
+
+    public static class ComputedReviewData {
+        private final Double gametime;
+
+        private final GamelengthUnit unit;
+
+        public static ComputedReviewData factory(Review review) {
+            if (review == null || review.getGameLength() == null) return null;
+            return new ComputedReviewData(review);
+        }
+
+        private ComputedReviewData(Review review) {
+            if (review == null || review.getGameLength() == null)
+                throw new IllegalStateException();
+            if (review.getGameLength() > GamelengthUnit.HOURS.toSeconds(1.0)) {
+                this.gametime = review.getGameLength() / GamelengthUnit.HOURS.toSeconds(1.0);
+                this.unit = GamelengthUnit.HOURS;
+            } else {
+                this.gametime = review.getGameLength() / GamelengthUnit.MINUTES.toSeconds(1.0);
+                this.unit = GamelengthUnit.MINUTES;
+            }
+        }
+
+        public Double getGametime() {
+            return Math.round(gametime * 100) / 100.0;
+        }
+
+        public GamelengthUnit getUnit() {
+            return unit;
+        }
+
     }
 
     public static class CalculatedReviewFilter extends ReviewFilter {

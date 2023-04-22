@@ -115,7 +115,10 @@
                 </div>
                 <div class="divider-h"></div>
                 <div class="review-card-body">
-                    <span id="review-card-title"><c:out value="${review.title}"/></span>
+                    <c:url value="/review/${review.id}" var="reviewUrl" />
+                    <a href="${reviewUrl}">
+                        <span id="review-card-title"><c:out value="${review.title}"/></span>
+                    </a>
                     <span id="review-card-content"><c:out value="${review.content}"/></span>
                     <span id="review-card-date"><c:out value="${review.createdFormatted}"/></span>
                 </div>

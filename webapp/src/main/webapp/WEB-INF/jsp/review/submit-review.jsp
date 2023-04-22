@@ -160,22 +160,9 @@
             </div>
         </div>
         <div class="col s12 m4">
-            <div class="card card-background">
-                <div class="card-content">
-                    <div>
-                        <img src="${game.imageUrl}" alt="game-image" class="game-image"/>
-                    </div>
-                    <a href="${gameUrl}">
-                        <h5><c:out value="${game.name}"/></h5>
-                    </a>
-                    <div>
-                        <span><spring:message code="genres"/> </span>
-                        <c:forEach var="genre" items="${game.genres}">
-                            <span class="chip-small"><spring:message code="${genre.name}"/> </span>
-                        </c:forEach>
-                    </div>
-                </div>
-            </div>
+            <c:set var="game" value="${game}" scope="request" />
+            <c:set var="gameUrl" value="${gameUrl}" scope="request" />
+            <c:import url="/WEB-INF/jsp/games/short-game-details.jsp" />
         </div>
     </div>
 </div>
