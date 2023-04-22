@@ -14,7 +14,6 @@ insert into genreforgames(genreid, gameid) values
 (8,7),
 (1,7),
 (8,8),
-(23,8),
 (5,10),
 (1,10),
 (23,11),
@@ -46,3 +45,5 @@ insert into genreforgames(genreid, gameid) values
 (1,24),
 (6,24)
 ;
+insert into genreforgames(genreid, gameid) values (23,9),
+(8,9);

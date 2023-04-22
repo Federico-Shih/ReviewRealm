@@ -3,10 +3,7 @@ package ar.edu.itba.paw.persistence;
 import ar.edu.itba.paw.enums.Difficulty;
 import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.enums.Platform;
-import ar.edu.itba.paw.models.Game;
-import ar.edu.itba.paw.models.Paginated;
-import ar.edu.itba.paw.models.Review;
-import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.persistenceinterfaces.GameDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -77,15 +74,22 @@ public class GameDaoImpl implements GameDao {
                 resultSet.getBoolean("replayability")
         );
     });
+    private final static RowMapper<Double> AVERAGE_REVIEW_RATING_ROW_MAPPER = (resultSet, i) -> resultSet.getDouble("average");
     @Override
-    public Paginated<Game> getAll(int page,Integer pageSize) {
+    public Paginated<GameData> getAll(int page, Integer pageSize) {
         Long totalGames = getTotalAmountOfGames();
         int pages = (int) Math.ceil(totalGames/pageSize.doubleValue());
         if(page > pages){
             return new Paginated<>(page,pageSize,pages,new ArrayList<>());
         }
         Long offset = (long) (page-1) * 10;
-        return new Paginated<>(page,pageSize,pages,jdbcTemplate.query("SELECT * FROM games LIMIT ? OFFSET ?",GAME_ROW_MAPPER,pageSize,offset));
+        List<Game> games = jdbcTemplate.query("SELECT * FROM games LIMIT ? OFFSET ?",GAME_ROW_MAPPER,pageSize,offset);
+        List<GameData> gameData = new ArrayList<>();
+        for(Game g : games){
+            g.setGenres(this.getGenresByGame(g.getId()));
+            gameData.add(new GameData(g,getAverageReviewRatingById(g.getId())));
+        }
+        return new Paginated<>(page,pageSize,pages,gameData);
     }
 
     @Override
@@ -126,6 +130,12 @@ public class GameDaoImpl implements GameDao {
                 "JOIN users as u ON u.id = reviews.authorid " +
                 "WHERE g.id = ?", REVIEW_ROW_MAPPER, id);
         //No buscamos los generos de lo juegos pues por ahora no se usan en ningun momento y es mejor hacer menos cant de querys
+    }
+
+    @Override
+    public Double getAverageReviewRatingById(Long id) {
+        return jdbcTemplate.query("SELECT avg(rating) as average FROM reviews " +
+                "WHERE gameid = ? group by gameid", AVERAGE_REVIEW_RATING_ROW_MAPPER, id).stream().findFirst().orElse(0.0);
     }
 
     @Override

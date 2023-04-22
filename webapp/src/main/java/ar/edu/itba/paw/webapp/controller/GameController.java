@@ -1,8 +1,6 @@
 package ar.edu.itba.paw.webapp.controller;
 
-import ar.edu.itba.paw.models.Game;
-import ar.edu.itba.paw.models.Paginated;
-import ar.edu.itba.paw.models.Review;
+import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.servicesinterfaces.GameService;
 import ar.edu.itba.paw.servicesinterfaces.ReviewService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,9 +37,9 @@ public class GameController {
         Optional<Game> game = gs.getGameById(gameId);
         if(game.isPresent()){
             mav.addObject("game",game.get());
-            List<Review> reviewList = gs.getReviewsByGameId(gameId);
+            GameReviewData reviewData = gs.getReviewsByGameId(gameId);
             //Si esta el juego entonces si o si estan las reviews aunque sean vacias, no hay que chequear
-            mav.addObject("reviews", reviewList);
+            mav.addObject("gameReviewData", reviewData);
 
         }else{
             return new ModelAndView("static-components/not-found");
@@ -52,7 +50,8 @@ public class GameController {
     @RequestMapping("/game/list")
     public ModelAndView gameList(@RequestParam(value = "page", defaultValue = "1") Integer page){
         final ModelAndView mav = new ModelAndView("games/game-list");
-        Paginated<Game> games = gs.getAllGames(page,PAGE_SIZE);
+        Paginated<GameData> games = gs.getAllGames(page,PAGE_SIZE);
+
         if(games.getTotalPages() > MAX_PAGES_PAGINATION){
             int offset = (page <= (MAX_PAGES_PAGINATION/2))? 0 : page - (MAX_PAGES_PAGINATION/2);
             mav.addObject("maxPages", Math.min(MAX_PAGES_PAGINATION + offset, games.getTotalPages()));
@@ -61,7 +60,7 @@ public class GameController {
             mav.addObject("maxPages", games.getTotalPages());
             mav.addObject("initialPage", INITIAL_PAGE);
         }
-        mav.addObject("games", games.getList());
+        mav.addObject("gamesData", games.getList());
         mav.addObject("currentPage", page);
         return mav;
     }

@@ -1,9 +1,9 @@
 package ar.edu.itba.paw.services;
 
+import ar.edu.itba.paw.enums.Difficulty;
 import ar.edu.itba.paw.enums.Genre;
-import ar.edu.itba.paw.models.Game;
-import ar.edu.itba.paw.models.Paginated;
-import ar.edu.itba.paw.models.Review;
+import ar.edu.itba.paw.enums.Platform;
+import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.persistenceinterfaces.GameDao;
 import ar.edu.itba.paw.servicesinterfaces.GameService;
 import ar.edu.itba.paw.servicesinterfaces.GenreService;
@@ -11,9 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class GameServiceImpl implements GameService {
@@ -47,12 +45,43 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public Paginated<Game> getAllGames(Integer page, Integer pageSize) {
+    public Paginated<GameData> getAllGames(Integer page, Integer pageSize) {
         return gameDao.getAll(page,pageSize);
     }
 
     @Override
-    public List<Review> getReviewsByGameId(Long id) {
-        return gameDao.getReviewsById(id);
+    public Double getAverageGameReviewRatingById(Long id) {
+        return gameDao.getAverageReviewRatingById(id);
+    }
+
+    @Override
+    public GameReviewData getReviewsByGameId(Long id) {
+        List<Review> reviews = gameDao.getReviewsById(id);
+        if(reviews.size()>0) {
+            int sumRating = 0;
+            HashMap<Difficulty, Integer> difficultyCount = new HashMap<>();
+            HashMap<Platform, Integer> platformCount = new HashMap<>();
+
+
+            double sumHours = 0;
+            int sumReplayability = 0;
+            int sumCompletability = 0;
+            for (Review r : reviews) {
+                sumRating += r.getRating();
+                difficultyCount.put(r.getDifficulty(), difficultyCount.getOrDefault(r.getDifficulty(), 0) + 1);
+                platformCount.put(r.getPlatform(), platformCount.getOrDefault(r.getPlatform(), 0) + 1);
+
+                sumHours += (r.getGameLength() != null)? r.getGameLength():0;
+                sumReplayability += (r.getReplayability()!= null)? ((r.getReplayability())? 1:0):0;
+                sumCompletability += (r.getCompleted() != null)? ((r.getCompleted())? 1:0):0;
+            }
+            difficultyCount.remove(null); //Sacamos a todos los que no tenian difficulty de la ecuacion
+            Difficulty averageDiff = difficultyCount.entrySet().stream().max(Comparator.comparingInt(Map.Entry::getValue)).get().getKey();
+            platformCount.remove(null);
+            Platform averagePlatform = platformCount.entrySet().stream().max(Comparator.comparingInt(Map.Entry::getValue)).get().getKey();
+            return new GameReviewData(reviews, (double) sumRating/  reviews.size(),averageDiff,averagePlatform,
+                    sumHours / reviews.size(),(double) sumReplayability/ reviews.size(), (double) sumCompletability /reviews.size());
+        }
+        return new GameReviewData(reviews,-1, null, null,-1,-1,-1);
     }
 }

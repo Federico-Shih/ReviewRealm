@@ -43,19 +43,61 @@
         </span>
     </div>
 </div>
+<c:if test="${gameReviewData.reviewList.size() > 0}">
+    <div class="statistics-section">
+        <span class="game-review-section-header"> <spring:message code="game.details.review.statistics"/></span>
+        <div class="statistics-list">
+            <div class="game-statistics">
+                <span class="game-statistics-header"><spring:message code="game.details.review.statistics.rating"/></span>
+                <span class=game-statistics-number>${gameReviewData.averageRating}<span class="game-statistics-number-minor">/10</span></span>
+            </div>
+            <c:if test="${gameReviewData.averagePlatform != null}">
+                <div class="game-statistics">
+                    <span class="game-statistics-header"><spring:message code="game.details.review.statistics.platform" /></span>
+                    <span class="game-statistics-text"><spring:message code="${gameReviewData.averagePlatform.code}"/> </span>
+                </div>
+            </c:if>
+            <c:if test="${gameReviewData.averageDifficulty != null}">
+                <div class="game-statistics">
+                    <span class="game-statistics-header"><spring:message code="game.details.review.statistics.difficulty" /></span>
+                    <span class="game-statistics-text"><spring:message code="${gameReviewData.averageDifficulty.code}"/> </span>
+                </div>
+            </c:if>
+            <c:if test="${gameReviewData.averageGameTime != 0}">
+                <div class="game-statistics">
+                    <span class="game-statistics-header"><spring:message code="game.details.review.statistics.gametime" /></span>
+                    <span class=game-statistics-number>${gameReviewData.averageGameTime/3600}hs</span>
+                </div>
+            </c:if>
+            <c:if test="${gameReviewData.replayability != 0}">
+                <div class="game-statistics">
+                    <span class="game-statistics-header"><spring:message code="game.details.review.statistics.replayability" /></span>
+                    <span class=game-statistics-number>${gameReviewData.replayability}<span class="game-statistics-number-minor">%</span></span>
+                </div>
+            </c:if>
+            <c:if test="${gameReviewData.completability != 0}">
+                <div class="game-statistics">
+                    <span class="game-statistics-header"><spring:message code="game.details.review.statistics.completability" /></span>
+                    <span class=game-statistics-number>${gameReviewData.completability}<span class="game-statistics-number-minor">%</span></span>
+                </div>
+            </c:if>
+        </div>
+    </div>
+</c:if>
+
 <div class="game-review-section">
     <div class="game-review-header">
         <span class="game-review-section-header"><spring:message code="game.details.other.reviews"/></span>
         <a class="btn waves-effect-light" href="${sumbitReview}"><spring:message code="game.details.new.review"/></a>
     </div>
     <div class="game-review-card-list row">
-        <c:if test="${empty reviews}">
+        <c:if test="${empty gameReviewData.reviewList}">
             <div class="no-reviews">
                 <div class="s"></div>
                 <p id="no-reviews-text"><spring:message code="game.details.first.review"/></p>
             </div>
         </c:if>
-        <c:forEach var="review" items="${reviews}">
+        <c:forEach var="review" items="${gameReviewData.reviewList}">
             <div class="col s12 m6">
                 <div class="card">
                     <div class="review-card-header">
@@ -84,7 +126,7 @@
             </div>
 
         </c:forEach>
-        <c:if test="${fn:length(reviews) % 2 == 1}">
+        <c:if test="${fn:length(gameReviewData.reviewList) % 2 == 1}">
             <div class="col m6"></div>
         </c:if>
     </div>

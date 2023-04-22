@@ -3,6 +3,7 @@ package ar.edu.itba.paw.persistenceinterfaces;
 import ar.edu.itba.paw.exceptions.ObjectNotFoundException;
 import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.models.Game;
+import ar.edu.itba.paw.models.GameData;
 import ar.edu.itba.paw.models.Paginated;
 import ar.edu.itba.paw.models.Review;
 
@@ -17,9 +18,11 @@ public interface GameDao {
 
     Optional<Game> getById(Long id) throws ObjectNotFoundException;
 
-    Paginated<Game> getAll(int page, Integer pageSize);
+    Paginated<GameData> getAll(int page, Integer pageSize);
 
     List<Review> getReviewsById(Long id);
 
     List<Genre> getGenresByGame(Long id);
+
+    Double getAverageReviewRatingById(Long id);
 }

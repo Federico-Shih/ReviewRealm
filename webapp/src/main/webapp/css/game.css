@@ -16,6 +16,7 @@
     /*height: 50%;*/
 }
 
+
 .game-details-page{
     display: flex;
     flex-direction: column;
@@ -54,7 +55,35 @@
     border: 1px solid #444155;
     border-radius: 25px;
 }
-
+.game-card-details{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+.game-card-details-text{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.game-card-details-extra{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    margin-top: 2%;
+    align-items: center;
+}
+.game-card-details-extra-text{
+    font-size: 16px;
+    font-weight: 600; /* bold */
+}
+.game-card-details-extra-number{
+    font-size: 14px;
+    font-weight: 700; /* bold */
+}
+.game-card-details-extra-minor {
+    font-size: 10px;
+    font-weight: 400; /* regular */
+}
 .game-card-title{
     margin-top: 2%;
     font-size: 24px;
@@ -71,6 +100,7 @@
     flex-direction: row;
     justify-content: flex-start;
     align-items: baseline;
+    flex-wrap: wrap;
 }
 
 .game-title{
@@ -104,10 +134,51 @@
     flex-direction: column;
     justify-content: flex-start;
     width: 96%;
-    height: 60%;
+    height: 40%;
     margin: 2%
 }
+.statistics-section{
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    width: 96%;
+    height: 20%;
+    margin: 2%
+}
+.statistics-list{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: center;
+    flex-wrap: wrap;
+    width: 100%;
+}
+.game-statistics{
+    display:flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items:center;
+    flex-wrap: wrap;
 
+}
+.game-statistics-header{
+    color: white;
+    font-size: 22px;
+    font-weight: 600; /* semibold */
+    margin-bottom: 2px;
+}
+.game-statistics-number{
+    font-size: 20px;
+    font-weight: 700; /* bold */
+}
+.game-statistics-number-minor {
+    font-size: 14px;
+    font-weight: 400; /* regular */
+}
+.game-statistics-text{
+    font-size: 18px;
+    font-weight: 700; /* bold */
+}
 .game-review-header{
     display: flex;
     flex-direction: row;

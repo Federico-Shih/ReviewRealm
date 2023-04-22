@@ -16,24 +16,36 @@
 <jsp:include page="../static-components/navbar.jsp"/>
 <div>
     <div class="row">
-        <c:if test="${empty games}">
+        <c:if test="${empty gamesData}">
             <div class="col">
                 <span><spring:message code="game.list.notfound"/></span>
             </div>
         </c:if>
-        <c:forEach items="${games}" var="game">
-            <a href="./<c:out value="${game.id}"/>">
+        <c:forEach items="${gamesData}" var="gameData">
+            <a href="./<c:out value="${gameData.game.id}"/>">
                 <div class="col s12 m6">
                     <div class="game-card-for-list medium z-depth-2">
-                        <img class="game-img" src="<c:out value="${game.imageUrl}"/>"
-                             alt="<c:out value="${game.name}"/>">
-                        <span class="game-card-title"><c:out value="${game.name}"/></span>
-                        <span class="game-card-text"><spring:message code="publishing.date" arguments="${game.publishDate}"/></span>
-                        <span class="game-card-text"><spring:message code="developer" arguments="${game.developer}"/></span>
-                        <div class="game-genres">
-                            <c:forEach items="${game.genres}" var="genre">
-                                <span class="chip-small"><spring:message code="${genre.name}"/></span>
-                            </c:forEach>
+                        <img class="game-img" src="<c:out value="${gameData.game.imageUrl}"/>"
+                             alt="<c:out value="${gameData.game.name}"/>">
+                        <div class="game-card-details">
+                            <div class="game-card-details-text">
+                                <span class="game-card-title"><c:out value="${gameData.game.name}"/></span>
+                                <span class="game-card-text"><spring:message code="publishing.date" arguments="${gameData.game.publishDate}"/></span>
+                                <span class="game-card-text"><spring:message code="developer" arguments="${gameData.game.developer}"/></span>
+                            </div>
+                            <div class="game-card-details-extra">
+                                <div class="game-genres">
+                                    <c:forEach items="${gameData.game.genres}" var="genre">
+                                        <span class="chip-small"><spring:message code="${genre.name}"/></span>
+                                    </c:forEach>
+                                </div>
+                                <c:if test="${gameData.averageScore >0}">
+                                    <span class="game-card-details-extra-text"><spring:message code="game.details.review.statistics.rating"/></span>
+                                    <span class=game-card-details-extra-number>${gameData.averageScore}
+                                        <span class="game-card-details-extra-minor">/10</span>
+                                    </span>
+                                </c:if>
+                            </div>
                         </div>
 
                     </div>
