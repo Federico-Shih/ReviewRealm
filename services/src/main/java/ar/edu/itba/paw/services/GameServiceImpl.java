@@ -84,4 +84,9 @@ public class GameServiceImpl implements GameService {
         }
         return new GameReviewData(reviews,-1, null, null,-1,-1,-1);
     }
+
+    @Override
+    public List<Game> getFavoriteGamesFromUser(long userId) {
+        return gameDao.getFavoriteGamesFromUser(userId);
+    }
 }

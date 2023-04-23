@@ -1,11 +1,14 @@
 package ar.edu.itba.paw.services;
 
+import ar.edu.itba.paw.models.Game;
+import ar.edu.itba.paw.models.Review;
 import ar.edu.itba.paw.servicesinterfaces.UserService;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.persistenceinterfaces.UserDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service

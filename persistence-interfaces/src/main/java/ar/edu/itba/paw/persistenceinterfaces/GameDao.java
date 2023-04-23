@@ -24,5 +24,8 @@ public interface GameDao {
 
     List<Genre> getGenresByGame(Long id);
 
+
+    List<Game> getFavoriteGamesFromUser(long userId);
+
     Double getAverageReviewRatingById(Long id);
 }

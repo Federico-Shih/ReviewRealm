@@ -14,6 +14,7 @@ import ar.edu.itba.paw.servicesinterfaces.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -59,5 +60,10 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     public Paginated<Review> getAllReviews(ReviewFilter filter, Integer page, Integer pageSize) {
         return reviewDao.getAll(filter, page, pageSize);
+    }
+
+    @Override
+    public List<Review> getUserReviews(long userId) {
+        return reviewDao.getUserReviews(userId);
     }
 }

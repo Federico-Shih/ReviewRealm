@@ -6,6 +6,7 @@ import ar.edu.itba.paw.enums.Platform;
 import ar.edu.itba.paw.models.Paginated;
 import ar.edu.itba.paw.models.Review;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface ReviewService {
@@ -20,5 +21,8 @@ public interface ReviewService {
                         Boolean completed,
                         Boolean replayable);
     Optional<Review> getReviewById(Long id);
+
+    List<Review> getUserReviews(long userId);
+
     Paginated<Review> getAllReviews(ReviewFilter filter, Integer page, Integer pageSize);
 }

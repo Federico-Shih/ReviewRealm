@@ -1,5 +1,10 @@
 package ar.edu.itba.paw.persistence;
 
+import ar.edu.itba.paw.enums.Difficulty;
+import ar.edu.itba.paw.enums.Genre;
+import ar.edu.itba.paw.enums.Platform;
+import ar.edu.itba.paw.models.Game;
+import ar.edu.itba.paw.models.Review;
 import ar.edu.itba.paw.persistenceinterfaces.UserDao;
 import ar.edu.itba.paw.models.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,9 +14,9 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.*;
 
 
 @Repository
@@ -54,5 +59,4 @@ public class UserDaoImpl implements UserDao {
     public Optional<User> getByEmail(String email) {
         return jdbcTemplate.query("SELECT * FROM users WHERE email = ?", ROW_MAPPER, email).stream().findFirst();
     }
-
 }

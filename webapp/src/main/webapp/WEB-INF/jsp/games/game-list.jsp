@@ -47,7 +47,6 @@
                                 </c:if>
                             </div>
                         </div>
-
                     </div>
                 </div>
             </a>

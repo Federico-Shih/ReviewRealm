@@ -116,8 +116,9 @@
                     </div>
                     <div class="divider"></div>
                     <div class="review-card-footer">
-                    <span id="review-card-bottom-text"> por <span id="review-card-author">@<c:out
-                            value="${review.author.username}"/></span><%--, quien prefiere: --%> </span>
+                    <span id="review-card-bottom-text review-card-author">
+                        <spring:message code="review.by" arguments="@${review.author.username}"/>
+                    </span>
                             <%--                            <c:forEach var="genre" items="${review.author.}">--%>
                             <%--                                <span class="chip-small-inverted"><c:out value="${genre.name}"/></span>--%>
                             <%--                            </c:forEach>--%>

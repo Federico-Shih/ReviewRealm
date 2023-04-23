@@ -8,6 +8,7 @@ import ar.edu.itba.paw.models.Paginated;
 import ar.edu.itba.paw.models.Review;
 import ar.edu.itba.paw.models.User;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface ReviewDao {
@@ -22,5 +23,8 @@ public interface ReviewDao {
                          Boolean completed,
                          Boolean replayable);
     Optional<Review> getById(Long id);
+
     Paginated<Review> getAll(ReviewFilter filter, Integer page, Integer pageSize);
+
+    List<Review> getUserReviews(long userId);
 }
