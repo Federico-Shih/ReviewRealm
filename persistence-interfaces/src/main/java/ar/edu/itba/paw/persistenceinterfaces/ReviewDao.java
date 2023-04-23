@@ -4,10 +4,10 @@ import ar.edu.itba.paw.dtos.ReviewFilter;
 import ar.edu.itba.paw.enums.Difficulty;
 import ar.edu.itba.paw.enums.Platform;
 import ar.edu.itba.paw.models.Game;
+import ar.edu.itba.paw.models.Paginated;
 import ar.edu.itba.paw.models.Review;
 import ar.edu.itba.paw.models.User;
 
-import java.util.List;
 import java.util.Optional;
 
 public interface ReviewDao {
@@ -22,5 +22,5 @@ public interface ReviewDao {
                          Boolean completed,
                          Boolean replayable);
     Optional<Review> getById(Long id);
-    List<Review> getAll(ReviewFilter filter);
+    Paginated<Review> getAll(ReviewFilter filter, Integer page, Integer pageSize);
 }

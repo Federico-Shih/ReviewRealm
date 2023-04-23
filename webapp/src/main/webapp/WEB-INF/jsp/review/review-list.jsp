@@ -86,58 +86,75 @@
         <div class="divider-v" id="filter-panel-divider"></div>
     </div>
 
-    <div class="review-card-list">
-        <c:if test="${empty reviews}">
-            <div>
-                <span><spring:message code="review.list.notfound"/></span>
-            </div>
-        </c:if>
-        <c:forEach var="review" items="${reviews}">
-            <div class="card review-card">
-                <div class="review-card-header">
-                    <div class="review-card-header-start">
-                        <a id="review-card-game-title" href="./game/<c:out value="${review.reviewedGame.id}"/>">
+    <div>
+        <div class="review-card-list row">
+            <c:if test="${empty reviews}">
+                <div>
+                    <span><spring:message code="review.list.notfound"/></span>
+                </div>
+            </c:if>
+            <c:forEach var="review" items="${reviews}">
+                <div class="card review-card">
+                    <div class="review-card-header">
+                        <div class="review-card-header-start">
+                            <a id="review-card-game-title" href="./game/<c:out value="${review.reviewedGame.id}"/>">
                             <span >
                                 <c:out value="${review.reviewedGame.name}"/>
                             </span>
-                        </a>
-                        <div>
-                            <c:forEach var="genre" items="${review.reviewedGame.genres}">
-                                <span class="chip-small"><spring:message code="${genre.name}"/></span>
-                            </c:forEach>
+                            </a>
+                            <div>
+                                <c:forEach var="genre" items="${review.reviewedGame.genres}">
+                                    <span class="chip-small"><spring:message code="${genre.name}"/></span>
+                                </c:forEach>
+                            </div>
+                        </div>
+                        <div class="review-card-header-end">
+                            <span id="review-card-score"><c:out value="${review.rating}"/></span>
+                            <span id="review-card-score-outof">/10</span>
+                            <i class="material-icons small">star</i>
                         </div>
                     </div>
-                    <div class="review-card-header-end">
-                        <span id="review-card-score"><c:out value="${review.rating}"/></span>
-                        <span id="review-card-score-outof">/10</span>
-                        <i class="material-icons small">star</i>
+                    <div class="divider-h"></div>
+                    <div class="review-card-body">
+                        <c:url value="/review/${review.id}" var="reviewUrl" />
+                        <a href="${reviewUrl}">
+                            <span id="review-card-title"><c:out value="${review.title}"/></span>
+                        </a>
+                        <span id="review-card-content"><c:out value="${review.content}"/></span>
+                        <span id="review-card-date"><c:out value="${review.createdFormatted}"/></span>
+                    </div>
+                    <div class="divider-h"></div>
+                    <div class="review-card-footer">
+                    <span id="review-card-bottom-text review-card-author">
+                        <spring:message code="review.by" arguments="@${review.author.username}"/>
+                    </span>
+                            <%--                    TODO: PREFERENCIAS DE USUARIO--%>
+                            <%--                    <c:forEach var="genre" items="${review.author.preferences}">--%>
+                            <%--                        <span class="chip-small-inverted"><c:out value="${genre.name}"/></span>--%>
+                            <%--                    </c:forEach>--%>
                     </div>
                 </div>
-                <div class="divider-h"></div>
-                <div class="review-card-body">
-                    <c:url value="/review/${review.id}" var="reviewUrl" />
-                    <a href="${reviewUrl}">
-                        <span id="review-card-title"><c:out value="${review.title}"/></span>
-                    </a>
-                    <span id="review-card-content"><c:out value="${review.content}"/></span>
-                    <span id="review-card-date"><c:out value="${review.createdFormatted}"/></span>
-                </div>
-                <div class="divider-h"></div>
-                <div class="review-card-footer">
-                    <span id="review-card-bottom-text"> <spring:message code="review.by"/>
-                        <span id="review-card-author">
-                            @<c:out value="${review.author.username}"/>
-                        </span><%--, quien prefiere:--%>
-                    </span>
-<%--                    TODO: PREFERENCIAS DE USUARIO--%>
-<%--                    <c:forEach var="genre" items="${review.author.preferences}">--%>
-<%--                        <span class="chip-small-inverted"><c:out value="${genre.name}"/></span>--%>
-<%--                    </c:forEach>--%>
-                </div>
-            </div>
-        </c:forEach>
+            </c:forEach>
+        </div>
+        <div class="row">
+            <ul class="center-align pagination">
+                <c:if test="${currentPage > 1}">
+                    <li class="waves-effect"><a href="${queryString}page=${currentPage-1}"><i class="material-icons">chevron_left</i></a></li>
+                </c:if>
+                <c:forEach var="i" begin="${initialPage}" end="${maxPages}">
+                    <c:if test="${i == currentPage}">
+                        <li class="pagination-active"><a href="${queryString}page=${i}">${i}</a></li>
+                    </c:if>
+                    <c:if test="${i != currentPage}">
+                        <li class="waves-effect"><a href="${queryString}page=${i}">${i}</a></li>
+                    </c:if>
+                </c:forEach >
+                <c:if test="${currentPage < maxPages}">
+                    <li class="waves-effect"><a href="${queryString}page=${currentPage+1}"><i class="material-icons">chevron_right</i></a></li>
+                </c:if>
+            </ul>
+        </div>
     </div>
-
 </div>
 </body>
 </html>

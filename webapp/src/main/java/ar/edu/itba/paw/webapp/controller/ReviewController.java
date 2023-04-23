@@ -7,10 +7,12 @@ import ar.edu.itba.paw.enums.Difficulty;
 import ar.edu.itba.paw.enums.GamelengthUnit;
 import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.enums.Platform;
+import ar.edu.itba.paw.models.Paginated;
 import ar.edu.itba.paw.models.Review;
 import ar.edu.itba.paw.servicesinterfaces.GenreService;
 import ar.edu.itba.paw.servicesinterfaces.ReviewService;
 import ar.edu.itba.paw.forms.SubmitReviewForm;
+import org.javatuples.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import ar.edu.itba.paw.models.Game;
@@ -20,20 +22,22 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
-import java.util.Optional;
-
 @Controller
-public class ReviewController {
+public class ReviewController extends PaginatedController {
     private final GameService gameService;
     private final ReviewService reviewService;
     private final GenreService genreService;
 
+    private static final int MAX_PAGES_PAGINATION = 6;
+    private static final int PAGE_SIZE = 8;
+    private static final int INITIAL_PAGE = 1;
+
     @Autowired
     public ReviewController(GameService gameService, ReviewService reviewService, GenreService genreService) {
+        super(MAX_PAGES_PAGINATION, INITIAL_PAGE);
         this.gameService = gameService;
         this.reviewService = reviewService;
         this.genreService = genreService;
@@ -95,18 +99,47 @@ public class ReviewController {
     public ModelAndView reviewList(
             @RequestParam(value = "o-crit", defaultValue = "0") Integer orderCriteria,
             @RequestParam(value = "o-dir", defaultValue = "0") Integer orderDirection,
-            @RequestParam(value = "f-gen", defaultValue = "") List<Integer> genresFilter
+            @RequestParam(value = "f-gen", defaultValue = "") List<Integer> genresFilter,
+            @RequestParam(value = "page", defaultValue = "1") Integer page,
+            @RequestParam(value = "pageSize", defaultValue = "8") Integer pageSize
             /*,@RequestParam(value = "f-pref", defaultValue = "") List<Long> preferencesFilter*/
     ) {
         final ModelAndView mav = new ModelAndView("review/review-list");
         List<Genre> allGenres = genreService.getAllGenres();
         CalculatedReviewFilter filters = new CalculatedReviewFilter(genresFilter, new ArrayList<>(), ReviewOrderCriteria.fromValue(orderCriteria), OrderDirection.fromValue(orderDirection), allGenres);
 
-        mav.addObject("reviews", reviewService.getAllReviews(filters));
+        Paginated<Review> reviewPaginated = reviewService.getAllReviews(filters,
+                page != null ? page : INITIAL_PAGE,
+                pageSize != null ? pageSize : PAGE_SIZE);
+
+        super.paginate(mav, reviewPaginated);
+
+        mav.addObject("reviews", reviewPaginated.getList());
+        mav.addObject("totalReviews", reviewPaginated.getTotalPages());
         mav.addObject("orderCriteria", ReviewOrderCriteria.values());
         mav.addObject("orderDirections", OrderDirection.values());
         mav.addObject("filters", filters);
+
+        List<Pair<String, Object>> queries = new ArrayList<>();
+        queries.add(Pair.with("o-crit", orderCriteria));
+        queries.add(Pair.with("o-dir", orderDirection));
+        queries.add(Pair.with("pageSize", pageSize));
+        queries.addAll(genresFilter.stream().map((value) -> Pair.with("f-gen", (Object)value)).collect(Collectors.toList()));
+
+        mav.addObject("queryString", toQueryString(queries));
         return mav;
+    }
+
+    private String toQueryString(List<Pair<String, Object>> entries) {
+        StringBuilder str = new StringBuilder();
+        str.append("?");
+        entries.forEach((pair) -> {
+            str.append(pair.getValue0());
+            str.append("=");
+            str.append(pair.getValue1());
+            str.append("&");
+        });
+        return str.toString();
     }
 
     public static class ComputedReviewData {

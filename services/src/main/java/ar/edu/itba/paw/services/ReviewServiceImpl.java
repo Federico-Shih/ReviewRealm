@@ -4,6 +4,7 @@ import ar.edu.itba.paw.dtos.ReviewFilter;
 import ar.edu.itba.paw.enums.Difficulty;
 import ar.edu.itba.paw.enums.Platform;
 import ar.edu.itba.paw.models.Game;
+import ar.edu.itba.paw.models.Paginated;
 import ar.edu.itba.paw.models.Review;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.persistenceinterfaces.ReviewDao;
@@ -13,7 +14,6 @@ import ar.edu.itba.paw.servicesinterfaces.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -57,7 +57,7 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public List<Review> getAllReviews(ReviewFilter filter) {
-        return reviewDao.getAll(filter);
+    public Paginated<Review> getAllReviews(ReviewFilter filter, Integer page, Integer pageSize) {
+        return reviewDao.getAll(filter, page, pageSize);
     }
 }
