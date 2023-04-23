@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.webapp.config;
 
+import org.flywaydb.core.Flyway;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
@@ -88,5 +89,14 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         ms.setDefaultEncoding(StandardCharsets.UTF_8.name());
 
         return ms;
+    }
+
+    @Bean(initMethod = "migrate")
+    public Flyway flyway() {
+        return Flyway.configure()
+                .dataSource(dataSource())
+                .locations("classpath:/db/migration")
+                .baselineOnMigrate(true)
+                .load();
     }
 }

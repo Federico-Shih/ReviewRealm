@@ -48,6 +48,7 @@
         <org.slf4j.version>1.7.5</org.slf4j.version>
         <logback.version>1.1.2</logback.version>
         <logback-ext-spring.version>0.1.1</logback-ext-spring.version>
+        <flyway.version>8.4.4</flyway.version>
         <javatuples.version>1.2</javatuples.version>
     </properties>
 
@@ -181,6 +182,11 @@
                 <artifactId>logback-ext-spring</artifactId>
                 <version>${logback-ext-spring.version}</version>
                 <scope>runtime</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.flywaydb</groupId>
+                <artifactId>flyway-core</artifactId>
+                <version>${flyway.version}</version>
             </dependency>
         </dependencies>
 
