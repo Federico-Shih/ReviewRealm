@@ -7,12 +7,16 @@ import ar.edu.itba.paw.enums.Difficulty;
 import ar.edu.itba.paw.enums.GamelengthUnit;
 import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.enums.Platform;
+import ar.edu.itba.paw.exceptions.ObjectNotFoundException;
 import ar.edu.itba.paw.models.Paginated;
 import ar.edu.itba.paw.models.Review;
+import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.servicesinterfaces.GenreService;
 import ar.edu.itba.paw.servicesinterfaces.ReviewService;
 import ar.edu.itba.paw.forms.SubmitReviewForm;
 import org.javatuples.Pair;
+import ar.edu.itba.paw.servicesinterfaces.UserService;
+import ar.edu.itba.paw.webapp.auth.AuthenticationHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import ar.edu.itba.paw.models.Game;
@@ -30,17 +34,19 @@ public class ReviewController extends PaginatedController {
     private final GameService gameService;
     private final ReviewService reviewService;
     private final GenreService genreService;
+    private final UserService userService;
 
     private static final int MAX_PAGES_PAGINATION = 6;
     private static final int PAGE_SIZE = 8;
     private static final int INITIAL_PAGE = 1;
 
     @Autowired
-    public ReviewController(GameService gameService, ReviewService reviewService, GenreService genreService) {
+    public ReviewController(GameService gameService, ReviewService reviewService, GenreService genreService, UserService userService) {
         super(MAX_PAGES_PAGINATION, INITIAL_PAGE);
         this.gameService = gameService;
         this.reviewService = reviewService;
         this.genreService = genreService;
+        this.userService = userService;
     }
 
     @RequestMapping(value = "/review/submit", method = RequestMethod.GET)
@@ -62,7 +68,7 @@ public class ReviewController extends PaginatedController {
     public ModelAndView reviewDetails(@PathVariable(value = "id") Long reviewId) {
         Optional<Review> review = reviewService.getReviewById(reviewId);
         if (!review.isPresent()) {
-            return new ModelAndView("not-found");
+            return new ModelAndView("static-components/not-found");
         }
         ModelAndView mav = new ModelAndView("/review/review-details");
         mav.addObject("review", review.get());
@@ -81,17 +87,28 @@ public class ReviewController extends PaginatedController {
         if (errors.hasErrors()) {
             return createReviewForm(gameId, form);
         }
-        Review createdReview = reviewService.createReview(form.getReviewTitle(),
+        Review createdReview;
+        Optional<User> author = AuthenticationHelper.getLoggedUser(userService);
+        if(!author.isPresent()) {
+            //No debería pasar esto, pero por las dudas
+            return new ModelAndView("redirect:/login");
+        }
+        Optional<Game> reviewedGame = gameService.getGameById(gameId);
+        if (!reviewedGame.isPresent()) {
+            return new ModelAndView("static-components/not-found");
+        }
+        createdReview = reviewService.createReview(
+                form.getReviewTitle(),
                 form.getReviewContent(),
                 form.getReviewRating(),
-                form.getReviewAuthor(),
-                gameId,
+                author.get(),
+                reviewedGame.get(),
                 form.getDifficultyEnum(),
                 form.getGameLengthSeconds(),
                 form.getPlatformEnum(),
                 form.getCompleted(),
-                form.getReplayability());
-
+                form.getReplayability()
+        );
         return new ModelAndView("redirect:/review/" + createdReview.getId());
     }
 

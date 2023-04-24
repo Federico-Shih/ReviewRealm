@@ -8,8 +8,10 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UserDao {
-    User create(String email, String password);
+    User create(String username, String email, String password);
     Optional<User> getByEmail(String email);
+    Optional<User> getByUsername(String username);
 
     Optional<User> findById(final long id);
+    void changePassword(String email, String password);
 }

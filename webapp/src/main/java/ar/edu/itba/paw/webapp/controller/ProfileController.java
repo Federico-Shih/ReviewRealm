@@ -34,7 +34,7 @@ public class ProfileController {
         Optional<User> user = userService.getUserById(userId);
         if(!user.isPresent())
         {
-            return new ModelAndView("not-found");
+            return new ModelAndView("static-components/not-found");
         }
         mav.addObject("games",gameService.getFavoriteGamesFromUser(userId));
         mav.addObject("profile",user.get());

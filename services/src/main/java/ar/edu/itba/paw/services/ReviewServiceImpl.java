@@ -3,6 +3,7 @@ package ar.edu.itba.paw.services;
 import ar.edu.itba.paw.dtos.ReviewFilter;
 import ar.edu.itba.paw.enums.Difficulty;
 import ar.edu.itba.paw.enums.Platform;
+import ar.edu.itba.paw.exceptions.ObjectNotFoundException;
 import ar.edu.itba.paw.models.Game;
 import ar.edu.itba.paw.models.Paginated;
 import ar.edu.itba.paw.models.Review;
@@ -12,8 +13,10 @@ import ar.edu.itba.paw.servicesinterfaces.GameService;
 import ar.edu.itba.paw.servicesinterfaces.ReviewService;
 import ar.edu.itba.paw.servicesinterfaces.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import javax.naming.AuthenticationException;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,20 +39,14 @@ public class ReviewServiceImpl implements ReviewService {
     public Review createReview(String title,
                                String content,
                                Integer rating,
-                               String userEmail,
-                               Long gameId,
+                               User author,
+                               Game reviewedGame,
                                Difficulty difficulty,
                                Double gameLength,
                                Platform platform,
                                Boolean completed,
                                Boolean replayable) {
-        Optional<User> user = userService.getUserByEmail(userEmail);
-        Optional<Game> game = gameService.getGameById(gameId);
-        if (!game.isPresent()) {
-            return null;
-        }
-        User presentUser = user.orElseGet(() -> userService.createUser(userEmail, ""));
-        return reviewDao.create(title, content, rating, game.get(), presentUser, difficulty, gameLength, platform, completed, replayable);
+        return reviewDao.create(title, content, rating, reviewedGame, author, difficulty, gameLength, platform, completed, replayable);
     }
 
     @Override

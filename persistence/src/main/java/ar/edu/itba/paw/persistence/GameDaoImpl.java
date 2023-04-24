@@ -46,13 +46,18 @@ public class GameDaoImpl implements GameDao {
         if (!genre.isPresent()) throw new IllegalStateException();
         return genre.get();
     };
+
     private final static RowMapper<Review> REVIEW_ROW_MAPPER = ((resultSet, i) -> {
         String difficulty = resultSet.getString("difficulty");
         String platform = resultSet.getString("platform");
 
         return new Review(
                 resultSet.getLong("id"),
-                new User(resultSet.getLong("authorId"), resultSet.getString("email"), "-"),
+                new User(
+                        resultSet.getLong("authorId"),
+                        resultSet.getString("username"),
+                        resultSet.getString("email"),
+                        "-"),
                 resultSet.getString("title"),
                 resultSet.getString("content"),
                 resultSet.getTimestamp("createddate").toLocalDateTime(),

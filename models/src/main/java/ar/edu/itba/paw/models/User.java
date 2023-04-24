@@ -19,8 +19,8 @@ public class User {
         this.preferences = preferences;
     }
 
-    public User(Long id, String email, String password) {
-        this(id, email.split("@")[0], email, password, new ArrayList<>());
+    public User(Long id, String username, String email, String password) {
+        this(id, username, email, password, new ArrayList<>());
     }
 
     public Long getId() {

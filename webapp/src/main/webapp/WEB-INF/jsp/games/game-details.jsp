@@ -43,7 +43,7 @@
         </span>
     </div>
 </div>
-<c:if test="${gameReviewData.reviewList.size() > 0}">
+<c:if test="${!empty gameReviewData.reviewList}">
     <div class="statistics-section">
         <span class="game-review-section-header"> <spring:message code="game.details.review.statistics"/></span>
         <div class="statistics-list">

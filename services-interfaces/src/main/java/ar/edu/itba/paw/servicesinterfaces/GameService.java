@@ -3,6 +3,7 @@ package ar.edu.itba.paw.servicesinterfaces;
 import ar.edu.itba.paw.exceptions.ObjectNotFoundException;
 import ar.edu.itba.paw.models.Game;
 import ar.edu.itba.paw.models.Paginated;
+import ar.edu.itba.paw.models.Review;
 import ar.edu.itba.paw.models.GameReviewData;
 import ar.edu.itba.paw.models.GameData;
 

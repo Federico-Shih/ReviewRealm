@@ -24,12 +24,10 @@ public class UserDaoImpl implements UserDao {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
 
-    private final static RowMapper<User> ROW_MAPPER = (resultSet, i) -> {
-        return new User(resultSet.getLong("id"),
-                resultSet.getString("email"),
-                resultSet.getString("password"));
-                // TODO: Agregar username
-    };
+    private final static RowMapper<User> ROW_MAPPER = (resultSet, i) -> new User(resultSet.getLong("id"),
+            resultSet.getString("username"),
+            resultSet.getString("email"),
+            resultSet.getString("password"));
 
     @Autowired
     public UserDaoImpl(final DataSource ds) {
@@ -44,19 +42,29 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public User create(String email, String password) {
+    public User create(String username, String email, String password) {
         final Map<String, Object> args = new HashMap<>();
+        args.put("username", username);
         args.put("email",email);
         args.put("password",password);
 
-        // todo: add username
         final Number id = jdbcInsert.executeAndReturnKey(args);
-        return new User(id.longValue(), email, password);
-        //todo: pasar ID a long en todos lados
+        return new User(id.longValue(), username, email, password);
     }
 
     @Override
     public Optional<User> getByEmail(String email) {
         return jdbcTemplate.query("SELECT * FROM users WHERE email = ?", ROW_MAPPER, email).stream().findFirst();
     }
+
+    @Override
+    public Optional<User> getByUsername(String username) {
+        return jdbcTemplate.query("SELECT * FROM users WHERE username = ?", ROW_MAPPER, username).stream().findFirst();
+    }
+
+    @Override
+    public void changePassword(String email, String password) {
+        jdbcTemplate.update("UPDATE users SET password = ? WHERE email = ?", password, email);
+    }
+
 }

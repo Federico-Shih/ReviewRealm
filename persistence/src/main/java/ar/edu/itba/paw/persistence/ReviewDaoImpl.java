@@ -33,7 +33,11 @@ public class ReviewDaoImpl implements ReviewDao {
 
         return new Review(
                 resultSet.getLong("id"),
-                new User(resultSet.getLong("authorId"), resultSet.getString("email"), "-"),
+                new User(
+                        resultSet.getLong("authorId"),
+                        resultSet.getString("username"),
+                        resultSet.getString("email"),
+                        "-"),
                 resultSet.getString("title"),
                 resultSet.getString("content"),
                 resultSet.getTimestamp("createddate").toLocalDateTime(),

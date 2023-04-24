@@ -73,11 +73,6 @@
                                     class="materialize-textarea review-content-input input-general"
                                     style="color: black;"/>
                         </div>
-                        <div class="input-field">
-                            <form:label path="reviewAuthor"><spring:message code="review.author"/></form:label>
-                            <form:input id="review-author" path="reviewAuthor" placeholder='${authorPlaceholder}' type="text"
-                                   class="input-general" style="color: black;"/>
-                        </div>
                         <div>
                             <form:label path="platform"><spring:message code="review.platform" /></form:label>
                             <form:select name="platform" path="platform" id="platform" cssClass="browser-default">
@@ -143,7 +138,6 @@
                             <div class="col s12">
                                 <form:errors path="reviewTitle" cssClass="error" element="p"/>
                                 <form:errors path="reviewContent" cssClass="error" element="p"/>
-                                <form:errors path="reviewAuthor" cssClass="error" element="p"/>
                                 <form:errors path="reviewRating" cssClass="error" element="p"/>
                                 <form:errors path="difficulty" cssClass="error" element="p" />
                                 <form:errors path="platform" cssClass="error" element="p" />

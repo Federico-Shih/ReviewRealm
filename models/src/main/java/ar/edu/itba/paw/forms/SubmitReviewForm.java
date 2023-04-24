@@ -4,7 +4,6 @@ import ar.edu.itba.paw.enums.Difficulty;
 import ar.edu.itba.paw.enums.GamelengthUnit;
 import ar.edu.itba.paw.enums.Platform;
 import ar.edu.itba.paw.exceptions.UnitNotSelectedException;
-import ar.edu.itba.paw.models.Game;
 
 import javax.validation.constraints.*;
 
@@ -15,7 +14,6 @@ public class SubmitReviewForm {
         return "SubmitReviewForm{" +
                 "reviewTitle='" + reviewTitle + '\'' +
                 ", reviewContent='" + reviewContent + '\'' +
-                ", reviewAuthor='" + reviewAuthor + '\'' +
                 ", reviewRating=" + reviewRating +
                 ", replayability=" + replayability +
                 ", platform='" + platform + '\'' +
@@ -30,9 +28,6 @@ public class SubmitReviewForm {
 
     @Size(min=8, max=420)
     private String reviewContent;
-
-    @Pattern(regexp = "^[a-zA-Z0-9]+(?:\\.[a-zA-Z0-9]+)*@[a-zA-Z0-9]+(?:\\.[a-zA-Z0-9]+)*$")
-    private String reviewAuthor;
 
     @NotNull
     @Max(value=10)
@@ -90,14 +85,6 @@ public class SubmitReviewForm {
 
     public void setReviewContent(String reviewContent) {
         this.reviewContent = reviewContent;
-    }
-
-    public String getReviewAuthor() {
-        return reviewAuthor;
-    }
-
-    public void setReviewAuthor(String reviewAuthor) {
-        this.reviewAuthor = reviewAuthor;
     }
 
     public Integer getReviewRating() {

@@ -6,6 +6,7 @@ body {
 
 nav {
     background-color: #35325e;
+    white-space: nowrap;
 }
 
 .navbar {
@@ -30,7 +31,6 @@ nav {
 .navbar-logo-title {
     font-size: 40px;
     font-weight: 700;
-    white-space: nowrap;
 }
 
 .navbar-options {

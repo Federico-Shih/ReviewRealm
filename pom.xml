@@ -202,7 +202,9 @@
                         <classpathDependencyExclude>org.postgresql:postgresql</classpathDependencyExclude>
                     </classpathDependencyExcludes>
                     <additionalClasspathElements>
-                        <additionalClasspathElement>${project.build.directory}/dependency/postgresql-${org.postgresql.version}.jar</additionalClasspathElement>
+                        <additionalClasspathElement>
+                            ${project.build.directory}/dependency/postgresql-${org.postgresql.version}.jar
+                        </additionalClasspathElement>
                     </additionalClasspathElements>
                 </configuration>
             </plugin>
