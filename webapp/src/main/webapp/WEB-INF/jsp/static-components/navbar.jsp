@@ -17,7 +17,7 @@
                 <ul class="navbar-options center">
                     <li><a href="<c:url value="/game/list"/>" class="${contextPath == "/paw-2023a-04/WEB-INF/jsp/games/game-list.jsp" ? "chosen-tab" : "" }"><span><spring:message code="navbar.games"/></span></a></li>
                     <li><a href="<c:url value="/"/>" class="${contextPath == "/paw-2023a-04/WEB-INF/jsp/review/review-list.jsp" ? "chosen-tab" : "" }"><span><spring:message code="navbar.reviews"/></span></a></li>
-                    <li><a href="<c:url value="/profile/1"/>" class="${contextPath == "/paw-2023a-04/WEB-INF/jsp/profile/profile.jsp" ? "chosen-tab" : "" }"><span><spring:message code="navbar.profile"/></span></a></li>
+                    <li><a href="<c:url value="/profile/${loggedUser.id}"/>" class="${contextPath == "/paw-2023a-04/WEB-INF/jsp/profile/profile.jsp" ? "chosen-tab" : "" }"><span><spring:message code="navbar.profile"/></span></a></li>
                     <c:if test="${loggedUser != null}">
                         <li><span><spring:message code="navbar.welcome" arguments="${loggedUser.username}"/></span></li>
                         <li><a href="<c:url value="/logout"/>"><span><spring:message code="navbar.logout"/></span></a></li>

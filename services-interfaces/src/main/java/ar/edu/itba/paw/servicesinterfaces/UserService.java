@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.servicesinterfaces;
 
+import ar.edu.itba.paw.models.Follow;
 import ar.edu.itba.paw.models.Game;
 import ar.edu.itba.paw.models.Review;
 import ar.edu.itba.paw.exceptions.InvalidUserException;
@@ -14,4 +15,13 @@ public interface UserService {
     Optional<User> getUserByUsername(String username);
     Optional<User> getUserById(Long id);
     void changeUserPassword(String email, String password);
+
+    List<User> getFollowers(Long id);
+    List<User> getFollowing(Long id);
+
+    Optional<Follow> followUserById(Long userId, Long otherId);
+
+    boolean unfollowUserById(Long userId, Long otherId);
+
+    boolean userFollowsId(Long userId, Long otherId);
 }

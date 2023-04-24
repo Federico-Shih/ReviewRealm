@@ -2,6 +2,7 @@ package ar.edu.itba.paw.models;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class User {
 
@@ -53,6 +54,14 @@ public class User {
 
     public void setPreferences(List<Genre> preferences) {
         this.preferences = preferences;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) return true;
+        if (!(o instanceof User)) return false;
+        User user = (User) o;
+        return this.getId().equals(user.getId());
     }
 }
 

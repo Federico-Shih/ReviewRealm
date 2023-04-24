@@ -125,9 +125,10 @@
                     </div>
                     <div class="divider-h"></div>
                     <div class="review-card-footer">
-                    <span id="review-card-bottom-text review-card-author">
+                    <c:url value="/profile/${review.author.id}" var="profileUrl" />
+                    <a href="${profileUrl}" id="review-card-bottom-text review-card-author">
                         <spring:message code="review.by" arguments="@${review.author.username}"/>
-                    </span>
+                    </a>
                             <%--                    TODO: PREFERENCIAS DE USUARIO--%>
                             <%--                    <c:forEach var="genre" items="${review.author.preferences}">--%>
                             <%--                        <span class="chip-small-inverted"><c:out value="${genre.name}"/></span>--%>
