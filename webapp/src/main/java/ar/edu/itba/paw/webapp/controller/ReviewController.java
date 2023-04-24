@@ -1,7 +1,8 @@
 package ar.edu.itba.paw.webapp.controller;
 
+import ar.edu.itba.paw.dtos.CalculatedFilter;
 import ar.edu.itba.paw.dtos.OrderDirection;
-import ar.edu.itba.paw.dtos.ReviewFilter;
+import ar.edu.itba.paw.dtos.Filter;
 import ar.edu.itba.paw.dtos.ReviewOrderCriteria;
 import ar.edu.itba.paw.enums.Difficulty;
 import ar.edu.itba.paw.enums.GamelengthUnit;
@@ -30,7 +31,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Controller
-public class ReviewController extends PaginatedController {
+public class ReviewController extends PaginatedController implements QueryController {
     private final GameService gameService;
     private final ReviewService reviewService;
     private final GenreService genreService;
@@ -123,7 +124,7 @@ public class ReviewController extends PaginatedController {
     ) {
         final ModelAndView mav = new ModelAndView("review/review-list");
         List<Genre> allGenres = genreService.getAllGenres();
-        CalculatedReviewFilter filters = new CalculatedReviewFilter(genresFilter, new ArrayList<>(), ReviewOrderCriteria.fromValue(orderCriteria), OrderDirection.fromValue(orderDirection), allGenres);
+        CalculatedFilter filters = new CalculatedFilter(genresFilter, new ArrayList<>(), ReviewOrderCriteria.fromValue(orderCriteria),null, OrderDirection.fromValue(orderDirection), allGenres);
 
         Paginated<Review> reviewPaginated = reviewService.getAllReviews(filters,
                 page != null ? page : INITIAL_PAGE,
@@ -147,17 +148,6 @@ public class ReviewController extends PaginatedController {
         return mav;
     }
 
-    private String toQueryString(List<Pair<String, Object>> entries) {
-        StringBuilder str = new StringBuilder();
-        str.append("?");
-        entries.forEach((pair) -> {
-            str.append(pair.getValue0());
-            str.append("=");
-            str.append(pair.getValue1());
-            str.append("&");
-        });
-        return str.toString();
-    }
 
     public static class ComputedReviewData {
         private final Double gametime;
@@ -191,40 +181,5 @@ public class ReviewController extends PaginatedController {
 
     }
 
-    public static class CalculatedReviewFilter extends ReviewFilter {
-        private final List<Genre> unselectedGenres;
-        private final List<Genre> selectedGenres;
-        private final List<Genre> unselectedPreferences;
-        private final List<Genre> selectedPreferences;
-
-        public CalculatedReviewFilter(
-                List<Integer> gameGenresFilter,
-                List<Integer> reviewerPreferencesFilter,
-                ReviewOrderCriteria reviewOrderCriteria,
-                OrderDirection orderDirection,
-                List<Genre> allGenres) {
-            super(gameGenresFilter, reviewerPreferencesFilter, reviewOrderCriteria, orderDirection);
-            this.unselectedGenres = allGenres.stream().filter((g) -> !gameGenresFilter.contains(g.getId())).collect(Collectors.toList());
-            this.selectedGenres = allGenres.stream().filter((g) -> gameGenresFilter.contains(g.getId())).collect(Collectors.toList());
-            this.unselectedPreferences = allGenres.stream().filter((g) -> !reviewerPreferencesFilter.contains(g.getId())).collect(Collectors.toList());
-            this.selectedPreferences = allGenres.stream().filter((g) -> reviewerPreferencesFilter.contains(g.getId())).collect(Collectors.toList());
-        }
-
-        public List<Genre> getUnselectedGenres() {
-            return unselectedGenres;
-        }
-
-        public List<Genre> getSelectedGenres() {
-            return selectedGenres;
-        }
-
-        public List<Genre> getUnselectedPreferences() {
-            return unselectedPreferences;
-        }
-
-        public List<Genre> getSelectedPreferences() {
-            return selectedPreferences;
-        }
-    }
 
 }

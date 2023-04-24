@@ -39,7 +39,10 @@ nav {
     justify-content: flex-end;
     gap: 4%;
 }
-
+.button-color{
+    background: #070A18; !important;
+    color: white
+}
 .card {
     background: #13112D;
     border: 1px solid #444155;

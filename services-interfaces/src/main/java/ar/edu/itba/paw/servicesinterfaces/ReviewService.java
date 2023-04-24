@@ -1,6 +1,6 @@
 package ar.edu.itba.paw.servicesinterfaces;
 
-import ar.edu.itba.paw.dtos.ReviewFilter;
+import ar.edu.itba.paw.dtos.Filter;
 import ar.edu.itba.paw.enums.Difficulty;
 import ar.edu.itba.paw.enums.Platform;
 import ar.edu.itba.paw.models.Game;
@@ -27,5 +27,5 @@ public interface ReviewService {
 
     List<Review> getUserReviews(long userId);
 
-    Paginated<Review> getAllReviews(ReviewFilter filter, Integer page, Integer pageSize);
+    Paginated<Review> getAllReviews(Filter filter, Integer page, Integer pageSize);
 }

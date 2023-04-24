@@ -1,6 +1,6 @@
 package ar.edu.itba.paw.persistence;
 
-import ar.edu.itba.paw.dtos.ReviewFilter;
+import ar.edu.itba.paw.dtos.Filter;
 import ar.edu.itba.paw.dtos.ReviewOrderCriteria;
 import ar.edu.itba.paw.enums.Difficulty;
 import ar.edu.itba.paw.enums.Platform;
@@ -127,7 +127,7 @@ public class ReviewDaoImpl implements ReviewDao {
 
 
 
-    private String toReviewFilterString(ReviewFilter filter, List<Object> arguments) {
+    private String toReviewFilterString(Filter filter, List<Object> arguments) {
         String gamesAmount = String.join(",", Collections.nCopies(filter.getGameGenresFilter().size(), "?"));
         StringBuilder str = new StringBuilder();
         if (!filter.getGameGenresFilter().isEmpty()) {
@@ -141,14 +141,14 @@ public class ReviewDaoImpl implements ReviewDao {
         return str.toString();
     }
 
-    private String toCriteriaString(ReviewFilter filter) {
+    private String toCriteriaString(Filter filter) {
         return "ORDER BY " +
                 toCriteriaString(filter.getReviewOrderCriteria()) +
                 " " +
                 filter.getOrderDirection().getAltName();
     }
     @Override
-    public Paginated<Review> getAll(ReviewFilter filter, Integer page, Integer pageSize) {
+    public Paginated<Review> getAll(Filter filter, Integer page, Integer pageSize) {
         Long filterCount = this.count(filter);
         int totalPages = (int) Math.ceil(filterCount/pageSize.doubleValue());
         if (page > totalPages || page <= 0) {
@@ -171,7 +171,7 @@ public class ReviewDaoImpl implements ReviewDao {
         return new Paginated<>(page, pageSize, totalPages, reviews);
     }
 
-    private Long count(ReviewFilter filter) {
+    private Long count(Filter filter) {
         List<Object> preparedStatementArgs = new ArrayList<>(filter.getGameGenresFilter());
         // Add more filters
         return jdbcTemplate.queryForObject(

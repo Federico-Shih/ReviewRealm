@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.services;
 
+import ar.edu.itba.paw.dtos.Filter;
 import ar.edu.itba.paw.enums.Difficulty;
 import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.enums.Platform;
@@ -45,8 +46,9 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public Paginated<GameData> getAllGames(Integer page, Integer pageSize) {
-        return gameDao.getAll(page,pageSize);
+    public  Paginated<GameData> getAllGames(Integer page, Integer pageSize, Filter filter,String searchQuery)
+    {
+        return gameDao.getAll(page,pageSize,filter,searchQuery);
     }
 
     @Override
@@ -76,10 +78,10 @@ public class GameServiceImpl implements GameService {
                 sumCompletability += (r.getCompleted() != null)? ((r.getCompleted())? 1:0):0;
             }
             difficultyCount.remove(null); //Sacamos a todos los que no tenian difficulty de la ecuacion
-            Difficulty averageDiff = difficultyCount.entrySet().stream().max(Comparator.comparingInt(Map.Entry::getValue)).get().getKey();
+            Optional<Map.Entry<Difficulty, Integer>> averageDiff = difficultyCount.entrySet().stream().max(Comparator.comparingInt(Map.Entry::getValue));
             platformCount.remove(null);
-            Platform averagePlatform = platformCount.entrySet().stream().max(Comparator.comparingInt(Map.Entry::getValue)).get().getKey();
-            return new GameReviewData(reviews, (double) sumRating/  reviews.size(),averageDiff,averagePlatform,
+            Optional<Map.Entry<Platform, Integer>> averagePlatform = platformCount.entrySet().stream().max(Comparator.comparingInt(Map.Entry::getValue));
+            return new GameReviewData(reviews, (double) sumRating/  reviews.size(),(averageDiff.isPresent())? averageDiff.get().getKey() : null,(averagePlatform.isPresent())? averagePlatform.get().getKey() : null,
                     sumHours / reviews.size(),(double) sumReplayability/ reviews.size(), (double) sumCompletability /reviews.size());
         }
         return new GameReviewData(reviews,-1, null, null,-1,-1,-1);

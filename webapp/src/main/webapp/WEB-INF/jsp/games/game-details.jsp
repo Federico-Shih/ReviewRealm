@@ -16,6 +16,7 @@
 </head>
 <body>
 <c:url value="/review/submit?gameId=${game.id}" var="sumbitReview"/>
+<c:url value="/game/list/" var="gameList"/>
 <jsp:include page="../static-components/navbar.jsp"/>
 <div class="game-details-section">
     <div class="game-details">
@@ -23,7 +24,7 @@
         <div class="game-genres">
             <span class="game-genre"><spring:message code="genres"/></span>
             <c:forEach items="${game.genres}" var="genre">
-                <div class="chip white-text"><spring:message code="${genre.name}"/></div>
+                <div class="chip white-text"><a href="${gameList}?f-gen=${genre.id}" class="genre-shortcut"><spring:message code="${genre.name}"/></a></div>
             </c:forEach>
         </div>
         <div class="divider"></div>

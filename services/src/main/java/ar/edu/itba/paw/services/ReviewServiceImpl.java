@@ -1,6 +1,6 @@
 package ar.edu.itba.paw.services;
 
-import ar.edu.itba.paw.dtos.ReviewFilter;
+import ar.edu.itba.paw.dtos.Filter;
 import ar.edu.itba.paw.enums.Difficulty;
 import ar.edu.itba.paw.enums.Platform;
 import ar.edu.itba.paw.exceptions.ObjectNotFoundException;
@@ -55,7 +55,7 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public Paginated<Review> getAllReviews(ReviewFilter filter, Integer page, Integer pageSize) {
+    public Paginated<Review> getAllReviews(Filter filter, Integer page, Integer pageSize) {
         return reviewDao.getAll(filter, page, pageSize);
     }
 

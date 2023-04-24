@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.servicesinterfaces;
 
+import ar.edu.itba.paw.dtos.Filter;
 import ar.edu.itba.paw.exceptions.ObjectNotFoundException;
 import ar.edu.itba.paw.models.Game;
 import ar.edu.itba.paw.models.Paginated;
@@ -17,7 +18,7 @@ public interface GameService {
 
     Optional<Game> getGameById(Long id);
 
-    Paginated<GameData> getAllGames(Integer page, Integer pageSize);
+    Paginated<GameData> getAllGames(Integer page, Integer pageSize, Filter filter,String searchQuery);
 
     GameReviewData getReviewsByGameId(Long id);
 

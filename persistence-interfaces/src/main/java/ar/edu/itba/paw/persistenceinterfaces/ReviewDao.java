@@ -1,6 +1,6 @@
 package ar.edu.itba.paw.persistenceinterfaces;
 
-import ar.edu.itba.paw.dtos.ReviewFilter;
+import ar.edu.itba.paw.dtos.Filter;
 import ar.edu.itba.paw.enums.Difficulty;
 import ar.edu.itba.paw.enums.Platform;
 import ar.edu.itba.paw.models.Game;
@@ -24,7 +24,7 @@ public interface ReviewDao {
                          Boolean replayable);
     Optional<Review> getById(Long id);
 
-    Paginated<Review> getAll(ReviewFilter filter, Integer page, Integer pageSize);
+    Paginated<Review> getAll(Filter filter, Integer page, Integer pageSize);
 
     List<Review> getUserReviews(long userId);
 }

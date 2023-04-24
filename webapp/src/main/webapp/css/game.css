@@ -15,8 +15,24 @@
     width: 100%;
     /*height: 50%;*/
 }
-
-
+.search-game-list{
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: baseline;
+    width: 100%;
+}
+#search-field{
+    width: 80%;
+    height: 50px;
+    border-radius: 10px;
+    border: 1px solid #444155;
+    background: #13112D;
+    color: white;
+    font-size: 14px;
+    font-weight: 400;
+    padding-left: 10px;
+}
 .game-details-page{
     display: flex;
     flex-direction: column;
@@ -114,6 +130,10 @@
     font-weight: 600;
     white-space: nowrap;
     margin-right: 10px;
+}
+.genre-shortcut{
+    color:white;
+    text-decoration: none;
 }
 
 .game-review-section-header{
