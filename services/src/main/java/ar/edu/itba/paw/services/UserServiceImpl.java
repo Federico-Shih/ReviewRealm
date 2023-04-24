@@ -28,10 +28,25 @@ public class UserServiceImpl implements UserService {
     @Override
     public User createUser(String username, String email, String password) throws InvalidUserException {
         InvalidUserException invalidUserException = new InvalidUserException();
-        if(userDao.getByEmail(email).isPresent())
-            invalidUserException.setEmailAlreadyExists();
+        Optional<User> user = userDao.getByEmail(email);
+
         if(userDao.getByUsername(username).isPresent())
             invalidUserException.setUsernameAlreadyExists();
+
+        if(user.isPresent()) {
+            //Esto es por si el usuario fue creado en el sprint 1, que no tenía password
+            if(user.get().getPassword().isEmpty() && !invalidUserException.hasErrors()) {
+                userDao.changePassword(email, passwordEncoder.encode(password));
+                userDao.changeUsername(email, username);
+                Optional<User> updatedUser = userDao.getByEmail(email);
+                if(updatedUser.isPresent())
+                    return updatedUser.get();
+                else
+                    invalidUserException.setUnexpectedError();
+            }
+            else
+                invalidUserException.setEmailAlreadyExists();
+        }
         if(invalidUserException.hasErrors())
             throw invalidUserException;
         return userDao.create(username, email, passwordEncoder.encode(password));

@@ -67,4 +67,9 @@ public class UserDaoImpl implements UserDao {
         jdbcTemplate.update("UPDATE users SET password = ? WHERE email = ?", password, email);
     }
 
+    @Override
+    public void changeUsername(String email, String username) {
+        jdbcTemplate.update("UPDATE users SET username = ? WHERE email = ?", username, email);
+    }
+
 }
