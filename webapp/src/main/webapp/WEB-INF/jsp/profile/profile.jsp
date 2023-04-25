@@ -46,7 +46,12 @@
         </c:if>
       </div>
     </c:if>
-
+    <c:if test="${isProfileSelf}">
+      <c:url value="/profile/following" var="followingUrl" />
+      <c:url value="/profile/followers" var="followersUrl" />
+      <a class="btn" href="${followingUrl}"><spring:message code="profile.following.pagename" /></a>
+      <a class="btn" href="${followersUrl}"><spring:message code="profile.followers.pagename" /></a>
+    </c:if>
     <div class="divider"></div>
     <div>
       <h5><spring:message code="profile.favgames"/></h5>

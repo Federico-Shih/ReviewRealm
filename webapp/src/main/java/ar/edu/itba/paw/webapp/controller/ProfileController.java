@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.util.List;
 import java.util.Optional;
 
 @Controller
@@ -48,6 +49,36 @@ public class ProfileController {
         boolean follows = userService.userFollowsId(loggedUser.get().getId(), userId);
         System.out.println(follows);
         loggedUser.ifPresent(value -> mav.addObject("following", follows));
+
+        return mav;
+    }
+
+    @RequestMapping(value = "/profile/following", method = RequestMethod.GET)
+    public ModelAndView followingList() {
+        Optional<User> loggedUser = AuthenticationHelper.getLoggedUser(userService);
+        if (!loggedUser.isPresent()) {
+            return new ModelAndView("redirect:/login");
+        }
+        ModelAndView mav = new ModelAndView("profile/friends-list");
+        List<User> users = userService.getFollowing(loggedUser.get().getId());
+        mav.addObject("users", users);
+        mav.addObject("pageName", "profile.following.pagename");
+        mav.addObject("usersLength", users.size());
+
+        return mav;
+    }
+
+    @RequestMapping(value = "/profile/followers", method = RequestMethod.GET)
+    public ModelAndView followersList() {
+        Optional<User> loggedUser = AuthenticationHelper.getLoggedUser(userService);
+        if (!loggedUser.isPresent()) {
+            return new ModelAndView("redirect:/login");
+        }
+        ModelAndView mav = new ModelAndView("profile/friends-list");
+        List<User> users = userService.getFollowers(loggedUser.get().getId());
+        mav.addObject("users", users);
+        mav.addObject("pageName", "profile.followers.pagename");
+        mav.addObject("usersLength", users.size());
 
         return mav;
     }
