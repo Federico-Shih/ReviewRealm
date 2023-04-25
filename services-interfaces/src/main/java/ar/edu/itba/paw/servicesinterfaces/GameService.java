@@ -20,6 +20,8 @@ public interface GameService {
 
     Paginated<GameData> getAllGames(Integer page, Integer pageSize, Filter filter,String searchQuery);
 
+    Paginated<Game> getAllGamesShort(Integer page, Integer pageSize,String searchQuery);
+
     GameReviewData getReviewsByGameId(Long id);
 
     Double getAverageGameReviewRatingById(Long id);

@@ -41,6 +41,8 @@ public class ReviewController extends PaginatedController implements QueryContro
     private static final int PAGE_SIZE = 8;
     private static final int INITIAL_PAGE = 1;
 
+    private static final int MAX_SEARCH_RESULTS = 5;
+
     @Autowired
     public ReviewController(GameService gameService, ReviewService reviewService, GenreService genreService, UserService userService) {
         super(MAX_PAGES_PAGINATION, INITIAL_PAGE);
@@ -51,14 +53,26 @@ public class ReviewController extends PaginatedController implements QueryContro
     }
 
     @RequestMapping(value = "/review/submit", method = RequestMethod.GET)
-    public ModelAndView createReviewForm(@RequestParam(value = "gameId", required = false) Long gameId,
+    public ModelAndView createReviewForm(@RequestParam(value = "gameId", defaultValue = "0", required = false) Long gameId,
+                                         @RequestParam(value = "search", defaultValue = "") String search,
                                          @ModelAttribute("reviewForm") final SubmitReviewForm form) {
-        Optional<Game> reviewedGame = gameService.getGameById(gameId);
-        if (!reviewedGame.isPresent()) {
-            return new ModelAndView("static-components/not-found");
-        }
         ModelAndView mav = new ModelAndView("/review/submit-review");
-        mav.addObject("game", reviewedGame.get());
+
+        if(gameId != 0) {
+            Optional<Game> reviewedGame = gameService.getGameById(gameId);
+            if (!reviewedGame.isPresent()) {
+                return new ModelAndView("static-components/not-found");
+            }
+            mav.addObject("game", reviewedGame.get());
+        }
+
+        if(!search.isEmpty()){
+            mav.addObject("searchedGames", gameService.getAllGamesShort(INITIAL_PAGE,MAX_SEARCH_RESULTS, search).getList());
+        }else{
+            mav.addObject("searchedGames", new ArrayList<Game>());
+        }
+        mav.addObject("selectedGameId", gameId);
+        mav.addObject("searchField", search);
         mav.addObject("platforms", Platform.values());
         mav.addObject("difficulties", Difficulty.values());
         mav.addObject("units", GamelengthUnit.values());
@@ -86,7 +100,7 @@ public class ReviewController extends PaginatedController implements QueryContro
             final BindingResult errors
     ) {
         if (errors.hasErrors()) {
-            return createReviewForm(gameId, form);
+            return createReviewForm(gameId, "",form);
         }
         Review createdReview;
         Optional<User> author = AuthenticationHelper.getLoggedUser(userService);

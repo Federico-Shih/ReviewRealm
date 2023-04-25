@@ -21,6 +21,8 @@ public interface GameDao {
 
     Paginated<GameData> getAll(int page, Integer pageSize, Filter filter, String searchQuery);
 
+    Paginated<Game> getAllShort(int page, Integer pageSize, String searchQuery); //Este no hace las querys para sacar los average score
+
     List<Review> getReviewsById(Long id);
 
     List<Genre> getGenresByGame(Long id);

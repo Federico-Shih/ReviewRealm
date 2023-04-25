@@ -2,6 +2,7 @@ package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.dtos.Filter;
 import ar.edu.itba.paw.dtos.GameOrderCriteria;
+import ar.edu.itba.paw.dtos.OrderDirection;
 import ar.edu.itba.paw.dtos.ReviewOrderCriteria;
 import ar.edu.itba.paw.enums.Difficulty;
 import ar.edu.itba.paw.enums.Genre;
@@ -86,6 +87,7 @@ public class GameDaoImpl implements GameDao {
     private final static RowMapper<Double> AVERAGE_REVIEW_RATING_ROW_MAPPER = (resultSet, i) -> resultSet.getDouble("average");
 
 
+
     @Override
     public Game create(String name,String description,String developer, String publisher, String imageUrl, List<Genre> genres, LocalDate publishDate) {
         Map<String,Object> args = new HashMap<>();
@@ -145,6 +147,7 @@ public class GameDaoImpl implements GameDao {
                 preparedStatementArgs.toArray(),
                 Long.class);
     }
+
     private String toCriteriaString(GameOrderCriteria criteria) {
         if (criteria.equals(GameOrderCriteria.PUBLISH_DATE)) {
             return "publishDate";
@@ -209,5 +212,33 @@ public class GameDaoImpl implements GameDao {
     @Override
     public List<Game> getFavoriteGamesFromUser(long userId) {
         return jdbcTemplate.query("SELECT * FROM games where id = 1 OR id = 2 OR id = 3",GAME_ROW_MAPPER);
+    }
+    @Override
+    public Paginated<Game> getAllShort(int page, Integer pageSize, String searchQuery) {
+        Filter filter = new Filter( new ArrayList<>(),new ArrayList<>(),
+                null,GameOrderCriteria.NAME, OrderDirection.ASCENDING);
+        Long totalGames = getTotalAmountOfGames(filter);
+        int totalPages = (int) Math.ceil(totalGames/pageSize.doubleValue());
+
+        if (page > totalPages || page <= 0) {
+            return new Paginated<>(page, pageSize, totalPages, new ArrayList<>());
+        }
+        Integer offset = (page - 1) * pageSize;
+        List<Object> preparedStatementArgs = new ArrayList<>();
+
+        String searchFilter = "";
+        if (!searchQuery.isEmpty()) {
+            searchFilter += " WHERE  g.name LIKE ? ";
+            preparedStatementArgs.add("%" + searchQuery + "%");
+        }
+        preparedStatementArgs.add(pageSize);
+        preparedStatementArgs.add(offset);
+
+
+        List<Game> games = jdbcTemplate.query("SELECT * FROM games as g "+searchFilter+" LIMIT ? OFFSET ?",GAME_ROW_MAPPER,preparedStatementArgs.toArray());
+        for(Game g : games){
+            g.setGenres(this.getGenresByGame(g.getId()));
+        }
+        return new Paginated<>(page,pageSize,totalPages,games);
     }
 }

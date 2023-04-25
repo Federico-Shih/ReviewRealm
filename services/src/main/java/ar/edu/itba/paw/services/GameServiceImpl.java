@@ -52,6 +52,11 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
+    public Paginated<Game> getAllGamesShort(Integer page, Integer pageSize, String searchQuery) {
+        return gameDao.getAllShort(page,pageSize,searchQuery);
+    }
+
+    @Override
     public Double getAverageGameReviewRatingById(Long id) {
         return gameDao.getAverageReviewRatingById(id);
     }
