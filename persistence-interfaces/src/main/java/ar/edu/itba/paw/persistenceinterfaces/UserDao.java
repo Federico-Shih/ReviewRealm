@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.persistenceinterfaces;
 
 import ar.edu.itba.paw.models.Follow;
+import ar.edu.itba.paw.models.Role;
 import ar.edu.itba.paw.models.User;
 
 import java.util.List;
@@ -23,4 +24,6 @@ public interface UserDao {
     boolean deleteFollow(final long userId, final long id);
 
     boolean follows(final long userId, final long id);
+
+    List<Role> getRoles(final long id);
 }

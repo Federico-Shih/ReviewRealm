@@ -23,6 +23,6 @@ public class GlobalControllerAdvice {
 
     @ModelAttribute("loggedUser")
     public User loggedUser() {
-        return AuthenticationHelper.getLoggedUser(us).orElse(null);
+        return AuthenticationHelper.getLoggedUser(us);
     }
 }

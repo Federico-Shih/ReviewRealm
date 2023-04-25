@@ -3,6 +3,7 @@ package ar.edu.itba.paw.servicesinterfaces;
 import ar.edu.itba.paw.exceptions.EmailAlreadyExistsException;
 import ar.edu.itba.paw.exceptions.UsernameAlreadyExistsException;
 import ar.edu.itba.paw.models.Follow;
+import ar.edu.itba.paw.models.Role;
 import ar.edu.itba.paw.models.User;
 
 import java.util.List;
@@ -23,4 +24,6 @@ public interface UserService {
     boolean unfollowUserById(Long userId, Long otherId);
 
     boolean userFollowsId(Long userId, Long otherId);
+
+    List<Role> getUserRoles(Long userId);
 }

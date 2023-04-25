@@ -3,11 +3,8 @@ package ar.edu.itba.paw.persistence;
 import ar.edu.itba.paw.enums.Difficulty;
 import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.enums.Platform;
-import ar.edu.itba.paw.models.Follow;
-import ar.edu.itba.paw.models.Game;
-import ar.edu.itba.paw.models.Review;
+import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.persistenceinterfaces.UserDao;
-import ar.edu.itba.paw.models.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -34,6 +31,7 @@ public class UserDaoImpl implements UserDao {
 
     private final static RowMapper<Follow> FOLLOW_ROW_MAPPER = ((resultSet, i) -> new Follow(resultSet.getLong("userId"), resultSet.getLong("following")));
 
+    private final static RowMapper<Role> ROLE_ROW_MAPPER = (((resultSet, i) -> new Role(resultSet.getString("roleName"))));
     @Autowired
     public UserDaoImpl(final DataSource ds) {
         this.jdbcTemplate = new JdbcTemplate(ds);
@@ -114,6 +112,11 @@ public class UserDaoImpl implements UserDao {
     @Override
     public boolean follows(long userId, long id) {
         return jdbcTemplate.query("SELECT * FROM followers WHERE userId = ? AND following = ?", FOLLOW_ROW_MAPPER,  userId, id).size() != 0;
+    }
+
+    @Override
+    public List<Role> getRoles(long id) {
+        return jdbcTemplate.query("SELECT * FROM user_roles NATURAL JOIN roles WHERE userId = ?", ROLE_ROW_MAPPER, id);
     }
 
     @Override

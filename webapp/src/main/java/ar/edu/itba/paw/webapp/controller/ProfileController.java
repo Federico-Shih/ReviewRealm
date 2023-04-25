@@ -40,27 +40,24 @@ public class ProfileController {
             return new ModelAndView("static-components/not-found");
         }
 
-        Optional<User> loggedUser = AuthenticationHelper.getLoggedUser(userService);
+        User loggedUser = AuthenticationHelper.getLoggedUser(userService);
 
         mav.addObject("games",gameService.getFavoriteGamesFromUser(userId));
         mav.addObject("profile",user.get());
         mav.addObject("reviews",reviewService.getUserReviews(userId));
-        mav.addObject("isProfileSelf", loggedUser.isPresent() && loggedUser.get().equals(user.get()));
-        boolean follows = userService.userFollowsId(loggedUser.get().getId(), userId);
-        System.out.println(follows);
-        loggedUser.ifPresent(value -> mav.addObject("following", follows));
+        if (loggedUser != null) {
+            mav.addObject("isProfileSelf", loggedUser.equals(user.get()));
+            mav.addObject("following", userService.userFollowsId(loggedUser.getId(), userId));
+        }
 
         return mav;
     }
 
     @RequestMapping(value = "/profile/following", method = RequestMethod.GET)
     public ModelAndView followingList() {
-        Optional<User> loggedUser = AuthenticationHelper.getLoggedUser(userService);
-        if (!loggedUser.isPresent()) {
-            return new ModelAndView("redirect:/login");
-        }
+        User loggedUser = AuthenticationHelper.getLoggedUser(userService);
         ModelAndView mav = new ModelAndView("profile/friends-list");
-        List<User> users = userService.getFollowing(loggedUser.get().getId());
+        List<User> users = userService.getFollowing(loggedUser.getId());
         mav.addObject("users", users);
         mav.addObject("pageName", "profile.following.pagename");
         mav.addObject("usersLength", users.size());
@@ -70,12 +67,9 @@ public class ProfileController {
 
     @RequestMapping(value = "/profile/followers", method = RequestMethod.GET)
     public ModelAndView followersList() {
-        Optional<User> loggedUser = AuthenticationHelper.getLoggedUser(userService);
-        if (!loggedUser.isPresent()) {
-            return new ModelAndView("redirect:/login");
-        }
+        User loggedUser = AuthenticationHelper.getLoggedUser(userService);
         ModelAndView mav = new ModelAndView("profile/friends-list");
-        List<User> users = userService.getFollowers(loggedUser.get().getId());
+        List<User> users = userService.getFollowers(loggedUser.getId());
         mav.addObject("users", users);
         mav.addObject("pageName", "profile.followers.pagename");
         mav.addObject("usersLength", users.size());
@@ -86,13 +80,10 @@ public class ProfileController {
     @RequestMapping(value = "/profile/follow/{id:\\d+}", method = RequestMethod.POST)
     public ModelAndView followUser(@PathVariable(value = "id") long userId)
     {
-        Optional<User> loggedUser = AuthenticationHelper.getLoggedUser(userService);
-        if (!loggedUser.isPresent()) {
-            return new ModelAndView("redirect:/login");
-        }
+        User loggedUser = AuthenticationHelper.getLoggedUser(userService);
         // todo - que hacer cuando falla
         try {
-            userService.followUserById(loggedUser.get().getId(), userId);
+            userService.followUserById(loggedUser.getId(), userId);
         } catch (UserNotFoundException err) {
             return profile(userId);
         }
@@ -102,13 +93,10 @@ public class ProfileController {
     @RequestMapping(value = "/profile/unfollow/{id:\\d+}", method = RequestMethod.POST)
     public ModelAndView unfollowUser(@PathVariable(value = "id") long userId)
     {
-        Optional<User> loggedUser = AuthenticationHelper.getLoggedUser(userService);
-        if (!loggedUser.isPresent()) {
-            return new ModelAndView("redirect:/login");
-        }
+        User loggedUser = AuthenticationHelper.getLoggedUser(userService);
         // todo - que hacer cuando falla
         try {
-            userService.unfollowUserById(loggedUser.get().getId(), userId);
+            userService.unfollowUserById(loggedUser.getId(), userId);
         } catch (UserNotFoundException err) {
             return profile(userId);
         }

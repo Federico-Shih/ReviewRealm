@@ -89,11 +89,7 @@ public class ReviewController extends PaginatedController implements QueryContro
             return createReviewForm(gameId, form);
         }
         Review createdReview;
-        Optional<User> author = AuthenticationHelper.getLoggedUser(userService);
-        if(!author.isPresent()) {
-            //No debería pasar esto, pero por las dudas
-            return new ModelAndView("redirect:/login");
-        }
+        User author = AuthenticationHelper.getLoggedUser(userService);
         Optional<Game> reviewedGame = gameService.getGameById(gameId);
         if (!reviewedGame.isPresent()) {
             return new ModelAndView("static-components/not-found");
@@ -102,7 +98,7 @@ public class ReviewController extends PaginatedController implements QueryContro
                 form.getReviewTitle(),
                 form.getReviewContent(),
                 form.getReviewRating(),
-                author.get(),
+                author,
                 reviewedGame.get(),
                 form.getDifficultyEnum(),
                 form.getGameLengthSeconds(),
