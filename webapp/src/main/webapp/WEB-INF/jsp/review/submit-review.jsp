@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="<c:url value="/css/main.css" />">
     <link rel="stylesheet" href="<c:url value="/css/review/review-page.css" />">
     <link rel="stylesheet" href="<c:url value="/css/game.css" />">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
     <!-- Compiled and minified JavaScript -->
     <script src="<c:url value="/js/materialize.min.js" />"></script>
@@ -170,7 +171,7 @@
             <form action="${searchEndpoint}">
                 <div class="search-game-list">
                     <input name="search" class="z-depth-1-half search-field white-text" value="${searchField}" placeholder="<spring:message code="game.list.placeholder.search"/>">
-                    <button class="btn-flat button-color white-text" type="submit" ><i class="material-icons" >search </i></button>
+                    <button class="btn-flat button-color white-text" type="submit" ><i class="material-icons" >search</i></button>
                     <input name="gameId" value="${selectedGameId}" type="hidden"/>
                     <%-- TODO: revisar esto --%>
                     <%--porque seguramente esta rre mal pero no tenia otra forma que se me ocurra--%>

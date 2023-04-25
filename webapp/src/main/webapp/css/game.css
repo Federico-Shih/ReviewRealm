@@ -20,6 +20,7 @@
     flex-direction: row;
     justify-content: flex-start;
     align-items: baseline;
+    margin-top: 2%;
     width: 100%;
 }
 

@@ -13,8 +13,14 @@
     <title><spring:message code="review.list.title"/></title>
 </head>
 <c:url value="/" var="applyFilters"/>
+<c:url value="/review/submit" var="submit_review"/>
 <body class="background has-background-black">
 <jsp:include page="../static-components/navbar.jsp"/>
+<div class="fixed-action-btn">
+    <a class="btn-floating btn-large btn-floating-color" href="${submit_review}">
+        <i class="large material-icons">mode_edit</i>
+    </a>
+</div>
 <div class="review-list-page">
     <div>
         <form action="${applyFilters}" class="review-filters-panel">

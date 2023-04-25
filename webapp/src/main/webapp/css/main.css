@@ -44,7 +44,7 @@ nav {
     color: white
 }
 
-[id=search] .search-field{
+.search-field{
     width: 80%;
     height: 50px;
     border-radius: 10px;
@@ -106,6 +106,14 @@ nav {
     font-weight: 700;
     padding: 2px 6px;
     white-space: nowrap;
+}
+.btn-floating-color{
+    background: #13112D;
+    border: 1px solid #444155;
+}
+.btn-floating-color:hover{
+    background: #13112D;
+    border: 1px solid #444155;
 }
 
 * {
