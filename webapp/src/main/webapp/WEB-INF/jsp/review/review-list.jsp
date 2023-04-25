@@ -16,7 +16,7 @@
 <body class="background has-background-black">
 <jsp:include page="../static-components/navbar.jsp"/>
 <div class="review-list-page">
-    <div>
+    <div class="left-panel">
         <form action="${applyFilters}" class="review-filters-panel">
             <div class="review-filters-panel-section">
                 <button type="submit" class="btn"><spring:message code="apply.filters"/></button>
@@ -31,6 +31,7 @@
                             </label>
                         </p>
                     </c:forEach>
+                    <div class="divider-h"></div>
                     <c:forEach var="direction" items="${orderDirections}">
                         <p>
                             <label>
@@ -45,6 +46,10 @@
             <div class="divider-h"></div>
             <div class="review-filters-panel-section">
                 <span class="review-filters-panel-title"><spring:message code="review.filters"/></span>
+                <a href="${queriesToKeepAtRemoveFilters}"><button type="button" class="remove-filter-button btn-small blue-grey darken-3">
+                    <i class="material-icons">clear</i>
+                    <span><spring:message code="remove.filters"/></span>
+                </button></a>
                 <span class="review-filters-panel-subtitle"><spring:message code="review.genres"/></span>
                 <c:forEach var="genre" items="${filters.selectedGenres}">
                     <p>
@@ -86,11 +91,14 @@
         <div class="divider-v" id="filter-panel-divider"></div>
     </div>
 
-    <div>
-        <div class="review-card-list row">
+    <div class="right-panel">
+        <div class="review-card-list">
             <c:if test="${empty reviews}">
                 <div>
                     <span><spring:message code="review.list.notfound"/></span>
+                    <a href="${queriesToKeepAtRemoveFilters}">
+                        <span><spring:message code="remove.filters"/></span>
+                    </a>
                 </div>
             </c:if>
             <c:forEach var="review" items="${reviews}">
@@ -140,18 +148,18 @@
         <div class="row">
             <ul class="center-align pagination">
                 <c:if test="${currentPage > 1}">
-                    <li class="waves-effect"><a href="${queryString}page=${currentPage-1}"><i class="material-icons">chevron_left</i></a></li>
+                    <li class="waves-effect"><a href="${queriesToKeepAtPageChange}page=${currentPage-1}"><i class="material-icons">chevron_left</i></a></li>
                 </c:if>
                 <c:forEach var="i" begin="${initialPage}" end="${maxPages}">
                     <c:if test="${i == currentPage}">
-                        <li class="pagination-active"><a href="${queryString}page=${i}">${i}</a></li>
+                        <li class="pagination-active"><a href="${queriesToKeepAtPageChange}page=${i}">${i}</a></li>
                     </c:if>
                     <c:if test="${i != currentPage}">
-                        <li class="waves-effect"><a href="${queryString}page=${i}">${i}</a></li>
+                        <li class="waves-effect"><a href="${queriesToKeepAtPageChange}page=${i}">${i}</a></li>
                     </c:if>
                 </c:forEach >
                 <c:if test="${currentPage < maxPages}">
-                    <li class="waves-effect"><a href="${queryString}page=${currentPage+1}"><i class="material-icons">chevron_right</i></a></li>
+                    <li class="waves-effect"><a href="${queriesToKeepAtPageChange}page=${currentPage+1}"><i class="material-icons">chevron_right</i></a></li>
                 </c:if>
             </ul>
         </div>
