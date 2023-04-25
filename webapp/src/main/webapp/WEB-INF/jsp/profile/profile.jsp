@@ -16,7 +16,7 @@
 
 <body>
   <jsp:include page="../static-components/navbar.jsp"/>
-  <div>
+  <div class="container">
     <div class="row">
       <div class="col s4">
         <h5>${profile.username}</h5>
@@ -30,6 +30,28 @@
         </div>
       </div>
     </div>
+    <c:if test="${!isProfileSelf}">
+      <div class="row">
+        <c:if test="${following == null || !following}">
+          <c:url value="/profile/follow/${profile.id}" var="follow" />
+          <form method="post" action="${follow}">
+            <button type="submit" class="waves-effect waves-light btn"><spring:message code="profile.follow" /></button>
+          </form>
+        </c:if>
+        <c:if test="${following != null && following}">
+          <c:url value="/profile/unfollow/${profile.id}" var="unfollow" />
+          <form method="post" action="${unfollow}">
+            <button type="submit" class="waves-effect waves-light btn"><spring:message code="profile.unfollow" /></button>
+          </form>
+        </c:if>
+      </div>
+    </c:if>
+    <c:if test="${isProfileSelf}">
+      <c:url value="/profile/following" var="followingUrl" />
+      <c:url value="/profile/followers" var="followersUrl" />
+      <a class="btn" href="${followingUrl}"><spring:message code="profile.following.pagename" /></a>
+      <a class="btn" href="${followersUrl}"><spring:message code="profile.followers.pagename" /></a>
+    </c:if>
     <div class="divider"></div>
     <div>
       <h5><spring:message code="profile.favgames"/></h5>

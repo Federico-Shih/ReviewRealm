@@ -1,0 +1,1 @@
+INSERT INTO roles (roleName) VALUES ('MODERATOR');

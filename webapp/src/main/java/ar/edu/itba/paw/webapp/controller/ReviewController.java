@@ -103,11 +103,7 @@ public class ReviewController extends PaginatedController implements QueryContro
             return createReviewForm(gameId, "",form);
         }
         Review createdReview;
-        Optional<User> author = AuthenticationHelper.getLoggedUser(userService);
-        if(!author.isPresent()) {
-            //No debería pasar esto, pero por las dudas
-            return new ModelAndView("redirect:/login");
-        }
+        User author = AuthenticationHelper.getLoggedUser(userService);
         Optional<Game> reviewedGame = gameService.getGameById(gameId);
         if (!reviewedGame.isPresent()) {
             return new ModelAndView("static-components/not-found");
@@ -116,7 +112,7 @@ public class ReviewController extends PaginatedController implements QueryContro
                 form.getReviewTitle(),
                 form.getReviewContent(),
                 form.getReviewRating(),
-                author.get(),
+                author,
                 reviewedGame.get(),
                 form.getDifficultyEnum(),
                 form.getGameLengthSeconds(),
@@ -152,13 +148,20 @@ public class ReviewController extends PaginatedController implements QueryContro
         mav.addObject("orderDirections", OrderDirection.values());
         mav.addObject("filters", filters);
 
-        List<Pair<String, Object>> queries = new ArrayList<>();
-        queries.add(Pair.with("o-crit", orderCriteria));
-        queries.add(Pair.with("o-dir", orderDirection));
-        queries.add(Pair.with("pageSize", pageSize));
-        queries.addAll(genresFilter.stream().map((value) -> Pair.with("f-gen", (Object)value)).collect(Collectors.toList()));
+        List<Pair<String, Object>> queriesToKeepAtPageChange = new ArrayList<>();
+        queriesToKeepAtPageChange.add(Pair.with("o-crit", orderCriteria));
+        queriesToKeepAtPageChange.add(Pair.with("o-dir", orderDirection));
+        queriesToKeepAtPageChange.add(Pair.with("pageSize", pageSize));
+        queriesToKeepAtPageChange.addAll(genresFilter.stream().map((value) -> Pair.with("f-gen", (Object)value)).collect(Collectors.toList()));
 
-        mav.addObject("queryString", toQueryString(queries));
+        mav.addObject("queriesToKeepAtPageChange", toQueryString(queriesToKeepAtPageChange));
+
+        List<Pair<String, Object>> queriesToKeepAtRemoveFilters = new ArrayList<>();
+        queriesToKeepAtRemoveFilters.add(Pair.with("o-crit", orderCriteria));
+        queriesToKeepAtRemoveFilters.add(Pair.with("o-dir", orderDirection));
+        queriesToKeepAtRemoveFilters.add(Pair.with("pageSize", pageSize));
+
+        mav.addObject("queriesToKeepAtRemoveFilters", toQueryString(queriesToKeepAtRemoveFilters));
         return mav;
     }
 

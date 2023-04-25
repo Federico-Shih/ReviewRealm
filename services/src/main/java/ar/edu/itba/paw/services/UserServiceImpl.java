@@ -1,8 +1,10 @@
 package ar.edu.itba.paw.services;
 
-import ar.edu.itba.paw.exceptions.InvalidUserException;
-import ar.edu.itba.paw.models.Game;
-import ar.edu.itba.paw.models.Review;
+import ar.edu.itba.paw.exceptions.EmailAlreadyExistsException;
+import ar.edu.itba.paw.exceptions.UserNotFoundException;
+import ar.edu.itba.paw.exceptions.UsernameAlreadyExistsException;
+import ar.edu.itba.paw.models.Follow;
+import ar.edu.itba.paw.models.Role;
 import ar.edu.itba.paw.servicesinterfaces.UserService;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.persistenceinterfaces.UserDao;
@@ -26,14 +28,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User createUser(String username, String email, String password) throws InvalidUserException {
-        InvalidUserException invalidUserException = new InvalidUserException();
+    public User createUser(String username, String email, String password) throws EmailAlreadyExistsException, UsernameAlreadyExistsException {
         if(userDao.getByEmail(email).isPresent())
-            invalidUserException.setEmailAlreadyExists();
+            throw new EmailAlreadyExistsException();
+
         if(userDao.getByUsername(username).isPresent())
-            invalidUserException.setUsernameAlreadyExists();
-        if(invalidUserException.hasErrors())
-            throw invalidUserException;
+            throw new UsernameAlreadyExistsException();
+
         return userDao.create(username, email, passwordEncoder.encode(password));
     }
 
@@ -55,5 +56,41 @@ public class UserServiceImpl implements UserService {
     @Override
     public void changeUserPassword(String email, String password) {
         userDao.changePassword(email, passwordEncoder.encode(password));
+    }
+
+    @Override
+    public List<User> getFollowers(Long id) {
+        return userDao.getFollowers(id);
+    }
+
+    @Override
+    public List<User> getFollowing(Long id) {
+        return userDao.getFollowing(id);
+    }
+
+    @Override
+    public Optional<Follow> followUserById(Long userId, Long otherId) {
+        if (!userDao.exists(userId)) {
+            throw new UserNotFoundException("notfound.currentuser");
+        }
+        if (!userDao.exists(otherId)) {
+            throw new UserNotFoundException("notfound.otheruser");
+        }
+        return userDao.createFollow(userId, otherId);
+    }
+
+    @Override
+    public boolean unfollowUserById(Long userId, Long otherId) {
+        return userDao.deleteFollow(userId, otherId);
+    }
+
+    @Override
+    public boolean userFollowsId(Long userId, Long otherId) {
+        return userDao.follows(userId, otherId);
+    }
+
+    @Override
+    public List<Role> getUserRoles(Long userId) {
+        return userDao.getRoles(userId);
     }
 }
