@@ -1,10 +1,9 @@
 package ar.edu.itba.paw.services;
 
-import ar.edu.itba.paw.exceptions.InvalidUserException;
+import ar.edu.itba.paw.exceptions.EmailAlreadyExistsException;
 import ar.edu.itba.paw.exceptions.UserNotFoundException;
+import ar.edu.itba.paw.exceptions.UsernameAlreadyExistsException;
 import ar.edu.itba.paw.models.Follow;
-import ar.edu.itba.paw.models.Game;
-import ar.edu.itba.paw.models.Review;
 import ar.edu.itba.paw.servicesinterfaces.UserService;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.persistenceinterfaces.UserDao;
@@ -28,29 +27,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User createUser(String username, String email, String password) throws InvalidUserException {
-        InvalidUserException invalidUserException = new InvalidUserException();
-        Optional<User> user = userDao.getByEmail(email);
+    public User createUser(String username, String email, String password) throws EmailAlreadyExistsException, UsernameAlreadyExistsException {
+        if(userDao.getByEmail(email).isPresent())
+            throw new EmailAlreadyExistsException();
 
         if(userDao.getByUsername(username).isPresent())
-            invalidUserException.setUsernameAlreadyExists();
+            throw new UsernameAlreadyExistsException();
 
-        if(user.isPresent()) {
-            //Esto es por si el usuario fue creado en el sprint 1, que no tenía password
-            if(user.get().getPassword().isEmpty() && !invalidUserException.hasErrors()) {
-                userDao.changePassword(email, passwordEncoder.encode(password));
-                userDao.changeUsername(email, username);
-                Optional<User> updatedUser = userDao.getByEmail(email);
-                if(updatedUser.isPresent())
-                    return updatedUser.get();
-                else
-                    invalidUserException.setUnexpectedError();
-            }
-            else
-                invalidUserException.setEmailAlreadyExists();
-        }
-        if(invalidUserException.hasErrors())
-            throw invalidUserException;
         return userDao.create(username, email, passwordEncoder.encode(password));
     }
 

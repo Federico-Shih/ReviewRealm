@@ -12,6 +12,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import java.util.concurrent.TimeUnit;
 
@@ -70,7 +71,7 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                 .tokenValiditySeconds((int) TimeUnit.DAYS.toSeconds(30))
             .and().logout()
                 .logoutUrl("/logout")
-                .logoutSuccessUrl("/logout/success")
+                .logoutSuccessUrl("/login")
             .and().exceptionHandling()
                 .accessDeniedPage("/403") //Todo: hacer página 403
             .and().csrf().disable();

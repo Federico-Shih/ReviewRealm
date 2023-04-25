@@ -1,8 +1,8 @@
 package ar.edu.itba.paw.webapp.controller;
 
-import ar.edu.itba.paw.exceptions.InvalidUserException;
+import ar.edu.itba.paw.exceptions.EmailAlreadyExistsException;
+import ar.edu.itba.paw.exceptions.UsernameAlreadyExistsException;
 import ar.edu.itba.paw.forms.RegisterForm;
-import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.servicesinterfaces.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -32,11 +32,6 @@ public class UserController {
         return mav;
     }
 
-    @RequestMapping("/logout/success")
-    public ModelAndView loginForm() {
-        return new ModelAndView("user/logout");
-    }
-
     @RequestMapping("/register")
     public ModelAndView registerForm(
             @ModelAttribute("registerForm") final RegisterForm form
@@ -55,16 +50,13 @@ public class UserController {
         if(errors.hasErrors()) {
             return registerForm(form);
         }
-        final User user;
         try {
-            user = us.createUser(form.getUsername(), form.getEmail(), form.getPassword());
-        } catch (InvalidUserException e) {
-            if(e.doesEmailAlreadyExist())
-                errors.rejectValue("email", "error.email.already.exists");
-            if(e.doesUsernameAlreadyExist())
-                errors.rejectValue("username", "error.username.already.exists");
-        }
-        if(errors.hasErrors()) {
+            us.createUser(form.getUsername(), form.getEmail(), form.getPassword());
+        } catch (EmailAlreadyExistsException e) {
+            errors.rejectValue("email", "error.email.already.exists");
+            return registerForm(form);
+        } catch (UsernameAlreadyExistsException e) {
+            errors.rejectValue("username", "error.username.already.exists");
             return registerForm(form);
         }
 
