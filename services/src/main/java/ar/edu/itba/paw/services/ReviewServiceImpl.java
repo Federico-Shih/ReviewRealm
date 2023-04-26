@@ -60,6 +60,11 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
+    public boolean deleteReviewById(Long id) {
+        return reviewDao.deleteReview(id);
+    }
+
+    @Override
     public List<Review> getUserReviews(long userId) {
         return reviewDao.getUserReviews(userId);
     }

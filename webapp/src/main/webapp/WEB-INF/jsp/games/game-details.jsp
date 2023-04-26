@@ -103,7 +103,9 @@
                 <div class="card">
                     <div class="review-card-header">
                         <div class="review-card-header-start">
-                            <span id="review-card-title"><c:out value="${review.title}"/></span>
+                            <a href="/review/${review.id}">
+                                <span id="review-card-title"><c:out value="${review.title}"/></span>
+                            </a>
                         </div>
                         <div class="review-card-header-end">
                             <span id="review-card-score"><c:out value="${review.rating}"/></span>

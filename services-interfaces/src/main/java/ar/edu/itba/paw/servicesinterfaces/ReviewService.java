@@ -28,4 +28,6 @@ public interface ReviewService {
     List<Review> getUserReviews(long userId);
 
     Paginated<Review> getAllReviews(Filter filter, Integer page, Integer pageSize);
+
+    boolean deleteReviewById(Long id);
 }

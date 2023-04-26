@@ -33,7 +33,7 @@ public class PawUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         final User user = us.getUserByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("No user found for email: " + email));
-        
+
         if(!BCRYPT_PATTERN.matcher(user.getPassword()).matches()) {
             throw new UsernameNotFoundException("User password is not hashed");
         }
@@ -41,7 +41,8 @@ public class PawUserDetailsService implements UserDetailsService {
         final List<Role> roleList = us.getUserRoles(user.getId());
         //TODO: implement logic to grant only required authorities
         final Collection<GrantedAuthority> authorities = new HashSet<>();
-        roleList.forEach((role -> authorities.add(new SimpleGrantedAuthority(role.getRoleName()))));
+        roleList.forEach((role -> authorities.add(new SimpleGrantedAuthority(String.format("ROLE_%s", role.getRoleName())))));
+        System.out.println(authorities);
         //authorities.add(new SimpleGrantedAuthority("ROLE_REVIEWER"));
         // TODO: definir roles (más de uno por user)
         return new PawAuthUserDetails(user.getEmail(), user.getPassword(), authorities);

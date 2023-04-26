@@ -185,4 +185,9 @@ public class ReviewDaoImpl implements ReviewDao {
     public List<Review> getUserReviews(long userId) {
         return jdbcTemplate.query("SELECT DISTINCT * FROM reviews as r JOIN games as g ON g.id = r.gameid JOIN users as u ON u.id = r.authorid WHERE u.id = ?",REVIEW_ROW_MAPPER,userId);
     }
+
+    @Override
+    public boolean deleteReview(Long id) {
+        return jdbcTemplate.update("DELETE FROM reviews WHERE id = ?", id) == 1;
+    }
 }

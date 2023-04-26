@@ -12,7 +12,19 @@
     <!-- Compiled and minified JavaScript -->
     <script src="<c:url value="/js/materialize.min.js" />"></script>
     <link rel="shortcut icon" type="image/png" href="<c:url value="/static/review_realm_logo_white_32px.png" />">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <script>
+        <c:if test="${isModerated}">
+            document.addEventListener('DOMContentLoaded', function() {
+                var elems = document.querySelectorAll('.dropdown-trigger');
+                var instances = M.Dropdown.init(elems, {
+                    alignment: 'right',
+                    coverTrigger: false,
+                });
+            });
+        </c:if>
+    </script>
 </head>
 
 <spring:message code="reviewForm.title.placeholder" var="titlePlaceholder"/>
@@ -28,12 +40,32 @@
             <div class="card card-background">
                 <div class="card-content">
                     <div class="card-title row">
-                        <div class="col s10">
+                        <div class="col s8">
                             <c:out value="${review.title}" />
                         </div>
-                        <div class="col s2" style="float: right;">
+                        <div class="col s2 ${isModerated ? "" : "s4 right"} right-align">
                             <span style="font-weight: bold"><c:out value="${review.rating}" /></span>/10
                         </div>
+                        <c:if test="${isModerated}">
+                        <div class="col s2 right-align">
+                                <div>
+                                    <a class="dropdown-trigger btn valign-wrapper" href="#" data-target="dropdown-mod">
+                                        <i class="material-icons" aria-hidden="true">settings</i>
+                                    </a>
+                                    <ul id="dropdown-mod" class="dropdown-content dropdown-container">
+                                        <li>
+                                            <c:url value="/review/delete/${review.id}" var="moderateUrl" />
+                                            <form action="${moderateUrl}" method="post" >
+                                                <button class="waves-effect btn-flat valign-wrapper red-text" style="display: flex" type="submit">
+                                                    <i class="material-icons">delete_outline</i>
+                                                    <span><spring:message code="review.delete" /></span>
+                                                </button>
+                                            </form>
+                                        </li>
+                                    </ul>
+                                </div>
+                        </div>
+                        </c:if>
                     </div>
                     <div class="divider"></div>
                     <div class="card-content-container-detail">

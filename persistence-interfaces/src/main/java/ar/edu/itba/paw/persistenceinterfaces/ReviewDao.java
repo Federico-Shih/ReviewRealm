@@ -27,4 +27,6 @@ public interface ReviewDao {
     Paginated<Review> getAll(Filter filter, Integer page, Integer pageSize);
 
     List<Review> getUserReviews(long userId);
+
+    boolean deleteReview(Long id);
 }

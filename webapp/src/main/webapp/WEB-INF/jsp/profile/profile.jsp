@@ -30,7 +30,7 @@
         </div>
       </div>
     </div>
-    <c:if test="${!isProfileSelf}">
+    <c:if test="${!isProfileSelf && loggedUser != null}">
       <div class="row">
         <c:if test="${following == null || !following}">
           <c:url value="/profile/follow/${profile.id}" var="follow" />

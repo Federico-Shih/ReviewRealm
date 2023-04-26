@@ -15,10 +15,13 @@ import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.servicesinterfaces.GenreService;
 import ar.edu.itba.paw.servicesinterfaces.ReviewService;
 import ar.edu.itba.paw.forms.SubmitReviewForm;
+import ar.edu.itba.paw.webapp.exceptions.ResourceNotFoundException;
 import org.javatuples.Pair;
 import ar.edu.itba.paw.servicesinterfaces.UserService;
 import ar.edu.itba.paw.webapp.auth.AuthenticationHelper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Controller;
 import ar.edu.itba.paw.models.Game;
 import ar.edu.itba.paw.servicesinterfaces.GameService;
@@ -85,10 +88,12 @@ public class ReviewController extends PaginatedController implements QueryContro
         if (!review.isPresent()) {
             return new ModelAndView("static-components/not-found");
         }
+        Collection<? extends GrantedAuthority> roles = AuthenticationHelper.getAuthorities();
         ModelAndView mav = new ModelAndView("/review/review-details");
         mav.addObject("review", review.get());
         mav.addObject("game", review.get().getReviewedGame());
         mav.addObject("reviewExtra", ComputedReviewData.factory(review.get()));
+        mav.addObject("isModerated", roles.contains(new SimpleGrantedAuthority("ROLE_MODERATOR")));
         return mav;
     }
 
@@ -163,6 +168,19 @@ public class ReviewController extends PaginatedController implements QueryContro
 
         mav.addObject("queriesToKeepAtRemoveFilters", toQueryString(queriesToKeepAtRemoveFilters));
         return mav;
+    }
+
+    @RequestMapping(value = "/review/delete/{id:\\d+}", method = RequestMethod.POST)
+    public ModelAndView deleteReview(@PathVariable(value = "id") Long id) {
+        Optional<Review> review = reviewService.getReviewById(id);
+        if (!review.isPresent()) {
+            throw new ResourceNotFoundException();
+        }
+        boolean deleted = reviewService.deleteReviewById(id);
+        if (!deleted) {
+            return reviewDetails(id);
+        }
+        return new ModelAndView("redirect:/game/" + id);
     }
 
 
