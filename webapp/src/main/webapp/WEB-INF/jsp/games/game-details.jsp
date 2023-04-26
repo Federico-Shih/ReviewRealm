@@ -24,7 +24,7 @@
         <div class="game-genres">
             <span class="game-genre"><spring:message code="genres"/></span>
             <c:forEach items="${game.genres}" var="genre">
-                <div class="chip white-text"><a href="${gameList}?f-gen=${genre.id}" class="genre-shortcut"><spring:message code="${genre.name}"/></a></div>
+                <div class="chip white-text"><a href="${gameList}?f-gen=${genre.id}" class="no-a-decoration"><spring:message code="${genre.name}"/></a></div>
             </c:forEach>
         </div>
         <div class="divider"></div>

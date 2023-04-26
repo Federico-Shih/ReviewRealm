@@ -71,8 +71,8 @@
             </div>
             <div class="col push-s1 s8">
                 <div class="search-game-list">
-                    <input name="search" class="z-depth-1-half" id="search-field" type="search" value="${searchField}" placeholder="<spring:message code="game.list.placeholder.search"/>">
-                    <button class="btn-flat button-color white-text" type="submit" ><i class="material-icons" id="close-search">search</i></button>
+                    <input name="search" class="z-depth-1-half search-field" type="search" value="${searchField}" placeholder="<spring:message code="game.list.placeholder.search"/>">
+                    <button class="btn-flat button-color white-text" type="submit" ><i class="material-icons" >search</i></button>
                 </div>
             </div>
         </form>

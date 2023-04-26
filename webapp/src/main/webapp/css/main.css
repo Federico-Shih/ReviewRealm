@@ -43,6 +43,18 @@ nav {
     background: #070A18; !important;
     color: white
 }
+
+.search-field{
+    width: 80%;
+    height: 50px;
+    border-radius: 10px;
+    border: 1px solid #444155;
+    background: #13112D;
+    color: white;
+    font-size: 14px;
+    font-weight: 400;
+    padding-left: 10px;
+}
 .card {
     background: #13112D;
     border: 1px solid #444155;
@@ -94,6 +106,14 @@ nav {
     font-weight: 700;
     padding: 2px 6px;
     white-space: nowrap;
+}
+.btn-floating-color{
+    background: #13112D;
+    border: 1px solid #444155;
+}
+.btn-floating-color:hover{
+    background: #13112D;
+    border: 1px solid #444155;
 }
 
 * {
