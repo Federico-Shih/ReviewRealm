@@ -1,9 +1,12 @@
 package ar.edu.itba.paw.webapp.config;
 
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -12,8 +15,10 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.concurrent.TimeUnit;
 
 
@@ -24,6 +29,9 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private UserDetailsService userDetailsService;
+
+    @Autowired
+    private ResourceLoader resourceLoader;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -74,13 +82,20 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
             .and().rememberMe()
                 .rememberMeParameter("remember-me")
                 .userDetailsService(userDetailsService)
-                .key("TODO: cambiar esto por algo más seguro, desde un archivo generado por openssl") //TODO
+                .key(getRememberMeKey())
                 .tokenValiditySeconds((int) TimeUnit.DAYS.toSeconds(30))
             .and().logout()
                 .logoutUrl("/logout")
                 .logoutSuccessUrl("/login")
             .and().exceptionHandling()
-                .accessDeniedPage("/403") //Todo: hacer página 403
+                .accessDeniedPage("/403") //TODO: hacer página 403
             .and().csrf().disable();
     }
+
+    private String getRememberMeKey() throws IOException {
+        ClassPathResource resource = new ClassPathResource("keys/rememberme_key.pem");
+        byte[] bytes = IOUtils.toByteArray(resource.getInputStream());
+        return new String(Base64.getEncoder().encode(bytes), StandardCharsets.UTF_8);
+    }
+
 }
