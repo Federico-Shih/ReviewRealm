@@ -15,7 +15,7 @@
 </head>
 <c:url value="/login" var="postPath"/>
 <body>
-    <jsp:include page="/WEB-INF/jsp/static-components/navbar.jsp"/>
+<jsp:include page="/WEB-INF/jsp/static-components/navbar.jsp"><jsp:param name="selected" value="login"/></jsp:include>
     <div class="container">
         <h3><spring:message code="login.header.title"/></h3>
         <form class="card form-body" action="${postPath}" method="post">

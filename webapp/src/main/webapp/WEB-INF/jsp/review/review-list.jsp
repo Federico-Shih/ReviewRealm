@@ -15,7 +15,7 @@
 <c:url value="/" var="applyFilters"/>
 <c:url value="/review/submit" var="submit_review"/>
 <body class="background has-background-black">
-<jsp:include page="../static-components/navbar.jsp"/>
+<jsp:include page="../static-components/navbar.jsp"><jsp:param name="selected" value="review-list" /></jsp:include>
 <div class="fixed-action-btn">
     <a class="btn-floating btn-large btn-floating-color" href="${submit_review}">
         <i class="large material-icons">mode_edit</i>

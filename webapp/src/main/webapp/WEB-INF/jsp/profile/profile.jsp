@@ -11,11 +11,11 @@
   <link rel="stylesheet" href="<c:url value="/css/review.css" />">
   <link rel="stylesheet" href="<c:url value="/css/game.css" />"/>
   <script src="<c:url value="/js/materialize.min.js" />"></script>
-  <title>Profile</title>
+  <title><spring:message code="profile.title"/></title>
 </head>
 
 <body>
-  <jsp:include page="../static-components/navbar.jsp"/>
+<jsp:include page="../static-components/navbar.jsp"><jsp:param name="selected" value="profile"/></jsp:include>
   <div class="container">
     <div class="row">
       <div class="col s4">

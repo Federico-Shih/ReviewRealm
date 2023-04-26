@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="<c:url value="/css/review.css"/>">
 </head>
 <body>
-<jsp:include page="../static-components/navbar.jsp"/>
+<jsp:include page="../static-components/navbar.jsp"><jsp:param name="selected" value="game-list"/></jsp:include>
 <c:url value="/game/list/" var="queryFinish"/>
 <div>
     <div class="row">
