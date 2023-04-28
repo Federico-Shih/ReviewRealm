@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.exceptions.UserNotFoundException;
+import ar.edu.itba.paw.models.FollowerFollowingCount;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.servicesinterfaces.GameService;
 import ar.edu.itba.paw.servicesinterfaces.ReviewService;
@@ -15,6 +16,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Controller
 public class ProfileController {
@@ -45,6 +47,9 @@ public class ProfileController {
         mav.addObject("games",gameService.getFavoriteGamesFromUser(userId));
         mav.addObject("profile",user.get());
         mav.addObject("reviews",reviewService.getUserReviews(userId));
+        FollowerFollowingCount ffc = userService.getFollowerFollowingCount(userId);
+        mav.addObject("followerCount", ffc.getFollowerCount());
+        mav.addObject("followingCount", ffc.getFollowingCount());
         if (loggedUser != null) {
             mav.addObject("isProfileSelf", loggedUser.equals(user.get()));
             mav.addObject("following", userService.userFollowsId(loggedUser.getId(), userId));
@@ -53,28 +58,42 @@ public class ProfileController {
         return mav;
     }
 
-    @RequestMapping(value = "/profile/following", method = RequestMethod.GET)
-    public ModelAndView followingList() {
-        User loggedUser = AuthenticationHelper.getLoggedUser(userService);
+    private ModelAndView friendsList(long userId, Boolean isFollowersPage, List<User> users) {
         ModelAndView mav = new ModelAndView("profile/friends-list");
-        List<User> users = userService.getFollowing(loggedUser.getId());
         mav.addObject("users", users);
-        mav.addObject("pageName", "profile.following.pagename");
         mav.addObject("usersLength", users.size());
+
+        Optional<User> user = userService.getUserById(userId);
+        if(!user.isPresent())
+        {
+            return new ModelAndView("static-components/not-found");
+        }
+        mav.addObject("username",user.get().getUsername());
+
+        User loggedUser = AuthenticationHelper.getLoggedUser(userService);
+        if (loggedUser != null && loggedUser.equals(user.get())) {
+            mav.addObject("isProfileSelf", true);
+            mav.addObject("pageName", isFollowersPage ? "profile.ownfollowers.pagename" : "profile.ownfollowing.pagename");
+        }
+        else {
+            mav.addObject("pageName", isFollowersPage ? "profile.followers.pagename" : "profile.following.pagename");
+        }
 
         return mav;
     }
 
-    @RequestMapping(value = "/profile/followers", method = RequestMethod.GET)
-    public ModelAndView followersList() {
-        User loggedUser = AuthenticationHelper.getLoggedUser(userService);
+    @RequestMapping(value = "/profile/{id:\\d+}/following", method = RequestMethod.GET)
+    public ModelAndView followingList(@PathVariable(value="id") long userId) {
         ModelAndView mav = new ModelAndView("profile/friends-list");
-        List<User> users = userService.getFollowers(loggedUser.getId());
-        mav.addObject("users", users);
-        mav.addObject("pageName", "profile.followers.pagename");
-        mav.addObject("usersLength", users.size());
+        List<User> users = userService.getFollowing(userId);
+        return friendsList(userId, false, users);
+    }
 
-        return mav;
+    @RequestMapping(value = "/profile/{id:\\d+}/followers", method = RequestMethod.GET)
+    public ModelAndView followersList(@PathVariable(value="id") long userId) {
+        ModelAndView mav = new ModelAndView("profile/friends-list");
+        List<User> users = userService.getFollowers(userId);
+        return friendsList(userId, true, users);
     }
 
     @RequestMapping(value = "/profile/follow/{id:\\d+}", method = RequestMethod.POST)

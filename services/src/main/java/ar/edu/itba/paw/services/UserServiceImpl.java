@@ -4,6 +4,7 @@ import ar.edu.itba.paw.exceptions.EmailAlreadyExistsException;
 import ar.edu.itba.paw.exceptions.UserNotFoundException;
 import ar.edu.itba.paw.exceptions.UsernameAlreadyExistsException;
 import ar.edu.itba.paw.models.Follow;
+import ar.edu.itba.paw.models.FollowerFollowingCount;
 import ar.edu.itba.paw.models.Role;
 import ar.edu.itba.paw.servicesinterfaces.UserService;
 import ar.edu.itba.paw.models.User;
@@ -66,6 +67,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<User> getFollowing(Long id) {
         return userDao.getFollowing(id);
+    }
+
+    @Override
+    public FollowerFollowingCount getFollowerFollowingCount(Long id) {
+        return userDao.getFollowerFollowingCount(id);
     }
 
     @Override

@@ -47,9 +47,12 @@
                                     class="white-text"
                                     placeholder="10"
                             />
+
                         </div>
                         <div>/10</div>
+
                     </div>
+
                     <div class="card-content card-content-container">
                         <div class="card-title review-card-title row valign-wrapper">
                             <div class="col s12 flow-text">
@@ -61,6 +64,7 @@
                                 </c:if>
                             </div>
                         </div>
+                        <form:errors path="reviewRating" cssClass="error" element="p"/>
                         <div class="divider"></div>
                         <div class="input-field">
                             <form:label path="reviewTitle"><spring:message code="review.titleInput"/></form:label>
@@ -72,7 +76,9 @@
                                     class="input-general"
                                     style="color: black;"
                             />
+                            <form:errors path="reviewTitle" cssClass="error" element="p"/>
                         </div>
+
                         <div class="input-field">
                             <form:label path="reviewContent"><spring:message code="review.ContentInput"/></form:label>
                             <form:textarea
@@ -81,6 +87,7 @@
                                     id="review-content"
                                     class="materialize-textarea review-content-input input-general"
                                     style="color: black;"/>
+                            <form:errors path="reviewContent" cssClass="error" element="p"/>
                         </div>
                         <div>
                             <form:label path="platform"><spring:message code="review.platform" /></form:label>
@@ -94,6 +101,7 @@
                                     </option>
                                 </c:forEach>
                             </form:select>
+                            <form:errors path="platform" cssClass="error" element="p" />
                         </div>
                         <div>
                             <form:label path="difficulty"><spring:message code="review.difficulty" /></form:label>
@@ -107,6 +115,7 @@
                                     </form:option>
                                 </c:forEach>
                             </form:select>
+                            <form:errors path="difficulty" cssClass="error" element="p" />
                         </div>
                         <div class="row">
                             <div class="col s12">
@@ -120,6 +129,7 @@
                                         class="white-text"
                                         step="0.01"
                                 />
+                                <form:errors path="gameLength" cssClass="error" element="p" />
                             </div>
                             <div class="col s2">
                                 <form:select name="unit" path="unit" id="unit" cssClass="browser-default">
@@ -142,16 +152,6 @@
                                 <input type="checkbox" name="replayability" id="replayable"/>
                                 <span><spring:message code="reviewForm.replayability" /></span>
                             </label>
-                        </div>
-                        <div class="row">
-                            <div class="col s12">
-                                <form:errors path="reviewTitle" cssClass="error" element="p"/>
-                                <form:errors path="reviewContent" cssClass="error" element="p"/>
-                                <form:errors path="reviewRating" cssClass="error" element="p"/>
-                                <form:errors path="difficulty" cssClass="error" element="p" />
-                                <form:errors path="platform" cssClass="error" element="p" />
-                                <form:errors path="gameLength" cssClass="error" element="p" />
-                            </div>
                         </div>
                         <div class="row">
                             <button class="${(selectedGameId==0)? " disabled ":" "}waves-effect waves-light btn submit-btn s2 offset-s10 col" type="submit">

@@ -183,7 +183,9 @@ public class ReviewDaoImpl implements ReviewDao {
     }
 
     public List<Review> getUserReviews(long userId) {
-        return jdbcTemplate.query("SELECT DISTINCT * FROM reviews as r JOIN games as g ON g.id = r.gameid JOIN users as u ON u.id = r.authorid WHERE u.id = ?",REVIEW_ROW_MAPPER,userId);
+        List<Review> reviews = jdbcTemplate.query("SELECT DISTINCT * FROM reviews as r JOIN games as g ON g.id = r.gameid JOIN users as u ON u.id = r.authorid WHERE u.id = ?",REVIEW_ROW_MAPPER,userId);
+        reviews.forEach((review -> review.getReviewedGame().setGenres(gameDao.getGenresByGame(review.getReviewedGame().getId()))));
+        return reviews;
     }
 
     @Override

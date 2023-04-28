@@ -16,11 +16,11 @@
 <body>
     <jsp:include page="../static-components/navbar.jsp"/>
     <div class="container row">
-        <h3><spring:message code="${pageName}" /></h3>
+        <h3><spring:message code="${pageName}" arguments="${username}" /></h3>
 
         <c:forEach items="${users}" var="user">
             <div class="col s4 card">
-                <a href="/profile/${user.id}">
+                <a href="<c:url value="/profile/${user.id}"/> ">
                     <div class="card-content">
                         <div class="card-title">
                             <c:out value="${user.username}" />

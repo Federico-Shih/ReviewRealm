@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.persistenceinterfaces;
 
 import ar.edu.itba.paw.models.Follow;
+import ar.edu.itba.paw.models.FollowerFollowingCount;
 import ar.edu.itba.paw.models.Role;
 import ar.edu.itba.paw.models.User;
 
@@ -18,6 +19,7 @@ public interface UserDao {
 
     List<User> getFollowers(final long id);
     List<User> getFollowing(final long id);
+    FollowerFollowingCount getFollowerFollowingCount(final long id);
 
     Optional<Follow> createFollow(final long userId, final long id);
 

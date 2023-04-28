@@ -81,13 +81,20 @@ public class GameController extends PaginatedController implements QueryControll
         mav.addObject("searchField",search);
         mav.addObject("filters", filters);
 
-        List<Pair<String, Object>> queries = new ArrayList<>();
-        queries.add(Pair.with("o-crit", orderCriteria));
-        queries.add(Pair.with("o-dir", orderDirection));
-        queries.add(Pair.with("search", search));
-        queries.addAll(genresFilter.stream().map((value) -> Pair.with("f-gen", (Object)value)).collect(Collectors.toList()));
+        List<Pair<String, Object>> queriesToKeepAtPageChange = new ArrayList<>();
+        queriesToKeepAtPageChange.add(Pair.with("o-crit", orderCriteria));
+        queriesToKeepAtPageChange.add(Pair.with("o-dir", orderDirection));
+        queriesToKeepAtPageChange.add(Pair.with("search", search));
+        queriesToKeepAtPageChange.addAll(genresFilter.stream().map((value) -> Pair.with("f-gen", (Object)value)).collect(Collectors.toList()));
 
-        mav.addObject("queryString", toQueryString(queries));
+        mav.addObject("queriesToKeepAtPageChange", toQueryString(queriesToKeepAtPageChange));
+
+        List<Pair<String, Object>> queriesToKeepAtRemoveFilters = new ArrayList<>();
+        queriesToKeepAtRemoveFilters.add(Pair.with("o-crit", orderCriteria));
+        queriesToKeepAtRemoveFilters.add(Pair.with("o-dir", orderDirection));
+        queriesToKeepAtRemoveFilters.add(Pair.with("search", search));
+
+        mav.addObject("queriesToKeepAtRemoveFilters", toQueryString(queriesToKeepAtRemoveFilters));
         return mav;
     }
 

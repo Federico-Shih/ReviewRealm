@@ -102,7 +102,7 @@
                             </c:if>
                         </div>
                         <div class="col s12 right right-align">
-                            <spring:message code="review.by" arguments="${review.author.email}" />
+                            <spring:message code="review.by" arguments="@${review.author.username}" />
                         </div>
                     </div>
                 </div>

@@ -211,6 +211,7 @@ public class GameDaoImpl implements GameDao {
 
     @Override
     public List<Game> getFavoriteGamesFromUser(long userId) {
+        //TODO: y verificar que incluya los generos de los juegos
         return jdbcTemplate.query("SELECT * FROM games where id = 1 OR id = 2 OR id = 3",GAME_ROW_MAPPER);
     }
     @Override

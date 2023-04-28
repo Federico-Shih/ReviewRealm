@@ -1,0 +1,75 @@
+.profile-info-panel {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    height: 30%;
+}
+
+.profile-info-panel-image {
+    width: 12%;
+    border-radius: 50%;
+    margin: 0 5%;
+}
+
+.profile-info-panel-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
+    gap: 3%;
+}
+
+.profile-user-name {
+    font-size: 60px;
+    font-weight: bold;
+}
+
+.profile-preferences {
+
+}
+
+.profile-preferences-list {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.profile-followers {
+    display: flex;
+    flex-direction: row;
+    font-weight: bold;
+}
+
+.profile-followers-text-divider {
+    margin: 0 6px;
+}
+
+.profile-favorite-games-panel {
+    padding: 0 5%;
+}
+
+.profile-favorite-games-panel-list {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.profile-favorite-game {
+    width: 32%;
+}
+
+.profile-reviews-panel {
+    padding: 0 5%;
+}
+
+.profile-review-list {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.profile-reviews-count {
+    font-weight: 300;
+}

@@ -3,6 +3,7 @@ package ar.edu.itba.paw.servicesinterfaces;
 import ar.edu.itba.paw.exceptions.EmailAlreadyExistsException;
 import ar.edu.itba.paw.exceptions.UsernameAlreadyExistsException;
 import ar.edu.itba.paw.models.Follow;
+import ar.edu.itba.paw.models.FollowerFollowingCount;
 import ar.edu.itba.paw.models.Role;
 import ar.edu.itba.paw.models.User;
 
@@ -18,6 +19,7 @@ public interface UserService {
 
     List<User> getFollowers(Long id);
     List<User> getFollowing(Long id);
+    FollowerFollowingCount getFollowerFollowingCount(Long id);
 
     Optional<Follow> followUserById(Long userId, Long otherId);
 

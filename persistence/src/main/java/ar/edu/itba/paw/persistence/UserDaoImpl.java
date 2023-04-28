@@ -32,6 +32,9 @@ public class UserDaoImpl implements UserDao {
     private final static RowMapper<Follow> FOLLOW_ROW_MAPPER = ((resultSet, i) -> new Follow(resultSet.getLong("userId"), resultSet.getLong("following")));
 
     private final static RowMapper<Role> ROLE_ROW_MAPPER = (((resultSet, i) -> new Role(resultSet.getString("roleName"))));
+
+    private final static RowMapper<FollowerFollowingCount> FOLLOWER_FOLLOWING_COUNT_ROW_MAPPER = (((resultSet, i) -> new FollowerFollowingCount(resultSet.getLong("follower_count"), resultSet.getLong("following_count"))));
+
     @Autowired
     public UserDaoImpl(final DataSource ds) {
         this.jdbcTemplate = new JdbcTemplate(ds);
@@ -93,6 +96,15 @@ public class UserDaoImpl implements UserDao {
                 "WHERE userId = ?",
                 ROW_MAPPER,
                 id);
+    }
+
+    @Override
+    public FollowerFollowingCount getFollowerFollowingCount(final long id) {
+        return jdbcTemplate.query("SELECT count(*) as following_count, " +
+                        "(SELECT count(*) FROM followers WHERE following = ?) as follower_count " +
+                        "FROM followers WHERE userid = ?",
+                FOLLOWER_FOLLOWING_COUNT_ROW_MAPPER,
+                id, id).get(0);
     }
 
     @Override
