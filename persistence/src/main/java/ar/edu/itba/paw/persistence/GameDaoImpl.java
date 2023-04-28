@@ -17,6 +17,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.sql.Array;
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.*;
@@ -96,7 +97,7 @@ public class GameDaoImpl implements GameDao {
         args.put("developer",developer);
         args.put("publisher",publisher);
         args.put("imageUrl",imageUrl);
-        args.put("publishDate", new Timestamp(publishDate.toEpochDay()));
+        args.put("publishDate", Timestamp.valueOf(publishDate.atStartOfDay()));
 
         final Number id = jdbcInsertGames.executeAndReturnKey(args);
 

@@ -18,6 +18,13 @@
                     <c:if test="${loggedUser != null}">
                         <li><a href="<c:url value="/profile/${loggedUser.id}"/>" class="${param.selected == "profile" ? "chosen-tab" : "" }"><span><spring:message code="navbar.profile"/></span></a></li>
                         <li><span><spring:message code="navbar.welcome" arguments="${loggedUser.username}"/></span></li>
+                        <c:if test="${isModerator}">
+                            <li>
+                                <a href="<c:url value="/game/submit" />" class="${param.selected == "gameSubmit" ? "chosen-tab": ""}">
+                                    <spring:message code="navbar.submitgame" />
+                                </a>
+                            </li>
+                        </c:if>
                         <li><a href="<c:url value="/logout"/>"><span><spring:message code="navbar.logout"/></span></a></li>
                     </c:if>
                     <c:if test="${loggedUser == null}">

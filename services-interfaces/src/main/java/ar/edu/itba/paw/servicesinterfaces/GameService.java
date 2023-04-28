@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.servicesinterfaces;
 
 import ar.edu.itba.paw.dtos.Filter;
+import ar.edu.itba.paw.dtos.SubmitGameDTO;
 import ar.edu.itba.paw.exceptions.ObjectNotFoundException;
 import ar.edu.itba.paw.models.Game;
 import ar.edu.itba.paw.models.Paginated;
@@ -15,6 +16,8 @@ import java.util.Optional;
 public interface GameService {
     Game createGame(String name, String description,String developer, String publisher, String imageUrl, List<Integer> genres,
                     LocalDate publishedDate);
+
+    Game createGame(SubmitGameDTO gameDTO);
 
     Optional<Game> getGameById(Long id);
 

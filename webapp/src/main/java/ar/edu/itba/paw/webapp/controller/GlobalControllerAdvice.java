@@ -6,6 +6,7 @@ import ar.edu.itba.paw.webapp.auth.AuthenticationHelper;
 import ar.edu.itba.paw.webapp.auth.PawAuthUserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -24,5 +25,10 @@ public class GlobalControllerAdvice {
     @ModelAttribute("loggedUser")
     public User loggedUser() {
         return AuthenticationHelper.getLoggedUser(us);
+    }
+
+    @ModelAttribute("isModerator")
+    public boolean isModerator() {
+        return AuthenticationHelper.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_MODERATOR"));
     }
 }

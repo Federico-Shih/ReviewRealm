@@ -22,7 +22,6 @@ import java.util.Optional;
 
 @Service
 public class ReviewServiceImpl implements ReviewService {
-
     private final ReviewDao reviewDao;
     private final UserService userService;
     private final GameService gameService;

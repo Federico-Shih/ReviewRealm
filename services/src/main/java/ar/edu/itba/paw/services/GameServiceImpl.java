@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.dtos.Filter;
+import ar.edu.itba.paw.dtos.SubmitGameDTO;
 import ar.edu.itba.paw.enums.Difficulty;
 import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.enums.Platform;
@@ -8,6 +9,7 @@ import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.persistenceinterfaces.GameDao;
 import ar.edu.itba.paw.servicesinterfaces.GameService;
 import ar.edu.itba.paw.servicesinterfaces.GenreService;
+import ar.edu.itba.paw.servicesinterfaces.ImageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,12 +19,16 @@ import java.util.*;
 @Service
 public class GameServiceImpl implements GameService {
 
+    private static final String IMAGE_PREFIX = "/images";
     private final GameDao gameDao;
     private final GenreService genreServ;
+    private final ImageService imgService;
+
     @Autowired
-    public GameServiceImpl(GameDao gameDao,GenreService genreServ) {
+    public GameServiceImpl(GameDao gameDao, GenreService genreServ, ImageService imgService) {
         this.gameDao = gameDao;
         this.genreServ = genreServ;
+        this.imgService = imgService;
     }
 
     @Override
@@ -31,13 +37,25 @@ public class GameServiceImpl implements GameService {
         Optional<Genre> g;
         for (Integer c : genres) {
              g = genreServ.getGenreById(c);
-             if(g.isPresent()){
-                 genreList.add(g.get());
-             }else{
-                 //TODO ver que hacemos aca
-             }
+            g.ifPresent(genreList::add);
         }
         return gameDao.create(name,description,developer,publisher,imageUrl, genreList, publishedDate);
+    }
+
+    @Override
+    public Game createGame(SubmitGameDTO gameDTO) {
+        Image img = imgService.uploadImage(gameDTO.getImageData(), gameDTO.getMediatype());
+        if (img == null) {
+            // TODO error
+            throw new RuntimeException("Unable to create image");
+        }
+        return createGame(gameDTO.getName(),
+                gameDTO.getDescription(),
+                gameDTO.getDeveloper(),
+                gameDTO.getPublisher(),
+                IMAGE_PREFIX + "/" + img.getId(),
+                gameDTO.getGenres(),
+                LocalDate.now());
     }
 
     @Override

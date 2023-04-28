@@ -1,0 +1,130 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ page contentType="text/html;charset=UTF-8" %>
+<%@ page pageEncoding="UTF-8" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<html>
+<head>
+    <title><spring:message code="game.submit.title" /></title> <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" type="text/css" href="<c:url value="/css/materialize.min.css" />" media="screen,projection"/>
+    <link rel="stylesheet" href="<c:url value="/css/main.css" />">
+    <!-- Compiled and minified JavaScript -->
+    <script src="<c:url value="/js/materialize.min.js" />"></script>
+    <link rel="stylesheet" type="text/css" href="<c:url value="/css/game-submit.css" />" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="shortcut icon" type="image/png" href="<c:url value="/static/review_realm_logo_white_32px.png" />">
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var elems = document.querySelectorAll('.collapsible');
+            var instances = M.Collapsible.init(elems, {});
+
+            var checkboxes = document.querySelectorAll('.checkbox');
+            var map = {};
+            checkboxes.forEach((element) => {
+               element.addEventListener('input', (value) => {
+                   map[element.id] = value.target.value;
+                   console.log(value.target.value);
+               })
+            });
+        });
+    </script>
+</head>
+<!-- general variables
+<%--<spring:message code="reviewForm.title.placeholder" var="titlePlaceholder"/>--%>
+<%--<spring:message code="reviewForm.content.placeholder" var="contentPlaceholder"/>--%>
+<%--<spring:message code="review.author.generic" var="authorPlaceholder"/>--%>
+<%--<c:url value="/game/${game.id}" var="gameUrl" />--%>
+-->
+<body>
+<jsp:include page="/WEB-INF/jsp/static-components/navbar.jsp">
+    <jsp:param name="selected" value="gameSubmit"/>
+</jsp:include>
+
+<div class="container">
+    <form:form modelAttribute="gameForm" enctype="multipart/form-data" method="post">
+        <div class="card form-text">
+            <div class="card-content">
+                <div class="card-title">
+                    <spring:message code="game.submit.title" />
+                </div>
+                <div class="row">
+                    <div class="input-field col s12">
+                        <spring:message code="game.submit.placeholder.title" var="placeholderTitle" />
+                        <form:input path="name" id="name" cssClass="white-text" placeholder="${placeholderTitle}" />
+                        <form:errors path="name" cssClass="error" element="p" />
+                        <form:label for="name" path="name">
+                            <spring:message code="game.submit.form.title" />
+                        </form:label>
+                    </div>
+                    <div class="input-field col s12">
+                        <spring:message code="game.submit.placeholder.description" var="placeholderDesc" />
+                        <form:input path="description" id="desc" cssClass="white-text" placeholder="${placeholderDesc}" />
+                        <form:errors path="description" cssClass="error" element="p" />
+                        <form:label for="desc" path="description">
+                            <spring:message code="game.submit.form.description" />
+                        </form:label>
+                    </div>
+                    <div class="input-field col s6">
+                        <spring:message code="game.submit.placeholder.developer" var="placeholderDev" />
+                        <form:input path="developer" id="dev" cssClass="white-text" placeholder="${placeholderDev}" />
+                        <form:errors path="developer" cssClass="error" element="p" />
+                        <form:label for="dev" path="developer">
+                            <spring:message code="game.submit.form.developer" />
+                        </form:label>
+                    </div>
+                    <div class="input-field col s6">
+                        <spring:message code="game.submit.placeholder.publisher" var="placeholderPub" />
+                        <form:input path="publisher" id="pub" cssClass="white-text" placeholder="${placeholderPub}" />
+                        <form:errors path="publisher" cssClass="error" element="p" />
+                        <form:label for="pub" path="publisher">
+                            <spring:message code="game.submit.form.publisher" />
+                        </form:label>
+                    </div>
+                    <div class="input-field file-field col s12">
+                        <div class="btn" type="">
+                            <span><spring:message code="game.submit.form.image" /></span>
+                            <input type="file" name="image" alt="image" accept="image/gif, image/png, image/jpeg" />
+                        </div>
+                        <div class="file-path-wrapper">
+                            <spring:message code="game.submit.placeholder.image" var="placeholderImage" />
+                            <input
+                                    class="file-path validate white-text"
+                                    type="text"
+                                    placeholder="${placeholderImage}"
+                            />
+                        </div>
+                        <form:errors path="image" cssClass="error" element="p" />
+                    </div>
+                    <div class="input-field col s12">
+                        <ul class="collapsible white-text">
+                            <li>
+                                <div class="collapsible-header collapsible-btn">
+                                    <i class="material-icons">style</i>
+                                    <spring:message code="game.submit.form.genres" />
+                                </div>
+                                <div class="collapsible-body row" style="margin-left: 0; margin-right: 0">
+                                    <c:forEach items="${genres}" var="genre">
+                                        <span class="col s3">
+                                            <label>
+                                                <input name="genres" id="${genre.id}" type="checkbox" value="${genre.id}" class="filled-in checkbox" />
+                                                <span><spring:message code="${genre.name}" /></span>
+                                            </label>
+                                        </span>
+                                    </c:forEach>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="card-action">
+                <button class="btn" type="submit">
+                    <spring:message code="game.submit.create" />
+                </button>
+            </div>
+        </div>
+    </form:form>
+</div>
+</body>
+</html>

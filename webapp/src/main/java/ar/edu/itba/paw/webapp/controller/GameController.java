@@ -5,18 +5,20 @@ import ar.edu.itba.paw.dtos.GameOrderCriteria;
 import ar.edu.itba.paw.dtos.OrderDirection;
 import ar.edu.itba.paw.dtos.ReviewOrderCriteria;
 import ar.edu.itba.paw.enums.Genre;
+import ar.edu.itba.paw.forms.SubmitGameForm;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.servicesinterfaces.GameService;
 import ar.edu.itba.paw.servicesinterfaces.GenreService;
 import org.javatuples.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.validation.Valid;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -98,4 +100,24 @@ public class GameController extends PaginatedController implements QueryControll
         return mav;
     }
 
+    @RequestMapping(value = "/game/submit", method = RequestMethod.GET)
+    public ModelAndView createGameForm(@ModelAttribute("gameForm") SubmitGameForm gameForm) {
+        ModelAndView mav = new ModelAndView("games/submit-game");
+        mav.addObject("genres", Genre.values());
+        return mav;
+    }
+
+    @RequestMapping(value = "/game/submit", method = RequestMethod.POST)
+    public ModelAndView createGame(@Valid() @ModelAttribute("gameForm") SubmitGameForm gameForm, final BindingResult errors) {
+        if (errors.hasErrors()) {
+            return createGameForm(gameForm);
+        }
+        try {
+            Game game = gs.createGame(gameForm.toSubmitDTO());
+            return new ModelAndView("redirect:/game/" + game.getId());
+        } catch (RuntimeException | IOException e) {
+            errors.addError(new ObjectError("image", "game.submit.errors.failedimg"));
+        }
+        return createGameForm(gameForm);
+    }
 }
