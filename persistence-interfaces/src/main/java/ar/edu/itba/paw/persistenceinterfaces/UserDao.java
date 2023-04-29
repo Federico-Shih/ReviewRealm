@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.persistenceinterfaces;
 
+import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.models.Follow;
 import ar.edu.itba.paw.models.FollowerFollowingCount;
 import ar.edu.itba.paw.models.Role;
@@ -28,4 +29,8 @@ public interface UserDao {
     boolean follows(final long userId, final long id);
 
     List<Role> getRoles(final long id);
+
+    List<Integer> getPreferencesById(long userId);
+
+    void setPreferences(List<Integer> genres, long userId);
 }

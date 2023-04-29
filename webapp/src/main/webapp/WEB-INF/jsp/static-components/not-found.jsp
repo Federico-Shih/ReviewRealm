@@ -12,17 +12,21 @@
 </head>
 <body>
 <jsp:include page="navbar.jsp"/>
-    <h4><spring:message code="error404.notfound"/></h4>
-    <div class="middle-column">
-        <div>
-            <h5><spring:message code="error404.wasteland"/></h5>
-        </div>
-        <div>
-            <h5><spring:message code="error404.solution"/></h5>
-        </div>
+<div class="row">
+    <div class="col s12 center">
+        <h4><spring:message code="error404.notfound"/></h4>
+    </div>
+    <div class="col s12 center">
+        <h5><spring:message code="error404.wasteland"/></h5>
+    </div>
+    <div class="col s12 center">
+        <h5><spring:message code="error404.solution"/></h5>
+    </div>
+    <div class="col s12 center">
         <a href="<c:url value="/"/>">
             <img src="<c:url value="/static/gobackportal.png"/>" alt='<spring:message code="error404.redportal"/>'/>
         </a>
     </div>
+</div>
 </body>
 </html>

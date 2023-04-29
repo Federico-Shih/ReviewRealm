@@ -35,6 +35,8 @@ public class UserDaoImpl implements UserDao {
 
     private final static RowMapper<FollowerFollowingCount> FOLLOWER_FOLLOWING_COUNT_ROW_MAPPER = (((resultSet, i) -> new FollowerFollowingCount(resultSet.getLong("follower_count"), resultSet.getLong("following_count"))));
 
+    private final static RowMapper<Integer> GENRE_ROW_MAPPER = ((resultSet, i) -> resultSet.getInt("genreId"));
+
     @Autowired
     public UserDaoImpl(final DataSource ds) {
         this.jdbcTemplate = new JdbcTemplate(ds);
@@ -134,6 +136,20 @@ public class UserDaoImpl implements UserDao {
     @Override
     public void changeUsername(String email, String username) {
         jdbcTemplate.update("UPDATE users SET username = ? WHERE email = ?", username, email);
+    }
+
+    @Override
+    public List<Integer> getPreferencesById(long userId){
+        return jdbcTemplate.query("SELECT genreId FROM genreforusers WHERE userId = ?", GENRE_ROW_MAPPER, userId);
+    }
+
+    @Override
+    public void setPreferences(List<Integer> genres, long userId) {
+        jdbcTemplate.update("DELETE FROM genreforusers WHERE userid = ?",userId);
+        // Si tuvieramos muchos géneros a la vez (10 o más), deberíamos utilizar batchUpdate
+        for(Integer genId : genres) {
+            jdbcTemplate.update("INSERT INTO genreforusers(genreid, userid) VALUES (?,?)", genId, userId);
+        }
     }
 
 }

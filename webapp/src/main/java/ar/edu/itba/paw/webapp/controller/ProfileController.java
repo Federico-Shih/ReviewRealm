@@ -2,18 +2,21 @@ package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.exceptions.UserNotFoundException;
 import ar.edu.itba.paw.models.FollowerFollowingCount;
+import ar.edu.itba.paw.enums.Genre;
+import ar.edu.itba.paw.forms.EditProfileForm;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.servicesinterfaces.GameService;
+import ar.edu.itba.paw.servicesinterfaces.GenreService;
 import ar.edu.itba.paw.servicesinterfaces.ReviewService;
 import ar.edu.itba.paw.servicesinterfaces.UserService;
 import ar.edu.itba.paw.webapp.auth.AuthenticationHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -25,11 +28,15 @@ public class ProfileController {
     private final ReviewService reviewService;
     private final GameService gameService;
 
+    private final GenreService genreService;
+
     @Autowired
-    public ProfileController(UserService userService, ReviewService reviewService, GameService gameService){
+    public ProfileController(UserService userService, ReviewService reviewService,
+                             GameService gameService, GenreService genreService){
         this.userService = userService;
         this.reviewService = reviewService;
         this.gameService = gameService;
+        this.genreService = genreService;
     }
 
     @RequestMapping(value = "/profile/{id:\\d+}", method = RequestMethod.GET)
@@ -121,4 +128,32 @@ public class ProfileController {
         }
         return new ModelAndView(String.format("redirect:/profile/%d", userId));
     }
+    @RequestMapping(value = "/profile/edit", method= RequestMethod.GET)
+    public ModelAndView editProfile(@Valid @ModelAttribute("editProfileForm") final EditProfileForm form){
+        long userId = AuthenticationHelper.getLoggedUser(userService).getId();
+        final ModelAndView mav = new ModelAndView("profile/edit-profile");
+        Optional<User> user = userService.getUserById(userId);
+        if(!user.isPresent())
+        {
+            return new ModelAndView("static-components/not-found");
+        }
+        mav.addObject("games", gameService.getFavoriteGamesFromUser(userId));
+        mav.addObject("profile",user.get());
+        mav.addObject("availableGenres", genreService.getAllGenres());
+        return mav;
+    }
+
+    @RequestMapping(value="/profile/edit/submit", method = RequestMethod.POST)
+    public ModelAndView submitEditProfile(@Valid @ModelAttribute("editProfileForm") final EditProfileForm form,
+                                          final BindingResult errors)
+    {
+        long userId = AuthenticationHelper.getLoggedUser(userService).getId();
+        if(errors.hasErrors()) {
+            return editProfile(form);
+        }
+        //llamados a métodos de service
+        userService.setPreferences(form.getGenres(), userId);
+        return profile(userId);
+    }
+
 }

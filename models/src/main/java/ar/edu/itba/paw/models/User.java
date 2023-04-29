@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.models;
 
+import ar.edu.itba.paw.enums.Genre;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;

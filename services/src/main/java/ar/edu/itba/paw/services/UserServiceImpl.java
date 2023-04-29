@@ -4,8 +4,10 @@ import ar.edu.itba.paw.exceptions.EmailAlreadyExistsException;
 import ar.edu.itba.paw.exceptions.UserNotFoundException;
 import ar.edu.itba.paw.exceptions.UsernameAlreadyExistsException;
 import ar.edu.itba.paw.models.Follow;
+import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.models.FollowerFollowingCount;
 import ar.edu.itba.paw.models.Role;
+import ar.edu.itba.paw.servicesinterfaces.GenreService;
 import ar.edu.itba.paw.servicesinterfaces.UserService;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.persistenceinterfaces.UserDao;
@@ -13,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,11 +24,13 @@ public class UserServiceImpl implements UserService {
 
     private final UserDao userDao;
     private final PasswordEncoder passwordEncoder;
+    private final GenreService genreService;
 
     @Autowired
-    public UserServiceImpl(UserDao userDao, PasswordEncoder passwordEncoder) {
+    public UserServiceImpl(UserDao userDao, PasswordEncoder passwordEncoder, GenreService genreService) {
         this.userDao = userDao;
         this.passwordEncoder = passwordEncoder;
+        this.genreService = genreService;
     }
 
     @Override
@@ -51,7 +56,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Optional<User> getUserById(Long id) {
-        return userDao.findById(id);
+        Optional<User> user = userDao.findById(id);
+        user.ifPresent(value -> value.setPreferences(getPreferences(id)));
+        return user;
     }
 
     @Override
@@ -98,5 +105,20 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<Role> getUserRoles(Long userId) {
         return userDao.getRoles(userId);
+    }
+
+    @Override
+    public List<Genre> getPreferences(long userId) {
+        List<Genre> list = new ArrayList<>();
+        Optional<Genre> genre;
+        for(Integer genreId : userDao.getPreferencesById(userId)){
+            genre = genreService.getGenreById(genreId);
+            genre.ifPresent(list::add);
+        }
+        return list;
+    }
+    @Override
+    public void setPreferences(List<Integer> genres, long userId){
+        userDao.setPreferences(genres, userId);
     }
 }

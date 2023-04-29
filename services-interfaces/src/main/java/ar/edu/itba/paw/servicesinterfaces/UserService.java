@@ -3,6 +3,7 @@ package ar.edu.itba.paw.servicesinterfaces;
 import ar.edu.itba.paw.exceptions.EmailAlreadyExistsException;
 import ar.edu.itba.paw.exceptions.UsernameAlreadyExistsException;
 import ar.edu.itba.paw.models.Follow;
+import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.models.FollowerFollowingCount;
 import ar.edu.itba.paw.models.Role;
 import ar.edu.itba.paw.models.User;
@@ -16,6 +17,9 @@ public interface UserService {
     Optional<User> getUserByUsername(String username);
     Optional<User> getUserById(Long id);
     void changeUserPassword(String email, String password);
+
+    List<Genre> getPreferences(long userId);
+    void setPreferences(List<Integer> genres, long userId);
 
     List<User> getFollowers(Long id);
     List<User> getFollowing(Long id);
