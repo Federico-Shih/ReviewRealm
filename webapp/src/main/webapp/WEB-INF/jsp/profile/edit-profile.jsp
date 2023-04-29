@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="<c:url value="/css/main.css" />">
     <link rel="stylesheet" href="<c:url value="/css/review.css" />">
     <link rel="stylesheet" href="<c:url value="/css/game.css" />"/>
+    <link rel="stylesheet" href="<c:url value="/css/profile.css" />"/>
     <script src="<c:url value="/js/materialize.min.js" />"></script>
     <title><spring:message code="edit.profile.title"/></title>
 </head>
@@ -17,7 +18,7 @@
 <body>
     <jsp:include page="../static-components/navbar.jsp"/>
     <form:form modelAttribute="editProfileForm" action="${applyChanges}" method="post">
-        <div class="row">
+        <div class="row container">
             <div class="col s12 center">
                 <h5><spring:message code="edit.profile.fav.genres"/></h5>
             </div>
@@ -37,7 +38,7 @@
             <div class="col s12 center">
                 <c:forEach items="${availableGenres}" var="genre"> <!--hacer sin form:-->
                     <label>
-                        <span class="col s2 center">
+                        <span class="col s4 m3 center margin-for-genres">
                             <input type="checkbox" id="${genre.id}" value="${genre.id}" name="genres"/>
                             <span class="chip-small"><spring:message code="${genre.name}"/></span>
                         </span>
