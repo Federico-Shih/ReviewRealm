@@ -29,6 +29,7 @@ public class GameDaoImpl implements GameDao {
 
     private final SimpleJdbcInsert jdbcInsertGenreForGames;
 
+    private final static String IMAGE_PREFIX = "/images/";
 
     @Autowired
     public GameDaoImpl(DataSource ds) {
@@ -44,7 +45,7 @@ public class GameDaoImpl implements GameDao {
             resultSet.getString("description"),
             resultSet.getString("developer"),
             resultSet.getString("publisher"),
-            resultSet.getString("imageUrl"),
+            IMAGE_PREFIX + resultSet.getString("imageid"),
             new ArrayList<>(),// despues manualmente tenes que formar los generos que tiene
             resultSet.getTimestamp("publishDate").toLocalDateTime().toLocalDate());
     private final static RowMapper  <Genre> GAME_GENRE_ROW_MAPPER = (resultSet, i) -> {
@@ -74,7 +75,7 @@ public class GameDaoImpl implements GameDao {
                         resultSet.getString("description"),
                         resultSet.getString("developer"),
                         resultSet.getString("publisher"),
-                        resultSet.getString("imageUrl"),
+                        IMAGE_PREFIX + resultSet.getString("imageid"),
                         new ArrayList<>(),
                         resultSet.getTimestamp("publishDate").toLocalDateTime().toLocalDate()
                 ),
@@ -90,13 +91,13 @@ public class GameDaoImpl implements GameDao {
 
 
     @Override
-    public Game create(String name,String description,String developer, String publisher, String imageUrl, List<Genre> genres, LocalDate publishDate) {
+    public Game create(String name,String description,String developer, String publisher, String imageid, List<Genre> genres, LocalDate publishDate) {
         Map<String,Object> args = new HashMap<>();
         args.put("name",name);
         args.put("description",description);
         args.put("developer",developer);
         args.put("publisher",publisher);
-        args.put("imageUrl",imageUrl);
+        args.put("imageid",imageid);
         args.put("publishDate", Timestamp.valueOf(publishDate.atStartOfDay()));
 
         final Number id = jdbcInsertGames.executeAndReturnKey(args);
@@ -109,7 +110,7 @@ public class GameDaoImpl implements GameDao {
 
             jdbcInsertGenreForGames.execute(args);
         }
-        return new Game(id.longValue(),name,description,developer,publisher,imageUrl,genres,publishDate);
+        return new Game(id.longValue(),name,description,developer,publisher,IMAGE_PREFIX + imageid,genres,publishDate);
     }
 
     @Override

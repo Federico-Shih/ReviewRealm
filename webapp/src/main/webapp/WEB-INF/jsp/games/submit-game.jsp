@@ -59,7 +59,7 @@
                     </div>
                     <div class="input-field col s12">
                         <spring:message code="game.submit.placeholder.description" var="placeholderDesc" />
-                        <form:input path="description" id="desc" cssClass="white-text" placeholder="${placeholderDesc}" />
+                        <form:textarea path="description" id="desc" cssClass="white-text materialize-textarea input-general review-content-input" placeholder="${placeholderDesc}" />
                         <form:errors path="description" cssClass="error" element="p" />
                         <form:label for="desc" path="description">
                             <spring:message code="game.submit.form.description" />

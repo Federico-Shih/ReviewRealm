@@ -32,14 +32,14 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public Game createGame(String name,String description ,String developer, String publisher, String imageUrl, List<Integer> genres, LocalDate publishedDate) {
+    public Game createGame(String name, String description , String developer, String publisher, String imageid, List<Integer> genres, LocalDate publishedDate) {
         List<Genre> genreList = new ArrayList<>();
         Optional<Genre> g;
         for (Integer c : genres) {
              g = genreServ.getGenreById(c);
             g.ifPresent(genreList::add);
         }
-        return gameDao.create(name,description,developer,publisher,imageUrl, genreList, publishedDate);
+        return gameDao.create(name,description,developer,publisher, imageid, genreList, publishedDate);
     }
 
     @Override
@@ -53,7 +53,7 @@ public class GameServiceImpl implements GameService {
                 gameDTO.getDescription(),
                 gameDTO.getDeveloper(),
                 gameDTO.getPublisher(),
-                IMAGE_PREFIX + "/" + img.getId(),
+                img.getId(),
                 gameDTO.getGenres(),
                 LocalDate.now());
     }

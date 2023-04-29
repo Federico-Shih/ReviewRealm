@@ -96,7 +96,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     public Flyway flyway() {
         return Flyway.configure()
                 .dataSource(dataSource())
-                .locations("classpath:/db.migration")
+                .locations("classpath:db/migration")
                 .baselineOnMigrate(true)
                 .load();
     }

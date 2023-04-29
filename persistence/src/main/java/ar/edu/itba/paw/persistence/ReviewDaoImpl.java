@@ -27,6 +27,7 @@ public class ReviewDaoImpl implements ReviewDao {
     private final SimpleJdbcInsert jdbcInsertReview;
     private final GameDao gameDao;
 
+    private static final String IMAGE_PREFIX = "/images/";
     private final static RowMapper<Review> REVIEW_ROW_MAPPER = ((resultSet, i) -> {
         String difficulty = resultSet.getString("difficulty");
         String platform = resultSet.getString("platform");
@@ -48,7 +49,7 @@ public class ReviewDaoImpl implements ReviewDao {
                         resultSet.getString("description"),
                         resultSet.getString("developer"),
                         resultSet.getString("publisher"),
-                        resultSet.getString("imageUrl"),
+                        IMAGE_PREFIX + resultSet.getString("imageid"),
                         new ArrayList<>(),
                         resultSet.getTimestamp("publishDate").toLocalDateTime().toLocalDate()
                 ),

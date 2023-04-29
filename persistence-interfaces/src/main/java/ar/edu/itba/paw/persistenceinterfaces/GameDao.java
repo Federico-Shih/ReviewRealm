@@ -15,7 +15,7 @@ import java.util.Optional;
 
 public interface GameDao {
 
-    Game create(String name,String description,String developer, String publisher, String imageUrl, List<Genre> genres, LocalDate publishDate);
+    Game create(String name,String description,String developer, String publisher, String imageid, List<Genre> genres, LocalDate publishDate);
 
     Optional<Game> getById(Long id) throws ObjectNotFoundException;
 
