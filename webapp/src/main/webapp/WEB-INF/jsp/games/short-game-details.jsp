@@ -16,7 +16,8 @@
 <div class="card card-background">
     <div class="card-content">
         <div>
-            <img src="${game.imageUrl}" alt="game-image" class="game-image"/>
+            <c:url value="${game.imageUrl}" var="imgUrl"/>
+            <img src="${imgUrl}" alt="game-image" class="game-image"/>
         </div>
         <a href="${gameUrl}">
             <h5><c:out value="${game.name}"/></h5>

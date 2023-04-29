@@ -96,7 +96,8 @@
             <div class="col push-s1 s9 m5">
                 <div class="game-card-for-list z-depth-2">
                     <a href="<c:url value="/game/${gameData.game.id}"/>">
-                        <img class="game-img" src="<c:out value="${gameData.game.imageUrl}"/>"
+                        <c:url value="${gameData.game.imageUrl}" var="imgUrl" />
+                        <img class="game-img" src="${imgUrl}"
                              alt="<c:out value="${gameData.game.name}"/>">
                     </a>
                     <div class="game-card-details">

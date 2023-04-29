@@ -84,7 +84,8 @@
                 <a class="profile-favorite-game" href="<c:url value="/game/${game.id}"/> ">
                     <div class="row">
                         <div class="game-card-for-list medium z-depth-4">
-                            <img class="game-img" src="<c:out value="${game.imageUrl}"/>"
+                            <c:url value="${game.imageUrl}" var="imgUrl" />
+                            <img class="game-img" src="${imgUrl}"
                                  alt="<c:out value="${game.name}"/>">
                             <div class="game-card-title"><c:out value="${game.name}"/></div>
                             <div class="game-genres">

@@ -186,7 +186,8 @@
                         <a href="?gameId=${gameIterator.id}" class="no-a-decoration">
                             <div class="card-content">
                                 <div>
-                                    <img src="${gameIterator.imageUrl}" alt="game-image" class="game-image"/>
+                                    <c:url value="${gameIterator.imageUrl}" var="imgUrl" />
+                                    <img src="${imgUrl}" alt="game-image" class="game-image"/>
                                 </div>
                                 <h5><c:out value="${gameIterator.name}"/></h5>
                                 <div>

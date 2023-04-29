@@ -32,7 +32,8 @@
         <div class="divider"></div>
     </div>
     <div class="game-card">
-        <img class="game-img" src="${game.imageUrl}" alt="Game image">
+        <c:url value="${game.imageUrl}" var="imageUrl" />
+        <img class="game-img" src="${imageUrl}" alt="Game image">
         <span class="game-card-text">
             <spring:message code="publishing.date" arguments='${game.publishDate}'/>
         </span>
