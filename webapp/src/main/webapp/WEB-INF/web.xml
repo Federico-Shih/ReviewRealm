@@ -23,7 +23,8 @@ http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
     <param-name>contextConfigLocation</param-name>
     <param-value>
       ar.edu.itba.paw.webapp.config.WebConfig,
-      ar.edu.itba.paw.webapp.config.WebAuthConfig
+      ar.edu.itba.paw.webapp.config.WebAuthConfig,
+      ar.edu.itba.paw.webapp.config.MailConfig,
     </param-value>
   </context-param>
   <listener>

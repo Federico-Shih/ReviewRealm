@@ -3,23 +3,25 @@ package ar.edu.itba.paw.services;
 import ar.edu.itba.paw.dtos.Filter;
 import ar.edu.itba.paw.enums.Difficulty;
 import ar.edu.itba.paw.enums.Platform;
-import ar.edu.itba.paw.exceptions.ObjectNotFoundException;
 import ar.edu.itba.paw.models.Game;
 import ar.edu.itba.paw.models.Paginated;
 import ar.edu.itba.paw.models.Review;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.persistenceinterfaces.ReviewDao;
 import ar.edu.itba.paw.servicesinterfaces.GameService;
+import ar.edu.itba.paw.servicesinterfaces.MailingService;
 import ar.edu.itba.paw.servicesinterfaces.ReviewService;
 import ar.edu.itba.paw.servicesinterfaces.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
-import javax.naming.AuthenticationException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -29,12 +31,17 @@ public class ReviewServiceImpl implements ReviewService {
     private final ReviewDao reviewDao;
     private final UserService userService;
     private final GameService gameService;
+    private final MailingService mailingService;
 
     @Autowired
-    public ReviewServiceImpl(ReviewDao reviewDao, UserService userService, GameService gameService) {
+    private MessageSource messageSource;
+
+    @Autowired
+    public ReviewServiceImpl(ReviewDao reviewDao, UserService userService, GameService gameService, MailingService mailingService) {
         this.reviewDao = reviewDao;
         this.userService = userService;
         this.gameService = gameService;
+        this.mailingService = mailingService;
     }
 
 
@@ -51,6 +58,22 @@ public class ReviewServiceImpl implements ReviewService {
                                Boolean replayable) {
         Review review = reviewDao.create(title, content, rating, reviewedGame, author, difficulty, gameLength, platform, completed, replayable);
         gameService.addNewReviewToGame(reviewedGame.getId(), rating);
+
+        List<User> authorFollowers = userService.getFollowers(author.getId());
+        Map<String, Object> templateVariables = new HashMap<>();
+        templateVariables.put("author", author.getUsername());
+        templateVariables.put("game", reviewedGame.getName());
+        templateVariables.put("reviewId", review.getId());
+        templateVariables.put("webBaseUrl", "http://localhost:8080/paw-2023a-04");
+
+        Object[] stringArgs = {author.getUsername()};
+        String subject = messageSource.getMessage("email.newreview.subject",
+                stringArgs, LocaleContextHolder.getLocale());
+
+        for (User follower : authorFollowers) {
+            mailingService.sendEmail(follower.getEmail(), subject, "newreview", templateVariables);
+        }
+
         return review;
     }
 

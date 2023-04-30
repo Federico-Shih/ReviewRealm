@@ -1,9 +1,9 @@
 package db.migration;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.flywaydb.core.api.migration.BaseJavaMigration;
 import org.flywaydb.core.api.migration.Context;
-import sun.misc.IOUtils;
 
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -23,7 +23,7 @@ public class V20230427221610__SaveImages extends BaseJavaMigration {
                     if (imageUrl.contains("https") || imageUrl.contains("http")) {
                         URL url = new URL(imageUrl);
                         InputStream is = url.openStream();
-                        byte[] resultArray = IOUtils.readAllBytes(is);
+                        byte[] resultArray = IOUtils.toByteArray(is);
                         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                         conn.setRequestMethod("HEAD");
                         conn.connect();
