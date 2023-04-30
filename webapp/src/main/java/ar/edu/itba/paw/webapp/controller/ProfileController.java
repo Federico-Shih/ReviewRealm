@@ -10,6 +10,8 @@ import ar.edu.itba.paw.servicesinterfaces.GenreService;
 import ar.edu.itba.paw.servicesinterfaces.ReviewService;
 import ar.edu.itba.paw.servicesinterfaces.UserService;
 import ar.edu.itba.paw.webapp.auth.AuthenticationHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -23,7 +25,7 @@ import java.util.stream.Collectors;
 
 @Controller
 public class ProfileController {
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(ProfileController.class);
     private final UserService userService;
     private final ReviewService reviewService;
     private final GameService gameService;
@@ -107,11 +109,13 @@ public class ProfileController {
     public ModelAndView followUser(@PathVariable(value = "id") long userId)
     {
         User loggedUser = AuthenticationHelper.getLoggedUser(userService);
-        // todo - que hacer cuando falla
         try {
             userService.followUserById(loggedUser.getId(), userId);
         } catch (UserNotFoundException err) {
+            LOGGER.error("Following unexistant user: {}", userId);
             return profile(userId);
+        } catch (RuntimeException err) {
+            LOGGER.error("Unexpected error: {}", err.getMessage());
         }
         return new ModelAndView(String.format("redirect:/profile/%d", userId));
     }
@@ -124,7 +128,10 @@ public class ProfileController {
         try {
             userService.unfollowUserById(loggedUser.getId(), userId);
         } catch (UserNotFoundException err) {
+            LOGGER.error("Unfollowing unexistant user: {}", userId);
             return profile(userId);
+        } catch (RuntimeException err) {
+            LOGGER.error("Unexpected error: {}", err.getMessage());
         }
         return new ModelAndView(String.format("redirect:/profile/%d", userId));
     }
@@ -152,7 +159,12 @@ public class ProfileController {
             return editProfile(form);
         }
         //llamados a métodos de service
-        userService.setPreferences(form.getGenres(), userId);
+        try {
+            userService.setPreferences(form.getGenres(), userId);
+        } catch (RuntimeException err) {
+            LOGGER.error("Unexpected error: {}", err.getMessage());
+            return editProfile(form);
+        }
         return profile(userId);
     }
 

@@ -3,13 +3,14 @@ package ar.edu.itba.paw.webapp.controller;
 import ar.edu.itba.paw.dtos.CalculatedFilter;
 import ar.edu.itba.paw.dtos.GameOrderCriteria;
 import ar.edu.itba.paw.dtos.OrderDirection;
-import ar.edu.itba.paw.dtos.ReviewOrderCriteria;
 import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.forms.SubmitGameForm;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.servicesinterfaces.GameService;
 import ar.edu.itba.paw.servicesinterfaces.GenreService;
 import org.javatuples.Pair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -26,6 +27,7 @@ import java.util.stream.Collectors;
 
 @Controller
 public class GameController extends PaginatedController implements QueryController {
+    private static final Logger LOGGER = LoggerFactory.getLogger(GameController.class);
 
     private GenreService grs;
     private GameService gs;
@@ -115,8 +117,11 @@ public class GameController extends PaginatedController implements QueryControll
         try {
             Game game = gs.createGame(gameForm.toSubmitDTO());
             return new ModelAndView("redirect:/game/" + game.getId());
-        } catch (RuntimeException | IOException e) {
+        } catch (IOException e) {
+            LOGGER.error("Failed to create image: {}", e.getMessage());
             errors.addError(new ObjectError("image", "game.submit.errors.failedimg"));
+        } catch (RuntimeException e) {
+            LOGGER.error("Unknown error: {}", e.getMessage());
         }
         return createGameForm(gameForm);
     }

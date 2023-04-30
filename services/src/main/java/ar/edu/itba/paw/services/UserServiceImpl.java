@@ -11,6 +11,8 @@ import ar.edu.itba.paw.servicesinterfaces.GenreService;
 import ar.edu.itba.paw.servicesinterfaces.UserService;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.persistenceinterfaces.UserDao;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -21,7 +23,7 @@ import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
     private final UserDao userDao;
     private final PasswordEncoder passwordEncoder;
     private final GenreService genreService;
@@ -40,7 +42,7 @@ public class UserServiceImpl implements UserService {
 
         if(userDao.getByUsername(username).isPresent())
             throw new UsernameAlreadyExistsException();
-
+        LOGGER.info("Creating user: {}", email);
         return userDao.create(username, email, passwordEncoder.encode(password));
     }
 
@@ -63,6 +65,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void changeUserPassword(String email, String password) {
+        LOGGER.info("Changing password: {}", email);
         userDao.changePassword(email, passwordEncoder.encode(password));
     }
 

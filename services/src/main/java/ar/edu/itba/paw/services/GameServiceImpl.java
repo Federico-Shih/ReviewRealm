@@ -10,6 +10,8 @@ import ar.edu.itba.paw.persistenceinterfaces.GameDao;
 import ar.edu.itba.paw.servicesinterfaces.GameService;
 import ar.edu.itba.paw.servicesinterfaces.GenreService;
 import ar.edu.itba.paw.servicesinterfaces.ImageService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +20,7 @@ import java.util.*;
 
 @Service
 public class GameServiceImpl implements GameService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(GameServiceImpl.class);
 
     private static final String IMAGE_PREFIX = "/images";
     private final GameDao gameDao;
@@ -33,6 +36,7 @@ public class GameServiceImpl implements GameService {
 
     @Override
     public Game createGame(String name, String description , String developer, String publisher, String imageid, List<Integer> genres, LocalDate publishedDate) {
+        LOGGER.info("Creating game - name: {}, developer: {}", name, publisher);
         List<Genre> genreList = new ArrayList<>();
         Optional<Genre> g;
         for (Integer c : genres) {
@@ -46,8 +50,7 @@ public class GameServiceImpl implements GameService {
     public Game createGame(SubmitGameDTO gameDTO) {
         Image img = imgService.uploadImage(gameDTO.getImageData(), gameDTO.getMediatype());
         if (img == null) {
-            // TODO error
-            throw new RuntimeException("Unable to create image");
+            throw new RuntimeException("Error creating image");
         }
         return createGame(gameDTO.getName(),
                 gameDTO.getDescription(),

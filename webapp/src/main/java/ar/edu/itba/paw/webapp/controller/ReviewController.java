@@ -19,6 +19,8 @@ import ar.edu.itba.paw.webapp.exceptions.ResourceNotFoundException;
 import org.javatuples.Pair;
 import ar.edu.itba.paw.servicesinterfaces.UserService;
 import ar.edu.itba.paw.webapp.auth.AuthenticationHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -35,6 +37,7 @@ import java.util.stream.Collectors;
 
 @Controller
 public class ReviewController extends PaginatedController implements QueryController {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ReviewController.class);
     private final GameService gameService;
     private final ReviewService reviewService;
     private final GenreService genreService;
@@ -43,7 +46,6 @@ public class ReviewController extends PaginatedController implements QueryContro
     private static final int MAX_PAGES_PAGINATION = 6;
     private static final int PAGE_SIZE = 8;
     private static final int INITIAL_PAGE = 1;
-
     private static final int MAX_SEARCH_RESULTS = 5;
 
     @Autowired

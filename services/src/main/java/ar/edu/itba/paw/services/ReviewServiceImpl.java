@@ -12,6 +12,8 @@ import ar.edu.itba.paw.persistenceinterfaces.ReviewDao;
 import ar.edu.itba.paw.servicesinterfaces.GameService;
 import ar.edu.itba.paw.servicesinterfaces.ReviewService;
 import ar.edu.itba.paw.servicesinterfaces.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -22,6 +24,8 @@ import java.util.Optional;
 
 @Service
 public class ReviewServiceImpl implements ReviewService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ReviewServiceImpl.class);
     private final ReviewDao reviewDao;
     private final UserService userService;
     private final GameService gameService;
@@ -62,6 +66,7 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public boolean deleteReviewById(Long id) {
+        LOGGER.info("Deleting review: {}", id);
         Optional<Review> review = getReviewById(id);
         if(review.isPresent()){
             boolean op = reviewDao.deleteReview(id);
