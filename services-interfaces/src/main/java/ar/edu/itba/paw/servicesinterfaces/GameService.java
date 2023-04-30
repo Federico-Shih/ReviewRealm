@@ -2,12 +2,9 @@ package ar.edu.itba.paw.servicesinterfaces;
 
 import ar.edu.itba.paw.dtos.Filter;
 import ar.edu.itba.paw.dtos.SubmitGameDTO;
-import ar.edu.itba.paw.exceptions.ObjectNotFoundException;
 import ar.edu.itba.paw.models.Game;
 import ar.edu.itba.paw.models.Paginated;
-import ar.edu.itba.paw.models.Review;
 import ar.edu.itba.paw.models.GameReviewData;
-import ar.edu.itba.paw.models.GameData;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -21,7 +18,7 @@ public interface GameService {
 
     Optional<Game> getGameById(Long id);
 
-    Paginated<GameData> getAllGames(Integer page, Integer pageSize, Filter filter,String searchQuery);
+    Paginated<Game> getAllGames(Integer page, Integer pageSize, Filter filter,String searchQuery);
 
     Paginated<Game> getAllGamesShort(Integer page, Integer pageSize,String searchQuery);
 
@@ -30,4 +27,10 @@ public interface GameService {
     Double getAverageGameReviewRatingById(Long id);
 
     List<Game> getFavoriteGamesFromUser(long userId);
+
+    void addNewReviewToGame(Long gameId,Integer rating);
+
+    void deleteReviewFromGame(Long gameId,Integer rating);
+
+    void updateReviewFromGame(Long gameId,Integer oldRating,Integer newRating);
 }

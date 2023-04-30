@@ -45,7 +45,9 @@ public class ReviewServiceImpl implements ReviewService {
                                Platform platform,
                                Boolean completed,
                                Boolean replayable) {
-        return reviewDao.create(title, content, rating, reviewedGame, author, difficulty, gameLength, platform, completed, replayable);
+        Review review = reviewDao.create(title, content, rating, reviewedGame, author, difficulty, gameLength, platform, completed, replayable);
+        gameService.addNewReviewToGame(reviewedGame.getId(), rating);
+        return review;
     }
 
     @Override
@@ -60,7 +62,15 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public boolean deleteReviewById(Long id) {
-        return reviewDao.deleteReview(id);
+        Optional<Review> review = getReviewById(id);
+        if(review.isPresent()){
+            boolean op = reviewDao.deleteReview(id);
+            if(op){
+                gameService.deleteReviewFromGame(review.get().getReviewedGame().getId(), review.get().getRating());
+            }
+            return op;
+        }
+        return false;
     }
 
     @Override

@@ -71,12 +71,12 @@ public class GameController extends PaginatedController implements QueryControll
         List<Genre> allGenres = grs.getAllGenres();
         CalculatedFilter filters = new CalculatedFilter(genresFilter, new ArrayList<>(),null, GameOrderCriteria.fromValue(orderCriteria), OrderDirection.fromValue(orderDirection), allGenres);
 
-        Paginated<GameData> games = gs.getAllGames(page != null? page: INITIAL_PAGE,PAGE_SIZE,filters,search);
+        Paginated<Game> games = gs.getAllGames(page != null? page: INITIAL_PAGE,PAGE_SIZE,filters,search);
 
 
         super.paginate(mav,games);
 
-        mav.addObject("gamesData", games.getList());
+        mav.addObject("games", games.getList());
         mav.addObject("currentPage", page);
         mav.addObject("orderCriteria", GameOrderCriteria.values());
         mav.addObject("orderDirections", OrderDirection.values());

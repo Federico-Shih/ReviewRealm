@@ -64,7 +64,7 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public  Paginated<GameData> getAllGames(Integer page, Integer pageSize, Filter filter,String searchQuery)
+    public  Paginated<Game> getAllGames(Integer page, Integer pageSize, Filter filter,String searchQuery)
     {
         return gameDao.getAll(page,pageSize,filter,searchQuery);
     }
@@ -105,9 +105,24 @@ public class GameServiceImpl implements GameService {
             platformCount.remove(null);
             Optional<Map.Entry<Platform, Integer>> averagePlatform = platformCount.entrySet().stream().max(Comparator.comparingInt(Map.Entry::getValue));
             return new GameReviewData(reviews, (double) sumRating/  reviews.size(),(averageDiff.isPresent())? averageDiff.get().getKey() : null,(averagePlatform.isPresent())? averagePlatform.get().getKey() : null,
-                    sumHours / reviews.size(),(double) sumReplayability/ reviews.size(), (double) sumCompletability /reviews.size());
+                    sumHours / reviews.size(),(double) (sumReplayability/ reviews.size() )* 100, (double) (sumCompletability /reviews.size())*100);
         }
         return new GameReviewData(reviews,-1, null, null,-1,-1,-1);
+    }
+
+    @Override
+    public void addNewReviewToGame(Long gameId, Integer rating) {
+        gameDao.addNewReview(gameId, rating);
+    }
+
+    @Override
+    public void deleteReviewFromGame(Long gameId, Integer reviewRating) {
+        gameDao.deleteReview(gameId,reviewRating);
+    }
+
+    @Override
+    public void updateReviewFromGame(Long gameId, Integer oldRating, Integer newRating) {
+        gameDao.modifyReview(gameId, oldRating, newRating);
     }
 
     @Override

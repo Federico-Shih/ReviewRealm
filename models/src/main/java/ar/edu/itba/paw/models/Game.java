@@ -15,7 +15,11 @@ public class Game {
     private List<Genre> genres;
     private final LocalDate publishDate;
 
-    public Game(Long id, String name, String description, String developer, String publisher, String imageUrl, List<Genre> genres, LocalDate publishDate) {
+    private final Double averageRating;
+
+
+
+    public Game(Long id, String name, String description, String developer, String publisher, String imageUrl, List<Genre> genres, LocalDate publishDate, Double averageRating ) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -24,6 +28,7 @@ public class Game {
         this.imageUrl = imageUrl;
         this.genres = genres;
         this.publishDate = publishDate;
+        this.averageRating = averageRating;
     }
 
     public String getDescription() {
@@ -58,6 +63,9 @@ public class Game {
         return publishDate;
     }
 
+    public Double getAverageRating() {
+        return averageRating;
+    }
     public void setGenres(List<Genre> genres) {
         if(this.genres.isEmpty()){ // You can only change the list once as the game
             // starts out with an empty list once it is retrieved from the db

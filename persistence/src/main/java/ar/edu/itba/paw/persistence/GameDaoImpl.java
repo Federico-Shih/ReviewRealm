@@ -11,6 +11,7 @@ import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.persistenceinterfaces.GameDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCallback;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
@@ -47,7 +48,9 @@ public class GameDaoImpl implements GameDao {
             resultSet.getString("publisher"),
             IMAGE_PREFIX + resultSet.getString("imageid"),
             new ArrayList<>(),// despues manualmente tenes que formar los generos que tiene
-            resultSet.getTimestamp("publishDate").toLocalDateTime().toLocalDate());
+            resultSet.getTimestamp("publishDate").toLocalDateTime().toLocalDate(),
+                    (resultSet.getInt("reviewcount") != 0)?
+                            (double) resultSet.getInt("ratingsum")/resultSet.getInt("reviewcount"): 0d );
     private final static RowMapper  <Genre> GAME_GENRE_ROW_MAPPER = (resultSet, i) -> {
         Optional<Genre> genre = Genre.getById(resultSet.getInt("genreId"));
         if (!genre.isPresent()) throw new IllegalStateException();
@@ -77,7 +80,10 @@ public class GameDaoImpl implements GameDao {
                         resultSet.getString("publisher"),
                         IMAGE_PREFIX + resultSet.getString("imageid"),
                         new ArrayList<>(),
-                        resultSet.getTimestamp("publishDate").toLocalDateTime().toLocalDate()
+                        resultSet.getTimestamp("publishDate").toLocalDateTime().toLocalDate(),
+                        (resultSet.getInt("reviewcount") != 0)?
+                                (double) resultSet.getInt("ratingsum")/resultSet.getInt("reviewcount"): 0d
+
                 ),
                 difficulty != null ? Difficulty.valueOf(difficulty.toUpperCase()) : null,
                 resultSet.getDouble("gamelength"),
@@ -86,7 +92,6 @@ public class GameDaoImpl implements GameDao {
                 resultSet.getBoolean("replayability")
         );
     });
-    private final static RowMapper<Double> AVERAGE_REVIEW_RATING_ROW_MAPPER = (resultSet, i) -> resultSet.getDouble("average");
 
 
 
@@ -110,7 +115,7 @@ public class GameDaoImpl implements GameDao {
 
             jdbcInsertGenreForGames.execute(args);
         }
-        return new Game(id.longValue(),name,description,developer,publisher,IMAGE_PREFIX + imageid,genres,publishDate);
+        return new Game(id.longValue(),name,description,developer,publisher,IMAGE_PREFIX + imageid,genres,publishDate,0d);
     }
 
     @Override
@@ -132,8 +137,36 @@ public class GameDaoImpl implements GameDao {
 
     @Override
     public Double getAverageReviewRatingById(Long id) {
-        return jdbcTemplate.query("SELECT avg(rating) as average FROM reviews " +
-                "WHERE gameid = ? group by gameid", AVERAGE_REVIEW_RATING_ROW_MAPPER, id).stream().findFirst().orElse(0.0);
+        return jdbcTemplate.query("SELECT cast(g.ratingsum as real) / NULLIF(g.reviewcount,0) as average FROM games g WHERE id = ?",
+                (resultSet, i) -> resultSet.getDouble("average"), id).stream().findFirst().orElse(0.0);
+    }
+
+    @Override
+    public void addNewReview(Long gameId, Integer rating) {
+        jdbcTemplate.execute("UPDATE games SET ratingsum = ratingsum + ?, reviewcount = reviewcount+1  WHERE id = ?", (PreparedStatementCallback<Object>) ps -> {
+            ps.setInt(1, rating);
+            ps.setLong(2, gameId);
+            return ps.execute();
+        });
+    }
+
+    @Override
+    public void modifyReview(Long gameId, Integer oldRating, Integer newRating) {
+        jdbcTemplate.execute("UPDATE games SET ratingsum = ratingsum - ? + ? WHERE id = ?", (PreparedStatementCallback<Object>) ps -> {
+            ps.setInt(1, oldRating);
+            ps.setInt(2, newRating);
+            ps.setLong(3, gameId);
+            return ps.execute();
+        });
+    }
+
+    @Override
+    public void deleteReview(Long gameId, Integer rating) {
+        jdbcTemplate.execute("UPDATE games SET ratingsum = ratingsum - ?, reviewcount= reviewcount - 1 WHERE id = ?", (PreparedStatementCallback<Object>) ps -> {
+            ps.setInt(1, rating);
+            ps.setLong(2, gameId);
+            return ps.execute();
+        });
     }
 
     @Override
@@ -164,7 +197,7 @@ public class GameDaoImpl implements GameDao {
     }
 
     @Override
-    public Paginated<GameData> getAll(int page, Integer pageSize, Filter filter, String searchQuery) {
+    public Paginated<Game> getAll(int page, Integer pageSize, Filter filter, String searchQuery) {
         Long totalGames = getTotalAmountOfGames(filter);
         int totalPages = (int) Math.ceil(totalGames/pageSize.doubleValue());
 
@@ -178,7 +211,7 @@ public class GameDaoImpl implements GameDao {
         if (!searchQuery.isEmpty()) {
 
             filterQuery += (filterQuery.isEmpty()) ? " WHERE " : " AND ";
-            filterQuery += " g.name LIKE ? ";
+            filterQuery += " g.name ILIKE ? ";
 
             preparedStatementArgs.add("%" + searchQuery + "%");
         }
@@ -190,12 +223,10 @@ public class GameDaoImpl implements GameDao {
                 filterQuery+
                 toCriteriaString(filter)+
                 " LIMIT ? OFFSET ?",GAME_ROW_MAPPER,preparedStatementArgs.toArray());
-        List<GameData> gameData = new ArrayList<>();
         for(Game g : games){
             g.setGenres(this.getGenresByGame(g.getId()));
-            gameData.add(new GameData(g,getAverageReviewRatingById(g.getId())));
         }
-        return new Paginated<>(page,pageSize,totalPages,gameData);
+        return new Paginated<>(page,pageSize,totalPages,games);
     }
     private String toGameFilterString(Filter filter, List<Object> arguments) {
         String gamesAmount = String.join(",", Collections.nCopies(filter.getGameGenresFilter().size(), "?"));
@@ -231,7 +262,7 @@ public class GameDaoImpl implements GameDao {
 
         String searchFilter = "";
         if (!searchQuery.isEmpty()) {
-            searchFilter += " WHERE  g.name LIKE ? ";
+            searchFilter += " WHERE  g.name ILIKE ? ";
             preparedStatementArgs.add("%" + searchQuery + "%");
         }
         preparedStatementArgs.add(pageSize);

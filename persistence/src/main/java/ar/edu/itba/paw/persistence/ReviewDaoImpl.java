@@ -51,7 +51,9 @@ public class ReviewDaoImpl implements ReviewDao {
                         resultSet.getString("publisher"),
                         IMAGE_PREFIX + resultSet.getString("imageid"),
                         new ArrayList<>(),
-                        resultSet.getTimestamp("publishDate").toLocalDateTime().toLocalDate()
+                        resultSet.getTimestamp("publishDate").toLocalDateTime().toLocalDate(),
+                        (resultSet.getInt("reviewcount") != 0)?
+                                (double) resultSet.getInt("ratingsum")/resultSet.getInt("reviewcount"): 0d
                 ),
                 difficulty != null ? Difficulty.valueOf(difficulty.toUpperCase()) : null,
                 resultSet.getDouble("gamelength"),

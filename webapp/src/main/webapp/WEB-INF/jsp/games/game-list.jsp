@@ -87,32 +87,32 @@
                 </div>
             </div>
         </form>
-        <c:if test="${empty gamesData}">
+        <c:if test="${empty games}">
             <div class="col s10 center-align">
                 <span><spring:message code="game.list.notfound"/></span>
             </div>
         </c:if>
-        <c:forEach items="${gamesData}" var="gameData">
+        <c:forEach items="${games}" var="game">
             <div class="col push-s1 s9 m5">
                 <div class="game-card-for-list z-depth-2">
-                    <a href="<c:url value="/game/${gameData.game.id}"/>">
-                        <c:url value="${gameData.game.imageUrl}" var="imgUrl" />
+                    <a href="<c:url value="/game/${game.id}"/>">
+                        <c:url value="${game.imageUrl}" var="imgUrl" />
                         <img class="game-img" src="${imgUrl}"
-                             alt="<c:out value="${gameData.game.name}"/>">
+                             alt="<c:out value="${game.name}"/>">
                     </a>
                     <div class="game-card-details">
                         <div class="game-card-details-text">
-                            <a class="game-card-title white-text" href="<c:url value="/game/${gameData.game.id}"/>">
-                                <span ><c:out value="${gameData.game.name}"/></span>
+                            <a class="game-card-title white-text" href="<c:url value="/game/${game.id}"/>">
+                                <span ><c:out value="${game.name}"/></span>
                             </a>
                             <span class="game-card-text"><spring:message code="publishing.date"
-                                                                         arguments="${gameData.game.publishDate}"/></span>
+                                                                         arguments="${game.publishDate}"/></span>
                             <span class="game-card-text"><spring:message code="developer"
-                                                                         arguments="${gameData.game.developer}"/></span>
+                                                                         arguments="${game.developer}"/></span>
                         </div>
                         <div class="game-card-details-extra">
                             <div class="game-genres">
-                                <c:forEach items="${gameData.game.genres}" var="genre">
+                                <c:forEach items="${game.genres}" var="genre">
                                     <a href="${queriesToKeepAtRemoveFilters}&f-gen=${genre.id}" class="white-text">
                                             <span class="chip-small">
                                                 <spring:message code="${genre.name}"/>
@@ -120,10 +120,10 @@
                                     </a>
                                 </c:forEach>
                             </div>
-                            <c:if test="${gameData.averageScore >0}">
+                            <c:if test="${game.averageRating >0}">
                                 <span class="game-card-details-extra-text"><spring:message
                                         code="game.details.review.statistics.rating"/></span>
-                                <span class=game-card-details-extra-number>${gameData.averageScore}
+                                <span class=game-card-details-extra-number>${game.averageRating}
                                         <span class="game-card-details-extra-minor">/10</span>
                                     </span>
                             </c:if>
