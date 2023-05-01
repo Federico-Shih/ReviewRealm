@@ -42,6 +42,12 @@
 
         <org.hibernate.validator>5.4.3.Final</org.hibernate.validator>
 
+        <org.mockito.version>2.25.1</org.mockito.version>
+
+        <org.junit.version>4.13.2</org.junit.version>
+
+        <org.hsqldb.version>2.3.1</org.hsqldb.version>
+
         <org.jetbrains.version>13.0</org.jetbrains.version>
 
         <spring-security.version>4.0.4.RELEASE</spring-security.version>
@@ -104,6 +110,12 @@
                 <version>${org.springframework.version}</version>
 
             </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-test</artifactId>
+                <version>${org.springframework.version}</version>
+                <scope>test</scope>
+            </dependency>
 
             <dependency>
                 <groupId>javax.servlet</groupId>
@@ -153,6 +165,24 @@
                 <groupId>org.springframework.security</groupId>
                 <artifactId>spring-security-config</artifactId>
                 <version>${spring-security.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>4.13.2</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-core</artifactId>
+                <version>${org.mockito.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.hsqldb</groupId>
+                <artifactId>hsqldb</artifactId>
+                <version>${org.hsqldb.version}</version>
+                <scope>test</scope>
             </dependency>
 
             <dependency>
