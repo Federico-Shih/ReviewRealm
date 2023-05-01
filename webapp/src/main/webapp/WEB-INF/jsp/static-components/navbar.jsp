@@ -2,6 +2,19 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page contentType="text/html; charset=UTF-8" %>
 
+<c:url value="/css/main.css" var="css" />
+<link href="${css}" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var elems = document.querySelectorAll('.dropdown-trigger');
+        var instances = M.Dropdown.init(elems, {
+            alignment: 'right',
+            coverTrigger: false,
+        });
+    });
+</script>
+
 <div>
     <nav>
         <div class="navbar">
@@ -13,20 +26,68 @@
             </div>
             <div>
                 <ul class="navbar-options center">
+                    <c:if test="${loggedUser != null}">
+                        <li>
+                            <a href="<c:url value="/for-you"/>" class="${param.selected == "for-you" ? "chosen-tab" : "" }">
+                                <span><spring:message code="navbar.foryou"/></span>
+                            </a>
+                        </li>
+                    </c:if>
                     <li><a href="<c:url value="/game/list"/>" class="${param.selected == "game-list" ? "chosen-tab" : "" }"><span><spring:message code="navbar.games"/></span></a></li>
                     <li><a href="<c:url value="/"/>" class="${param.selected == "review-list" ? "chosen-tab" : "" }"><span><spring:message code="navbar.reviews"/></span></a></li>
+                    <c:if test="${isModerator}">
+                        <li>
+                            <a href="<c:url value="/game/submit" />" class="${param.selected == "gameSubmit" ? "chosen-tab": ""}">
+                                <spring:message code="navbar.submitgame" />
+                            </a>
+                        </li>
+                    </c:if>
                     <c:if test="${loggedUser != null}">
-                        <li><a href="<c:url value="/for-you"/>" class="${param.selected == "for-you" ? "chosen-tab" : "" }"><span><spring:message code="navbar.foryou"/></span></a></li>
-                        <li><a href="<c:url value="/profile/${loggedUser.id}"/>" class="${param.selected == "profile" ? "chosen-tab" : "" }"><span><spring:message code="navbar.profile"/></span></a></li>
-                        <li><span><spring:message code="navbar.welcome" arguments="${loggedUser.username}"/></span></li>
-                        <c:if test="${isModerator}">
-                            <li>
-                                <a href="<c:url value="/game/submit" />" class="${param.selected == "gameSubmit" ? "chosen-tab": ""}">
-                                    <spring:message code="navbar.submitgame" />
-                                </a>
-                            </li>
-                        </c:if>
-                        <li><a href="<c:url value="/logout"/>"><span><spring:message code="navbar.logout"/></span></a></li>
+                        <li>
+                            <a class="dropdown-trigger btn" href="#" data-target="dropdownProfile">
+                                <span>
+                                    <spring:message code="navbar.welcome" arguments="${loggedUser.username}"/>
+                                </span>
+                            </a>
+                            <ul id="dropdownProfile" class="dropdown-content profile-dropdown">
+                                <li>
+                                    <a href="<c:url value="/profile/${loggedUser.id}"/>" class="${param.selected == "profile" ? "chosen-tab" : "" }">
+                                        <div class="valign-wrapper profile-dropdown-link">
+                                            <span class="material-icons">
+                                                account_circle
+                                            </span>
+                                                <span>
+                                                <spring:message code="navbar.profile"/>
+                                            </span>
+                                        </div>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="<c:url value="/review/submit"/>">
+                                        <div class="valign-wrapper profile-dropdown-link">
+                                            <span class="material-icons">
+                                                create
+                                            </span>
+                                            <span>
+                                                <spring:message code="navbar.create"/>
+                                            </span>
+                                        </div>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="<c:url value="/logout"/>">
+                                        <div class="valign-wrapper profile-dropdown-link">
+                                            <span class="material-icons">
+                                                logout
+                                            </span>
+                                                <span>
+                                                <spring:message code="navbar.logout"/>
+                                            </span>
+                                        </div>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
                     </c:if>
                     <c:if test="${loggedUser == null}">
                         <li><a href="<c:url value="/login"/>" class="${param.selected == "login" ? "chosen-tab" : "" }"><span><spring:message code="navbar.login"/></span></a></li>

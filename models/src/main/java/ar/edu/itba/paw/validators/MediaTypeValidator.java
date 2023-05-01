@@ -2,13 +2,15 @@ package ar.edu.itba.paw.validators;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
+
+import ar.edu.itba.paw.annotations.ValidMediaType;
 import org.springframework.http.MediaType;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Arrays;
 import java.util.List;
 
-class MediaTypeValidator implements ConstraintValidator<ValidMediaType, MultipartFile> {
+public class MediaTypeValidator implements ConstraintValidator<ValidMediaType, MultipartFile> {
 
     private List<String> allowed;
 

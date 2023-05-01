@@ -112,7 +112,7 @@
                         </div>
                         <div class="game-card-details-extra">
                             <div class="game-genres">
-                                <c:forEach items="${game.genres}" var="genre">
+                                <c:forEach items="${game.genres}" var="genre" end="1">
                                     <a href="${queriesToKeepAtRemoveFilters}&f-gen=${genre.id}" class="white-text">
                                             <span class="chip-small">
                                                 <spring:message code="${genre.name}"/>

@@ -1,5 +1,6 @@
-package ar.edu.itba.paw.validators;
+package ar.edu.itba.paw.annotations;
 
+import ar.edu.itba.paw.validators.MediaTypeValidator;
 import org.springframework.http.MediaType;
 
 import javax.validation.Constraint;

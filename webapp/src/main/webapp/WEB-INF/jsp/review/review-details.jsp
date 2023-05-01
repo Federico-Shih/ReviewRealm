@@ -34,6 +34,13 @@
 
 <body>
 <jsp:include page="/WEB-INF/jsp/static-components/navbar.jsp"/>
+<div class="row" style="margin: 2%;">
+    <c:url value="/" var="reviewList" />
+    <div class="col s12">
+        <a href="${reviewList}" class="breadcrumb"><spring:message code="review.search" /></a>
+        <a href="#" class="breadcrumb"><c:out value="${game.name}" /> </a>
+    </div>
+</div>
 <div class="container">
     <div class="row">
         <div class="col s12 m8">
@@ -102,7 +109,9 @@
                             </c:if>
                         </div>
                         <div class="col s12 right right-align">
-                            <spring:message code="review.by" arguments="@${review.author.username}" />
+                            <a href="<c:url value="/profile/${review.author.id}" />">
+                                <spring:message code="review.by" arguments="@${review.author.username}" />
+                            </a>
                         </div>
                     </div>
                 </div>

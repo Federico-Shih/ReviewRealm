@@ -9,7 +9,6 @@ import ar.edu.itba.paw.models.Role;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.persistenceinterfaces.UserDao;
 import ar.edu.itba.paw.servicesinterfaces.GenreService;
-import com.sun.org.apache.xpath.internal.Arg;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;

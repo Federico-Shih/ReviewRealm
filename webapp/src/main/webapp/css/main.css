@@ -12,6 +12,27 @@ nav {
     white-space: nowrap;
 }
 
+.btn, .btn-floating, .btn-large {
+    background-color: #D84315 !important;
+}
+
+.profile-dropdown {
+    color: white !important;
+    background-color: #13112D;
+}
+
+.profile-dropdown-link {
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+    color: white !important;;
+}
+
+.dropdown-content li:hover {
+    background-color: rgba(0,0,0,0.1);
+    font-weight: bold;
+}
+
 .navbar {
     display: flex;
     width: 100%;

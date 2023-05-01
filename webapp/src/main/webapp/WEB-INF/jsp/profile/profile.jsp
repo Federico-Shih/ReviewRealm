@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="<c:url value="/css/review.css" />">
     <link rel="stylesheet" href="<c:url value="/css/game.css" />"/>
     <link rel="stylesheet" href="<c:url value="/css/profile.css" />"/>
+    <link rel="shortcut icon" type="image/png" href="<c:url value="/static/review_realm_logo_white_32px.png" />">
     <script src="<c:url value="/js/materialize.min.js" />"></script>
     <title><spring:message code="profile.title"/></title>
 </head>
