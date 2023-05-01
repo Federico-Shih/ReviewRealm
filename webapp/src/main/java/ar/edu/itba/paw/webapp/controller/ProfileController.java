@@ -143,7 +143,6 @@ public class ProfileController {
         {
             return new ModelAndView("static-components/not-found");
         }
-        mav.addObject("games", gameService.getFavoriteGamesFromUser(userId));
         mav.addObject("profile",user.get());
         mav.addObject("availableGenres", genreService.getAllGenres());
         return mav;

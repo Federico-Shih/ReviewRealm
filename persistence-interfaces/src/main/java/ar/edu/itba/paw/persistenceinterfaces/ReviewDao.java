@@ -31,4 +31,8 @@ public interface ReviewDao {
     boolean deleteReview(Long id);
 
     List<Review> getReviewsFromFollowing(List<Long> followingIds, Integer size);
+
+    void updateFavGames(long userId, Long idReviewToAdd, Long idGameToAdd, Optional<Long> optIdToDelete);
+
+    List<Review> getBestReviews(long userId);
 }

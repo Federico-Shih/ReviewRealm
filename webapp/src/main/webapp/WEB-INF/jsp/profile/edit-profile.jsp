@@ -51,24 +51,6 @@
 
         <form:errors path="genres" cssClass="error" element="p"/>
 
-        <div class="divider"></div>
-        <div class="row">
-            <div class="col s12 center">
-                <h5><spring:message code="edit.profile.fav.games"/></h5>
-            </div>
-            <c:forEach items="${games}" var="game">
-                <div class="col s4">
-                </div>
-            </c:forEach>
-            <div class="col s12 center">
-                <h5><spring:message code="edit.profile.fav.games.choose"/></h5>
-            </div>
-        </div>
-
-
-
-        <form:errors path="games" cssClass="error" element="p"/>
-
 
         <div class="row">
             <div class="col s12 center">

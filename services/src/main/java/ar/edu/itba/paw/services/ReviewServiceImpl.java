@@ -19,11 +19,11 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
+import java.util.*;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import java.util.stream.Collectors;
 
 @Service
@@ -76,7 +76,36 @@ public class ReviewServiceImpl implements ReviewService {
             mailingService.sendEmail(follower.getEmail(), subject, "newreview", templateVariables);
         }
 
+        if(review.getRating()>7)
+            updateFavoriteGames(author.getId(), review);
+
         return review;
+    }
+
+    private void updateFavoriteGames(long userId, Review review) {
+        Optional<Long> toDelete = Optional.empty();
+        List<Review> bestReviews = reviewDao.getBestReviews(userId);
+        if(bestReviews.size()==3) {
+            bestReviews.sort((o1, o2) -> o2.getRating().compareTo(o1.getRating()));
+            if (bestReviews.get(2).getRating() > review.getRating()) {
+                return;
+            }
+            toDelete = Optional.of(bestReviews.remove(2).getId());
+        }
+        reviewDao.updateFavGames(userId, review.getId(), review.getReviewedGame().getId(), toDelete);
+
+        /*
+        List<Review> reviewList = reviewDao.getUserReviews(userId);
+        reviewList.removeIf(review -> review.getRating()<=7);
+        if(reviewList.stream().filter(review -> review.getRating()>rating).count()>=3)
+            return;
+        reviewList.sort((o1, o2) -> o2.getRating().compareTo(o1.getRating()));
+        reviewDao.updateFavGames(userId,
+                reviewList.subList(0,Math.min(2,reviewList.size()-1)).stream().map(
+                        review -> review.getReviewedGame().getId()).collect(Collectors.toList()),
+                reviewList.subList(0,Math.min(2,reviewList.size()-1)).stream().map(
+                        Review::getId).collect(Collectors.toList()));
+         */
     }
 
     @Override
