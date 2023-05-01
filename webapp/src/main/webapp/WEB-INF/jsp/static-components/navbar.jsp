@@ -16,6 +16,7 @@
                     <li><a href="<c:url value="/game/list"/>" class="${param.selected == "game-list" ? "chosen-tab" : "" }"><span><spring:message code="navbar.games"/></span></a></li>
                     <li><a href="<c:url value="/"/>" class="${param.selected == "review-list" ? "chosen-tab" : "" }"><span><spring:message code="navbar.reviews"/></span></a></li>
                     <c:if test="${loggedUser != null}">
+                        <li><a href="<c:url value="/for-you"/>" class="${param.selected == "for-you" ? "chosen-tab" : "" }"><span><spring:message code="navbar.foryou"/></span></a></li>
                         <li><a href="<c:url value="/profile/${loggedUser.id}"/>" class="${param.selected == "profile" ? "chosen-tab" : "" }"><span><spring:message code="navbar.profile"/></span></a></li>
                         <li><span><spring:message code="navbar.welcome" arguments="${loggedUser.username}"/></span></li>
                         <c:if test="${isModerator}">

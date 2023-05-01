@@ -1,8 +1,5 @@
 package ar.edu.itba.paw.persistence;
 
-import ar.edu.itba.paw.enums.Difficulty;
-import ar.edu.itba.paw.enums.Genre;
-import ar.edu.itba.paw.enums.Platform;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.persistenceinterfaces.UserDao;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,8 +9,6 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.*;
 
 
@@ -24,7 +19,7 @@ public class UserDaoImpl implements UserDao {
 
     private final SimpleJdbcInsert followJdbcInsert;
 
-    private final static RowMapper<User> ROW_MAPPER = (resultSet, i) -> new User(resultSet.getLong("id"),
+    private final static RowMapper<User> USER_ROW_MAPPER = (resultSet, i) -> new User(resultSet.getLong("id"),
             resultSet.getString("username"),
             resultSet.getString("email"),
             resultSet.getString("password"));
@@ -48,12 +43,12 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public boolean exists(final long id) {
-        return jdbcTemplate.query("SELECT * FROM users WHERE id = ?", ROW_MAPPER, id).size() == 1;
+        return jdbcTemplate.query("SELECT * FROM users WHERE id = ?", USER_ROW_MAPPER, id).size() == 1;
     }
 
     @Override
     public Optional<User> findById(final long id) {
-        return jdbcTemplate.query("SELECT * FROM users WHERE id = ?", ROW_MAPPER, id).stream().findFirst();
+        return jdbcTemplate.query("SELECT * FROM users WHERE id = ?", USER_ROW_MAPPER, id).stream().findFirst();
     }
 
     @Override
@@ -69,12 +64,12 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public Optional<User> getByEmail(String email) {
-        return jdbcTemplate.query("SELECT * FROM users WHERE email = ?", ROW_MAPPER, email).stream().findFirst();
+        return jdbcTemplate.query("SELECT * FROM users WHERE email = ?", USER_ROW_MAPPER, email).stream().findFirst();
     }
 
     @Override
     public Optional<User> getByUsername(String username) {
-        return jdbcTemplate.query("SELECT * FROM users WHERE username = ?", ROW_MAPPER, username).stream().findFirst();
+        return jdbcTemplate.query("SELECT * FROM users WHERE username = ?", USER_ROW_MAPPER, username).stream().findFirst();
     }
 
     @Override
@@ -87,7 +82,7 @@ public class UserDaoImpl implements UserDao {
         return jdbcTemplate.query("SELECT u.username, u.id, u.email, u.password " +
                 "FROM followers as f JOIN users as u ON f.userId = u.id " +
                 "WHERE following = ?",
-                ROW_MAPPER,
+                USER_ROW_MAPPER,
                 id);
     }
 
@@ -96,7 +91,7 @@ public class UserDaoImpl implements UserDao {
         return jdbcTemplate.query("SELECT u.username, u.id, u.email, u.password " +
                 "FROM followers f JOIN users u ON f.following = u.id " +
                 "WHERE userId = ?",
-                ROW_MAPPER,
+                USER_ROW_MAPPER,
                 id);
     }
 

@@ -20,9 +20,11 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ReviewServiceImpl implements ReviewService {
@@ -85,6 +87,19 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     public Paginated<Review> getAllReviews(Filter filter, Integer page, Integer pageSize) {
         return reviewDao.getAll(filter, page, pageSize);
+    }
+
+    @Override
+    public List<Review> getReviewsFromFollowingByUser(Long userId, Integer size) {
+        if(size<=0){
+            return null;
+        }
+        List<User> followingUsers = userService.getFollowing(userId);
+        if(followingUsers.isEmpty()){
+            return new ArrayList<>();
+        }
+        List<Long> followingIds = followingUsers.stream().map(User::getId).collect(Collectors.toList());
+        return reviewDao.getReviewsFromFollowing(followingIds, size);
     }
 
     @Override

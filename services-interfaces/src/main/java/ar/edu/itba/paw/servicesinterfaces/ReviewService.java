@@ -29,5 +29,6 @@ public interface ReviewService {
 
     Paginated<Review> getAllReviews(Filter filter, Integer page, Integer pageSize);
 
+    List<Review> getReviewsFromFollowingByUser(Long userId, Integer size);
     boolean deleteReviewById(Long id);
 }

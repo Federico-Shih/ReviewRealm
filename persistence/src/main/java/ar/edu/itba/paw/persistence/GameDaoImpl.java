@@ -30,8 +30,6 @@ public class GameDaoImpl implements GameDao {
 
     private final SimpleJdbcInsert jdbcInsertGenreForGames;
 
-    private final static String IMAGE_PREFIX = "/images/";
-
     @Autowired
     public GameDaoImpl(DataSource ds) {
         this.jdbcTemplate = new JdbcTemplate(ds);
@@ -40,60 +38,11 @@ public class GameDaoImpl implements GameDao {
         this.jdbcInsertGenreForGames = new SimpleJdbcInsert(ds).withTableName("genreForGames");
     }
 
-    private final static RowMapper<Game> GAME_ROW_MAPPER = (resultSet, i) ->
-            new Game(resultSet.getLong("id"),
-            resultSet.getString("name"),
-            resultSet.getString("description"),
-            resultSet.getString("developer"),
-            resultSet.getString("publisher"),
-            IMAGE_PREFIX + resultSet.getString("imageid"),
-            new ArrayList<>(),// despues manualmente tenes que formar los generos que tiene
-            resultSet.getTimestamp("publishDate").toLocalDateTime().toLocalDate(),
-                    (resultSet.getInt("reviewcount") != 0)?
-                            (double) resultSet.getInt("ratingsum")/resultSet.getInt("reviewcount"): 0d );
     private final static RowMapper  <Genre> GAME_GENRE_ROW_MAPPER = (resultSet, i) -> {
         Optional<Genre> genre = Genre.getById(resultSet.getInt("genreId"));
         if (!genre.isPresent()) throw new IllegalStateException();
         return genre.get();
     };
-
-    private final static RowMapper<Review> REVIEW_ROW_MAPPER = ((resultSet, i) -> {
-        String difficulty = resultSet.getString("difficulty");
-        String platform = resultSet.getString("platform");
-
-        return new Review(
-                resultSet.getLong("id"),
-                new User(
-                        resultSet.getLong("authorId"),
-                        resultSet.getString("username"),
-                        resultSet.getString("email"),
-                        "-"),
-                resultSet.getString("title"),
-                resultSet.getString("content"),
-                resultSet.getTimestamp("createddate").toLocalDateTime(),
-                resultSet.getInt("rating"),
-                new Game(
-                        resultSet.getLong("gameId"),
-                        resultSet.getString("name"),
-                        resultSet.getString("description"),
-                        resultSet.getString("developer"),
-                        resultSet.getString("publisher"),
-                        IMAGE_PREFIX + resultSet.getString("imageid"),
-                        new ArrayList<>(),
-                        resultSet.getTimestamp("publishDate").toLocalDateTime().toLocalDate(),
-                        (resultSet.getInt("reviewcount") != 0)?
-                                (double) resultSet.getInt("ratingsum")/resultSet.getInt("reviewcount"): 0d
-
-                ),
-                difficulty != null ? Difficulty.valueOf(difficulty.toUpperCase()) : null,
-                resultSet.getDouble("gamelength"),
-                platform != null ? Platform.valueOf(platform.toUpperCase()) : null,
-                resultSet.getBoolean("completed"),
-                resultSet.getBoolean("replayability")
-        );
-    });
-
-
 
     @Override
     public Game create(String name,String description,String developer, String publisher, String imageid, List<Genre> genres, LocalDate publishDate) {
@@ -115,12 +64,12 @@ public class GameDaoImpl implements GameDao {
 
             jdbcInsertGenreForGames.execute(args);
         }
-        return new Game(id.longValue(),name,description,developer,publisher,IMAGE_PREFIX + imageid,genres,publishDate,0d);
+        return new Game(id.longValue(),name,description,developer,publisher,CommonRowMappers.IMAGE_PREFIX + imageid,genres,publishDate,0d);
     }
 
     @Override
     public Optional<Game> getById(Long id) {
-        Optional<Game> game = jdbcTemplate.query("SELECT * FROM games where id = ?",GAME_ROW_MAPPER,id).stream().findFirst();
+        Optional<Game> game = jdbcTemplate.query("SELECT * FROM games where id = ?",CommonRowMappers.GAME_ROW_MAPPER,id).stream().findFirst();
         //Busco los genres directamente, no paso por genreID
         game.ifPresent(value -> value.setGenres(this.getGenresByGame(id)));
         return game;
@@ -131,7 +80,7 @@ public class GameDaoImpl implements GameDao {
        return jdbcTemplate.query("SELECT * FROM reviews " +
                 "JOIN games as g ON g.id = reviews.gameid " +
                 "JOIN users as u ON u.id = reviews.authorid " +
-                "WHERE g.id = ?", REVIEW_ROW_MAPPER, id);
+                "WHERE g.id = ?", CommonRowMappers.REVIEW_ROW_MAPPER, id);
         //No buscamos los generos de lo juegos pues por ahora no se usan en ningun momento y es mejor hacer menos cant de querys
     }
 
@@ -222,7 +171,7 @@ public class GameDaoImpl implements GameDao {
         List<Game> games = jdbcTemplate.query("SELECT * FROM games as g "+
                 filterQuery+
                 toCriteriaString(filter)+
-                " LIMIT ? OFFSET ?",GAME_ROW_MAPPER,preparedStatementArgs.toArray());
+                " LIMIT ? OFFSET ?",CommonRowMappers.GAME_ROW_MAPPER,preparedStatementArgs.toArray());
         for(Game g : games){
             g.setGenres(this.getGenresByGame(g.getId()));
         }
@@ -245,8 +194,26 @@ public class GameDaoImpl implements GameDao {
     @Override
     public List<Game> getFavoriteGamesFromUser(long userId) {
         //TODO: y verificar que incluya los generos de los juegos
-        return jdbcTemplate.query("SELECT * FROM games where id = 1 OR id = 2 OR id = 3",GAME_ROW_MAPPER);
+        return jdbcTemplate.query("SELECT * FROM games where id = 1 OR id = 2 OR id = 3",CommonRowMappers.GAME_ROW_MAPPER);
     }
+
+    @Override
+    public List<Game> getRecommendationsForUser(Long userId,List<Integer> userPreferences, Integer amount) {
+        List<Object> preparedStatementArgs = new ArrayList<>();
+        String filterString = toGameFilterString(new Filter(userPreferences,new ArrayList<>(),null,null,null),preparedStatementArgs);
+        preparedStatementArgs.add(userId);
+        preparedStatementArgs.add(amount);
+        filterString += (filterString.isEmpty()) ? " WHERE " : " AND ";
+        List<Game> games = jdbcTemplate.query("SELECT * " +
+                "FROM games g "+ filterString +
+                " NOT EXISTS(select * from reviews where reviews.gameid = g.id and reviews.authorid=?)"+
+                "ORDER BY (cast(g.ratingsum as real) / coalesce(nullif(g.reviewcount,0),1)) desc LIMIT ? ",CommonRowMappers.GAME_ROW_MAPPER,preparedStatementArgs.toArray());
+        for(Game g : games){
+            g.setGenres(this.getGenresByGame(g.getId()));
+        }
+        return games;
+    }
+
     @Override
     public Paginated<Game> getAllShort(int page, Integer pageSize, String searchQuery) {
         Filter filter = new Filter( new ArrayList<>(),new ArrayList<>(),
@@ -269,7 +236,7 @@ public class GameDaoImpl implements GameDao {
         preparedStatementArgs.add(offset);
 
 
-        List<Game> games = jdbcTemplate.query("SELECT * FROM games as g "+searchFilter+" LIMIT ? OFFSET ?",GAME_ROW_MAPPER,preparedStatementArgs.toArray());
+        List<Game> games = jdbcTemplate.query("SELECT * FROM games as g "+searchFilter+" LIMIT ? OFFSET ?",CommonRowMappers.GAME_ROW_MAPPER,preparedStatementArgs.toArray());
         for(Game g : games){
             g.setGenres(this.getGenresByGame(g.getId()));
         }

@@ -1,0 +1,23 @@
+
+.for-you-page{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    margin: 2%;
+    padding: 2% 1%;
+    height: max-content;
+    width: 96%;
+}
+.for-you-section{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: space-between;
+
+    width: 100%;
+}
+.for-you-section-header{
+    font-size: 28px;
+    font-weight: 600;
+    white-space: nowrap;
+}

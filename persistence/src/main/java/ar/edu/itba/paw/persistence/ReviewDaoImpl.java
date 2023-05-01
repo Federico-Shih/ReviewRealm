@@ -27,41 +27,6 @@ public class ReviewDaoImpl implements ReviewDao {
     private final SimpleJdbcInsert jdbcInsertReview;
     private final GameDao gameDao;
 
-    private static final String IMAGE_PREFIX = "/images/";
-    private final static RowMapper<Review> REVIEW_ROW_MAPPER = ((resultSet, i) -> {
-        String difficulty = resultSet.getString("difficulty");
-        String platform = resultSet.getString("platform");
-
-        return new Review(
-                resultSet.getLong("id"),
-                new User(
-                        resultSet.getLong("authorId"),
-                        resultSet.getString("username"),
-                        resultSet.getString("email"),
-                        "-"),
-                resultSet.getString("title"),
-                resultSet.getString("content"),
-                resultSet.getTimestamp("createddate").toLocalDateTime(),
-                resultSet.getInt("rating"),
-                new Game(
-                        resultSet.getLong("gameId"),
-                        resultSet.getString("name"),
-                        resultSet.getString("description"),
-                        resultSet.getString("developer"),
-                        resultSet.getString("publisher"),
-                        IMAGE_PREFIX + resultSet.getString("imageid"),
-                        new ArrayList<>(),
-                        resultSet.getTimestamp("publishDate").toLocalDateTime().toLocalDate(),
-                        (resultSet.getInt("reviewcount") != 0)?
-                                (double) resultSet.getInt("ratingsum")/resultSet.getInt("reviewcount"): 0d
-                ),
-                difficulty != null ? Difficulty.valueOf(difficulty.toUpperCase()) : null,
-                resultSet.getDouble("gamelength"),
-                platform != null ? Platform.valueOf(platform.toUpperCase()) : null,
-                resultSet.getBoolean("completed"),
-                resultSet.getBoolean("replayability")
-        );
-    });
     @Autowired
     public ReviewDaoImpl(DataSource ds, GameDao gameDao) {
         this.jdbcTemplate = new JdbcTemplate(ds);
@@ -111,7 +76,7 @@ public class ReviewDaoImpl implements ReviewDao {
         Optional<Review> review = jdbcTemplate.query("SELECT * FROM reviews " +
                 "JOIN games as g ON g.id = reviews.gameid " +
                 "JOIN users as u ON u.id = reviews.authorid " +
-                "WHERE reviews.id = ?", REVIEW_ROW_MAPPER, id)
+                "WHERE reviews.id = ?", CommonRowMappers.REVIEW_ROW_MAPPER, id)
                 .stream()
                 .findFirst();
         if (review.isPresent()) {
@@ -169,7 +134,7 @@ public class ReviewDaoImpl implements ReviewDao {
                          filterQuery +
                         toCriteriaString(filter)
                 + " LIMIT ? OFFSET ?"
-        , REVIEW_ROW_MAPPER, preparedStatementArgs.toArray());
+        , CommonRowMappers.REVIEW_ROW_MAPPER, preparedStatementArgs.toArray());
         reviews.forEach((review -> review.getReviewedGame().setGenres(gameDao.getGenresByGame(review.getReviewedGame().getId()))));
         return new Paginated<>(page, pageSize, totalPages, reviews);
     }
@@ -186,7 +151,7 @@ public class ReviewDaoImpl implements ReviewDao {
     }
 
     public List<Review> getUserReviews(long userId) {
-        List<Review> reviews = jdbcTemplate.query("SELECT DISTINCT * FROM reviews as r JOIN games as g ON g.id = r.gameid JOIN users as u ON u.id = r.authorid WHERE u.id = ?",REVIEW_ROW_MAPPER,userId);
+        List<Review> reviews = jdbcTemplate.query("SELECT DISTINCT * FROM reviews as r JOIN games as g ON g.id = r.gameid JOIN users as u ON u.id = r.authorid WHERE u.id = ?",CommonRowMappers.REVIEW_ROW_MAPPER,userId);
         reviews.forEach((review -> review.getReviewedGame().setGenres(gameDao.getGenresByGame(review.getReviewedGame().getId()))));
         return reviews;
     }
@@ -194,5 +159,16 @@ public class ReviewDaoImpl implements ReviewDao {
     @Override
     public boolean deleteReview(Long id) {
         return jdbcTemplate.update("DELETE FROM reviews WHERE id = ?", id) == 1;
+    }
+
+    @Override
+    public List<Review> getReviewsFromFollowing(List<Long> followingIds, Integer size) {
+        String followingAmount = String.join(",", Collections.nCopies(followingIds.size(), "?"));
+        List<Object> preparedStatementArgs = new ArrayList<>(followingIds);
+        preparedStatementArgs.add(size);
+        return jdbcTemplate.query("SELECT DISTINCT * FROM reviews as r JOIN games as g ON g.id = r.gameid JOIN users as u ON u.id = r.authorid  WHERE authorid IN ("
+                +followingAmount+") ORDER BY r.createddate DESC LIMIT ?"
+                ,CommonRowMappers.REVIEW_ROW_MAPPER,preparedStatementArgs.toArray());
+
     }
 }

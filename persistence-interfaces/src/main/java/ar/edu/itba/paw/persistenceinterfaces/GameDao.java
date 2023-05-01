@@ -6,6 +6,7 @@ import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.models.Game;
 import ar.edu.itba.paw.models.Paginated;
 import ar.edu.itba.paw.models.Review;
+import ar.edu.itba.paw.models.User;
 
 
 import java.time.LocalDate;
@@ -26,8 +27,9 @@ public interface GameDao {
 
     List<Genre> getGenresByGame(Long id);
 
-
     List<Game> getFavoriteGamesFromUser(long userId);
+
+    List<Game> getRecommendationsForUser(Long userId, List<Integer> userPreferences,  Integer amount);
 
     Double getAverageReviewRatingById(Long id);
 

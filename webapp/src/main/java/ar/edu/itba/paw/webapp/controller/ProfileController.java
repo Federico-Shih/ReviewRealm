@@ -21,7 +21,6 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Controller
 public class ProfileController {
@@ -29,9 +28,9 @@ public class ProfileController {
     private final UserService userService;
     private final ReviewService reviewService;
     private final GameService gameService;
-
     private final GenreService genreService;
 
+    private final static int MAX_RECOMMENDED_GAMES = 3;
     @Autowired
     public ProfileController(UserService userService, ReviewService reviewService,
                              GameService gameService, GenreService genreService){
@@ -167,5 +166,23 @@ public class ProfileController {
         }
         return profile(userId);
     }
+
+    @RequestMapping(value="/for-you", method = RequestMethod.GET)
+    public ModelAndView forYouPage(@RequestParam(value = "size", defaultValue = "6") Integer size) {
+        final ModelAndView mav = new ModelAndView("profile/for-you");
+        User loggedUser = AuthenticationHelper.getLoggedUser(userService);
+
+        if (loggedUser == null) {
+            return new ModelAndView("redirect:/login"); //TODO: Revisar que esto ese bien
+        }
+
+        mav.addObject("recommendedGames", gameService.getRecommendationsOfGamesForUser(loggedUser.getId(),MAX_RECOMMENDED_GAMES));
+        mav.addObject("reviewsFollowing", reviewService.getReviewsFromFollowingByUser(loggedUser.getId(), size));
+        mav.addObject("user",loggedUser);
+        mav.addObject("size", size);
+
+        return mav;
+    }
+
 
 }

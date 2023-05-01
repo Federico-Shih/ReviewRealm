@@ -10,6 +10,7 @@ import ar.edu.itba.paw.persistenceinterfaces.GameDao;
 import ar.edu.itba.paw.servicesinterfaces.GameService;
 import ar.edu.itba.paw.servicesinterfaces.GenreService;
 import ar.edu.itba.paw.servicesinterfaces.ImageService;
+import ar.edu.itba.paw.servicesinterfaces.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class GameServiceImpl implements GameService {
@@ -27,11 +29,14 @@ public class GameServiceImpl implements GameService {
     private final GenreService genreServ;
     private final ImageService imgService;
 
+    private final UserService userService;
+
     @Autowired
-    public GameServiceImpl(GameDao gameDao, GenreService genreServ, ImageService imgService) {
+    public GameServiceImpl(GameDao gameDao, GenreService genreServ, ImageService imgService,UserService userService) {
         this.gameDao = gameDao;
         this.genreServ = genreServ;
         this.imgService = imgService;
+        this.userService = userService;
     }
 
     @Override
@@ -126,6 +131,15 @@ public class GameServiceImpl implements GameService {
     @Override
     public void updateReviewFromGame(Long gameId, Integer oldRating, Integer newRating) {
         gameDao.modifyReview(gameId, oldRating, newRating);
+    }
+
+    @Override
+    public List<Game> getRecommendationsOfGamesForUser(Long userId, Integer amount) {
+        List <Genre> userPreferences = userService.getPreferences(userId);
+        if(userPreferences.isEmpty()){
+            return new ArrayList<>();
+        }
+        return gameDao.getRecommendationsForUser(userId,userPreferences.stream().map(Genre::getId).collect(Collectors.toList()),amount);
     }
 
     @Override

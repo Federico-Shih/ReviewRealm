@@ -33,4 +33,6 @@ public interface GameService {
     void deleteReviewFromGame(Long gameId,Integer rating);
 
     void updateReviewFromGame(Long gameId,Integer oldRating,Integer newRating);
+
+    List<Game> getRecommendationsOfGamesForUser(Long userId, Integer amount);
 }

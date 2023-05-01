@@ -29,4 +29,6 @@ public interface ReviewDao {
     List<Review> getUserReviews(long userId);
 
     boolean deleteReview(Long id);
+
+    List<Review> getReviewsFromFollowing(List<Long> followingIds, Integer size);
 }
