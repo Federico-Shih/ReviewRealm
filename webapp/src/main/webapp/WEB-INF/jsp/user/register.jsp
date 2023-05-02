@@ -16,7 +16,9 @@
 </head>
 <c:url value="/register" var="postPath"/>
 <body>
-<jsp:include page="/WEB-INF/jsp/static-components/navbar.jsp"/>
+<jsp:include page="/WEB-INF/jsp/static-components/navbar.jsp">
+    <jsp:param name="selected" value="register"/>
+</jsp:include>
 <div class="container">
     <h3><spring:message code="register.header.title"/></h3>
     <form:form class="card form-body" action="${postPath}" method="post" modelAttribute="registerForm">
@@ -47,6 +49,9 @@
             </div>
             <div>
                 <a href="<c:url value="/login" />"><spring:message code="register.to.login.link"/></a>
+            </div>
+            <div>
+                <a href="<c:url value="/recover" />"><spring:message code="login.to.validate.link"/></a>
             </div>
             <div class="form-submit-button">
                 <button class="btn waves-effect waves-light" type="submit" name="action">

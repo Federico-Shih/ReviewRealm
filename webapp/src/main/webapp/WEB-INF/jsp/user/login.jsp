@@ -43,6 +43,9 @@
             <div>
                 <a href="<c:url value="/register" />"><spring:message code="login.to.register.link"/></a>
             </div>
+            <div>
+                <a href="<c:url value="/recover" />"><spring:message code="login.to.validate.link"/></a>
+            </div>
             <div class="form-submit-button">
                 <button class="btn waves-effect waves-light" type="submit" name="action"><spring:message code="login.submit"/>
                     <i class="material-icons right">send</i>

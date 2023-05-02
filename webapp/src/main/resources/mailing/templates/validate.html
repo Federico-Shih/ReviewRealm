@@ -55,6 +55,10 @@
             text-transform: uppercase;
             vertical-align: middle;
         }
+        .token-container {
+            font-weight: bold;
+            padding: 50px;
+        }
     </style>
 </head>
 
@@ -72,6 +76,9 @@
     </div>
     <div class="container">
         <h3 th:text="#{email.validation.longtitle (${user})}"></h3>
+        <div class="token-container">
+            <h2 th:text="#{${token}}"></h2>
+        </div>
         <a th:href="@{{base}/validate/{token}(base=${webBaseUrl},token=${token})}">
             <span class="goto-button" th:text="#{email.validation.cta}">
             </span>

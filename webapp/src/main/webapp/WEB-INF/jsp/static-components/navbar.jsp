@@ -91,6 +91,7 @@
                     </c:if>
                     <c:if test="${loggedUser == null}">
                         <li><a href="<c:url value="/login"/>" class="${param.selected == "login" ? "chosen-tab" : "" }"><span><spring:message code="navbar.login"/></span></a></li>
+                        <li><a href="<c:url value="/register"/>" class="${param.selected == "register" ? "chosen-tab" : "" }"><span><spring:message code="navbar.register"/></span></a></li>
                     </c:if>
                 </ul>
             </div>

@@ -135,7 +135,7 @@ public class ProfileController {
             LOGGER.error("Unexpected error: {}", err.getMessage());
         }
         return new ModelAndView(String.format("redirect:/profile/%d", userId));
-    }
+}
     @RequestMapping(value = "/profile/edit", method= RequestMethod.GET)
     public ModelAndView editProfile(@Valid @ModelAttribute("editProfileForm") final EditProfileForm form){
         long userId = AuthenticationHelper.getLoggedUser(userService).getId();
