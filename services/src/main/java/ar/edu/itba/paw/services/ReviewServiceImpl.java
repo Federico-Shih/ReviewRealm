@@ -85,6 +85,9 @@ public class ReviewServiceImpl implements ReviewService {
     private void updateFavoriteGames(long userId, Review review) {
         Optional<Long> toDelete = Optional.empty();
         List<Review> bestReviews = reviewDao.getBestReviews(userId);
+        if(bestReviews.stream().anyMatch(r -> r.getReviewedGame().getId().equals(review.getReviewedGame().getId()))){
+            return;
+        }
         if(bestReviews.size()==3) {
             bestReviews.sort((o1, o2) -> o2.getRating().compareTo(o1.getRating()));
             if (bestReviews.get(2).getRating() > review.getRating()) {
@@ -93,19 +96,6 @@ public class ReviewServiceImpl implements ReviewService {
             toDelete = Optional.of(bestReviews.remove(2).getId());
         }
         reviewDao.updateFavGames(userId, review.getId(), review.getReviewedGame().getId(), toDelete);
-
-        /*
-        List<Review> reviewList = reviewDao.getUserReviews(userId);
-        reviewList.removeIf(review -> review.getRating()<=7);
-        if(reviewList.stream().filter(review -> review.getRating()>rating).count()>=3)
-            return;
-        reviewList.sort((o1, o2) -> o2.getRating().compareTo(o1.getRating()));
-        reviewDao.updateFavGames(userId,
-                reviewList.subList(0,Math.min(2,reviewList.size()-1)).stream().map(
-                        review -> review.getReviewedGame().getId()).collect(Collectors.toList()),
-                reviewList.subList(0,Math.min(2,reviewList.size()-1)).stream().map(
-                        Review::getId).collect(Collectors.toList()));
-         */
     }
 
     @Override

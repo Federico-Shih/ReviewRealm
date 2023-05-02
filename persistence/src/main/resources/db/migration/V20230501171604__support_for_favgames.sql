@@ -1,5 +1,12 @@
-ALTER TABLE favoritegames ADD COLUMN IF NOT EXISTS reviewId integer;
-ALTER TABLE favoritegames ADD CONSTRAINT favoritegames_reviewId_fkey FOREIGN KEY (reviewId) REFERENCES reviews(id);
+CREATE TABLE IF NOT EXISTS favoritegames (
+                                             gameId integer,
+                                             userId integer,
+                                             reviewId integer,
+                                             PRIMARY KEY (reviewId),
+                                             FOREIGN KEY (gameId) REFERENCES games(id) ON DELETE CASCADE,
+                                             FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE,
+                                             FOREIGN KEY (reviewId) REFERENCES reviews(id) ON DELETE CASCADE
+);
 
 INSERT INTO favoritegames (userId, gameId, reviewId)
 SELECT authorid, gameId, id
