@@ -46,6 +46,17 @@
                     </label>
                 </c:forEach>
             </div>
+
+            <div class="col s12 center">
+                <c:forEach items="${profile.preferences}" var="genre"> <!--hacer sin form:-->
+                    <label>
+                        <span class="col s4 m3 center margin-for-genres">
+                            <input type="checkbox" checked id="${genre.id}" value="${genre.id}" name="genres"/>
+                            <span class="chip-small"><spring:message code="${genre.name}"/></span>
+                        </span>
+                    </label>
+                </c:forEach>
+            </div>
         </div>
 
 
