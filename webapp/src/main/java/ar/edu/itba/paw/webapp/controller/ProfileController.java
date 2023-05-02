@@ -21,6 +21,8 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 @Controller
 public class ProfileController {
@@ -144,7 +146,8 @@ public class ProfileController {
             return new ModelAndView("static-components/not-found");
         }
         mav.addObject("profile",user.get());
-        mav.addObject("availableGenres", genreService.getAllGenres());
+        mav.addObject("availableGenres", genreService.getAllGenres().stream()
+                .filter(genre -> !user.get().getPreferences().contains(genre)).collect(Collectors.toList()));
         return mav;
     }
 
