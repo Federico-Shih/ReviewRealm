@@ -22,7 +22,9 @@ public class UserDaoImpl implements UserDao {
     private final static RowMapper<User> USER_ROW_MAPPER = (resultSet, i) -> new User(resultSet.getLong("id"),
             resultSet.getString("username"),
             resultSet.getString("email"),
-            resultSet.getString("password"));
+            resultSet.getString("password"),
+            new ArrayList<>(),
+            resultSet.getBoolean("enabled"));
 
     private final static RowMapper<Follow> FOLLOW_ROW_MAPPER = ((resultSet, i) -> new Follow(resultSet.getLong("userId"), resultSet.getLong("following")));
 
@@ -79,7 +81,7 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public List<User> getFollowers(final long id) {
-        return jdbcTemplate.query("SELECT u.username, u.id, u.email, u.password " +
+        return jdbcTemplate.query("SELECT * " +
                 "FROM followers as f JOIN users as u ON f.userId = u.id " +
                 "WHERE following = ?",
                 USER_ROW_MAPPER,
@@ -88,7 +90,7 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public List<User> getFollowing(long id) {
-        return jdbcTemplate.query("SELECT u.username, u.id, u.email, u.password " +
+        return jdbcTemplate.query("SELECT *" +
                 "FROM followers f JOIN users u ON f.following = u.id " +
                 "WHERE userId = ?",
                 USER_ROW_MAPPER,
@@ -147,4 +149,8 @@ public class UserDaoImpl implements UserDao {
         }
     }
 
+    @Override
+    public boolean setEnabled(long id, boolean enabled) {
+        return jdbcTemplate.update("UPDATE users SET enabled = ? WHERE id = ?", enabled, id) == 1;
+    }
 }

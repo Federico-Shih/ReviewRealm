@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.servicesinterfaces;
 
 import ar.edu.itba.paw.exceptions.EmailAlreadyExistsException;
+import ar.edu.itba.paw.exceptions.UserAlreadyEnabled;
 import ar.edu.itba.paw.exceptions.UsernameAlreadyExistsException;
 import ar.edu.itba.paw.models.Follow;
 import ar.edu.itba.paw.enums.Genre;
@@ -32,4 +33,8 @@ public interface UserService {
     boolean userFollowsId(Long userId, Long otherId);
 
     List<Role> getUserRoles(Long userId);
+
+    boolean validateToken(String token);
+
+    void resendToken(String email) throws UserAlreadyEnabled;
 }

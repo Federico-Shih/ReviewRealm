@@ -33,4 +33,6 @@ public interface UserDao {
     List<Integer> getPreferencesById(long userId);
 
     void setPreferences(List<Integer> genres, long userId);
+
+    boolean setEnabled(long id, boolean enabled);
 }

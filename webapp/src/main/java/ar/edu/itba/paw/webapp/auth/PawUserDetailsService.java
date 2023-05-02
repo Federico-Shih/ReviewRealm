@@ -37,6 +37,7 @@ public class PawUserDetailsService implements UserDetailsService {
         final User user = us.getUserByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("No user found for email: " + email));
 
+        if (!user.isEnabled()) throw new UsernameNotFoundException("User not enabled");
         if(!BCRYPT_PATTERN.matcher(user.getPassword()).matches()) {
             throw new UsernameNotFoundException("User password is not hashed");
         }

@@ -1,25 +1,29 @@
 package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.exceptions.EmailAlreadyExistsException;
+import ar.edu.itba.paw.exceptions.UserAlreadyEnabled;
 import ar.edu.itba.paw.exceptions.UserNotFoundException;
 import ar.edu.itba.paw.exceptions.UsernameAlreadyExistsException;
-import ar.edu.itba.paw.models.Follow;
+import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.enums.Genre;
-import ar.edu.itba.paw.models.FollowerFollowingCount;
-import ar.edu.itba.paw.models.Role;
+import ar.edu.itba.paw.persistenceinterfaces.ValidationTokenDao;
 import ar.edu.itba.paw.servicesinterfaces.GenreService;
+import ar.edu.itba.paw.servicesinterfaces.MailingService;
 import ar.edu.itba.paw.servicesinterfaces.UserService;
-import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.persistenceinterfaces.UserDao;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.core.env.Environment;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.time.LocalDateTime;
+import java.util.*;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -27,23 +31,68 @@ public class UserServiceImpl implements UserService {
     private final UserDao userDao;
     private final PasswordEncoder passwordEncoder;
     private final GenreService genreService;
+    private final ValidationTokenDao tokenDao;
+    private final MailingService mailingService;
+    private final Environment env;
+
+    private static final int EXPIRATION_TIME = 60 * 60 * 24; // 24hs
 
     @Autowired
-    public UserServiceImpl(UserDao userDao, PasswordEncoder passwordEncoder, GenreService genreService) {
+    private MessageSource messageSource;
+
+    @Autowired
+    public UserServiceImpl(UserDao userDao,
+                           PasswordEncoder passwordEncoder,
+                           GenreService genreService,
+                           ValidationTokenDao tokenDao,
+                           MailingService mailingService,
+                           Environment env
+    ) {
         this.userDao = userDao;
         this.passwordEncoder = passwordEncoder;
         this.genreService = genreService;
+        this.tokenDao = tokenDao;
+        this.mailingService = mailingService;
+        this.env = env;
     }
 
     @Override
     public User createUser(String username, String email, String password) throws EmailAlreadyExistsException, UsernameAlreadyExistsException {
-        if(userDao.getByEmail(email).isPresent())
+        Optional<User> user = userDao.getByEmail(email);
+        boolean isEmptyPassword = false;
+        if (user.isPresent() && !(isEmptyPassword = user.get().getPassword().equals(""))) {
             throw new EmailAlreadyExistsException();
-
-        if(userDao.getByUsername(username).isPresent())
+        }
+        if(!isEmptyPassword && userDao.getByUsername(username).isPresent())
             throw new UsernameAlreadyExistsException();
-        LOGGER.info("Creating user: {}", email);
-        return userDao.create(username, email, passwordEncoder.encode(password));
+        User createdUser;
+        if (isEmptyPassword) {
+            LOGGER.info("Migrating empty pass user: {}", email);
+            createdUser = user.get();
+        } else {
+            LOGGER.info("Creating user: {}", email);
+            createdUser = userDao.create(username, email, "");
+        }
+
+        ExpirationToken token = this.tokenDao.create(RandomStringUtils.randomAlphanumeric(16),
+                createdUser.getId(),
+                passwordEncoder.encode(password),
+                LocalDateTime.now().plusSeconds(EXPIRATION_TIME));
+        sendValidationTokenEmail(token, createdUser);
+        return createdUser;
+    }
+
+    private void sendValidationTokenEmail(ExpirationToken token, User user) {
+        Map<String, Object> templateVariables = new HashMap<>();
+        templateVariables.put("webBaseUrl", env.getProperty("mailing.weburl"));
+        templateVariables.put("token", token.getToken());
+        templateVariables.put("user", user.getUsername());
+
+        Object[] stringArgs = {};
+        String subject = messageSource.getMessage("email.validation.subject",
+                stringArgs, LocaleContextHolder.getLocale());
+
+        mailingService.sendEmail(user.getEmail(), subject, "validate", templateVariables);
     }
 
     @Override
@@ -108,6 +157,26 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<Role> getUserRoles(Long userId) {
         return userDao.getRoles(userId);
+    }
+
+    @Override
+    public boolean validateToken(String token) {
+        Optional<ExpirationToken> expToken = tokenDao.getByToken(token);
+        expToken.ifPresent((expirationToken) -> {
+            User user = userDao.findById(expirationToken.getUserId()).orElseThrow(() -> new UserNotFoundException("illegal.state"));
+            userDao.changePassword(user.getEmail(), expirationToken.getPassword());
+        });
+        return expToken.isPresent();
+    }
+
+    @Override
+    public void resendToken(String email) throws UserAlreadyEnabled {
+        User user = userDao.getByEmail(email).orElseThrow(() -> new UserNotFoundException("user.notfound"));
+        if (user.isEnabled()) {
+            throw new UserAlreadyEnabled();
+        }
+        ExpirationToken token = tokenDao.refresh(user.getId(), RandomStringUtils.randomAlphanumeric(16));
+        sendValidationTokenEmail(token, user);
     }
 
     @Override

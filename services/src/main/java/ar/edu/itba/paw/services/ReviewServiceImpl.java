@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -34,16 +35,18 @@ public class ReviewServiceImpl implements ReviewService {
     private final UserService userService;
     private final GameService gameService;
     private final MailingService mailingService;
+    private final Environment env;
 
     @Autowired
     private MessageSource messageSource;
 
     @Autowired
-    public ReviewServiceImpl(ReviewDao reviewDao, UserService userService, GameService gameService, MailingService mailingService) {
+    public ReviewServiceImpl(ReviewDao reviewDao, UserService userService, GameService gameService, MailingService mailingService, Environment env) {
         this.reviewDao = reviewDao;
         this.userService = userService;
         this.gameService = gameService;
         this.mailingService = mailingService;
+        this.env = env;
     }
 
 
@@ -66,7 +69,7 @@ public class ReviewServiceImpl implements ReviewService {
         templateVariables.put("author", author.getUsername());
         templateVariables.put("game", reviewedGame.getName());
         templateVariables.put("reviewId", review.getId());
-        templateVariables.put("webBaseUrl", "http://localhost:8080/paw-2023a-04");
+        templateVariables.put("webBaseUrl", env.getProperty("mailing.weburl"));
 
         Object[] stringArgs = {author.getUsername()};
         String subject = messageSource.getMessage("email.newreview.subject",

@@ -12,17 +12,19 @@ public class User {
     private final String email;
     private String password;
     private List<Genre> preferences;
+    private final boolean enabled;
 
-    public User(Long id, String username, String email, String password, List<Genre> preferences) {
+    public User(Long id, String username, String email, String password, List<Genre> preferences, boolean enabled) {
         this.id = id;
         this.username = username;
         this.email = email;
         this.password = password;
         this.preferences = preferences;
+        this.enabled = enabled;
     }
 
     public User(Long id, String username, String email, String password) {
-        this(id, username, email, password, new ArrayList<>());
+        this(id, username, email, password, new ArrayList<>(), false);
     }
 
     public Long getId() {
@@ -63,6 +65,10 @@ public class User {
         if (!(o instanceof User)) return false;
         User user = (User) o;
         return this.getId().equals(user.getId());
+    }
+
+    public boolean isEnabled() {
+        return enabled;
     }
 }
 
