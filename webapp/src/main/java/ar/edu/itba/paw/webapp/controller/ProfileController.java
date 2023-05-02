@@ -72,6 +72,7 @@ public class ProfileController {
         ModelAndView mav = new ModelAndView("profile/friends-list");
         mav.addObject("users", users);
         mav.addObject("usersLength", users.size());
+        mav.addObject("page", isFollowersPage ? "profile.followers.page" : "profile.following.page");
 
         Optional<User> user = userService.getUserById(userId);
         if(!user.isPresent())

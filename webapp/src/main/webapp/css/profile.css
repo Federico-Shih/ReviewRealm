@@ -25,10 +25,13 @@
 }
 
 .profile-preferences {
-
+    display: flex;
+    align-items: baseline;
+    font-size: 16px;
 }
 
 .profile-preferences-list {
+    margin-left: 5px;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;

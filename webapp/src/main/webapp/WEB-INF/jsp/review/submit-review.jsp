@@ -168,7 +168,7 @@
                 <c:set var="gameUrl" value="${gameUrl}" scope="request" />
                 <c:import url="/WEB-INF/jsp/games/short-game-details.jsp" />
             </c:if>
-            <form action="${searchEndpoint}">
+            <form action="${searchEndpoint}" method="post">
                 <div class="search-game-list">
                     <input name="search" class="z-depth-1-half search-field white-text" value="${searchField}" placeholder="<spring:message code="game.list.placeholder.search"/>">
                     <button class="btn-flat button-color white-text" type="submit" ><i class="material-icons" >search</i></button>

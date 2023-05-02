@@ -123,7 +123,7 @@
                             <c:if test="${game.averageRating >0}">
                                 <span class="game-card-details-extra-text"><spring:message
                                         code="game.details.review.statistics.rating"/></span>
-                                <span class=game-card-details-extra-number>${game.averageRating}
+                                <span class=game-card-details-extra-number>${game.averageRatingString}
                                         <span class="game-card-details-extra-minor">/10</span>
                                     </span>
                             </c:if>

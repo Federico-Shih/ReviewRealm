@@ -12,11 +12,18 @@
     <link rel="stylesheet" href="<c:url value="/css/game.css" />"/>
     <link rel="shortcut icon" type="image/png" href="<c:url value="/static/review_realm_logo_white_32px.png" />">
     <script src="<c:url value="/js/materialize.min.js" />"></script>
-    <title>Friends</title>
+    <title><spring:message code="${pageName}" arguments="${username}" /></title>
 </head>
 <body>
     <jsp:include page="../static-components/navbar.jsp"/>
+    <div class="row" style="margin:2%">
+        <div class="col s12 valign-wrapper breadcrumb-align">
+            <a href="<c:url value="."/>" class="breadcrumb"><c:out value="${username}"/></a>
+            <a href="#" class="breadcrumb"><spring:message code="${page}" /></a>
+        </div>
+    </div>
     <div class="container row">
+
         <h3><spring:message code="${pageName}" arguments="${username}" /></h3>
 
         <c:forEach items="${users}" var="user">

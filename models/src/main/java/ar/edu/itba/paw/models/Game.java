@@ -66,6 +66,11 @@ public class Game {
     public Double getAverageRating() {
         return averageRating;
     }
+
+    public String getAverageRatingString() {
+        return String.format("%.2f", averageRating);
+    }
+
     public void setGenres(List<Genre> genres) {
         if(this.genres.isEmpty()){ // You can only change the list once as the game
             // starts out with an empty list once it is retrieved from the db

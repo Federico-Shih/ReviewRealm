@@ -165,6 +165,26 @@ nav {
     flex-direction: column;
 }
 
+.breadcrumb-align {
+    display: flex;
+    flex-direction: row;
+    align-items: baseline !important;
+}
+
+.breadcrumb {
+    font-size: 22px;
+}
+
+.navbar-dropdown-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.navbar-dropdown {
+    display: flex;
+}
+
 .input-general {
     box-sizing: border-box !important;
     padding: 2px !important;

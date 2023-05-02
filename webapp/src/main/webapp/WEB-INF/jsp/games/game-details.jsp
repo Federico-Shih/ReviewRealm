@@ -19,9 +19,9 @@
 <c:url value="/game/list/" var="gameList"/>
 <jsp:include page="../static-components/navbar.jsp"/>
 <div class="row" style="margin:2%">
-    <div class="col s12 valign-wrapper">
+    <div class="col s12 valign-wrapper breadcrumb-align">
         <a href="${gameList}" class="breadcrumb"><spring:message code="game.list.placeholder.search" /></a>
-        <a href="#" class="breadcrumb"><c:out value="${game.name}" /> </a>
+        <a href="#" class="breadcrumb"><c:out value="${game.name}" /></a>
     </div>
 </div>
 <div class="game-details-section">

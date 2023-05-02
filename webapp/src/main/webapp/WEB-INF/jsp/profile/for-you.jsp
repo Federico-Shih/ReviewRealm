@@ -114,7 +114,7 @@
         </div>
         <div class="center-align">
             <c:if test="${fn:length(reviewsFollowing) == size}">
-                <button class="btn-flat btn-floating-color no-a-decoration"> <a href="?size=${fn:length(reviewsFollowing) + 6}}"> <spring:message code="for-you.more"/> </a></button>
+                <button class="btn-flat btn-floating-color no-a-decoration"> <a href="?size=${fn:length(reviewsFollowing) + 6}"> <spring:message code="for-you.more"/> </a></button>
             </c:if>
         </div>
     </div>

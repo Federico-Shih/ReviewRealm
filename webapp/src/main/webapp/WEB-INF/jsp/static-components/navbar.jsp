@@ -43,11 +43,12 @@
                         </li>
                     </c:if>
                     <c:if test="${loggedUser != null}">
-                        <li>
-                            <a class="dropdown-trigger btn" href="#" data-target="dropdownProfile">
+                        <li class="navbar-dropdown-container">
+                            <a class="dropdown-trigger btn navbar-dropdown" href="#" data-target="dropdownProfile">
                                 <span>
                                     <spring:message code="navbar.welcome" arguments="${loggedUser.username}"/>
                                 </span>
+                                <i class="material-icons right">arrow_drop_down</i>
                             </a>
                             <ul id="dropdownProfile" class="dropdown-content profile-dropdown">
                                 <li>
