@@ -77,7 +77,7 @@
     <div class="container">
         <h3 th:text="#{email.validation.longtitle (${user})}"></h3>
         <div class="token-container">
-            <h2 th:text="#{${token}}"></h2>
+            <h2 th:text="${token}"></h2>
         </div>
         <a th:href="@{{base}/validate/{token}(base=${webBaseUrl},token=${token})}">
             <span class="goto-button" th:text="#{email.validation.cta}">

@@ -2,6 +2,7 @@ package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.exceptions.EmailAlreadyExistsException;
 import ar.edu.itba.paw.exceptions.UserAlreadyEnabled;
+import ar.edu.itba.paw.exceptions.UserNotFoundException;
 import ar.edu.itba.paw.exceptions.UsernameAlreadyExistsException;
 import ar.edu.itba.paw.forms.RegisterForm;
 import ar.edu.itba.paw.forms.ResendEmailForm;
@@ -80,7 +81,7 @@ public class UserController {
     }
 
     @RequestMapping(value = "/validate", method = RequestMethod.POST)
-    public ModelAndView validateToken(@RequestParam("validationCode") String code) {
+    public ModelAndView validateToken(@RequestParam("validationCode") String code, @ModelAttribute("resendEmailForm") ResendEmailForm form) {
         boolean validated = us.validateToken(code);
         if (!validated) {
             return new ModelAndView("user/recovery").addObject("unknownToken", true);
@@ -89,8 +90,8 @@ public class UserController {
     }
 
     @RequestMapping(value = "/validate/{token}", method = RequestMethod.GET)
-    public ModelAndView validateByPath(@PathVariable("token") String token) {
-        return validateToken(token);
+    public ModelAndView validateByPath(@PathVariable("token") String token, @ModelAttribute("resendEmailForm") ResendEmailForm form) {
+        return validateToken(token, form);
     }
 
     @RequestMapping(value = "/resend-email", method = RequestMethod.POST)
@@ -102,6 +103,9 @@ public class UserController {
             us.resendToken(form.getEmail());
         } catch (UserAlreadyEnabled e) {
             errors.rejectValue("email", "user.already.exists");
+            return validateForm(form, form.getEmail(), false);
+        } catch (UserNotFoundException e) {
+            errors.rejectValue("email", "user.not.exists");
             return validateForm(form, form.getEmail(), false);
         }
         return validateForm(form, form.getEmail(), true);

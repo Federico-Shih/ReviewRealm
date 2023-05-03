@@ -93,7 +93,6 @@
             <c:if test="${empty reviewsFollowing}">
                 <div class="s12 col center">
                     <span> <spring:message code="for-you.reviews.notfound"/></span>
-                    <a href="${searchUsers}"><span class><spring:message code="for-you.doit"/></span></a>
                 </div>
             </c:if>
             <c:forEach var="review" items="${reviewsFollowing}">

@@ -165,6 +165,7 @@ public class UserServiceImpl implements UserService {
         expToken.ifPresent((expirationToken) -> {
             User user = userDao.findById(expirationToken.getUserId()).orElseThrow(() -> new UserNotFoundException("illegal.state"));
             userDao.changePassword(user.getEmail(), expirationToken.getPassword());
+            userDao.setEnabled(user.getId(), true);
         });
         return expToken.isPresent();
     }
