@@ -3,11 +3,8 @@ package ar.edu.itba.paw.servicesinterfaces;
 import ar.edu.itba.paw.exceptions.EmailAlreadyExistsException;
 import ar.edu.itba.paw.exceptions.UserAlreadyEnabled;
 import ar.edu.itba.paw.exceptions.UsernameAlreadyExistsException;
-import ar.edu.itba.paw.models.Follow;
+import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.enums.Genre;
-import ar.edu.itba.paw.models.FollowerFollowingCount;
-import ar.edu.itba.paw.models.Role;
-import ar.edu.itba.paw.models.User;
 
 import java.util.List;
 import java.util.Optional;
@@ -37,4 +34,6 @@ public interface UserService {
     boolean validateToken(String token);
 
     void resendToken(String email) throws UserAlreadyEnabled;
+
+    Paginated<User> getSearchedUsers(int page, int pageSize, String search);
 }

@@ -192,6 +192,11 @@ nav {
     background-color: #13112D !important;
 }
 
+.entire-width {
+    width: 100%;
+}
+
+
 .input-general ::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
     color: white !important;
     opacity: 1; /* Firefox */

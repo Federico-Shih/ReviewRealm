@@ -21,3 +21,18 @@
     font-weight: 600;
     white-space: nowrap;
 }
+
+.search-section {
+    width: 50%;
+    display: flex;
+    align-self: center;
+}
+
+.user-card-small {
+    margin-right: 2.5%;
+}
+
+.align-icon-text {
+    display: flex;
+    justify-content: start;
+}

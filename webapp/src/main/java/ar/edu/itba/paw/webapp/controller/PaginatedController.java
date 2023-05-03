@@ -4,8 +4,13 @@ import ar.edu.itba.paw.models.Paginated;
 import org.springframework.web.servlet.ModelAndView;
 
 public class PaginatedController {
-    private final int MAX_PAGES_PAGINATION;
-    private final int INITIAL_PAGE;
+    private int MAX_PAGES_PAGINATION = 6;
+    private int INITIAL_PAGE = 1;
+
+    PaginatedController() {
+
+    }
+
     PaginatedController(int max, int initial) {
         this.MAX_PAGES_PAGINATION = max;
         this.INITIAL_PAGE = initial;

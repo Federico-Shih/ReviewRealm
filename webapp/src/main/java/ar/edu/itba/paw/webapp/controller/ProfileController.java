@@ -4,6 +4,7 @@ import ar.edu.itba.paw.exceptions.UserNotFoundException;
 import ar.edu.itba.paw.models.FollowerFollowingCount;
 import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.forms.EditProfileForm;
+import ar.edu.itba.paw.models.Paginated;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.servicesinterfaces.GameService;
 import ar.edu.itba.paw.servicesinterfaces.GenreService;
@@ -25,7 +26,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Controller
-public class ProfileController {
+public class ProfileController extends PaginatedController {
     private static final Logger LOGGER = LoggerFactory.getLogger(ProfileController.class);
     private final UserService userService;
     private final ReviewService reviewService;
@@ -36,6 +37,7 @@ public class ProfileController {
     @Autowired
     public ProfileController(UserService userService, ReviewService reviewService,
                              GameService gameService, GenreService genreService){
+        super();
         this.userService = userService;
         this.reviewService = reviewService;
         this.gameService = gameService;
@@ -171,14 +173,19 @@ public class ProfileController {
     }
 
     @RequestMapping(value="/for-you", method = RequestMethod.GET)
-    public ModelAndView forYouPage(@RequestParam(value = "size", defaultValue = "6") Integer size) {
+    public ModelAndView forYouPage(@RequestParam(value = "size", defaultValue = "6") Integer size,
+                                   @RequestParam(value= "search", defaultValue = "") String search) {
         final ModelAndView mav = new ModelAndView("profile/for-you");
         User loggedUser = AuthenticationHelper.getLoggedUser(userService);
 
-        if (loggedUser == null) {
-            return new ModelAndView("redirect:/login"); //TODO: Revisar que esto ese bien
+        if(!search.isEmpty()) {
+            Paginated<User> searchedUsers = userService.getSearchedUsers(1, 5, search);
+            super.paginate(mav, searchedUsers);
+            mav.addObject("users", searchedUsers.getList());
         }
 
+
+        mav.addObject("search", search);
         mav.addObject("recommendedGames", gameService.getRecommendationsOfGamesForUser(loggedUser.getId(),MAX_RECOMMENDED_GAMES));
         mav.addObject("reviewsFollowing", reviewService.getReviewsFromFollowingByUser(loggedUser.getId(), size));
         mav.addObject("user",loggedUser);

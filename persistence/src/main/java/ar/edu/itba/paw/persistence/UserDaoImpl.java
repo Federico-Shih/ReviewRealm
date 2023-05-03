@@ -153,4 +153,16 @@ public class UserDaoImpl implements UserDao {
     public boolean setEnabled(long id, boolean enabled) {
         return jdbcTemplate.update("UPDATE users SET enabled = ? WHERE id = ?", enabled, id) == 1;
     }
+    @Override
+    public Paginated<User> getSearchedUsers(int page, int pageSize, int offset, String search) {
+        List<User> users = jdbcTemplate.query("SELECT * FROM users WHERE username ILIKE ? LIMIT ? OFFSET ?", USER_ROW_MAPPER, "%" + search + "%", pageSize, offset);
+        return new Paginated<>(page, pageSize, offset, users);
+    }
+
+    @Override
+    public Long getTotalAmountOfUsers() {
+        return jdbcTemplate.queryForObject("SELECT count(*) from users", Long.class);
+    }
+
+
 }

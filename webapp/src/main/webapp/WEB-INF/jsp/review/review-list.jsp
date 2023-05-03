@@ -27,7 +27,7 @@
 <jsp:include page="../static-components/navbar.jsp"><jsp:param name="selected" value="review-list" /></jsp:include>
 
 <div class="review-list-page">
-    <div class="left-panel" style="padding: 0 .75rem">
+    <div class="left-panel">
         <form action="${applyFilters}" class="review-filters-panel">
             <div class="review-filters-panel-section">
                 <button type="submit" class="btn" style="width: 100%"><spring:message code="apply.filters"/></button>

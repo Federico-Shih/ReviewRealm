@@ -1,10 +1,7 @@
 package ar.edu.itba.paw.persistenceinterfaces;
 
 import ar.edu.itba.paw.enums.Genre;
-import ar.edu.itba.paw.models.Follow;
-import ar.edu.itba.paw.models.FollowerFollowingCount;
-import ar.edu.itba.paw.models.Role;
-import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -35,4 +32,8 @@ public interface UserDao {
     void setPreferences(List<Integer> genres, long userId);
 
     boolean setEnabled(long id, boolean enabled);
+
+    Paginated<User> getSearchedUsers(int page, int pageSize, int offset, String search);
+
+    Long getTotalAmountOfUsers();
 }

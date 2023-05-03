@@ -84,9 +84,9 @@
             <c:forEach var="game" items="${games}">
                 <a class="profile-favorite-game" href="<c:url value="/game/${game.id}"/> ">
                     <div class="row">
-                        <div class="game-card-for-list medium z-depth-4">
+                        <div class="game-card-for-list-small medium z-depth-4">
                             <c:url value="${game.imageUrl}" var="imgUrl" />
-                            <img class="game-img" src="${imgUrl}"
+                            <img class="game-img-small" src="${imgUrl}"
                                  alt="<c:out value="${game.name}"/>">
                             <div class="game-card-title"><c:out value="${game.name}"/></div>
                             <div class="game-genres">

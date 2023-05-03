@@ -20,6 +20,7 @@
 </jsp:include>
 <c:url var="setPreferences" value="/profile/edit"/>
 <c:url var="searchUsers" value="/"/> <%--TODO Busqueda de usuarios para following--%>
+<c:url value="/for-you" var="sendSearch"/>
 
 <div class="for-you-page">
     <div class="for-you-section">
@@ -56,10 +57,41 @@
         </div>
     </div>
     <div class="for-you-section">
+        <span class="for-you-section-header"><spring:message code="for-you.search.users"/></span>
+        <form action="${sendSearch}" class="entire-width">
+            <div class="search-section">
+                <div class="search-game-list">
+                    <input name="search" class="z-depth-1-half search-field" type="search" value="${search}"
+                           placeholder="<spring:message code="for-you.search-placeholder"/>">
+                    <button class="btn-flat button-color white-text" type="submit"><i class="material-icons">search</i>
+                    </button>
+                </div>
+            </div>
+        </form>
+        <c:if test="${not empty search}">
+            <div class="container row">
+                <c:forEach var="user" items="${users}">
+                    <div class="col s5 card user-card-small">
+                        <a href="<c:url value="/profile/${user.id}"/> ">
+                            <div class="card-content">
+                                <div class="card-title">
+                                    <div class="align-icon-text">
+                                        <i class="material-icons">person</i>
+                                        <span><c:out value="${user.username}" /></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </c:forEach>
+            </div>
+        </c:if>
+    </div>
+    <div class="for-you-section">
         <span class="for-you-section-header"><spring:message code="for-you.reviews.header"/></span>
         <div class="review-card-list">
             <c:if test="${empty reviewsFollowing}">
-                <div class="col s12 center-align">
+                <div class="s12 col center">
                     <span> <spring:message code="for-you.reviews.notfound"/></span>
                     <a href="${searchUsers}"><span class><spring:message code="for-you.doit"/></span></a>
                 </div>

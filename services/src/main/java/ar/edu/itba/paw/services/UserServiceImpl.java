@@ -180,6 +180,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public Paginated<User> getSearchedUsers(int page, int pageSize, String search) {
+        int totalPages = (int) Math.ceil(userDao.getTotalAmountOfUsers()/(double) pageSize);
+
+        if (page > totalPages || page <= 0) {
+            return new Paginated<>(page, pageSize, totalPages, new ArrayList<>());
+        }
+        int offset = (page - 1) * pageSize;
+
+        return userDao.getSearchedUsers(page, pageSize, offset, search);
+    }
+
+    @Override
     public List<Genre> getPreferences(long userId) {
         List<Genre> list = new ArrayList<>();
         Optional<Genre> genre;

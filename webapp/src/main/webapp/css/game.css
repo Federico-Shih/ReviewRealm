@@ -12,11 +12,31 @@
     height: 400px;
 }
 
+.game-card-for-list-small{
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    background: #13112D;
+    padding: 4%;
+    border: 1px solid #444155;
+    border-radius: 10px;
+    color: white;
+    margin-top: 2%;
+    height: 160px;
+}
+
 .game-img{
     width: 100%;
     height: 250px;
     object-fit: contain;
 }
+
+.game-img-small{
+    width: 100%;
+    height: 100px;
+    object-fit: contain;
+}
+
 .search-game-list{
     display: flex;
     flex-direction: row;
