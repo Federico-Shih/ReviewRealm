@@ -9,7 +9,7 @@
 /* TODO Agregar un resizing a las imagenes para que ocupe toda la pantalla*/
 .game-image {
     width: 100%;
-    height: auto;
+    height: 180px;
     object-fit: contain;
 }
 

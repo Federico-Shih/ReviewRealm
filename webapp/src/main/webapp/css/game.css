@@ -75,6 +75,7 @@
     flex-direction: column;
     justify-content: flex-start;
     width: 70%;
+    text-align: start;
 }
 .game-card-details-extra{
     display: flex;

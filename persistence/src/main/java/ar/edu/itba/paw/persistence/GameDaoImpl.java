@@ -124,10 +124,18 @@ public class GameDaoImpl implements GameDao {
                 "WHERE g.gameid = ?",GAME_GENRE_ROW_MAPPER,id);
     }
 
-    private Long getTotalAmountOfGames(Filter filter){
-        List<Object> preparedStatementArgs = new ArrayList<>(filter.getGameGenresFilter());
+    private Long getTotalAmountOfGames(Filter filter, String searchQuery){
+        List<Object> preparedStatementArgs = new ArrayList<>();
+        String filterQuery = toGameFilterString(filter, preparedStatementArgs);
+        if (!searchQuery.isEmpty()) {
+
+            filterQuery += (filterQuery.isEmpty()) ? " WHERE " : " AND ";
+            filterQuery += " g.name ILIKE ? ";
+
+            preparedStatementArgs.add("%" + searchQuery + "%");
+        }
         return jdbcTemplate.queryForObject("SELECT COUNT(distinct g.id) FROM games as g "+
-                toGameFilterString(filter,new ArrayList<>()),
+                filterQuery ,
                 preparedStatementArgs.toArray(),
                 Long.class);
     }
@@ -147,7 +155,7 @@ public class GameDaoImpl implements GameDao {
 
     @Override
     public Paginated<Game> getAll(int page, Integer pageSize, Filter filter, String searchQuery) {
-        Long totalGames = getTotalAmountOfGames(filter);
+        Long totalGames = getTotalAmountOfGames(filter, searchQuery);
         int totalPages = (int) Math.ceil(totalGames/pageSize.doubleValue());
 
         if (page > totalPages || page <= 0) {
@@ -186,7 +194,6 @@ public class GameDaoImpl implements GameDao {
             str.append("WHERE gg.genreid IN (");
             str.append(gamesAmount);
             str.append(")");
-            // TODO: filters
         }
         return str.toString();
     }
@@ -204,6 +211,7 @@ public class GameDaoImpl implements GameDao {
         preparedStatementArgs.add(userId);
         preparedStatementArgs.add(amount);
         filterString += (filterString.isEmpty()) ? " WHERE " : " AND ";
+        // TODO: fix repeated
         List<Game> games = jdbcTemplate.query("SELECT * " +
                 "FROM games g "+ filterString +
                 " NOT EXISTS(select * from reviews where reviews.gameid = g.id and reviews.authorid=?)"+
@@ -218,7 +226,7 @@ public class GameDaoImpl implements GameDao {
     public Paginated<Game> getAllShort(int page, Integer pageSize, String searchQuery) {
         Filter filter = new Filter( new ArrayList<>(),new ArrayList<>(),
                 null,GameOrderCriteria.NAME, OrderDirection.ASCENDING);
-        Long totalGames = getTotalAmountOfGames(filter);
+        Long totalGames = getTotalAmountOfGames(filter, searchQuery);
         int totalPages = (int) Math.ceil(totalGames/pageSize.doubleValue());
 
         if (page > totalPages || page <= 0) {

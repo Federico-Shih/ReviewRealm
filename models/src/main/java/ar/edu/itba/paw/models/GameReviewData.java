@@ -56,4 +56,8 @@ public class GameReviewData {
     public double getCompletability() {
         return completability;
     }
+
+    public String getAverageRatingString() {
+        return String.format("%.2f", averageRating);
+    }
 }

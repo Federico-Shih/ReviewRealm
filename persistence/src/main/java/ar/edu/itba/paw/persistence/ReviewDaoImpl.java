@@ -104,7 +104,6 @@ public class ReviewDaoImpl implements ReviewDao {
             str.append("WHERE gg.genreid IN (");
             str.append(gamesAmount);
             str.append(")");
-            // TODO: filters
         }
         return str.toString();
     }

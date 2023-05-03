@@ -57,7 +57,7 @@
         <div class="statistics-list">
             <div class="game-statistics">
                 <span class="game-statistics-header"><spring:message code="game.details.review.statistics.rating"/></span>
-                <span class=game-statistics-number>${gameReviewData.averageRating}<span class="game-statistics-number-minor">/10</span></span>
+                <span class=game-statistics-number>${gameReviewData.averageRatingString}<span class="game-statistics-number-minor">/10</span></span>
             </div>
             <c:if test="${gameReviewData.averagePlatform != null}">
                 <div class="game-statistics">

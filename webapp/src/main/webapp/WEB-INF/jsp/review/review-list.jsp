@@ -1,6 +1,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <html>
 <head>
@@ -11,21 +12,25 @@
     <link rel="shortcut icon" type="image/png" href="<c:url value="/static/review_realm_logo_white_32px.png" />">
     <script src="<c:url value="/js/materialize.min.js" />"></script>
     <title><spring:message code="review.list.title"/></title>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var elem = document.querySelector('.collapsible');
+            var instance = M.Collapsible.init(elem, { accordion: false });
+            <c:if test="${fn:length(filters.selectedGenres) > 0}">
+                instance.open(0);
+            </c:if>
+        });
+    </script>
 </head>
 <c:url value="/" var="applyFilters"/>
-<c:url value="/review/submit" var="submit_review"/>
 <body class="background has-background-black">
 <jsp:include page="../static-components/navbar.jsp"><jsp:param name="selected" value="review-list" /></jsp:include>
-<div class="fixed-action-btn">
-    <a class="btn-floating btn-large" href="${submit_review}">
-        <i class="large material-icons">create</i>
-    </a>
-</div>
+
 <div class="review-list-page">
-    <div class="left-panel">
+    <div class="left-panel" style="padding: 0 .75rem">
         <form action="${applyFilters}" class="review-filters-panel">
             <div class="review-filters-panel-section">
-                <button type="submit" class="btn"><spring:message code="apply.filters"/></button>
+                <button type="submit" class="btn" style="width: 100%"><spring:message code="apply.filters"/></button>
                 <span class="review-filters-panel-title"><spring:message code="order.by"/></span>
                 <div>
                     <c:forEach var="criteria" items="${orderCriteria}">
@@ -56,23 +61,33 @@
                     <i class="material-icons">clear</i>
                     <span><spring:message code="remove.filters"/></span>
                 </button></a>
-                <span class="review-filters-panel-subtitle"><spring:message code="review.genres"/></span>
-                <c:forEach var="genre" items="${filters.selectedGenres}">
-                    <p>
-                        <label>
-                            <input name="f-gen" value="${genre.id}" type="checkbox" class="filled-in" checked/>
-                            <span><spring:message code="${genre.name}"/></span>
-                        </label>
-                    </p>
-                </c:forEach>
-                <c:forEach var="genre" items="${filters.unselectedGenres}">
-                    <p>
-                        <label>
-                            <input name="f-gen" value="${genre.id}" type="checkbox" class="filled-in"/>
-                            <span><spring:message code="${genre.name}"/></span>
-                        </label>
-                    </p>
-                </c:forEach>
+                <ul class="collapsible" style="width: 100%">
+                    <li style="width: 100%">
+                        <div class="collapsible-header filters-header" style="width: 100%">
+                            <i class="material-icons">videogame_asset</i>
+                            <span class="review-filters-panel-subtitle"><spring:message code="review.genres"/></span>
+                            <i class="material-icons right">arrow_drop_down</i>
+                        </div>
+                        <div class="collapsible-body row filters-container">
+                            <c:forEach var="genre" items="${filters.selectedGenres}">
+                                <p class="col s6">
+                                    <label>
+                                        <input name="f-gen" value="${genre.id}" type="checkbox" class="filled-in" checked/>
+                                        <span><spring:message code="${genre.name}"/></span>
+                                    </label>
+                                </p>
+                            </c:forEach>
+                            <c:forEach var="genre" items="${filters.unselectedGenres}">
+                                <p class="col s6">
+                                    <label>
+                                        <input name="f-gen" value="${genre.id}" type="checkbox" class="filled-in"/>
+                                        <span><spring:message code="${genre.name}"/></span>
+                                    </label>
+                                </p>
+                            </c:forEach>
+                        </div>
+                    </li>
+                </ul>
                 <%--<span class="review-filters-panel-subtitle">Preferencias del reseñador</span>
                 <c:forEach var="genre" items="${filters.selectedPreferences}">
                     <p>

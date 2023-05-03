@@ -28,7 +28,7 @@
 <spring:message code="reviewForm.content.placeholder" var="contentPlaceholder"/>
 <spring:message code="review.author.generic" var="authorPlaceholder"/>
 <c:url value="/review/submit/${game.id}" var="submitEndpoint"/>
-<c:url value="/review/submit/" var="searchEndpoint"/>
+<c:url value="/review/submit" var="searchEndpoint"/>
 <c:url value="/game/${game.id}" var="gameUrl" />
 
 <body>
@@ -50,9 +50,7 @@
 
                         </div>
                         <div>/10</div>
-
                     </div>
-
                     <div class="card-content card-content-container">
                         <div class="card-title review-card-title row valign-wrapper">
                             <div class="col s12 flow-text">
@@ -168,7 +166,7 @@
                 <c:set var="gameUrl" value="${gameUrl}" scope="request" />
                 <c:import url="/WEB-INF/jsp/games/short-game-details.jsp" />
             </c:if>
-            <form action="${searchEndpoint}" method="post">
+            <form action="${searchEndpoint}" method="get">
                 <div class="search-game-list">
                     <input name="search" class="z-depth-1-half search-field white-text" value="${searchField}" placeholder="<spring:message code="game.list.placeholder.search"/>">
                     <button class="btn-flat button-color white-text" type="submit" ><i class="material-icons" >search</i></button>

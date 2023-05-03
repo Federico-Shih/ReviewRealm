@@ -15,6 +15,12 @@
     });
 </script>
 
+<c:url value="/review/submit" var="submit_review"/>
+<div class="fixed-action-btn">
+    <a class="btn-floating btn-large" href="${submit_review}">
+        <i class="large material-icons">create</i>
+    </a>
+</div>
 <div>
     <nav>
         <div class="navbar">

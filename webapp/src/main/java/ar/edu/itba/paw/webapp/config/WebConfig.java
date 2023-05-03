@@ -75,10 +75,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     }
 
     private DatabasePopulator databasePopulator() {
-        final ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
-        populator.addScript(usersSchema);
-
-        return populator;
+        return new ResourceDatabasePopulator();
     }
 
     @Bean
