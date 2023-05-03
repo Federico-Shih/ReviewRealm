@@ -26,10 +26,16 @@
     <div class="for-you-section">
         <span class="for-you-section-header"><spring:message code="for-you.games.header"/> </span>
         <div class="row">
-            <c:if test="${empty recommendedGames}">
+            <c:if test="${empty user.preferences}">
                 <div class="col s12 center-align">
-                    <span> <spring:message code="for-you.games.notfound"/></span>
-                    <a href="${setPreferences}"><span class><spring:message code="for-you.doit"/></span></a>
+                    <span> <spring:message code="for-you.nopreferencesset"/></span>
+                    <a href="${setPreferences}"><span class><spring:message code="for-you.nopreferencesset.doit"/></span></a>
+                </div>
+            </c:if>
+            <c:if test="${!(empty user.preferences) && empty recommendedGames}">
+                <div class="col s12 center-align">
+                    <span> <spring:message code="for-you.norecomendedgames"/></span>
+                    <a href="${setPreferences}"><span class><spring:message code="for-you.norecomendedgames.doit"/></span></a>
                 </div>
             </c:if>
             <c:forEach items="${recommendedGames}" var="game">

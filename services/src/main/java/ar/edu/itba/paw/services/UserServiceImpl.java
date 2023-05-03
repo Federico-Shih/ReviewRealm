@@ -97,12 +97,16 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Optional<User> getUserByEmail(String email) {
-        return userDao.getByEmail(email);
+        Optional<User> user = userDao.getByEmail(email);
+        user.ifPresent(value -> value.setPreferences(getPreferences(user.get().getId())));
+        return user;
     }
 
     @Override
     public Optional<User> getUserByUsername(String username) {
-        return userDao.getByUsername(username);
+        Optional<User> user = userDao.getByUsername(username);
+        user.ifPresent(value -> value.setPreferences(getPreferences(user.get().getId())));
+        return user;
     }
 
     @Override

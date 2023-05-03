@@ -4,6 +4,7 @@ import ar.edu.itba.paw.exceptions.UserNotFoundException;
 import ar.edu.itba.paw.models.FollowerFollowingCount;
 import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.forms.EditProfileForm;
+import ar.edu.itba.paw.models.Game;
 import ar.edu.itba.paw.models.Paginated;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.servicesinterfaces.GameService;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
@@ -184,9 +186,9 @@ public class ProfileController extends PaginatedController {
             mav.addObject("users", searchedUsers.getList());
         }
 
-
+        List<Game> recommendedGames = gameService.getRecommendationsOfGamesForUser(loggedUser.getId(),MAX_RECOMMENDED_GAMES);
         mav.addObject("search", search);
-        mav.addObject("recommendedGames", gameService.getRecommendationsOfGamesForUser(loggedUser.getId(),MAX_RECOMMENDED_GAMES));
+        mav.addObject("recommendedGames", recommendedGames.size() < 3 ? new ArrayList<>() : recommendedGames);
         mav.addObject("reviewsFollowing", reviewService.getReviewsFromFollowingByUser(loggedUser.getId(), size));
         mav.addObject("user",loggedUser);
         mav.addObject("size", size);
