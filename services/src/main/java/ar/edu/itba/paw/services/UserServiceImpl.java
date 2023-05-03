@@ -181,6 +181,9 @@ public class UserServiceImpl implements UserService {
             throw new UserAlreadyEnabled();
         }
         ExpirationToken token = tokenDao.refresh(user.getId(), RandomStringUtils.randomAlphanumeric(16));
+        if (token == null) {
+            throw new UserNotFoundException("user.not.found");
+        }
         sendValidationTokenEmail(token, user);
     }
 
