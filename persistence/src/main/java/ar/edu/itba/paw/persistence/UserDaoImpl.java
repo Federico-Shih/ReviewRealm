@@ -81,17 +81,17 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public List<User> getFollowers(final long id) {
-        return jdbcTemplate.query("SELECT * " +
+        return jdbcTemplate.query("SELECT u.id, u.username, u.email, u.password, u.enabled " +
                 "FROM followers as f JOIN users as u ON f.userId = u.id " +
-                "WHERE following = ?",
+                "WHERE f.following = ?",
                 USER_ROW_MAPPER,
                 id);
     }
 
     @Override
     public List<User> getFollowing(long id) {
-        return jdbcTemplate.query("SELECT *" +
-                "FROM followers f JOIN users u ON f.following = u.id " +
+        return jdbcTemplate.query("SELECT u.id, u.username, u.email, u.password, u.enabled " +
+                "FROM followers as f JOIN users as u ON f.following = u.id " +
                 "WHERE userId = ?",
                 USER_ROW_MAPPER,
                 id);

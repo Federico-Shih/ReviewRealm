@@ -26,12 +26,12 @@
 
         <h3><spring:message code="${pageName}" arguments="${username}" /></h3>
 
-        <c:forEach items="${users}" var="user">
+        <c:forEach items="${users}" var="userlist">
             <div class="col s4 card">
-                <a href="<c:url value="/profile/${user.id}"/> ">
+                <a href="<c:url value="/profile/${userlist.id}"/> ">
                     <div class="card-content">
                         <div class="card-title">
-                            <c:out value="${user.username}" />
+                            <c:out value="${userlist.username}" />
                         </div>
                     </div>
                 </a>

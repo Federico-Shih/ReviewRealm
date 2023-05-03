@@ -99,7 +99,7 @@
                 </a>
             </c:forEach>
             <c:if test="${fn:length(games) == 0}">
-                <div>
+                <div style="margin-bottom: 20px">
                     <span><spring:message code="profile.nofavorites"/></span>
                 </div>
             </c:if>
