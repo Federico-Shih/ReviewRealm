@@ -1,17 +1,20 @@
-package ar.edu.itba.paw.dtos;
+package ar.edu.itba.paw.dtos.ordering;
 
 import java.util.Objects;
 
-public enum ReviewOrderCriteria {
-    REVIEW_DATE(0, "order.criteria.review.date"),
-    REVIEW_SCORE(1, "order.criteria.review.score");
+public enum ReviewOrderCriteria implements OrderCriteria {
+    REVIEW_DATE(0, "order.criteria.review.date", "createddate"),
+    REVIEW_SCORE(1, "order.criteria.review.score", "rating");
 
     final Integer value;
     final String localizedNameCode;
+    final String altName;
 
-    ReviewOrderCriteria(Integer value, String localizedNameCode) {
+    ReviewOrderCriteria(Integer value, String localizedNameCode, String altName) {
         this.value = value;
         this.localizedNameCode = localizedNameCode;
+
+        this.altName = altName;
     }
 
     public Integer getValue() {
@@ -22,6 +25,9 @@ public enum ReviewOrderCriteria {
         return localizedNameCode;
     }
 
+    public String getAltName() {
+        return this.altName;
+    }
     public static ReviewOrderCriteria fromValue(Integer value) {
         for (ReviewOrderCriteria orderCriteria : values()) {
             if (Objects.equals(orderCriteria.getValue(), value)){

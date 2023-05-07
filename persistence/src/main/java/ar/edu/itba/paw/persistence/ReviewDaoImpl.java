@@ -1,7 +1,8 @@
 package ar.edu.itba.paw.persistence;
 
-import ar.edu.itba.paw.dtos.Filter;
-import ar.edu.itba.paw.dtos.ReviewOrderCriteria;
+import ar.edu.itba.paw.dtos.*;
+import ar.edu.itba.paw.dtos.ordering.Ordering;
+import ar.edu.itba.paw.dtos.ordering.ReviewOrderCriteria;
 import ar.edu.itba.paw.enums.Difficulty;
 import ar.edu.itba.paw.enums.Platform;
 import ar.edu.itba.paw.models.Game;
@@ -9,10 +10,10 @@ import ar.edu.itba.paw.models.Paginated;
 import ar.edu.itba.paw.models.Review;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.persistenceinterfaces.GameDao;
+import ar.edu.itba.paw.persistenceinterfaces.PaginationDao;
 import ar.edu.itba.paw.persistenceinterfaces.ReviewDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
@@ -22,7 +23,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 @Repository
-public class ReviewDaoImpl implements ReviewDao {
+public class ReviewDaoImpl implements ReviewDao, PaginationDao<ReviewFilter> {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsertReview;
     private final GameDao gameDao;
@@ -72,7 +73,7 @@ public class ReviewDaoImpl implements ReviewDao {
     }
 
     @Override
-    public Optional<Review> getById(Long id) {
+    public Optional<Review> findById(Long id) {
         Optional<Review> review = jdbcTemplate.query("SELECT * FROM reviews " +
                 "JOIN games as g ON g.id = reviews.gameid " +
                 "JOIN users as u ON u.id = reviews.authorid " +
@@ -85,90 +86,55 @@ public class ReviewDaoImpl implements ReviewDao {
         }
         return review;
     }
-
-    private String toCriteriaString(ReviewOrderCriteria criteria) {
-        if (criteria.equals(ReviewOrderCriteria.REVIEW_DATE)) {
-            return "createddate";
-        }
-        return "rating";
-    }
-
-
-
-    private String toReviewFilterString(Filter filter, List<Object> arguments) {
-        String gamesAmount = String.join(",", Collections.nCopies(filter.getGameGenresFilter().size(), "?"));
-        StringBuilder str = new StringBuilder();
-        if (!filter.getGameGenresFilter().isEmpty()) {
-            arguments.addAll(filter.getGameGenresFilter());
-            str.append("JOIN genreforgames as gg ON r.gameid = gg.gameid ");
-            str.append("WHERE gg.genreid IN (");
-            str.append(gamesAmount);
-            str.append(")");
-        }
-        return str.toString();
-    }
-
-    private String toCriteriaString(Filter filter) {
-        return "ORDER BY " +
-                toCriteriaString(filter.getReviewOrderCriteria()) +
-                " " +
-                filter.getOrderDirection().getAltName();
-    }
     @Override
-    public Paginated<Review> getAll(Filter filter, Integer page, Integer pageSize) {
-        Long filterCount = this.count(filter);
-        int totalPages = (int) Math.ceil(filterCount/pageSize.doubleValue());
-        if (page > totalPages || page <= 0) {
-            return new Paginated<>(page, pageSize, totalPages, new ArrayList<>());
+    public Paginated<Review> findAll(Page pagination, ReviewFilter filter, Ordering<ReviewOrderCriteria> ordering) {
+        int totalPages = getPageCount(filter, pagination.getPageSize());
+        if (pagination.getPageNumber() > totalPages || pagination.getPageNumber() <= 0) {
+            return new Paginated<>(pagination.getPageNumber(), pagination.getPageSize(), totalPages, new ArrayList<>());
         }
-        int offset = (page - 1) * pageSize;
-        List<Object> preparedStatementArgs = new ArrayList<>();
+        QueryBuilder query = new QueryBuilder();
 
-        String filterQuery = toReviewFilterString(filter, preparedStatementArgs);
-        preparedStatementArgs.add(pageSize);
-        preparedStatementArgs.add(offset);
+        QueryBuilder queryBuilder = query
+                .withList("gg.genreid", filter.getFilterGameGenres())
+                .withList("ap.genreid", filter.getAuthorPreferences())
+                .withSimilar("r.content", filter.getReviewContent())
+                .withList("r.authorid", filter.getAuthors())
+                .withExact("r.gameid", filter.getGameId());
 
+        List<Object> preparedArgs = new ArrayList<>(query.toArguments());
+        preparedArgs.add(pagination.getPageSize());
+        preparedArgs.add(pagination.getOffset());
         List<Review> reviews = jdbcTemplate.query(
-                "SELECT DISTINCT * FROM reviews as r JOIN games as g ON g.id = r.gameid JOIN users as u ON u.id = r.authorid " +
-                         filterQuery +
-                        toCriteriaString(filter)
-                + " LIMIT ? OFFSET ?"
-        , CommonRowMappers.REVIEW_ROW_MAPPER, preparedStatementArgs.toArray());
+                "SELECT DISTINCT * FROM " +
+                        toTableString(filter) +
+                        queryBuilder.toQuery() +
+                        toOrderString(ordering) +
+                        " LIMIT ? OFFSET ?"
+                , CommonRowMappers.REVIEW_ROW_MAPPER, preparedArgs.toArray());
         reviews.forEach((review -> review.getReviewedGame().setGenres(gameDao.getGenresByGame(review.getReviewedGame().getId()))));
-        return new Paginated<>(page, pageSize, totalPages, reviews);
+        return new Paginated<>(pagination.getPageNumber(), pagination.getPageSize(), totalPages, reviews);
     }
 
-    private Long count(Filter filter) {
-        List<Object> preparedStatementArgs = new ArrayList<>(filter.getGameGenresFilter());
-        // Add more filters
+    @Override
+    public Long count(ReviewFilter filter) {
+        QueryBuilder query = new QueryBuilder()
+                .withList("gg.genreid", filter.getFilterGameGenres())
+                .withList("ap.genreid", filter.getAuthorPreferences())
+                .withSimilar("r.content", filter.getReviewContent())
+                .withList("r.authorid", filter.getAuthors());
+        List<Object> preparedArgs = new ArrayList<>(query.toArguments());
         return jdbcTemplate.queryForObject(
-                "SELECT COUNT(DISTINCT r.id) FROM reviews as r JOIN games as g ON g.id = r.gameid JOIN users as u ON u.id = r.authorid "
-                + toReviewFilterString(filter, new ArrayList<>()),
-                preparedStatementArgs.toArray(),
+                "SELECT COUNT(DISTINCT r.id) FROM " +
+                        toTableString(filter) +
+                        query.toQuery(),
+                preparedArgs.toArray(),
                 Long.class
         );
-    }
-
-    public List<Review> getUserReviews(long userId) {
-        List<Review> reviews = jdbcTemplate.query("SELECT DISTINCT * FROM reviews as r JOIN games as g ON g.id = r.gameid JOIN users as u ON u.id = r.authorid WHERE u.id = ?",CommonRowMappers.REVIEW_ROW_MAPPER,userId);
-        reviews.forEach((review -> review.getReviewedGame().setGenres(gameDao.getGenresByGame(review.getReviewedGame().getId()))));
-        return reviews;
     }
 
     @Override
     public boolean deleteReview(Long id) {
         return jdbcTemplate.update("DELETE FROM reviews WHERE id = ?", id) == 1;
-    }
-
-    @Override
-    public List<Review> getReviewsFromFollowing(List<Long> followingIds, Integer size) {
-        String followingAmount = String.join(",", Collections.nCopies(followingIds.size(), "?"));
-        List<Object> preparedStatementArgs = new ArrayList<>(followingIds);
-        preparedStatementArgs.add(size);
-        return jdbcTemplate.query("SELECT DISTINCT * FROM reviews as r JOIN games as g ON g.id = r.gameid JOIN users as u ON u.id = r.authorid  WHERE authorid IN ("
-                +followingAmount+") ORDER BY r.createddate DESC LIMIT ?"
-                ,CommonRowMappers.REVIEW_ROW_MAPPER,preparedStatementArgs.toArray());
-
     }
 
     @Override
@@ -185,5 +151,24 @@ public class ReviewDaoImpl implements ReviewDao {
         return jdbcTemplate.query("SELECT * FROM reviews INNER JOIN favoritegames f on reviews.id = f.reviewid " +
                 "INNER JOIN users u on u.id = f.userid INNER JOIN games g on f.gameid = g.id" +
                 " WHERE authorid = ?", CommonRowMappers.REVIEW_ROW_MAPPER, userId);
+    }
+
+    private String toTableString(ReviewFilter filter) {
+        StringBuilder str = new StringBuilder();
+        str.append("reviews as r JOIN games as g ON g.id = r.gameid JOIN users as u ON u.id = r.authorid ");
+        if (filter.getFilterGameGenres() != null) {
+            str.append("JOIN genreforgames as gg ON r.gameid = gg.gameid ");
+        }
+        if (filter.getAuthorPreferences() != null) {
+            str.append("JOIN genreforusers as ap ON ap.userid = r.authorid ");
+        }
+        return str.toString();
+    }
+
+    private String toOrderString(Ordering<ReviewOrderCriteria> order) {
+        return " ORDER BY " +
+                order.getOrderCriteria().getAltName()+
+                " " +
+                order.getOrderDirection().getAltName();
     }
 }

@@ -1,6 +1,9 @@
 package ar.edu.itba.paw.services;
 
-import ar.edu.itba.paw.dtos.Filter;
+import ar.edu.itba.paw.dtos.*;
+import ar.edu.itba.paw.dtos.builders.ReviewFilterBuilder;
+import ar.edu.itba.paw.dtos.ordering.Ordering;
+import ar.edu.itba.paw.dtos.ordering.ReviewOrderCriteria;
 import ar.edu.itba.paw.enums.Difficulty;
 import ar.edu.itba.paw.enums.Platform;
 import ar.edu.itba.paw.models.Game;
@@ -22,9 +25,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.ArrayList;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import java.util.stream.Collectors;
 
 @Service
@@ -103,12 +103,12 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public Optional<Review> getReviewById(Long id) {
-        return reviewDao.getById(id);
+        return reviewDao.findById(id);
     }
 
     @Override
-    public Paginated<Review> getAllReviews(Filter filter, Integer page, Integer pageSize) {
-        return reviewDao.getAll(filter, page, pageSize);
+    public Paginated<Review> getAllReviews(Page page, ReviewFilter filter, Ordering<ReviewOrderCriteria> ordering) {
+        return reviewDao.findAll(page, filter, ordering);
     }
 
     @Override
@@ -120,8 +120,10 @@ public class ReviewServiceImpl implements ReviewService {
         if(followingUsers.isEmpty()){
             return new ArrayList<>();
         }
-        List<Long> followingIds = followingUsers.stream().map(User::getId).collect(Collectors.toList());
-        return reviewDao.getReviewsFromFollowing(followingIds, size);
+        List<Integer> followingIds = followingUsers.stream().map((user -> user.getId().intValue())).collect(Collectors.toList());
+        ReviewFilterBuilder filterBuilder = new ReviewFilterBuilder()
+                .withAuthors(followingIds);
+        return reviewDao.findAll(Page.with(1, size), filterBuilder.getFilter(), Ordering.defaultOrder(ReviewOrderCriteria.REVIEW_DATE)).getList();
     }
 
     @Override
@@ -138,8 +140,11 @@ public class ReviewServiceImpl implements ReviewService {
         return false;
     }
 
+    // TODO: paginar
     @Override
     public List<Review> getUserReviews(long userId) {
-        return reviewDao.getUserReviews(userId);
+        List<Integer> authors = new ArrayList<>();
+        authors.add((int) userId);
+        return reviewDao.findAll(Page.with(1, 100), new ReviewFilterBuilder().withAuthors(authors).getFilter(), Ordering.defaultOrder(ReviewOrderCriteria.REVIEW_DATE)).getList();
     }
 }

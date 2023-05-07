@@ -1,20 +1,22 @@
 package ar.edu.itba.paw.webapp.controller;
 
-import ar.edu.itba.paw.dtos.CalculatedFilter;
-import ar.edu.itba.paw.dtos.OrderDirection;
-import ar.edu.itba.paw.dtos.Filter;
-import ar.edu.itba.paw.dtos.ReviewOrderCriteria;
+import ar.edu.itba.paw.dtos.*;
+import ar.edu.itba.paw.dtos.builders.ReviewFilterBuilder;
+import ar.edu.itba.paw.dtos.ordering.GameOrderCriteria;
+import ar.edu.itba.paw.dtos.ordering.OrderDirection;
+import ar.edu.itba.paw.dtos.ordering.Ordering;
+import ar.edu.itba.paw.dtos.ordering.ReviewOrderCriteria;
 import ar.edu.itba.paw.enums.Difficulty;
 import ar.edu.itba.paw.enums.GamelengthUnit;
 import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.enums.Platform;
-import ar.edu.itba.paw.exceptions.ObjectNotFoundException;
 import ar.edu.itba.paw.models.Paginated;
 import ar.edu.itba.paw.models.Review;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.servicesinterfaces.GenreService;
 import ar.edu.itba.paw.servicesinterfaces.ReviewService;
 import ar.edu.itba.paw.forms.SubmitReviewForm;
+import ar.edu.itba.paw.webapp.controller.datacontainers.CalculatedFilter;
 import ar.edu.itba.paw.webapp.exceptions.ResourceNotFoundException;
 import org.javatuples.Pair;
 import ar.edu.itba.paw.servicesinterfaces.UserService;
@@ -141,11 +143,15 @@ public class ReviewController extends PaginatedController implements QueryContro
     ) {
         final ModelAndView mav = new ModelAndView("review/review-list");
         List<Genre> allGenres = genreService.getAllGenres();
-        CalculatedFilter filters = new CalculatedFilter(genresFilter, new ArrayList<>(), ReviewOrderCriteria.fromValue(orderCriteria),null, OrderDirection.fromValue(orderDirection), allGenres);
+        ReviewFilterBuilder filterBuilder = new ReviewFilterBuilder()
+                .withGameGenres(genresFilter);
+        ReviewFilter filters = filterBuilder.getFilter();
 
-        Paginated<Review> reviewPaginated = reviewService.getAllReviews(filters,
-                page != null ? page : INITIAL_PAGE,
-                pageSize != null ? pageSize : PAGE_SIZE);
+        Paginated<Review> reviewPaginated = reviewService.getAllReviews(
+                Page.with(page != null ? page : INITIAL_PAGE, pageSize != null ? pageSize : PAGE_SIZE),
+                filters,
+                new Ordering<>(OrderDirection.fromValue(orderDirection), ReviewOrderCriteria.fromValue(orderCriteria))
+        );
 
         super.paginate(mav, reviewPaginated);
 
@@ -153,7 +159,9 @@ public class ReviewController extends PaginatedController implements QueryContro
         mav.addObject("totalReviews", reviewPaginated.getTotalPages());
         mav.addObject("orderCriteria", ReviewOrderCriteria.values());
         mav.addObject("orderDirections", OrderDirection.values());
-        mav.addObject("filters", filters);
+        mav.addObject("filters", new CalculatedFilter(genresFilter, new ArrayList<>(), allGenres));
+        mav.addObject("selectedOrderDirection", OrderDirection.fromValue(orderDirection));
+        mav.addObject("selectedOrderCriteria", GameOrderCriteria.fromValue(orderCriteria));
 
         List<Pair<String, Object>> queriesToKeepAtPageChange = new ArrayList<>();
         queriesToKeepAtPageChange.add(Pair.with("o-crit", orderCriteria));

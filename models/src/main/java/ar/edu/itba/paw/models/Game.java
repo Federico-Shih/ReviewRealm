@@ -7,7 +7,6 @@ import java.util.List;
 public class Game {
     private final Long id;
     private final String name;
-
     private final String description;
     private final String developer;
     private final String publisher;

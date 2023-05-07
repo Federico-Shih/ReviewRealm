@@ -1,12 +1,18 @@
 package ar.edu.itba.paw.services;
 
-import ar.edu.itba.paw.dtos.Filter;
-import ar.edu.itba.paw.dtos.SubmitGameDTO;
+import ar.edu.itba.paw.dtos.*;
+import ar.edu.itba.paw.dtos.builders.GameFilterBuilder;
+import ar.edu.itba.paw.dtos.builders.ReviewFilterBuilder;
+import ar.edu.itba.paw.dtos.ordering.GameOrderCriteria;
+import ar.edu.itba.paw.dtos.ordering.OrderDirection;
+import ar.edu.itba.paw.dtos.ordering.Ordering;
+import ar.edu.itba.paw.dtos.ordering.ReviewOrderCriteria;
 import ar.edu.itba.paw.enums.Difficulty;
 import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.enums.Platform;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.persistenceinterfaces.GameDao;
+import ar.edu.itba.paw.persistenceinterfaces.ReviewDao;
 import ar.edu.itba.paw.servicesinterfaces.GameService;
 import ar.edu.itba.paw.servicesinterfaces.GenreService;
 import ar.edu.itba.paw.servicesinterfaces.ImageService;
@@ -26,16 +32,19 @@ public class GameServiceImpl implements GameService {
 
     private static final String IMAGE_PREFIX = "/images";
     private final GameDao gameDao;
+    private final ReviewDao reviewDao;
     private final GenreService genreServ;
     private final ImageService imgService;
 
     private final UserService userService;
 
     @Autowired
-    public GameServiceImpl(GameDao gameDao, GenreService genreServ, ImageService imgService,UserService userService) {
+    public GameServiceImpl(GameDao gameDao, ReviewDao reviewDao, GenreService genreServ, ImageService imgService, UserService userService) {
         this.gameDao = gameDao;
+        this.reviewDao = reviewDao;
         this.genreServ = genreServ;
         this.imgService = imgService;
+
         this.userService = userService;
     }
 
@@ -72,14 +81,15 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public  Paginated<Game> getAllGames(Integer page, Integer pageSize, Filter filter,String searchQuery)
+    public Paginated<Game> getAllGames(Page page, GameFilter filter, Ordering<GameOrderCriteria> ordering)
     {
-        return gameDao.getAll(page,pageSize,filter,searchQuery);
+        return gameDao.findAll(page, filter, ordering);
     }
 
     @Override
     public Paginated<Game> getAllGamesShort(Integer page, Integer pageSize, String searchQuery) {
-        return gameDao.getAllShort(page,pageSize,searchQuery);
+        GameFilterBuilder gameFilterBuilder = new GameFilterBuilder().withGameContent(searchQuery);
+        return gameDao.findAll(Page.with(page, pageSize), gameFilterBuilder.getFilter(), new Ordering<>(OrderDirection.ASCENDING, GameOrderCriteria.NAME));
     }
 
     @Override
@@ -89,7 +99,9 @@ public class GameServiceImpl implements GameService {
 
     @Override
     public GameReviewData getReviewsByGameId(Long id) {
-        List<Review> reviews = gameDao.getReviewsById(id);
+        // TODO PAGINAR
+        ReviewFilter filter = new ReviewFilterBuilder().withGameId(id.intValue()).getFilter();
+        List<Review> reviews = reviewDao.findAll(Page.with(1, 1000), filter, new Ordering<>(OrderDirection.DESCENDING, ReviewOrderCriteria.REVIEW_DATE)).getList();
         if(reviews.size()>0) {
             int sumRating = 0;
             HashMap<Difficulty, Integer> difficultyCount = new HashMap<>();

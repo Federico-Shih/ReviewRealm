@@ -42,7 +42,7 @@
                                 <p>
                                     <label>
                                         <input name="o-crit" value="${criteria.value}" type="radio" <c:if
-                                                test="${filters.gameOrderCriteria.value == criteria.value}"> checked </c:if>/>
+                                                test="${selectedOrderCriteria.value == criteria.value}"> checked </c:if>/>
                                         <span><spring:message code="${criteria.localizedNameCode}"/></span>
                                     </label>
                                 </p>
@@ -52,7 +52,7 @@
                                 <p>
                                     <label>
                                         <input name="o-dir" value="${direction.value}" type="radio" <c:if
-                                                test="${filters.orderDirection.value == direction.value}"> checked </c:if>/>
+                                                test="${selectedOrderDirection.value == direction.value}"> checked </c:if>/>
                                         <span><spring:message code="${direction.localizedNameCode}"/></span>
                                     </label>
                                 </p>

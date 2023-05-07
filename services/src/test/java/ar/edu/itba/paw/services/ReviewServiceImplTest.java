@@ -1,8 +1,6 @@
 package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.enums.Difficulty;
-import ar.edu.itba.paw.enums.GamelengthUnit;
-import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.enums.Platform;
 import ar.edu.itba.paw.models.Game;
 import ar.edu.itba.paw.models.Review;
@@ -44,7 +42,7 @@ public class ReviewServiceImplTest {
 
     @Test
     public void testGetReviewById() {
-        Mockito.when(reviewDao.getById(REVIEWID))
+        Mockito.when(reviewDao.findById(REVIEWID))
                 .thenReturn(Optional.of(new Review(23L, USER,
                         "","", LocalDateTime.now(),8,GAME, Difficulty.EASY,
                         12.2, Platform.PS,true,true)));

@@ -1,13 +1,16 @@
 package ar.edu.itba.paw.webapp.controller;
 
-import ar.edu.itba.paw.dtos.CalculatedFilter;
-import ar.edu.itba.paw.dtos.GameOrderCriteria;
-import ar.edu.itba.paw.dtos.OrderDirection;
+import ar.edu.itba.paw.dtos.*;
+import ar.edu.itba.paw.dtos.builders.GameFilterBuilder;
+import ar.edu.itba.paw.dtos.ordering.GameOrderCriteria;
+import ar.edu.itba.paw.dtos.ordering.OrderDirection;
+import ar.edu.itba.paw.dtos.ordering.Ordering;
 import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.forms.SubmitGameForm;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.servicesinterfaces.GameService;
 import ar.edu.itba.paw.servicesinterfaces.GenreService;
+import ar.edu.itba.paw.webapp.controller.datacontainers.CalculatedFilter;
 import org.javatuples.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,8 +32,8 @@ import java.util.stream.Collectors;
 public class GameController extends PaginatedController implements QueryController {
     private static final Logger LOGGER = LoggerFactory.getLogger(GameController.class);
 
-    private GenreService grs;
-    private GameService gs;
+    private final GenreService grs;
+    private final GameService gs;
 
     private static final int MAX_PAGES_PAGINATION = 6;
 
@@ -71,9 +74,16 @@ public class GameController extends PaginatedController implements QueryControll
         final ModelAndView mav = new ModelAndView("games/game-list");
 
         List<Genre> allGenres = grs.getAllGenres();
-        CalculatedFilter filters = new CalculatedFilter(genresFilter, new ArrayList<>(),null, GameOrderCriteria.fromValue(orderCriteria), OrderDirection.fromValue(orderDirection), allGenres);
+        GameFilterBuilder filterBuilder = new GameFilterBuilder()
+                .withGameContent(search)
+                .withGameGenres(genresFilter);
+        GameFilter filter = filterBuilder.getFilter();
 
-        Paginated<Game> games = gs.getAllGames(page != null? page: INITIAL_PAGE,PAGE_SIZE,filters,search);
+        Paginated<Game> games = gs.getAllGames(
+                Page.with(page != null ? page: INITIAL_PAGE, PAGE_SIZE),
+                filter,
+                new Ordering<>(OrderDirection.fromValue(orderDirection), GameOrderCriteria.fromValue(orderCriteria))
+        );
 
 
         super.paginate(mav,games);
@@ -83,7 +93,9 @@ public class GameController extends PaginatedController implements QueryControll
         mav.addObject("orderCriteria", GameOrderCriteria.values());
         mav.addObject("orderDirections", OrderDirection.values());
         mav.addObject("searchField",search);
-        mav.addObject("filters", filters);
+        mav.addObject("filters", new CalculatedFilter(genresFilter, new ArrayList<>(), allGenres));
+        mav.addObject("selectedOrderDirection", OrderDirection.fromValue(orderDirection));
+        mav.addObject("selectedOrderCriteria", GameOrderCriteria.fromValue(orderCriteria));
 
         List<Pair<String, Object>> queriesToKeepAtPageChange = new ArrayList<>();
         queriesToKeepAtPageChange.add(Pair.with("o-crit", orderCriteria));

@@ -1,6 +1,8 @@
 package ar.edu.itba.paw.persistenceinterfaces;
 
-import ar.edu.itba.paw.dtos.Filter;
+import ar.edu.itba.paw.dtos.*;
+import ar.edu.itba.paw.dtos.ordering.Ordering;
+import ar.edu.itba.paw.dtos.ordering.ReviewOrderCriteria;
 import ar.edu.itba.paw.enums.Difficulty;
 import ar.edu.itba.paw.enums.Platform;
 import ar.edu.itba.paw.models.Game;
@@ -22,15 +24,11 @@ public interface ReviewDao {
                          Platform platform,
                          Boolean completed,
                          Boolean replayable);
-    Optional<Review> getById(Long id);
+    Optional<Review> findById(Long id);
 
-    Paginated<Review> getAll(Filter filter, Integer page, Integer pageSize);
-
-    List<Review> getUserReviews(long userId);
+    Paginated<Review> findAll(Page pagination, ReviewFilter filter, Ordering<ReviewOrderCriteria> ordering);
 
     boolean deleteReview(Long id);
-
-    List<Review> getReviewsFromFollowing(List<Long> followingIds, Integer size);
 
     void updateFavGames(long userId, Long idReviewToAdd, Long idGameToAdd, Optional<Long> optIdToDelete);
 

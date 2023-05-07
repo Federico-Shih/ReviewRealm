@@ -1,14 +1,12 @@
 package ar.edu.itba.paw.persistence;
 
-import ar.edu.itba.paw.dtos.Filter;
-import ar.edu.itba.paw.dtos.GameOrderCriteria;
-import ar.edu.itba.paw.dtos.OrderDirection;
-import ar.edu.itba.paw.dtos.ReviewOrderCriteria;
-import ar.edu.itba.paw.enums.Difficulty;
+import ar.edu.itba.paw.dtos.*;
+import ar.edu.itba.paw.dtos.ordering.GameOrderCriteria;
+import ar.edu.itba.paw.dtos.ordering.Ordering;
 import ar.edu.itba.paw.enums.Genre;
-import ar.edu.itba.paw.enums.Platform;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.persistenceinterfaces.GameDao;
+import ar.edu.itba.paw.persistenceinterfaces.PaginationDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCallback;
@@ -17,14 +15,12 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
-import java.sql.Array;
-import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.*;
 
 @Repository
-public class GameDaoImpl implements GameDao {
+public class GameDaoImpl implements GameDao, PaginationDao<GameFilter> {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsertGames;
 
@@ -70,18 +66,8 @@ public class GameDaoImpl implements GameDao {
     @Override
     public Optional<Game> getById(Long id) {
         Optional<Game> game = jdbcTemplate.query("SELECT * FROM games where id = ?",CommonRowMappers.GAME_ROW_MAPPER,id).stream().findFirst();
-        //Busco los genres directamente, no paso por genreID
         game.ifPresent(value -> value.setGenres(this.getGenresByGame(id)));
         return game;
-    }
-
-    @Override
-    public List<Review> getReviewsById(Long id) {
-       return jdbcTemplate.query("SELECT * FROM reviews " +
-                "JOIN games as g ON g.id = reviews.gameid " +
-                "JOIN users as u ON u.id = reviews.authorid " +
-                "WHERE g.id = ?", CommonRowMappers.REVIEW_ROW_MAPPER, id);
-        //No buscamos los generos de lo juegos pues por ahora no se usan en ningun momento y es mejor hacer menos cant de querys
     }
 
     @Override
@@ -124,78 +110,30 @@ public class GameDaoImpl implements GameDao {
                 "WHERE g.gameid = ?",GAME_GENRE_ROW_MAPPER,id);
     }
 
-    private Long getTotalAmountOfGames(Filter filter, String searchQuery){
-        List<Object> preparedStatementArgs = new ArrayList<>();
-        String filterQuery = toGameFilterString(filter, preparedStatementArgs);
-        if (!searchQuery.isEmpty()) {
-
-            filterQuery += (filterQuery.isEmpty()) ? " WHERE " : " AND ";
-            filterQuery += " g.name ILIKE ? ";
-
-            preparedStatementArgs.add("%" + searchQuery + "%");
-        }
-        return jdbcTemplate.queryForObject("SELECT COUNT(distinct g.id) FROM games as g "+
-                filterQuery ,
-                preparedStatementArgs.toArray(),
-                Long.class);
-    }
-
-    private String toCriteriaString(GameOrderCriteria criteria) {
-        if (criteria.equals(GameOrderCriteria.PUBLISH_DATE)) {
-            return "publishDate";
-        }
-        return "name";
-    }
-    private String toCriteriaString(Filter filter) {
-        return "ORDER BY " +
-                toCriteriaString(filter.getGameOrderCriteria()) +
-                " " +
-                filter.getOrderDirection().getAltName();
-    }
-
     @Override
-    public Paginated<Game> getAll(int page, Integer pageSize, Filter filter, String searchQuery) {
-        Long totalGames = getTotalAmountOfGames(filter, searchQuery);
-        int totalPages = (int) Math.ceil(totalGames/pageSize.doubleValue());
-
-        if (page > totalPages || page <= 0) {
-            return new Paginated<>(page, pageSize, totalPages, new ArrayList<>());
+    public Paginated<Game> findAll(Page page, GameFilter filter, Ordering<GameOrderCriteria> ordering) {
+        int totalPages = getPageCount(filter, page.getPageSize());
+        if (page.getPageNumber() > totalPages || page.getPageNumber()<= 0) {
+            return new Paginated<>(page.getPageNumber(), page.getPageSize(), totalPages, new ArrayList<>());
         }
-        int offset = (page - 1) * pageSize;
-        List<Object> preparedStatementArgs = new ArrayList<>();
+        QueryBuilder queryBuilder = new QueryBuilder()
+                .withSimilar("g.name", filter.getGameContent())
+                .withList("gg.genreid", filter.getGameGenres())
+                .withExact("g.publisher", filter.getPublisher())
+                .withExact("g.developer", filter.getDeveloper());
+        List<Object> preparedStatementArgs = new ArrayList<>(queryBuilder.toArguments());
 
-        String filterQuery = toGameFilterString(filter, preparedStatementArgs);
-        if (!searchQuery.isEmpty()) {
+        preparedStatementArgs.add(page.getPageSize());
+        preparedStatementArgs.add(page.getOffset());
 
-            filterQuery += (filterQuery.isEmpty()) ? " WHERE " : " AND ";
-            filterQuery += " g.name ILIKE ? ";
-
-            preparedStatementArgs.add("%" + searchQuery + "%");
-        }
-        preparedStatementArgs.add(pageSize);
-        preparedStatementArgs.add(offset);
-
-
-        List<Game> games = jdbcTemplate.query("SELECT * FROM games as g "+
-                filterQuery+
-                toCriteriaString(filter)+
-                " LIMIT ? OFFSET ?",CommonRowMappers.GAME_ROW_MAPPER,preparedStatementArgs.toArray());
+        List<Game> games = jdbcTemplate.query("SELECT DISTINCT *  FROM " + toTableString(filter) +
+                queryBuilder.toQuery() +
+                toOrderString(ordering)+
+                " LIMIT ? OFFSET ?", preparedStatementArgs.toArray(), CommonRowMappers.GAME_ROW_MAPPER);
         for(Game g : games){
             g.setGenres(this.getGenresByGame(g.getId()));
         }
-        return new Paginated<>(page,pageSize,totalPages,games);
-    }
-    private String toGameFilterString(Filter filter, List<Object> arguments) {
-        String gamesAmount = String.join(",", Collections.nCopies(filter.getGameGenresFilter().size(), "?"));
-        StringBuilder str = new StringBuilder();
-        if (!filter.getGameGenresFilter().isEmpty()) {
-            arguments.addAll(filter.getGameGenresFilter());
-            str.append("JOIN genreforgames as gg ON g.id = gg.gameid ");
-            str.append("WHERE gg.genreid IN (");
-            str.append(gamesAmount);
-            str.append(")");
-        }
-        return str.toString();
+        return new Paginated<>(page.getPageNumber(), page.getPageSize(), totalPages, games);
     }
 
     @Override
@@ -205,17 +143,19 @@ public class GameDaoImpl implements GameDao {
     }
 
     @Override
-    public List<Game> getRecommendationsForUser(Long userId,List<Integer> userPreferences, Integer amount) {
-        List<Object> preparedStatementArgs = new ArrayList<>();
-        String filterString = toGameFilterString(new Filter(userPreferences,new ArrayList<>(),null,null,null),preparedStatementArgs);
+    public List<Game> getRecommendationsForUser(Long userId, List<Integer> userPreferences, Integer amount) {
+        QueryBuilder queryBuilder = new QueryBuilder().withList("gg.genreid", userPreferences);
+        String filterString = queryBuilder.toQuery();
+        List<Object> preparedStatementArgs = new ArrayList<>(queryBuilder.toArguments());
+        if (!filterString.isEmpty()) {
+            filterString = filterString + " AND ";
+        }
         preparedStatementArgs.add(userId);
         preparedStatementArgs.add(amount);
-        filterString += (filterString.isEmpty()) ? " WHERE " : " AND ";
-        // TODO: fix repeated
-        List<Game> games = jdbcTemplate.query("SELECT * " +
-                "FROM games g "+ filterString +
-                " NOT EXISTS(select * from reviews where reviews.gameid = g.id and reviews.authorid=?)"+
-                "ORDER BY (cast(g.ratingsum as real) / coalesce(nullif(g.reviewcount,0),1)) desc LIMIT ? ",CommonRowMappers.GAME_ROW_MAPPER,preparedStatementArgs.toArray());
+        List<Game> games = jdbcTemplate.query("SELECT DISTINCT *, cast(g.ratingsum as real) / coalesce(nullif(g.reviewcount,0),1) as avg " +
+                "FROM games g INNER JOIN genreforgames gg on g.id = gg.gameid " + filterString +
+                "NOT EXISTS(select * from reviews where reviews.gameid = g.id and reviews.authorid=?)"+
+                " ORDER BY avg desc LIMIT ? ",CommonRowMappers.GAME_ROW_MAPPER,preparedStatementArgs.toArray());
         for(Game g : games){
             g.setGenres(this.getGenresByGame(g.getId()));
         }
@@ -223,31 +163,32 @@ public class GameDaoImpl implements GameDao {
     }
 
     @Override
-    public Paginated<Game> getAllShort(int page, Integer pageSize, String searchQuery) {
-        Filter filter = new Filter( new ArrayList<>(),new ArrayList<>(),
-                null,GameOrderCriteria.NAME, OrderDirection.ASCENDING);
-        Long totalGames = getTotalAmountOfGames(filter, searchQuery);
-        int totalPages = (int) Math.ceil(totalGames/pageSize.doubleValue());
+    public Long count(GameFilter filter) {
+        QueryBuilder queryBuilder = new QueryBuilder()
+                .withSimilar("g.name", filter.getGameContent())
+                .withList("gg.genreid", filter.getGameGenres())
+                .withExact("g.publisher", filter.getPublisher())
+                .withExact("g.developer", filter.getDeveloper());
 
-        if (page > totalPages || page <= 0) {
-            return new Paginated<>(page, pageSize, totalPages, new ArrayList<>());
+        return jdbcTemplate.queryForObject("SELECT COUNT(distinct g.id) FROM " + toTableString(filter) +
+                        queryBuilder.toQuery() ,
+                queryBuilder.toArguments().toArray(),
+                Long.class);
+    }
+
+    private String toTableString(GameFilter filter) {
+        StringBuilder str = new StringBuilder();
+        str.append("games as g ");
+        if (filter.getGameGenres() != null && filter.getGameGenres().size() > 0) {
+            str.append("JOIN genreforgames as gg ON g.id = gg.gameid ");
         }
-        Integer offset = (page - 1) * pageSize;
-        List<Object> preparedStatementArgs = new ArrayList<>();
+        return str.toString();
+    }
 
-        String searchFilter = "";
-        if (!searchQuery.isEmpty()) {
-            searchFilter += " WHERE  g.name ILIKE ? ";
-            preparedStatementArgs.add("%" + searchQuery + "%");
-        }
-        preparedStatementArgs.add(pageSize);
-        preparedStatementArgs.add(offset);
-
-
-        List<Game> games = jdbcTemplate.query("SELECT * FROM games as g "+searchFilter+" LIMIT ? OFFSET ?",CommonRowMappers.GAME_ROW_MAPPER,preparedStatementArgs.toArray());
-        for(Game g : games){
-            g.setGenres(this.getGenresByGame(g.getId()));
-        }
-        return new Paginated<>(page,pageSize,totalPages,games);
+    private String toOrderString(Ordering<GameOrderCriteria> order) {
+        return " ORDER BY " +
+                order.getOrderCriteria().getAltName()+
+                " " +
+                order.getOrderDirection().getAltName();
     }
 }

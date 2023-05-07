@@ -1,7 +1,7 @@
 package ar.edu.itba.paw.models;
 
 public class Role {
-    private String roleName;
+    private final String roleName;
 
     public Role(String roleName) {
         this.roleName = roleName;

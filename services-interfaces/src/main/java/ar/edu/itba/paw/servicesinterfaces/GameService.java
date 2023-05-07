@@ -1,7 +1,8 @@
 package ar.edu.itba.paw.servicesinterfaces;
 
-import ar.edu.itba.paw.dtos.Filter;
-import ar.edu.itba.paw.dtos.SubmitGameDTO;
+import ar.edu.itba.paw.dtos.*;
+import ar.edu.itba.paw.dtos.ordering.GameOrderCriteria;
+import ar.edu.itba.paw.dtos.ordering.Ordering;
 import ar.edu.itba.paw.models.Game;
 import ar.edu.itba.paw.models.Paginated;
 import ar.edu.itba.paw.models.GameReviewData;
@@ -18,7 +19,7 @@ public interface GameService {
 
     Optional<Game> getGameById(Long id);
 
-    Paginated<Game> getAllGames(Integer page, Integer pageSize, Filter filter,String searchQuery);
+    Paginated<Game> getAllGames(Page page, GameFilter filter, Ordering<GameOrderCriteria> ordering);
 
     Paginated<Game> getAllGamesShort(Integer page, Integer pageSize,String searchQuery);
 

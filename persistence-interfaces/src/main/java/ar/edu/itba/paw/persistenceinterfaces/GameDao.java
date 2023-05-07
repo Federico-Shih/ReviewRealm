@@ -1,12 +1,12 @@
 package ar.edu.itba.paw.persistenceinterfaces;
 
-import ar.edu.itba.paw.dtos.Filter;
+import ar.edu.itba.paw.dtos.*;
+import ar.edu.itba.paw.dtos.ordering.GameOrderCriteria;
+import ar.edu.itba.paw.dtos.ordering.Ordering;
 import ar.edu.itba.paw.exceptions.ObjectNotFoundException;
 import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.models.Game;
 import ar.edu.itba.paw.models.Paginated;
-import ar.edu.itba.paw.models.Review;
-import ar.edu.itba.paw.models.User;
 
 
 import java.time.LocalDate;
@@ -19,11 +19,7 @@ public interface GameDao {
 
     Optional<Game> getById(Long id) throws ObjectNotFoundException;
 
-    Paginated<Game> getAll(int page, Integer pageSize, Filter filter, String searchQuery);
-
-    Paginated<Game> getAllShort(int page, Integer pageSize, String searchQuery); //Este no hace las querys para sacar los average score
-
-    List<Review> getReviewsById(Long id);
+    Paginated<Game> findAll(Page page, GameFilter filter, Ordering<GameOrderCriteria> ordering);
 
     List<Genre> getGenresByGame(Long id);
 
