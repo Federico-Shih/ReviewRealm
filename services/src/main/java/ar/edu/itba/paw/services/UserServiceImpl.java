@@ -1,9 +1,6 @@
 package ar.edu.itba.paw.services;
 
-import ar.edu.itba.paw.exceptions.EmailAlreadyExistsException;
-import ar.edu.itba.paw.exceptions.UserAlreadyEnabled;
-import ar.edu.itba.paw.exceptions.UserNotFoundException;
-import ar.edu.itba.paw.exceptions.UsernameAlreadyExistsException;
+import ar.edu.itba.paw.exceptions.*;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.persistenceinterfaces.ValidationTokenDao;
@@ -15,7 +12,6 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.env.Environment;
@@ -164,8 +160,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean validateToken(String token) {
+    public boolean validateToken(String token) throws TokenExpiredException {
         Optional<ExpirationToken> expToken = tokenDao.getByToken(token);
+        if (expToken.isPresent() && expToken.get().getExpiration().isBefore(LocalDateTime.now())) {
+            throw new TokenExpiredException("token.expired");
+        }
         expToken.ifPresent((expirationToken) -> {
             User user = userDao.findById(expirationToken.getUserId()).orElseThrow(() -> new UserNotFoundException("illegal.state"));
             userDao.changePassword(user.getEmail(), expirationToken.getPassword());
@@ -185,6 +184,17 @@ public class UserServiceImpl implements UserService {
             throw new UserNotFoundException("user.not.found");
         }
         sendValidationTokenEmail(token, user);
+    }
+
+    @Override
+    public void refreshToken(String token) {
+        ExpirationToken expirationToken = tokenDao.getByToken(token).orElseThrow(() -> new UserNotFoundException("user.notfound"));
+        User user = userDao.findById(expirationToken.getUserId()).orElseThrow(() -> new UserNotFoundException("user.notfound"));
+        ExpirationToken newToken = tokenDao.refresh(user.getId(), RandomStringUtils.randomAlphanumeric(16));
+        if (newToken == null) {
+            throw new UserNotFoundException("user.not.found");
+        }
+        sendValidationTokenEmail(newToken, user);
     }
 
     @Override

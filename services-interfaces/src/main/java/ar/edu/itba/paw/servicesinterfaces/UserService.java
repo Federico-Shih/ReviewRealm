@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.servicesinterfaces;
 
 import ar.edu.itba.paw.exceptions.EmailAlreadyExistsException;
+import ar.edu.itba.paw.exceptions.TokenExpiredException;
 import ar.edu.itba.paw.exceptions.UserAlreadyEnabled;
 import ar.edu.itba.paw.exceptions.UsernameAlreadyExistsException;
 import ar.edu.itba.paw.models.*;
@@ -31,9 +32,11 @@ public interface UserService {
 
     List<Role> getUserRoles(Long userId);
 
-    boolean validateToken(String token);
+    boolean validateToken(String token) throws TokenExpiredException;
 
     void resendToken(String email) throws UserAlreadyEnabled;
+
+    void refreshToken(String token);
 
     Paginated<User> getSearchedUsers(int page, int pageSize, String search);
 }

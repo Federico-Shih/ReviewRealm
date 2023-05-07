@@ -34,6 +34,11 @@
                     <spring:message code="validation.content.unknown-token" />
                 </p>
             </c:if>
+            <c:if test="${expiredToken != null && expiredToken}">
+                <p class="error">
+                    <spring:message code="validation.content.expired-token" />
+                </p>
+            </c:if>
         </div>
         <button type="submit" class="btn-large">
             <spring:message code="email.validation.cta" />

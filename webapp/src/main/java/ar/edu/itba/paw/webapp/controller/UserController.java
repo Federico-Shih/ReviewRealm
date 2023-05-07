@@ -1,9 +1,6 @@
 package ar.edu.itba.paw.webapp.controller;
 
-import ar.edu.itba.paw.exceptions.EmailAlreadyExistsException;
-import ar.edu.itba.paw.exceptions.UserAlreadyEnabled;
-import ar.edu.itba.paw.exceptions.UserNotFoundException;
-import ar.edu.itba.paw.exceptions.UsernameAlreadyExistsException;
+import ar.edu.itba.paw.exceptions.*;
 import ar.edu.itba.paw.forms.RegisterForm;
 import ar.edu.itba.paw.forms.ResendEmailForm;
 import ar.edu.itba.paw.servicesinterfaces.UserService;
@@ -82,7 +79,14 @@ public class UserController {
 
     @RequestMapping(value = "/validate", method = RequestMethod.POST)
     public ModelAndView validateToken(@RequestParam("validationCode") String code, @ModelAttribute("resendEmailForm") ResendEmailForm form) {
-        boolean validated = us.validateToken(code);
+        boolean validated;
+        try {
+            validated = us.validateToken(code);
+        } catch (TokenExpiredException e) {
+            LOGGER.error("Token expired " + code);
+            us.refreshToken(code);
+            return new ModelAndView("user/recovery").addObject("expiredToken", true);
+        }
         if (!validated) {
             return new ModelAndView("user/recovery").addObject("unknownToken", true);
         }
