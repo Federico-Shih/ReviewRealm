@@ -23,6 +23,9 @@
 <body>
 <jsp:include page="/WEB-INF/jsp/static-components/navbar.jsp"/>
 <div class="container">
+    <c:if test="${emailSuccess}">
+        <h4 class="green-text"><spring:message code="resend.email.sent" /></h4>
+    </c:if>
     <article class="card">
         <div class="card-content">
             <h5><spring:message code="validation.title" /></h5>
@@ -60,9 +63,6 @@
                 <button type="submit" class="btn-large">
                     <spring:message code="register.submit" />
                 </button>
-                <c:if test="${emailSuccess}">
-                    <h6><spring:message code="resend.email.sent" /></h6>
-                </c:if>
             </form:form>
         </div>
     </article>

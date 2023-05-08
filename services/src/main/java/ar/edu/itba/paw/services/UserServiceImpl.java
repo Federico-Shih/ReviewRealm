@@ -128,6 +128,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public Optional<User> getUserByToken(String token) {
+        ExpirationToken expirationToken = tokenDao.getByToken(token).orElseThrow(() -> new UserNotFoundException("user.notfound"));
+        return userDao.findById(expirationToken.getUserId());
+    }
+
+    @Override
     public void changeUserPassword(String email, String password) {
         LOGGER.info("Changing password: {}", email);
         User user = userDao.getByEmail(email).orElseThrow(() -> new UserNotFoundException("notfound.user"));

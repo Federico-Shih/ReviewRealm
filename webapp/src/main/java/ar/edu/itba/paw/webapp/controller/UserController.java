@@ -4,16 +4,26 @@ import ar.edu.itba.paw.exceptions.*;
 import ar.edu.itba.paw.forms.ChangePasswordForm;
 import ar.edu.itba.paw.forms.RegisterForm;
 import ar.edu.itba.paw.forms.ResendEmailForm;
+import ar.edu.itba.paw.models.Role;
+import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.servicesinterfaces.UserService;
+import ar.edu.itba.paw.webapp.auth.PawAuthUserDetails;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 public class UserController {
@@ -91,7 +101,21 @@ public class UserController {
         if (!validated) {
             return new ModelAndView("user/recovery").addObject("unknownToken", true);
         }
+        User user;
+        try {
+            user = us.getUserByToken(code).orElseThrow(() -> new UserNotFoundException("User not found for token " + code));
+            authWithoutPassword(user);
+        } catch (UserNotFoundException e) {
+            return new ModelAndView("user/recovery").addObject("unknownToken", true);
+        }
         return new ModelAndView("user/validated");
+    }
+
+    private void authWithoutPassword(User user) {
+         List<Role> roles = us.getUserRoles(user.getId());
+         List<GrantedAuthority> authorities = roles.stream().map(p -> new SimpleGrantedAuthority("ROLE_" + p.getRoleName())).collect(Collectors.toList());
+         Authentication result = new UsernamePasswordAuthenticationToken(new PawAuthUserDetails(user.getEmail(), user.getPassword(), authorities), null, authorities);
+         SecurityContextHolder.getContext().setAuthentication(result);
     }
 
     @RequestMapping(value = "/validate/{token}", method = RequestMethod.GET)

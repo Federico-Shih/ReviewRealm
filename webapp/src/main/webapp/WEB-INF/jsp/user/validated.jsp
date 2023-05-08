@@ -16,7 +16,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
-                <c:url value="/login" var="loginUrl" />
+                <c:url value="/" var="loginUrl" />
                 window.location.replace("${loginUrl}");
             }, 1500);
         })

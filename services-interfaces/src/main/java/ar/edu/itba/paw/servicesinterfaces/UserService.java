@@ -12,6 +12,8 @@ public interface UserService {
     Optional<User> getUserByEmail(String email);
     Optional<User> getUserByUsername(String username);
     Optional<User> getUserById(Long id);
+    Optional<User> getUserByToken(String token);
+
     void changeUserPassword(String email, String password);
 
     List<Genre> getPreferences(long userId);
