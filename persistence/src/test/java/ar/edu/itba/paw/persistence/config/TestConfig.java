@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.persistence.config;
 
+import org.flywaydb.core.Flyway;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.context.annotation.Bean;
@@ -29,11 +30,20 @@ public class TestConfig {
         final SimpleDriverDataSource ds = new SimpleDriverDataSource();
 
         ds.setDriverClass(org.hsqldb.jdbc.JDBCDriver.class);
-        ds.setUrl("jdbc:hsqldb:mem:paw");
+        ds.setUrl("jdbc:hsqldb:mem:paw;sql.syntax_pgs=true");
         ds.setUsername("ha");
         ds.setPassword("");
 
         return ds;
+    }
+
+    @Bean(initMethod = "migrate")
+    public Flyway flyway() {
+        return Flyway.configure()
+                .dataSource(dataSource())
+                .locations("classpath:db/migration")
+                .baselineOnMigrate(true)
+                .load();
     }
     @Bean
     public DataSourceInitializer dataSourceInitializer(final DataSource dataSource) {
@@ -44,8 +54,8 @@ public class TestConfig {
     }
     private DatabasePopulator databasePopulator() {
         final ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
-        populator.addScript(hsqldbSql);
-        populator.addScript(schemaSql);
+//        populator.addScript(hsqldbSql);
+//        populator.addScript(schemaSql);
         return populator;
     }
 }

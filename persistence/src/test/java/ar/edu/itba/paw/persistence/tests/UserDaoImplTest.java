@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.persistence.tests;
 
+import ar.edu.itba.paw.dtos.builders.SaveUserBuilder;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.persistence.UserDaoImpl;
 import ar.edu.itba.paw.persistence.config.TestConfig;
@@ -10,7 +11,6 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.jdbc.JdbcTestUtils;
 
@@ -26,6 +26,8 @@ public class UserDaoImplTest {
     private final static String USERNAME = "username";
     private final static String EMAIL = "email";
     private final static String PASSWORD = "password";
+
+    private final static boolean ENABLED = true;
 
     @Autowired
     private DataSource ds;
@@ -62,6 +64,21 @@ public class UserDaoImplTest {
 
         //3.assert
         Assert.assertFalse(maybeUser.isPresent());
+    }
+
+    @Test
+    public void testUpdate() throws SQLException {
+        jdbcTemplate.execute("INSERT INTO users (id,username,email,password, enabled) VALUES ("+ID+",'"+USERNAME+"', '"+EMAIL+"','"+PASSWORD+"', "+ ENABLED +")");
+
+        SaveUserBuilder userBuilder = new SaveUserBuilder();
+        int update = userDao.update(ID, userBuilder.withEmail("newEmail").withPassword("newPassword").withEnabled(false).getSaveUserDTO());
+
+        Assert.assertEquals(update, 1);
+        jdbcTemplate.query("SELECT * FROM users WHERE id = ?", new Object[]{ID}, rs -> {
+            Assert.assertEquals(rs.getString("email"), "newEmail");
+            Assert.assertEquals(rs.getString("password"), "newPassword");
+            Assert.assertFalse(rs.getBoolean("enabled"));
+        });
     }
 
     @Test

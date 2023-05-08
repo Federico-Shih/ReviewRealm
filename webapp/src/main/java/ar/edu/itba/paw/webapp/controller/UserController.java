@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.exceptions.*;
+import ar.edu.itba.paw.forms.ChangePasswordForm;
 import ar.edu.itba.paw.forms.RegisterForm;
 import ar.edu.itba.paw.forms.ResendEmailForm;
 import ar.edu.itba.paw.servicesinterfaces.UserService;
@@ -115,7 +116,55 @@ public class UserController {
         return validateForm(form, form.getEmail(), true);
     }
 
+    @RequestMapping(value = "/changepassword", method = RequestMethod.GET)
+    public ModelAndView changePasswordForm(@RequestParam(value = "token", required = false) String token,
+                                           @ModelAttribute("passwordForm") ChangePasswordForm passwordForm,
+                                           @ModelAttribute("emailForm") ResendEmailForm emailForm) {
+        ModelAndView mav = new ModelAndView("user/change-password");
+        mav.addObject("token", token);
+        return mav;
+    }
 
+    @RequestMapping(value = "/changepassword", method = RequestMethod.POST)
+    public ModelAndView sendChangePasswordRequest(@ModelAttribute("passwordForm") ChangePasswordForm passwordForm,
+                                                  @Valid @ModelAttribute("emailForm") ResendEmailForm emailForm,
+                                                  final BindingResult errors) {
+        if (errors.hasErrors()) {
+            return changePasswordForm(null, new ChangePasswordForm(), emailForm);
+        }
+        try {
+            us.sendPasswordResetToken(emailForm.getEmail());
+        } catch (UserNotFoundException e) {
+            errors.rejectValue("email", "user.not.exists");
+            return changePasswordForm(null, new ChangePasswordForm(), emailForm);
+        }
+        return changePasswordForm(null, new ChangePasswordForm(), emailForm).addObject("emailSent", true);
+    }
+
+    @RequestMapping(value = "/changepassword/{token}", method = RequestMethod.POST)
+    public ModelAndView changePassword(@PathVariable("token") String token,
+                                       @ModelAttribute("emailForm") ResendEmailForm emailForm,
+                                       @Valid @ModelAttribute("passwordForm") ChangePasswordForm passwordForm,
+                                       final BindingResult errors) {
+        if (errors.hasErrors()) {
+            return changePasswordForm(token, passwordForm, emailForm);
+        }
+        if (!passwordForm.passwordsMatch()) {
+            errors.rejectValue("repeatPassword", "error.passwords.dont.match");
+            return changePasswordForm(token, passwordForm, emailForm);
+        }
+        try {
+            us.resetPassword(token, passwordForm.getPassword());
+        } catch (TokenExpiredException e) {
+            LOGGER.error("Token expired " + token);
+            errors.rejectValue("repeatPassword", "error.token.expired");
+            return changePasswordForm(token, passwordForm, emailForm);
+        } catch (TokenNotFoundException e) {
+            errors.rejectValue("repeatPassword", "error.token.not.found");
+            return changePasswordForm(token, passwordForm, emailForm);
+        }
+        return new ModelAndView("user/password-changed");
+    }
 
     /* Para reconocer el usuario actual en cualquier página se puede usar:
     *

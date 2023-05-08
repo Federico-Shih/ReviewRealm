@@ -23,44 +23,49 @@
 <body>
 <jsp:include page="/WEB-INF/jsp/static-components/navbar.jsp"/>
 <div class="container">
-    <h5><spring:message code="validation.title" /></h5>
-    <c:url var="validateUrl" value="/validate" />
-    <form action="${validateUrl}" method="post">
-        <div class="input-field ">
-            <input id="code" type="text" class="validate white-text" name="validationCode" />
-            <label for="code"><spring:message code="validate.token.title" /></label>
-            <c:if test="${unknownToken != null && unknownToken}">
-                <p class="error">
-                    <spring:message code="validation.content.unknown-token" />
-                </p>
-            </c:if>
-            <c:if test="${expiredToken != null && expiredToken}">
-                <p class="error">
-                    <spring:message code="validation.content.expired-token" />
-                </p>
-            </c:if>
+    <article class="card">
+        <div class="card-content">
+            <h5><spring:message code="validation.title" /></h5>
+            <c:url var="validateUrl" value="/validate" />
+            <form action="${validateUrl}" method="post">
+                <div class="input-field ">
+                    <input id="code" type="text" class="validate white-text" name="validationCode" />
+                    <label for="code"><spring:message code="validate.token.title" /></label>
+                    <c:if test="${unknownToken != null && unknownToken}">
+                        <p class="error">
+                            <spring:message code="validation.content.unknown-token" />
+                        </p>
+                    </c:if>
+                    <c:if test="${expiredToken != null && expiredToken}">
+                        <p class="error">
+                            <spring:message code="validation.content.expired-token" />
+                        </p>
+                    </c:if>
+                </div>
+                <button type="submit" class="btn-large">
+                    <spring:message code="email.validation.cta" />
+                </button>
+            </form>
+            <div class="divider"></div>
+            <h5><spring:message code="resend.email" /></h5>
+            <c:url var="resendUrl" value="/resend-email" />
+            <form:form modelAttribute="resendEmailForm" action="${resendUrl}" method="post">
+                <div class="input-field">
+                    <form:input path="email" class="validate white-text" id="email" />
+                    <form:label for="email" path="email">
+                        <spring:message code="login.email.field" />
+                    </form:label>
+                    <form:errors cssClass="error" path="email" />
+                </div>
+                <button type="submit" class="btn-large">
+                    <spring:message code="register.submit" />
+                </button>
+                <c:if test="${emailSuccess}">
+                    <h6><spring:message code="resend.email.sent" /></h6>
+                </c:if>
+            </form:form>
         </div>
-        <button type="submit" class="btn-large">
-            <spring:message code="email.validation.cta" />
-        </button>
-    </form>
-    <h5><spring:message code="resend.email" /></h5>
-    <c:url var="resendUrl" value="/resend-email" />
-    <form:form modelAttribute="resendEmailForm" action="${resendUrl}" method="post">
-        <div class="input-field">
-            <form:input path="email" class="validate white-text" id="email" />
-            <form:label for="email" path="email">
-                <spring:message code="login.email.field" />
-            </form:label>
-            <form:errors cssClass="error" path="email" />
-        </div>
-        <button type="submit" class="btn-large">
-            <spring:message code="register.submit" />
-        </button>
-    </form:form>
-    <c:if test="${emailSuccess}">
-        <h6><spring:message code="resend.email.sent" /></h6>
-    </c:if>
+    </article>
 </div>
 </body>
 </html>

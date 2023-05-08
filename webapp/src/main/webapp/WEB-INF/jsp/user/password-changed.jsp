@@ -5,7 +5,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <html>
 <head>
-    <title><spring:message code="validation.title" arguments="PAGE.ARGUMENTS" /></title> <!-- Compiled and minified CSS -->
+    <title><spring:message code="passwordchanged.title" arguments="PAGE.ARGUMENTS" /></title> <!-- Compiled and minified CSS -->
     <link rel="stylesheet" type="text/css" href="<c:url value="/css/materialize.min.css" />" media="screen,projection"/>
     <link rel="stylesheet" href="<c:url value="/css/main.css" />">
     <link rel="stylesheet" href="<c:url value="/css/review/review-page.css" />">
@@ -31,7 +31,7 @@
 <body>
 <jsp:include page="/WEB-INF/jsp/static-components/navbar.jsp"/>
 <div class="container">
-    <h5><spring:message code="validation.validated" /></h5>
+    <h5><spring:message code="passwordchanged.changed" /></h5>
 </div>
 </body>
 </html>

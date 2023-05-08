@@ -48,10 +48,24 @@
                 <form:errors path="repeatPassword" cssClass="error" element="span"/>
             </div>
             <div>
-                <a href="<c:url value="/login" />"><spring:message code="register.to.login.link"/></a>
+                <spring:message code="register.to.login.link"/>
+                <span>
+                    <a href="<c:url value="/login" />">
+                        <spring:message code="register.to.login.cta"/>
+                    </a>
+                </span>
             </div>
             <div>
-                <a href="<c:url value="/recover" />"><spring:message code="login.to.validate.link"/></a>
+                <spring:message code="login.to.validate.link"/>
+                <a href="<c:url value="/recover" />">
+                    <spring:message code="login.to.validate.cta"/>
+                </a>
+            </div>
+            <div>
+                <spring:message code="login.to.changepass.link" />
+                <span>
+                        <a href="<c:url value="/changepassword" />"><spring:message code="login.to.changepass.cta" /></a>
+                    </span>
             </div>
             <div class="form-submit-button">
                 <button class="btn waves-effect waves-light" type="submit" name="action">

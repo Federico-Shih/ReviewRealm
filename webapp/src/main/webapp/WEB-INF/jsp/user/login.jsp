@@ -41,10 +41,24 @@
                 </c:if>
             </div>
             <div>
-                <a href="<c:url value="/register" />"><spring:message code="login.to.register.link"/></a>
+                <spring:message code="login.to.register.link"/>
+                <span>
+                    <a href="<c:url value="/register" />">
+                        <spring:message code="login.to.register.cta"/>
+                    </a>
+                </span>
             </div>
             <div>
-                <a href="<c:url value="/recover" />"><spring:message code="login.to.validate.link"/></a>
+                <spring:message code="login.to.validate.link"/>
+                <a href="<c:url value="/recover" />">
+                    <spring:message code="login.to.validate.cta"/>
+                </a>
+            </div>
+            <div>
+                <spring:message code="login.to.changepass.link" />
+                <span>
+                    <a href="<c:url value="/changepassword" />"><spring:message code="login.to.changepass.cta" /></a>
+                </span>
             </div>
             <div class="form-submit-button">
                 <button class="btn waves-effect waves-light" type="submit" name="action"><spring:message code="login.submit"/>

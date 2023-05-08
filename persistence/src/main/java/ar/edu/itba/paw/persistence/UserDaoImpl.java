@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.persistence;
 
+import ar.edu.itba.paw.dtos.SaveUserDTO;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.persistenceinterfaces.UserDao;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +50,53 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
+    public int update(long id, SaveUserDTO saveUserDTO) {
+        List<Object> args = new ArrayList<>();
+        String updateString = toUpdateString(saveUserDTO, args);
+        args.add(id);
+        return jdbcTemplate.update("UPDATE users " + updateString + " WHERE id = ?", args.toArray());
+    }
+
+    private String toUpdateString(SaveUserDTO updateUser, List<Object> args) {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("SET ");
+        boolean first = true;
+        if (updateUser.getUsername() != null) {
+            if (!first) {
+                stringBuilder.append(", ");
+            }
+            stringBuilder.append("username = ?");
+            args.add(updateUser.getUsername());
+            first = false;
+        }
+        if (updateUser.getEmail() != null) {
+            if (!first) {
+                stringBuilder.append(", ");
+            }
+            stringBuilder.append("email = ?");
+            args.add(updateUser.getEmail());
+            first = false;
+        }
+        if (updateUser.getPassword() != null) {
+            if (!first) {
+                stringBuilder.append(", ");
+            }
+            stringBuilder.append("password = ?");
+            args.add(updateUser.getPassword());
+            first = false;
+        }
+        if (updateUser.isEnabled() != null) {
+            if (!first) {
+                stringBuilder.append(", ");
+            }
+            stringBuilder.append("enabled = ?");
+            args.add(updateUser.isEnabled());
+        }
+        stringBuilder.append(" ");
+        return stringBuilder.toString();
+    }
+
+    @Override
     public Optional<User> findById(final long id) {
         return jdbcTemplate.query("SELECT * FROM users WHERE id = ?", USER_ROW_MAPPER, id).stream().findFirst();
     }
@@ -72,11 +120,6 @@ public class UserDaoImpl implements UserDao {
     @Override
     public Optional<User> getByUsername(String username) {
         return jdbcTemplate.query("SELECT * FROM users WHERE username = ?", USER_ROW_MAPPER, username).stream().findFirst();
-    }
-
-    @Override
-    public void changePassword(String email, String password) {
-        jdbcTemplate.update("UPDATE users SET password = ? WHERE email = ?", password, email);
     }
 
     @Override
@@ -131,11 +174,6 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public void changeUsername(String email, String username) {
-        jdbcTemplate.update("UPDATE users SET username = ? WHERE email = ?", username, email);
-    }
-
-    @Override
     public List<Integer> getPreferencesById(long userId){
         return jdbcTemplate.query("SELECT genreId FROM genreforusers WHERE userId = ?", GENRE_ROW_MAPPER, userId);
     }
@@ -147,11 +185,6 @@ public class UserDaoImpl implements UserDao {
         for(Integer genId : genres) {
             jdbcTemplate.update("INSERT INTO genreforusers(genreid, userid) VALUES (?,?)", genId, userId);
         }
-    }
-
-    @Override
-    public boolean setEnabled(long id, boolean enabled) {
-        return jdbcTemplate.update("UPDATE users SET enabled = ? WHERE id = ?", enabled, id) == 1;
     }
     @Override
     public Paginated<User> getSearchedUsers(int page, int pageSize, int offset, String search) {

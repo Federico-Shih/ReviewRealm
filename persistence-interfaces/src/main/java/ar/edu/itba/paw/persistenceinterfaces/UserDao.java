@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.persistenceinterfaces;
 
+import ar.edu.itba.paw.dtos.SaveUserDTO;
 import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.models.*;
 
@@ -8,13 +9,13 @@ import java.util.Optional;
 
 public interface UserDao {
     boolean exists(final long id);
+
+    int update(final long id, SaveUserDTO saveUserDTO);
+
     User create(String username, String email, String password);
     Optional<User> getByEmail(String email);
     Optional<User> getByUsername(String username);
     Optional<User> findById(final long id);
-    void changePassword(String email, String password);
-    void changeUsername(String email, String username);
-
     List<User> getFollowers(final long id);
     List<User> getFollowing(final long id);
     FollowerFollowingCount getFollowerFollowingCount(final long id);
@@ -30,8 +31,6 @@ public interface UserDao {
     List<Integer> getPreferencesById(long userId);
 
     void setPreferences(List<Integer> genres, long userId);
-
-    boolean setEnabled(long id, boolean enabled);
 
     Paginated<User> getSearchedUsers(int page, int pageSize, int offset, String search);
 

@@ -46,7 +46,7 @@
 
         <org.junit.version>4.13.2</org.junit.version>
 
-        <org.hsqldb.version>2.3.1</org.hsqldb.version>
+        <org.hsqldb.version>2.4.0</org.hsqldb.version>
 
         <org.jetbrains.version>13.0</org.jetbrains.version>
 

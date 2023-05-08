@@ -1,9 +1,6 @@
 package ar.edu.itba.paw.servicesinterfaces;
 
-import ar.edu.itba.paw.exceptions.EmailAlreadyExistsException;
-import ar.edu.itba.paw.exceptions.TokenExpiredException;
-import ar.edu.itba.paw.exceptions.UserAlreadyEnabled;
-import ar.edu.itba.paw.exceptions.UsernameAlreadyExistsException;
+import ar.edu.itba.paw.exceptions.*;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.enums.Genre;
 
@@ -39,4 +36,8 @@ public interface UserService {
     void refreshToken(String token);
 
     Paginated<User> getSearchedUsers(int page, int pageSize, String search);
+
+    void sendPasswordResetToken(String email) throws UserNotFoundException;
+
+    boolean resetPassword(String token, String password) throws TokenExpiredException, TokenNotFoundException;
 }
