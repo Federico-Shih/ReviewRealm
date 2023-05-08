@@ -6,6 +6,7 @@ import ar.edu.itba.paw.dtos.ordering.Ordering;
 import ar.edu.itba.paw.dtos.ordering.ReviewOrderCriteria;
 import ar.edu.itba.paw.enums.Difficulty;
 import ar.edu.itba.paw.enums.Platform;
+import ar.edu.itba.paw.enums.ReviewFeedback;
 import ar.edu.itba.paw.models.Game;
 import ar.edu.itba.paw.models.Paginated;
 import ar.edu.itba.paw.models.Review;
@@ -102,13 +103,13 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public Optional<Review> getReviewById(Long id) {
-        return reviewDao.findById(id);
+    public Optional<Review> getReviewById(Long id, User activeUser) {
+        return reviewDao.findById(id, (activeUser != null)? activeUser.getId() : null);
     }
 
     @Override
-    public Paginated<Review> getAllReviews(Page page, ReviewFilter filter, Ordering<ReviewOrderCriteria> ordering) {
-        return reviewDao.findAll(page, filter, ordering);
+    public Paginated<Review> getAllReviews(Page page, ReviewFilter filter, Ordering<ReviewOrderCriteria> ordering, User activeUser) {
+        return reviewDao.findAll(page, filter, ordering,(activeUser != null)? activeUser.getId() : null);
     }
 
     @Override
@@ -123,13 +124,13 @@ public class ReviewServiceImpl implements ReviewService {
         List<Integer> followingIds = followingUsers.stream().map((user -> user.getId().intValue())).collect(Collectors.toList());
         ReviewFilterBuilder filterBuilder = new ReviewFilterBuilder()
                 .withAuthors(followingIds);
-        return reviewDao.findAll(Page.with(1, size), filterBuilder.getFilter(), Ordering.defaultOrder(ReviewOrderCriteria.REVIEW_DATE)).getList();
+        return reviewDao.findAll(Page.with(1, size), filterBuilder.getFilter(), Ordering.defaultOrder(ReviewOrderCriteria.REVIEW_DATE), userId).getList();
     }
 
     @Override
     public boolean deleteReviewById(Long id) {
         LOGGER.info("Deleting review: {}", id);
-        Optional<Review> review = getReviewById(id);
+        Optional<Review> review = getReviewById(id, null);
         if(review.isPresent()){
             boolean op = reviewDao.deleteReview(id);
             if(op){
@@ -142,9 +143,31 @@ public class ReviewServiceImpl implements ReviewService {
 
     // TODO: paginar
     @Override
-    public List<Review> getUserReviews(long userId) {
+    public List<Review> getUserReviews(long userId, User activeUser) {
         List<Integer> authors = new ArrayList<>();
         authors.add((int) userId);
-        return reviewDao.findAll(Page.with(1, 100), new ReviewFilterBuilder().withAuthors(authors).getFilter(), Ordering.defaultOrder(ReviewOrderCriteria.REVIEW_DATE)).getList();
+        return reviewDao.findAll(Page.with(1, 100), new ReviewFilterBuilder().withAuthors(authors).getFilter(), Ordering.defaultOrder(ReviewOrderCriteria.REVIEW_DATE), (activeUser != null)? activeUser.getId() : null ).getList();
+    }
+
+    @Override
+    public boolean updateOrCreateReviewFeedback(Review review, User user, ReviewFeedback feedback) {
+        ReviewFeedback oldFeedback = reviewDao.getReviewFeedback(review.getId(), user.getId());
+        if(oldFeedback == feedback){
+            return deleteReviewFeedback(review, user,oldFeedback);
+        }
+        boolean response = (oldFeedback==null)? reviewDao.addReviewFeedback(review.getId(), user.getId(), feedback):
+                reviewDao.editReviewFeedback(review.getId(), user.getId(),oldFeedback,feedback);
+        userService.modifyUserReputation(review.getAuthor().getId(),(feedback == ReviewFeedback.LIKE)? 1:-1);
+        return response;
+    }
+
+    private boolean deleteReviewFeedback(Review review, User user, ReviewFeedback oldFeedback) {
+       // ReviewFeedback oldFeedback = reviewDao.getReviewFeedback(review.getId(), user.getId());
+        if(oldFeedback == null){
+            return false;
+        }
+        boolean response = reviewDao.deleteReviewFeedback(review.getId(), user.getId(), oldFeedback);
+        userService.modifyUserReputation(review.getAuthor().getId(),(oldFeedback == ReviewFeedback.LIKE)? -1:1);
+        return response;
     }
 }

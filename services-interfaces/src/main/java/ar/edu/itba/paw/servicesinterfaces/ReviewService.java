@@ -6,6 +6,7 @@ import ar.edu.itba.paw.dtos.ReviewFilter;
 import ar.edu.itba.paw.dtos.ordering.ReviewOrderCriteria;
 import ar.edu.itba.paw.enums.Difficulty;
 import ar.edu.itba.paw.enums.Platform;
+import ar.edu.itba.paw.enums.ReviewFeedback;
 import ar.edu.itba.paw.models.Game;
 import ar.edu.itba.paw.models.Paginated;
 import ar.edu.itba.paw.models.Review;
@@ -25,12 +26,16 @@ public interface ReviewService {
                         Platform platform,
                         Boolean completed,
                         Boolean replayable);
-    Optional<Review> getReviewById(Long id);
+    Optional<Review> getReviewById(Long id, User activeUser);
 
-    List<Review> getUserReviews(long userId);
+    List<Review> getUserReviews(long userId,User activeUser);
 
-    Paginated<Review> getAllReviews(Page page, ReviewFilter filter, Ordering<ReviewOrderCriteria> ordering);
+    Paginated<Review> getAllReviews(Page page, ReviewFilter filter, Ordering<ReviewOrderCriteria> ordering, User activeUser);
 
-    List<Review> getReviewsFromFollowingByUser(Long userId, Integer size);
+    List<Review> getReviewsFromFollowingByUser(Long userId, Integer size); //No es necesario Active User porque es el mismo que el que me pasan
     boolean deleteReviewById(Long id);
+
+    boolean updateOrCreateReviewFeedback(Review review, User user, ReviewFeedback feedback);
+
+
 }

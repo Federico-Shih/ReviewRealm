@@ -6,6 +6,7 @@ import ar.edu.itba.paw.dtos.ordering.Ordering;
 import ar.edu.itba.paw.models.Game;
 import ar.edu.itba.paw.models.Paginated;
 import ar.edu.itba.paw.models.GameReviewData;
+import ar.edu.itba.paw.models.User;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -23,7 +24,7 @@ public interface GameService {
 
     Paginated<Game> getAllGamesShort(Integer page, Integer pageSize,String searchQuery);
 
-    GameReviewData getReviewsByGameId(Long id);
+    GameReviewData getReviewsByGameId(Long id, User activeUser);
 
     Double getAverageGameReviewRatingById(Long id);
 

@@ -10,6 +10,8 @@ import ar.edu.itba.paw.forms.SubmitGameForm;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.servicesinterfaces.GameService;
 import ar.edu.itba.paw.servicesinterfaces.GenreService;
+import ar.edu.itba.paw.servicesinterfaces.UserService;
+import ar.edu.itba.paw.webapp.auth.AuthenticationHelper;
 import ar.edu.itba.paw.webapp.controller.datacontainers.CalculatedFilter;
 import org.javatuples.Pair;
 import org.slf4j.Logger;
@@ -34,6 +36,7 @@ public class GameController extends PaginatedController implements QueryControll
 
     private final GenreService grs;
     private final GameService gs;
+    private final UserService us;
 
     private static final int MAX_PAGES_PAGINATION = 6;
 
@@ -42,19 +45,21 @@ public class GameController extends PaginatedController implements QueryControll
     private static final int INITIAL_PAGE = 1;
 
     @Autowired
-    public GameController(GenreService grs, GameService gs) {
+    public GameController(GenreService grs, GameService gs, UserService us) {
         super(MAX_PAGES_PAGINATION, INITIAL_PAGE);
         this.grs = grs;
         this.gs = gs;
+        this.us = us;
     }
 
     @RequestMapping("/game/{id:\\d+}")
     public ModelAndView game_details(@PathVariable("id") final Long gameId){
         final ModelAndView mav =  new ModelAndView("games/game-details");
         Optional<Game> game = gs.getGameById(gameId);
+        User loggedUser = AuthenticationHelper.getLoggedUser(us);
         if(game.isPresent()){
             mav.addObject("game",game.get());
-            GameReviewData reviewData = gs.getReviewsByGameId(gameId);
+            GameReviewData reviewData = gs.getReviewsByGameId(gameId,loggedUser);
             //Si esta el juego entonces si o si estan las reviews aunque sean vacias, no hay que chequear
             mav.addObject("gameReviewData", reviewData);
 

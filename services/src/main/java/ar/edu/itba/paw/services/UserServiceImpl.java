@@ -260,4 +260,9 @@ public class UserServiceImpl implements UserService {
     public void setPreferences(List<Integer> genres, long userId){
         userDao.setPreferences(genres, userId);
     }
+
+    @Override
+    public boolean modifyUserReputation(long id, int reputation) {
+        return userDao.modifyReputation(id, reputation);
+    }
 }

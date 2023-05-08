@@ -25,7 +25,8 @@ public class UserDaoImpl implements UserDao {
             resultSet.getString("email"),
             resultSet.getString("password"),
             new ArrayList<>(),
-            resultSet.getBoolean("enabled"));
+            resultSet.getBoolean("enabled"),
+            resultSet.getLong("reputation"));
 
     private final static RowMapper<Follow> FOLLOW_ROW_MAPPER = ((resultSet, i) -> new Follow(resultSet.getLong("userId"), resultSet.getLong("following")));
 
@@ -197,5 +198,8 @@ public class UserDaoImpl implements UserDao {
         return jdbcTemplate.queryForObject("SELECT count(*) from users", Long.class);
     }
 
-
+    @Override
+    public boolean modifyReputation(long id, int reputation) {
+        return jdbcTemplate.update("UPDATE users SET reputation = reputation + ? WHERE id = ?", reputation, id) == 1;
+    }
 }

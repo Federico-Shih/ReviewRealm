@@ -98,10 +98,10 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public GameReviewData getReviewsByGameId(Long id) {
-        // TODO PAGINAR
+    public GameReviewData getReviewsByGameId(Long id, User activeUser) {
+        // TODO: PAGINAR
         ReviewFilter filter = new ReviewFilterBuilder().withGameId(id.intValue()).getFilter();
-        List<Review> reviews = reviewDao.findAll(Page.with(1, 1000), filter, new Ordering<>(OrderDirection.DESCENDING, ReviewOrderCriteria.REVIEW_DATE)).getList();
+        List<Review> reviews = reviewDao.findAll(Page.with(1, 1000), filter, new Ordering<>(OrderDirection.DESCENDING, ReviewOrderCriteria.REVIEW_DATE),(activeUser !=null)? activeUser.getId() : null).getList();
         if(reviews.size()>0) {
             int sumRating = 0;
             HashMap<Difficulty, Integer> difficultyCount = new HashMap<>();

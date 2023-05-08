@@ -162,6 +162,7 @@ public class GameDaoImpl implements GameDao, PaginationDao<GameFilter> {
         return games;
     }
 
+
     @Override
     public Long count(GameFilter filter) {
         QueryBuilder queryBuilder = new QueryBuilder()
@@ -179,7 +180,7 @@ public class GameDaoImpl implements GameDao, PaginationDao<GameFilter> {
     private String toTableString(GameFilter filter) {
         StringBuilder str = new StringBuilder();
         str.append("games as g ");
-        if (filter.getGameGenres() != null && filter.getGameGenres().size() > 0) {
+        if (filter.getGameGenres() != null && !filter.getGameGenres().isEmpty()) {
             str.append("JOIN genreforgames as gg ON g.id = gg.gameid ");
         }
         return str.toString();

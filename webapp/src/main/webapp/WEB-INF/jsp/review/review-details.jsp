@@ -25,6 +25,24 @@
             });
         </c:if>
     </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var likeButton = document.getElementById("like-button");
+            var  dislikeButton = document.getElementById("dislike-button");
+            var   feedbackValue = document.getElementById("feedback-value");
+            likeButton.addEventListener('click',function () {
+                feedbackValue.value = 'LIKE';
+                 document.updateFeedbackForm.submit();
+            });
+            dislikeButton.addEventListener('click',function () {
+                feedbackValue.value = 'DISLIKE';
+                document.updateFeedbackForm.submit();
+            });
+        });
+
+
+    </script>
+
 </head>
 
 <spring:message code="reviewForm.title.placeholder" var="titlePlaceholder"/>
@@ -78,6 +96,29 @@
                     <div class="card-content-container-detail">
                         <c:out value="${review.content}" />
                     </div>
+                    <div class="divider"></div>
+                    <div class="row">
+                        <c:url value="/review/feedback/${review.id}" var="updateFeedback" />
+                        <form name="updateFeedbackForm" method="post" action="${updateFeedback}">
+                            <div class="col s1">
+                                <button id="like-button" class="btn-flat waves-effect waves-light ${(isLiked)? "white-text":""}" type="button">
+                                    <i class="material-icons">thumb_up</i>
+                                </button>
+                            </div>
+                            <div class="col s1">
+                                <button id="dislike-button" class="btn-flat waves-effect waves-light ${(isDisliked)? "white-text":""}" type="button">
+                                    <i class="material-icons">thumb_down</i>
+                                </button>
+                            </div>
+                            <div class="col s2">
+                                <c:if test="${review.likeCounter != 0}">
+                                <span><c:out value="${review.likeCounter}"/></span>
+                                </c:if>
+                            </div>
+                            <input type="hidden" name="feedback" id="feedback-value" value=""/>
+                        </form>
+                    </div>
+                    <div class="divider"></div>
                     <div class="row" style="padding: 5px">
                         <spring:message code="review.gameLength" />:
                         <c:out value="${reviewExtra.gametime}" />

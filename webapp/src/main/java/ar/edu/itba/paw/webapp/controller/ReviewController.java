@@ -6,10 +6,8 @@ import ar.edu.itba.paw.dtos.ordering.GameOrderCriteria;
 import ar.edu.itba.paw.dtos.ordering.OrderDirection;
 import ar.edu.itba.paw.dtos.ordering.Ordering;
 import ar.edu.itba.paw.dtos.ordering.ReviewOrderCriteria;
-import ar.edu.itba.paw.enums.Difficulty;
-import ar.edu.itba.paw.enums.GamelengthUnit;
-import ar.edu.itba.paw.enums.Genre;
-import ar.edu.itba.paw.enums.Platform;
+import ar.edu.itba.paw.enums.*;
+import ar.edu.itba.paw.exceptions.ObjectNotFoundException;
 import ar.edu.itba.paw.models.Paginated;
 import ar.edu.itba.paw.models.Review;
 import ar.edu.itba.paw.models.User;
@@ -88,7 +86,8 @@ public class ReviewController extends PaginatedController implements QueryContro
 
     @RequestMapping(value = "/review/{id:\\d+}", method = RequestMethod.GET)
     public ModelAndView reviewDetails(@PathVariable(value = "id") Long reviewId) {
-        Optional<Review> review = reviewService.getReviewById(reviewId);
+        User loggedUser = AuthenticationHelper.getLoggedUser(userService);
+        Optional<Review> review = reviewService.getReviewById(reviewId,loggedUser);
         if (!review.isPresent()) {
             return new ModelAndView("static-components/not-found");
         }
@@ -98,6 +97,8 @@ public class ReviewController extends PaginatedController implements QueryContro
         mav.addObject("game", review.get().getReviewedGame());
         mav.addObject("reviewExtra", ComputedReviewData.factory(review.get()));
         mav.addObject("isModerated", roles.contains(new SimpleGrantedAuthority("ROLE_MODERATOR")));
+        mav.addObject("isLiked", review.get().getFeedback() == ReviewFeedback.LIKE);
+        mav.addObject("isDisliked", review.get().getFeedback() == ReviewFeedback.DISLIKE);
         return mav;
     }
 
@@ -142,6 +143,7 @@ public class ReviewController extends PaginatedController implements QueryContro
             /*,@RequestParam(value = "f-pref", defaultValue = "") List<Long> preferencesFilter*/
     ) {
         final ModelAndView mav = new ModelAndView("review/review-list");
+        User loggedUser = AuthenticationHelper.getLoggedUser(userService);
         List<Genre> allGenres = genreService.getAllGenres();
         ReviewFilterBuilder filterBuilder = new ReviewFilterBuilder()
                 .withGameGenres(genresFilter);
@@ -150,7 +152,8 @@ public class ReviewController extends PaginatedController implements QueryContro
         Paginated<Review> reviewPaginated = reviewService.getAllReviews(
                 Page.with(page != null ? page : INITIAL_PAGE, pageSize != null ? pageSize : PAGE_SIZE),
                 filters,
-                new Ordering<>(OrderDirection.fromValue(orderDirection), ReviewOrderCriteria.fromValue(orderCriteria))
+                new Ordering<>(OrderDirection.fromValue(orderDirection), ReviewOrderCriteria.fromValue(orderCriteria)),
+                loggedUser
         );
 
         super.paginate(mav, reviewPaginated);
@@ -182,7 +185,7 @@ public class ReviewController extends PaginatedController implements QueryContro
 
     @RequestMapping(value = "/review/delete/{id:\\d+}", method = RequestMethod.POST)
     public ModelAndView deleteReview(@PathVariable(value = "id") Long id) {
-        Optional<Review> review = reviewService.getReviewById(id);
+        Optional<Review> review = reviewService.getReviewById(id,null);
         if (!review.isPresent()) {
             throw new ResourceNotFoundException();
         }
@@ -192,6 +195,29 @@ public class ReviewController extends PaginatedController implements QueryContro
         }
         return new ModelAndView("redirect:/game/" + id);
     }
+    @RequestMapping(value = "/review/feedback/{id:\\d+}", method = RequestMethod.POST)
+    public ModelAndView updateReviewFeedback(@PathVariable(value = "id") Long id,
+                                   @RequestParam(value = "feedback") String feedback
+                                   /*@RequestParam(value = "url", defaultValue = "/") String url*/){
+        String url = "/review/" + id;
+        Optional<Review> review = reviewService.getReviewById(id,null);
+        User loggedUser = AuthenticationHelper.getLoggedUser(userService);
+        if (!review.isPresent()) {
+            throw new ResourceNotFoundException();
+        }
+        ReviewFeedback fb;
+        try{
+           fb = ReviewFeedback.valueOf(feedback);
+        }catch (IllegalArgumentException e){ //TODO: chequear si es la excepcion correcta
+            throw new ResourceNotFoundException();
+        }
+
+        boolean response = reviewService.updateOrCreateReviewFeedback(review.get(), loggedUser,fb);
+         //TODO: ver errores
+
+        return new ModelAndView("redirect:" + url);
+    }
+
 
 
     public static class ComputedReviewData {

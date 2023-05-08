@@ -68,7 +68,8 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                         "/profile/unfollow/{\\d+}",
                         "/profile/edit",
                         "/profile/edit/submit",
-                        "/for-you"
+                        "/for-you",
+                        "/review/feedback/{id:\\d+}"
                 ).authenticated()
 
                 /* ACÁ PONEMOS TODOS LOS PATHS QUE REQUIERAN NO HABER INICIADO SESIÓN */

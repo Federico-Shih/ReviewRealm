@@ -35,4 +35,6 @@ public interface UserDao {
     Paginated<User> getSearchedUsers(int page, int pageSize, int offset, String search);
 
     Long getTotalAmountOfUsers();
+
+    boolean modifyReputation(long id, int reputation);
 }

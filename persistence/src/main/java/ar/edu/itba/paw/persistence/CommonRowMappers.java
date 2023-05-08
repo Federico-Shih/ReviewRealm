@@ -2,6 +2,7 @@ package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.enums.Difficulty;
 import ar.edu.itba.paw.enums.Platform;
+import ar.edu.itba.paw.enums.ReviewFeedback;
 import ar.edu.itba.paw.models.Game;
 import ar.edu.itba.paw.models.Review;
 import ar.edu.itba.paw.models.User;
@@ -27,7 +28,6 @@ public interface CommonRowMappers{
     RowMapper<Review> REVIEW_ROW_MAPPER = ((resultSet, i) -> {
         String difficulty = resultSet.getString("difficulty");
         String platform = resultSet.getString("platform");
-
         return new Review(
                 resultSet.getLong("id"),
                 new User(
@@ -56,7 +56,9 @@ public interface CommonRowMappers{
                 resultSet.getDouble("gamelength"),
                 platform != null ? Platform.valueOf(platform.toUpperCase()) : null,
                 resultSet.getBoolean("completed"),
-                resultSet.getBoolean("replayability")
+                resultSet.getBoolean("replayability"),
+                 null,
+                (resultSet.getLong("likes")-resultSet.getLong("dislikes"))
         );
     });
 }

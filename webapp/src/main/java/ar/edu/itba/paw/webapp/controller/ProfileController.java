@@ -60,7 +60,7 @@ public class ProfileController extends PaginatedController {
 
         mav.addObject("games",gameService.getFavoriteGamesFromUser(userId));
         mav.addObject("profile",user.get());
-        mav.addObject("reviews",reviewService.getUserReviews(userId));
+        mav.addObject("reviews",reviewService.getUserReviews(userId,loggedUser));
         FollowerFollowingCount ffc = userService.getFollowerFollowingCount(userId);
         mav.addObject("followerCount", ffc.getFollowerCount());
         mav.addObject("followingCount", ffc.getFollowingCount());

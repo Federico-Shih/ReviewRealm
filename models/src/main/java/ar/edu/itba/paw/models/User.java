@@ -14,18 +14,23 @@ public class User {
     private List<Genre> preferences;
     private final boolean enabled;
 
-    public User(Long id, String username, String email, String password, List<Genre> preferences, boolean enabled) {
+   private final Long reputation;
+
+    public User(Long id, String username, String email, String password, List<Genre> preferences, boolean enabled, Long reputation) {
         this.id = id;
         this.username = username;
         this.email = email;
         this.password = password;
         this.preferences = preferences;
         this.enabled = enabled;
+        this.reputation = reputation;
     }
 
     public User(Long id, String username, String email, String password) {
-        this(id, username, email, password, new ArrayList<>(), false);
+        this(id, username, email, password, new ArrayList<>(), false,0L);
     }
+
+
 
     public Long getId() {
         return id;
@@ -45,6 +50,10 @@ public class User {
 
     public String getPassword() {
         return password;
+    }
+
+    public Long getReputation() {
+        return reputation;
     }
 
     public void setPassword(String password) {

@@ -26,7 +26,7 @@ public class ReviewServiceImplTest {
 
     private static final long REVIEWID = 23;
 
-    private static final User USER = new User(1L, "InflusearchGames", "email", "password", new ArrayList<>(), true);
+    private static final User USER = new User(1L, "InflusearchGames", "email", "password", new ArrayList<>(), true,0L);
 
     private static final Game GAME = new Game(3L,"Martians Attack"
             ,"","","","",new ArrayList<>(), LocalDate.now(),8.8);
@@ -42,12 +42,12 @@ public class ReviewServiceImplTest {
 
     @Test
     public void testGetReviewById() {
-        Mockito.when(reviewDao.findById(REVIEWID))
+        Mockito.when(reviewDao.findById(REVIEWID,null))
                 .thenReturn(Optional.of(new Review(23L, USER,
                         "","", LocalDateTime.now(),8,GAME, Difficulty.EASY,
-                        12.2, Platform.PS,true,true)));
+                        12.2, Platform.PS,true,true,null,0L)));
 
-        Optional<Review> optReview = rs.getReviewById(REVIEWID);
+        Optional<Review> optReview = rs.getReviewById(REVIEWID,null);
 
         Assert.assertTrue(optReview.isPresent());
         long id = optReview.get().getId();

@@ -2,6 +2,7 @@ package ar.edu.itba.paw.models;
 
 import ar.edu.itba.paw.enums.Difficulty;
 import ar.edu.itba.paw.enums.Platform;
+import ar.edu.itba.paw.enums.ReviewFeedback;
 import org.jetbrains.annotations.Nullable;
 
 import java.time.LocalDateTime;
@@ -26,7 +27,14 @@ public class Review {
     @Nullable
     private final Boolean replayability;
 
-    public Review(Long id, User author, String title, String content, LocalDateTime created, Integer rating, Game reviewedGame, Difficulty difficulty, Double gameLength, Platform platform, Boolean completed, Boolean replayability) {
+   @Nullable
+   private ReviewFeedback feedback;
+
+
+   private final Long likeCounter;
+
+
+    public Review(Long id, User author, String title, String content, LocalDateTime created, Integer rating, Game reviewedGame, Difficulty difficulty, Double gameLength, Platform platform, Boolean completed, Boolean replayability, ReviewFeedback feedback, Long likeCounter) {
         this.id = id;
         this.author = author;
         this.title = title;
@@ -39,6 +47,8 @@ public class Review {
         this.platform = platform;
         this.completed = completed;
         this.replayability = replayability;
+        this.feedback = feedback;
+        this.likeCounter = likeCounter;
     }
 
     public Long getId() {
@@ -59,6 +69,12 @@ public class Review {
 
     public LocalDateTime getCreated() {
         return created;
+    }
+
+    public void setFeedback(ReviewFeedback feedback) {
+        if(this.feedback == null) {
+            this.feedback = feedback;
+        }
     }
 
     public String getCreatedFormatted() {
@@ -91,5 +107,14 @@ public class Review {
 
     public Boolean getReplayability() {
         return replayability;
+    }
+
+    @Nullable
+    public ReviewFeedback getFeedback() {
+        return feedback;
+    }
+
+    public Long getLikeCounter() {
+        return likeCounter;
     }
 }

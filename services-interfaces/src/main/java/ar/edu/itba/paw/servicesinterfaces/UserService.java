@@ -40,4 +40,6 @@ public interface UserService {
     void sendPasswordResetToken(String email) throws UserNotFoundException;
 
     boolean resetPassword(String token, String password) throws TokenExpiredException, TokenNotFoundException;
+
+    boolean modifyUserReputation(long id, int reputation);
 }
