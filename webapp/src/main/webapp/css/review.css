@@ -65,7 +65,16 @@
 }
 
 .review-card-footer {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
     padding: 2% 4%;
+}
+.review-card-feedback-footer{
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: baseline;
 }
 
 #review-card-game-title {

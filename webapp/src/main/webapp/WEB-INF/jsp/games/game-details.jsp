@@ -11,12 +11,14 @@
     <link rel="stylesheet" href="<c:url value="/css/game.css" />">
     <link rel="stylesheet" href="<c:url value="/css/review.css" />">
     <script src="<c:url value="/js/materialize.min.js" />"></script>
+    <script src="<c:url value="/js/reviewfeedback.js"/>"></script>
     <link rel="shortcut icon" type="image/png" href="<c:url value="/static/review_realm_logo_white_32px.png" />">
     <title><spring:message code="game.details.title" arguments="${game.name}"/></title>
 </head>
 <body>
 <c:url value="/review/submit?gameId=${game.id}" var="sumbitReview"/>
 <c:url value="/game/list/" var="gameList"/>
+<c:url value="/" var="baseUrl"></c:url>
 <jsp:include page="../static-components/navbar.jsp"/>
 <div class="row" style="margin:2%">
     <div class="col s12 valign-wrapper breadcrumb-align">
@@ -126,12 +128,31 @@
                     </div>
                     <div class="divider"></div>
                     <div class="review-card-footer">
-                    <span id="review-card-bottom-text review-card-author">
-                        <spring:message code="review.by" arguments="@${review.author.username}"/>
-                    </span>
+                        <span id="review-card-bottom-text review-card-author">
+                            <spring:message code="review.by" arguments="@${review.author.username}"/>
+                        </span>
                             <%--                            <c:forEach var="genre" items="${review.author.}">--%>
                             <%--                                <span class="chip-small-inverted"><c:out value="${genre.name}"/></span>--%>
                             <%--                            </c:forEach>--%>
+                        <div class="review-card-feedback-footer">
+                            <c:url value="/review/feedback/${review.id}" var="updateFeedback" />
+
+                            <form name="likeFeedbackForm" class="feedback-form" method="post" action="${updateFeedback}">
+                                <button name="feedback" class="btn-flat waves-effect waves-light ${ (review.feedback == "LIKE")? "white-text":""}" value="LIKE">
+                                    <i class="material-icons">thumb_up</i>
+                                </button>
+                                <input type="hidden" name="url" value="${baseUrl}"/>
+                            </form>
+                            <form name="dislikeFeedbackForm" class="feedback-form" method="post" action="${updateFeedback}" >
+                                <button name="feedback" class="btn-flat waves-effect waves-light ${ (review.feedback == "DISLIKE")? "white-text":""}" value="DISLIKE">
+                                    <i class="material-icons">thumb_down</i>
+                                </button>
+                                <input type="hidden" name="url" value="${baseUrl}"/>
+                            </form>
+                            <c:if test="${review.likeCounter != 0}">
+                                <span><c:out value="${review.likeCounter}"/></span>
+                            </c:if>
+                        </div>
                     </div>
                 </div>
             </div>

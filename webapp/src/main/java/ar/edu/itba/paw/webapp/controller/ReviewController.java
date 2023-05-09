@@ -97,8 +97,6 @@ public class ReviewController extends PaginatedController implements QueryContro
         mav.addObject("game", review.get().getReviewedGame());
         mav.addObject("reviewExtra", ComputedReviewData.factory(review.get()));
         mav.addObject("isModerated", roles.contains(new SimpleGrantedAuthority("ROLE_MODERATOR")));
-        mav.addObject("isLiked", review.get().getFeedback() == ReviewFeedback.LIKE);
-        mav.addObject("isDisliked", review.get().getFeedback() == ReviewFeedback.DISLIKE);
         return mav;
     }
 
@@ -197,9 +195,8 @@ public class ReviewController extends PaginatedController implements QueryContro
     }
     @RequestMapping(value = "/review/feedback/{id:\\d+}", method = RequestMethod.POST)
     public ModelAndView updateReviewFeedback(@PathVariable(value = "id") Long id,
-                                   @RequestParam(value = "feedback") String feedback
-                                   /*@RequestParam(value = "url", defaultValue = "/") String url*/){
-        String url = "/review/" + id;
+                                   @RequestParam(value = "feedback") String feedback,
+                                   @RequestParam(value = "url", defaultValue = "/") String url){
         Optional<Review> review = reviewService.getReviewById(id,null);
         User loggedUser = AuthenticationHelper.getLoggedUser(userService);
         if (!review.isPresent()) {
