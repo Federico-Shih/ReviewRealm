@@ -219,3 +219,11 @@ input::-webkit-inner-spin-button {
 .review-content-input {
     height: 200px !important;
 }
+
+.border-button {
+    border: 1px solid white;
+    border-radius: 5px;
+    padding: 5px 10px;
+    color: white;
+    width: fit-content;
+}

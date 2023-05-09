@@ -1,10 +1,12 @@
 package ar.edu.itba.paw.servicesinterfaces;
 
+import ar.edu.itba.paw.enums.NotificationType;
 import ar.edu.itba.paw.exceptions.*;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.enums.Genre;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public interface UserService {
@@ -42,6 +44,14 @@ public interface UserService {
     void sendPasswordResetToken(String email) throws UserNotFoundException;
 
     boolean resetPassword(String token, String password) throws TokenExpiredException, TokenNotFoundException;
+
+    Map<NotificationType, Boolean> getUserNotificationSettings(Long userId);
+
+    Boolean isNotificationEnabled(Long userId, NotificationType notificationType);
+
+    void setUserNotificationSettings(Long userId, Map<NotificationType, Boolean> notificationSettings);
+
+    Boolean hasPreferencesSet(User user);
 
     boolean modifyUserReputation(long id, int reputation);
 }

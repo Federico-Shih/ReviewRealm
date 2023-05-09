@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.services;
 
+import ar.edu.itba.paw.enums.NotificationType;
 import ar.edu.itba.paw.exceptions.*;
 import ar.edu.itba.paw.dtos.builders.SaveUserBuilder;
 import ar.edu.itba.paw.exceptions.EmailAlreadyExistsException;
@@ -17,7 +18,6 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.env.Environment;
@@ -61,11 +61,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public User createUser(String username, String email, String password) throws EmailAlreadyExistsException, UsernameAlreadyExistsException {
         Optional<User> user = userDao.getByEmail(email);
-        boolean isEmptyPassword = false;
         if (user.isPresent()) {
             throw new EmailAlreadyExistsException();
         }
-        if(!isEmptyPassword && userDao.getByUsername(username).isPresent())
+        if(userDao.getByUsername(username).isPresent())
             throw new UsernameAlreadyExistsException();
         User createdUser;
         LOGGER.info("Creating user: {}", email);
@@ -93,7 +92,7 @@ public class UserServiceImpl implements UserService {
         mailingService.sendEmail(user.getEmail(), subject, "validate", templateVariables);
     }
 
-    private void sendChangepasswordEmail(ExpirationToken token, User user) {
+    private void sendChangePasswordEmail(ExpirationToken token, User user) {
         Map<String, Object> templateVariables = new HashMap<>();
         templateVariables.put("webBaseUrl", env.getProperty("mailing.weburl"));
         templateVariables.put("token", token.getToken());
@@ -236,7 +235,7 @@ public class UserServiceImpl implements UserService {
     public void sendPasswordResetToken(String email) throws UserNotFoundException {
         User user = userDao.getByEmail(email).orElseThrow(() -> new UserNotFoundException("user.notfound"));
         ExpirationToken newToken = tokenDao.create(generateToken(), user.getId(), "", LocalDateTime.now().plusHours(EXPIRATION_TIME));
-        sendChangepasswordEmail(newToken, user);
+        sendChangePasswordEmail(newToken, user);
     }
 
     @Override
@@ -246,6 +245,44 @@ public class UserServiceImpl implements UserService {
             throw new TokenExpiredException("token.expired");
         }
         return userDao.update(existentToken.getUserId(), new SaveUserBuilder().withPassword(passwordEncoder.encode(password)).withEnabled(true).getSaveUserDTO()) == 1;
+    }
+
+    @Override
+    public Map<NotificationType, Boolean> getUserNotificationSettings(Long userId) {
+        Map<NotificationType, Boolean> notificationSettings = new HashMap<>();
+        List<DisabledNotification> disabledNotifications = userDao.getDisabledNotifications(userId);
+        for (DisabledNotification disabledNotification : disabledNotifications) {
+            notificationSettings.put(disabledNotification.getNotificationType(), false);
+        }
+        for (NotificationType notificationType : NotificationType.values()) {
+            if (!notificationSettings.containsKey(notificationType)) {
+                notificationSettings.put(notificationType, true);
+            }
+        }
+        return notificationSettings;
+    }
+
+    @Override
+    public Boolean isNotificationEnabled(Long userId, NotificationType notificationType) {
+        List<DisabledNotification> disabledNotifications = userDao.getDisabledNotifications(userId);
+        return disabledNotifications.stream().noneMatch(disabledNotification -> disabledNotification.getNotificationType().equals(notificationType));
+    }
+
+    @Override
+    public void setUserNotificationSettings(Long userId, Map<NotificationType, Boolean> notificationSettings) {
+        Map<NotificationType, Boolean> currentNotificationSettings = getUserNotificationSettings(userId);
+        for (Map.Entry<NotificationType, Boolean> entry : notificationSettings.entrySet()) {
+            if (entry.getValue() && !currentNotificationSettings.get(entry.getKey())) {
+                userDao.enableNotification(userId, entry.getKey().getTypeName());
+            } else if (!entry.getValue() && currentNotificationSettings.get(entry.getKey())) {
+                userDao.disableNotification(userId, entry.getKey().getTypeName());
+            }
+        }
+    }
+
+    @Override
+    public Boolean hasPreferencesSet(User user) {
+        return user.getPreferences().size() > 0;
     }
 
     @Override

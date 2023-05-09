@@ -13,15 +13,15 @@
     <link rel="stylesheet" href="<c:url value="/css/profile.css" />"/>
     <link rel="shortcut icon" type="image/png" href="<c:url value="/static/review_realm_logo_white_32px.png" />">
     <script src="<c:url value="/js/materialize.min.js" />"></script>
-    <title><spring:message code="edit.profile.title"/></title>
+    <title><spring:message code="edit.preferences.title"/></title>
 </head>
-<c:url value="/profile/edit/submit" var="applyChanges"/>
+<c:url value="/profile/settings/preferences" var="applyChanges"/>
 <body>
     <jsp:include page="../static-components/navbar.jsp"/>
-    <form:form modelAttribute="editProfileForm" action="${applyChanges}" method="post">
+    <form:form modelAttribute="editPreferencesForm" action="${applyChanges}" method="post">
         <div class="row container">
             <div class="col s12 center">
-                <h5><spring:message code="edit.profile.fav.genres"/></h5>
+                <h5><spring:message code="edit.preferences.fav.genres"/></h5>
             </div>
             <div class="col s12 center">
                 <c:forEach items="${profile.preferences}" var="favgenres">
@@ -30,14 +30,14 @@
                     </span>
                 </c:forEach>
                 <c:if test="${empty profile.preferences}">
-                    <h6><spring:message code="edit.profile.no.favgenres"/></h6>
+                    <h6><spring:message code="edit.preferences.no.favgenres"/></h6>
                 </c:if>
             </div>
             <div class="col s12 center">
-                <h5><spring:message code="edit.profile.fav.genres.choose"/></h5>
+                <h5><spring:message code="edit.preferences.fav.genres.choose"/></h5>
             </div>
             <div class="col s12 center">
-                <c:forEach items="${availableGenres}" var="genre"> <!--hacer sin form:-->
+                <c:forEach items="${availableGenres}" var="genre">
                     <label>
                         <span class="col s4 m3 center margin-for-genres">
                             <input type="checkbox" id="${genre.id}" value="${genre.id}" name="genres"/>
@@ -48,7 +48,7 @@
             </div>
 
             <div class="col s12 center">
-                <c:forEach items="${profile.preferences}" var="genre"> <!--hacer sin form:-->
+                <c:forEach items="${profile.preferences}" var="genre">
                     <label>
                         <span class="col s4 m3 center margin-for-genres">
                             <input type="checkbox" checked id="${genre.id}" value="${genre.id}" name="genres"/>
@@ -66,7 +66,8 @@
         <div class="row">
             <div class="col s12 center">
                 <button class="btn" type="submit">
-                    <spring:message code="edit.profile.save.changes"/>
+                    <i class="material-icons left">save</i>
+                    <spring:message code="edit.preferences.save.changes"/>
                 </button>
             </div>
         </div>

@@ -193,7 +193,7 @@ public class ReviewController extends PaginatedController implements QueryContro
         if (!deleted) {
             return reviewDetails(id);
         }
-        return new ModelAndView("redirect:/game/" + id);
+        return new ModelAndView("redirect:/game/" + review.get().getReviewedGame().getId());
     }
     @RequestMapping(value = "/review/feedback/{id:\\d+}", method = RequestMethod.POST)
     public ModelAndView updateReviewFeedback(@PathVariable(value = "id") Long id,

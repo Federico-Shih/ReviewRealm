@@ -5,6 +5,7 @@ import ar.edu.itba.paw.dtos.builders.ReviewFilterBuilder;
 import ar.edu.itba.paw.dtos.ordering.Ordering;
 import ar.edu.itba.paw.dtos.ordering.ReviewOrderCriteria;
 import ar.edu.itba.paw.enums.Difficulty;
+import ar.edu.itba.paw.enums.NotificationType;
 import ar.edu.itba.paw.enums.Platform;
 import ar.edu.itba.paw.enums.ReviewFeedback;
 import ar.edu.itba.paw.models.Game;
@@ -77,7 +78,9 @@ public class ReviewServiceImpl implements ReviewService {
                 stringArgs, LocaleContextHolder.getLocale());
 
         for (User follower : authorFollowers) {
-            mailingService.sendEmail(follower.getEmail(), subject, "newreview", templateVariables);
+            if(userService.isNotificationEnabled(follower.getId(), NotificationType.USER_I_FOLLOW_WRITES_REVIEW)) {
+                mailingService.sendEmail(follower.getEmail(), subject, "newreview", templateVariables);
+            }
         }
 
         if(review.getRating()>7)
@@ -135,6 +138,21 @@ public class ReviewServiceImpl implements ReviewService {
             boolean op = reviewDao.deleteReview(id);
             if(op){
                 gameService.deleteReviewFromGame(review.get().getReviewedGame().getId(), review.get().getRating());
+            }
+            Game game = review.get().getReviewedGame();
+            User author = review.get().getAuthor();
+            String userEmail = author.getEmail();
+
+            if(userService.isNotificationEnabled(author.getId(), NotificationType.MY_REVIEW_IS_DELETED)) {
+                Map<String, Object> templateVariables = new HashMap<>();
+                templateVariables.put("game", game.getName());
+                templateVariables.put("gameId", game.getId());
+                templateVariables.put("webBaseUrl", env.getProperty("mailing.weburl"));
+                Object[] stringArgs = {};
+                String subject = messageSource.getMessage("email.deletedreview.subject",
+                        stringArgs, LocaleContextHolder.getLocale());
+
+                mailingService.sendEmail(userEmail, subject, "deletedreview", templateVariables);
             }
             return op;
         }

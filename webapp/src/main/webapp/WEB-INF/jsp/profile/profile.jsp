@@ -8,6 +8,7 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link type="text/css" rel="stylesheet" href="<c:url value="/css/materialize.min.css" />" media="screen,projection"/>
     <link rel="stylesheet" href="<c:url value="/css/main.css" />">
+    <link rel="stylesheet" href="<c:url value="/css/flex.css" />">
     <link rel="stylesheet" href="<c:url value="/css/review.css" />">
     <link rel="stylesheet" href="<c:url value="/css/game.css" />"/>
     <link rel="stylesheet" href="<c:url value="/css/profile.css" />"/>
@@ -21,62 +22,80 @@
     <jsp:param name="selected" value="profile"/>
 </jsp:include>
 <div class="container">
-    <div class="profile-info-panel">
-        <img class="profile-info-panel-image"
-             src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"
-             alt="profilePic"/> <!-- TODO: imágenes de perfil -->
-        <div class="profile-info-panel-info">
-            <span class="profile-user-name">${profile.username}</span>
-            <div class="profile-preferences">
-                <span><spring:message code="profile.fanof"/></span>
-                <div class="profile-preferences-list">
-                    <c:forEach var="genre" items="${profile.preferences}">
-                        <span class="chip-small-inverted"><spring:message code="${genre.name}"/></span>
-                    </c:forEach>
-                </div>
-            </div>
-            <div class="profile-followers">
-                <a href="<c:url value="/profile/${profile.id}/followers"/>">
+    <div class="profile-info-panel f-row f-jc-sbetween">
+        <div class="f-row f-ai-center">
+            <img class="profile-info-panel-image"
+                 src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"
+                 alt="profilePic"/> <!-- TODO: imágenes de perfil -->
+            <div class="profile-info-panel-info f-column f-jc-center">
+                <span class="profile-user-name">${profile.username}</span>
+                <c:if test="${!(empty profile.preferences)}">
+                    <div class="profile-preferences">
+                        <span><spring:message code="profile.fanof"/></span>
+                        <div class="profile-preferences-list f-gap-1">
+                            <c:forEach var="genre" items="${profile.preferences}">
+                                <span class="chip-small-inverted"><spring:message code="${genre.name}"/></span>
+                            </c:forEach>
+                        </div>
+                    </div>
+                </c:if>
+                <div class="profile-followers">
+                    <a href="<c:url value="/profile/${profile.id}/followers"/>">
                     <span class="white-text"><spring:message code="profile.followers"
                                                              arguments="${followerCount}"/></span>
-                </a>
-                <div class="divider-v profile-followers-text-divider"></div>
-                <a href="<c:url value="/profile/${profile.id}/following"/>">
+                    </a>
+                    <div class="divider-v profile-followers-text-divider"></div>
+                    <a href="<c:url value="/profile/${profile.id}/following"/>">
             <span class="white-text">
               <spring:message code="profile.following" arguments="${followingCount}"/>
             </span>
-                </a>
-            </div>
-            <div class="">
-                <c:if test="${!isProfileSelf}">
-                    <c:if test="${following == null || !following}">
-                        <c:url value="/profile/follow/${profile.id}" var="follow"/>
-                        <form method="post" action="${follow}">
-                            <button type="submit" class="waves-effect waves-light btn-small deep-purple">
-                                <spring:message code="profile.follow"/>
-                            </button>
-                        </form>
-                    </c:if>
-                    <c:if test="${following != null && following}">
-                        <c:url value="/profile/unfollow/${profile.id}" var="unfollow"/>
-                        <form method="post" action="${unfollow}">
-                            <button type="submit" class="waves-effect waves-light btn-small deep-purple">
-                                <spring:message code="profile.unfollow"/>
-                            </button>
-                        </form>
-                    </c:if>
-                </c:if>
-                <c:if test="${isProfileSelf}">
-                    <a href="<c:url value="/profile/edit"/>" class="waves-effect waves-light btn-small deep-purple">
-                        <i class="material-icons left">edit</i>
-                        <span>
-                            <spring:message code="profile.edit"/>
-                        </span>
                     </a>
-                </c:if>
+                </div>
+                <div class="">
+                    <c:if test="${!isProfileSelf}">
+                        <c:if test="${following == null || !following}">
+                            <c:url value="/profile/follow/${profile.id}" var="follow"/>
+                            <form method="post" action="${follow}">
+                                <button type="submit" class="waves-effect waves-light btn-small deep-purple">
+                                    <spring:message code="profile.follow"/>
+                                </button>
+                            </form>
+                        </c:if>
+                        <c:if test="${following != null && following}">
+                            <c:url value="/profile/unfollow/${profile.id}" var="unfollow"/>
+                            <form method="post" action="${unfollow}">
+                                <button type="submit" class="waves-effect waves-light btn-small deep-purple">
+                                    <spring:message code="profile.unfollow"/>
+                                </button>
+                            </form>
+                        </c:if>
+                    </c:if>
+                </div>
             </div>
         </div>
+        <div>
+            <c:if test="${isProfileSelf}">
+                <a class="btn valign-wrapper" href="<c:url value="/profile/settings/"/>">
+                    <i class="material-icons" aria-hidden="true">settings</i>
+                </a>
+            </c:if>
+        </div>
     </div>
+    <c:if test="${userHasNotSetPreferences}">
+        <div class="card lime darken-3">
+            <div class="card-content white-text f-row f-gap-2">
+                <div class="">
+                    <i class="material-icons medium">warning</i>
+                </div>
+                <div class="">
+                    <span class="card-title"><spring:message code="profile.hasnotsetpreferences" /></span>
+                    <a href="<c:url value="/profile/settings/preferences"/>" class="no-a-decoration btn-flat waves-effect waves-light border-button f-row f-jc-center f-ai-center">
+                        <span><spring:message code="profile.hasnotsetpreferences.doit"/></span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </c:if>
     <div class="divider-h"></div>
     <div class="profile-favorite-games-panel">
         <h5><spring:message code="profile.favgames"/></h5>

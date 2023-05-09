@@ -1,9 +1,9 @@
 package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.exceptions.UserNotFoundException;
+import ar.edu.itba.paw.forms.NotificationsForm;
 import ar.edu.itba.paw.models.FollowerFollowingCount;
-import ar.edu.itba.paw.enums.Genre;
-import ar.edu.itba.paw.forms.EditProfileForm;
+import ar.edu.itba.paw.forms.EditPreferencesForm;
 import ar.edu.itba.paw.models.Game;
 import ar.edu.itba.paw.models.Paginated;
 import ar.edu.itba.paw.models.User;
@@ -21,10 +21,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Controller
@@ -35,7 +33,7 @@ public class ProfileController extends PaginatedController {
     private final GameService gameService;
     private final GenreService genreService;
 
-    private final static int MAX_RECOMMENDED_GAMES = 3;
+    private final static int RECOMMENDED_GAMES_COUNT = 3;
     @Autowired
     public ProfileController(UserService userService, ReviewService reviewService,
                              GameService gameService, GenreService genreService){
@@ -67,8 +65,8 @@ public class ProfileController extends PaginatedController {
         if (loggedUser != null) {
             mav.addObject("isProfileSelf", loggedUser.equals(user.get()));
             mav.addObject("following", userService.userFollowsId(loggedUser.getId(), userId));
+            mav.addObject("userHasNotSetPreferences", loggedUser.equals(user.get()) && !userService.hasPreferencesSet(user.get()));
         }
-
         return mav;
     }
 
@@ -140,11 +138,17 @@ public class ProfileController extends PaginatedController {
             LOGGER.error("Unexpected error: {}", err.getMessage());
         }
         return new ModelAndView(String.format("redirect:/profile/%d", userId));
-}
-    @RequestMapping(value = "/profile/edit", method= RequestMethod.GET)
-    public ModelAndView editProfile(@Valid @ModelAttribute("editProfileForm") final EditProfileForm form){
+    }
+
+    @RequestMapping(value = "/profile/settings/", method= RequestMethod.GET)
+    public ModelAndView accountSettings() {
+        return new ModelAndView("profile/account-settings");
+    }
+
+    @RequestMapping(value = "/profile/settings/preferences", method= RequestMethod.GET)
+    public ModelAndView editPreferences(@Valid @ModelAttribute("editPreferencesForm") final EditPreferencesForm form){
         long userId = AuthenticationHelper.getLoggedUser(userService).getId();
-        final ModelAndView mav = new ModelAndView("profile/edit-profile");
+        final ModelAndView mav = new ModelAndView("profile/edit-preferences");
         Optional<User> user = userService.getUserById(userId);
         if(!user.isPresent())
         {
@@ -156,22 +160,46 @@ public class ProfileController extends PaginatedController {
         return mav;
     }
 
-    @RequestMapping(value="/profile/edit/submit", method = RequestMethod.POST)
-    public ModelAndView submitEditProfile(@Valid @ModelAttribute("editProfileForm") final EditProfileForm form,
-                                          final BindingResult errors)
+    @RequestMapping(value="/profile/settings/preferences", method = RequestMethod.POST)
+    public ModelAndView submitEditPreferences(@Valid @ModelAttribute("editPreferencesForm") final EditPreferencesForm form,
+                                              final BindingResult errors)
     {
         long userId = AuthenticationHelper.getLoggedUser(userService).getId();
         if(errors.hasErrors()) {
-            return editProfile(form);
+            return editPreferences(form);
         }
-        //llamados a métodos de service
         try {
             userService.setPreferences(form.getGenres(), userId);
         } catch (RuntimeException err) {
             LOGGER.error("Unexpected error: {}", err.getMessage());
-            return editProfile(form);
+            return editPreferences(form);
         }
-        return profile(userId);
+        return new ModelAndView(String.format("redirect:/profile/%d", userId));
+    }
+
+    @RequestMapping(value = "/profile/settings/notifications", method= RequestMethod.GET)
+    public ModelAndView notificationSettings(@Valid @ModelAttribute("notificationsForm") final NotificationsForm form){
+        long userId = AuthenticationHelper.getLoggedUser(userService).getId();
+        final ModelAndView mav = new ModelAndView("profile/notification-settings");
+        mav.addObject("currentNotificationSettings",userService.getUserNotificationSettings(userId).entrySet());
+        return mav;
+    }
+
+    @RequestMapping(value="/profile/settings/notifications", method = RequestMethod.POST)
+    public ModelAndView submitNotificationSettings(@Valid @ModelAttribute("notificationsForm") final NotificationsForm form,
+                                              final BindingResult errors)
+    {
+        long userId = AuthenticationHelper.getLoggedUser(userService).getId();
+        if(errors.hasErrors()) {
+            return notificationSettings(form);
+        }
+        try {
+            userService.setUserNotificationSettings(userId, form.getConvertedNotificationSettings());
+        } catch (RuntimeException err) {
+            LOGGER.error("Unexpected error: {}", err.getMessage());
+            return notificationSettings(form);
+        }
+        return new ModelAndView(String.format("redirect:/profile/%d", userId));
     }
 
     @RequestMapping(value="/for-you", method = RequestMethod.GET)
@@ -186,11 +214,12 @@ public class ProfileController extends PaginatedController {
             mav.addObject("users", searchedUsers.getList());
         }
 
-        List<Game> recommendedGames = gameService.getRecommendationsOfGamesForUser(loggedUser.getId(),MAX_RECOMMENDED_GAMES);
+        List<Game> recommendedGames = gameService.getRecommendationsOfGamesForUser(loggedUser.getId(),RECOMMENDED_GAMES_COUNT, RECOMMENDED_GAMES_COUNT);
         mav.addObject("search", search);
-        mav.addObject("recommendedGames", recommendedGames.size() < 3 ? new ArrayList<>() : recommendedGames);
+        mav.addObject("recommendedGames", recommendedGames);
         mav.addObject("reviewsFollowing", reviewService.getReviewsFromFollowingByUser(loggedUser.getId(), size));
-        mav.addObject("user",loggedUser);
+        mav.addObject("user", loggedUser);
+        mav.addObject("userSetPreferences", userService.hasPreferencesSet(loggedUser));
         mav.addObject("size", size);
 
         return mav;

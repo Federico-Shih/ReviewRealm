@@ -36,6 +36,8 @@ public class UserDaoImpl implements UserDao {
 
     private final static RowMapper<Role> ROLE_ROW_MAPPER = (((resultSet, i) -> new Role(resultSet.getString("roleName"))));
 
+    private final static RowMapper<DisabledNotification> DISABLED_NOTIFICATION_ROW_MAPPER = ((resultSet, i) -> new DisabledNotification(resultSet.getString("notificationType")));
+
     private final static RowMapper<FollowerFollowingCount> FOLLOWER_FOLLOWING_COUNT_ROW_MAPPER = (((resultSet, i) -> new FollowerFollowingCount(resultSet.getLong("follower_count"), resultSet.getLong("following_count"))));
 
     private final static RowMapper<Integer> GENRE_ROW_MAPPER = ((resultSet, i) -> resultSet.getInt("genreId"));
@@ -200,6 +202,21 @@ public class UserDaoImpl implements UserDao {
     @Override
     public Long getTotalAmountOfUsers() {
         return jdbcTemplate.queryForObject("SELECT count(*) from users", Long.class);
+    }
+
+    @Override
+    public List<DisabledNotification> getDisabledNotifications(long userId) {
+        return jdbcTemplate.query("SELECT * FROM user_disabled_notifications NATURAL JOIN notifications WHERE userId = ?", DISABLED_NOTIFICATION_ROW_MAPPER, userId);
+    }
+
+    @Override
+    public void disableNotification(long userId, String notificationType) {
+        jdbcTemplate.update("WITH notification_id(id) AS (SELECT notificationId FROM notifications WHERE notificationType = ?) INSERT INTO user_disabled_notifications(userId, notificationId) SELECT ?, id FROM notification_id WHERE NOT EXISTS (SELECT * FROM user_disabled_notifications WHERE userId = ? AND notificationId = notification_id.id)", notificationType, userId, userId);
+    }
+
+    @Override
+    public void enableNotification(long userId, String notificationType) {
+        jdbcTemplate.update("DELETE FROM user_disabled_notifications WHERE userId = ? AND notificationId = (SELECT notificationId FROM notifications WHERE notificationType = ? LIMIT 1)", userId, notificationType);
     }
 
     @Override

@@ -78,13 +78,15 @@ public class UserController {
     public ModelAndView validateForm(
             @ModelAttribute("resendEmailForm") ResendEmailForm form,
             @RequestParam(value = "email", required = false) String email,
-            @RequestParam(value = "registered", required = false) boolean registered
+            @RequestParam(value = "registered", required = false) boolean registered,
+            @RequestParam(value = "resent", required = false) boolean resent
             ) {
         if (email != null && !email.equals("")) {
             form.setEmail(email);
         }
         ModelAndView mav = new ModelAndView("user/recovery");
-        if (registered) mav.addObject("emailSuccess", true);
+        mav.addObject("registered", registered);
+        mav.addObject("resent", resent);
         return mav;
     }
 
@@ -126,18 +128,18 @@ public class UserController {
     @RequestMapping(value = "/resend-email", method = RequestMethod.POST)
     public ModelAndView resendEmail(@Valid @ModelAttribute("resendEmailForm") ResendEmailForm form, final BindingResult errors) {
         if (errors.hasErrors()) {
-            return validateForm(form, form.getEmail(), false);
+            return validateForm(form, form.getEmail(), false, false);
         }
         try {
             us.resendToken(form.getEmail());
         } catch (UserAlreadyEnabled e) {
             errors.rejectValue("email", "user.already.exists");
-            return validateForm(form, form.getEmail(), false);
+            return validateForm(form, form.getEmail(), false, false);
         } catch (UserNotFoundException e) {
             errors.rejectValue("email", "user.not.exists");
-            return validateForm(form, form.getEmail(), false);
+            return validateForm(form, form.getEmail(), false, false);
         }
-        return validateForm(form, form.getEmail(), true);
+        return validateForm(form, form.getEmail(),false, true);
     }
 
     @RequestMapping(value = "/changepassword", method = RequestMethod.GET)

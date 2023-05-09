@@ -36,5 +36,11 @@ public interface UserDao {
 
     Long getTotalAmountOfUsers();
 
+    List<DisabledNotification> getDisabledNotifications(long userId);
+
+    void disableNotification(long userId, String notificationType);
+
+    void enableNotification(long userId, String notificationType);
+
     boolean modifyReputation(long id, int reputation);
 }

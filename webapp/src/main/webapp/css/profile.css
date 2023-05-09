@@ -1,9 +1,6 @@
 .profile-info-panel {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    height: 30%;
-    margin-bottom: 5px;
+    height: auto;
+    margin: 2% 0;
 }
 
 .profile-info-panel-image {
@@ -13,9 +10,6 @@
 }
 
 .profile-info-panel-info {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
     height: 100%;
     gap: 3%;
 }
@@ -81,4 +75,11 @@
 
 .margin-for-genres {
     margin-top: 6px;
+}
+
+.settings-option {
+    font-size: 20px;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-bottom: 10px;
 }

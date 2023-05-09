@@ -58,22 +58,23 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                 //.antMatchers("/admin/**").hasRole("ADMIN") TODO: lo que requiera un rol especial
                 //.antMatchers("/review/edit/").access("@AccessHelper.canEdit") cuando se requiera un acceso especial segun el usuario (Spring Expression Language)
 
-                /* ACÁ PONEMOS TODOS LOS PATHS QUE REQUIERAN INICIAR SESIÓN, PERO NO ROLES */
+                /* ACÁ PONEMOS TODOS LOS PATHS QUE REQUIERAN INICIAR SESIÓN Y TENER UN ROL */
                 .antMatchers("/review/delete/{\\d+}", "/game/submit").hasRole("MODERATOR")
+
+                /* ACÁ PONEMOS TODOS LOS PATHS QUE REQUIERAN INICIAR SESIÓN, PERO NO ROLES */
                 .antMatchers("/review/submit",
                         "/review/submit/{\\d+}",
                         "/profile/following",
                         "/profile/followers",
                         "/profile/follow/{\\d+}",
                         "/profile/unfollow/{\\d+}",
-                        "/profile/edit",
-                        "/profile/edit/submit",
                         "/for-you",
-                        "/review/feedback/{id:\\d+}"
+                        "/review/feedback/{id:\\d+}",
+                        "/profile/settings/**"
                 ).authenticated()
 
                 /* ACÁ PONEMOS TODOS LOS PATHS QUE REQUIERAN NO HABER INICIADO SESIÓN */
-                .antMatchers("/login", "/register").anonymous()
+                .antMatchers("/login", "/register", "/recover").anonymous()
 
                 /* POR DEFAULT NO ES NECESARIO INICIAR SESIÓN */
                 .antMatchers("/**").permitAll()

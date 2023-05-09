@@ -96,7 +96,8 @@ input[type=number] {
 }
 
 .dropdown-container {
-    width: 150px !important;
+    width: auto !important;
+    white-space: nowrap;
 }
 
 .link-button {

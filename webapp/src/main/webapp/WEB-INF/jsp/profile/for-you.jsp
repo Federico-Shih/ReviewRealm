@@ -7,6 +7,7 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link type="text/css" rel="stylesheet" href="<c:url value="/css/materialize.min.css" />" media="screen,projection"/>
     <link rel="stylesheet" href="<c:url value="/css/main.css" />">
+    <link rel="stylesheet" href="<c:url value="/css/flex.css" />">
     <link rel="stylesheet" href="<c:url value="/css/for-you.css" />">
     <link rel="stylesheet" href="<c:url value="/css/review.css" />">
     <link rel="stylesheet" href="<c:url value="/css/game.css" />"/>
@@ -18,24 +19,42 @@
 <jsp:include page="../static-components/navbar.jsp">
     <jsp:param name="selected" value="for-you"/>
 </jsp:include>
-<c:url var="setPreferences" value="/profile/edit"/>
-<c:url var="searchUsers" value="/"/> <%--TODO Busqueda de usuarios para following--%>
+<c:url var="setPreferences" value="/profile/settings/preferences"/>
+<c:url var="searchUsers" value="/"/>
 <c:url value="/for-you" var="sendSearch"/>
 
 <div class="for-you-page">
     <div class="for-you-section">
         <span class="for-you-section-header"><spring:message code="for-you.games.header"/> </span>
-        <div class="row">
-            <c:if test="${empty user.preferences}">
-                <div class="col s12 center-align">
-                    <span> <spring:message code="for-you.nopreferencesset"/></span>
-                    <a href="${setPreferences}"><span class><spring:message code="for-you.nopreferencesset.doit"/></span></a>
+        <div class="full-width">
+            <c:if test="${!userSetPreferences}">
+                <div class="card lime darken-3">
+                    <div class="card-content white-text f-row f-gap-2">
+                        <div class="">
+                            <i class="material-icons medium">warning</i>
+                        </div>
+                        <div class="">
+                            <span class="card-title"><spring:message code="for-you.nopreferencesset" /></span>
+                            <a href="<c:url value="/profile/settings/preferences"/>" class="no-a-decoration btn-flat waves-effect waves-light border-button f-row f-jc-center f-ai-center">
+                                <span><spring:message code="for-you.nopreferencesset.doit"/></span>
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </c:if>
-            <c:if test="${!(empty user.preferences) && empty recommendedGames}">
-                <div class="col s12 center-align">
-                    <span> <spring:message code="for-you.norecomendedgames"/></span>
-                    <a href="${setPreferences}"><span class><spring:message code="for-you.norecomendedgames.doit"/></span></a>
+            <c:if test="${userSetPreferences && empty recommendedGames}">
+                <div class="card lime darken-3">
+                    <div class="card-content white-text f-row f-gap-2">
+                        <div class="">
+                            <i class="material-icons medium">warning</i>
+                        </div>
+                        <div class="">
+                            <span class="card-title"><spring:message code="for-you.norecomendedgames" /></span>
+                            <a href="<c:url value="/profile/settings/preferences"/>" class="no-a-decoration btn-flat waves-effect waves-light border-button f-row f-jc-center f-ai-center">
+                                <span><spring:message code="for-you.norecomendedgames.doit"/></span>
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </c:if>
             <c:forEach items="${recommendedGames}" var="game">

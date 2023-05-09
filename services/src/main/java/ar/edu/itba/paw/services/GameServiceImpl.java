@@ -145,13 +145,18 @@ public class GameServiceImpl implements GameService {
         gameDao.modifyReview(gameId, oldRating, newRating);
     }
 
+
     @Override
-    public List<Game> getRecommendationsOfGamesForUser(Long userId, Integer amount) {
+    public List<Game> getRecommendationsOfGamesForUser(Long userId, Integer min, Integer max) {
         List <Genre> userPreferences = userService.getPreferences(userId);
         if(userPreferences.isEmpty()){
             return new ArrayList<>();
         }
-        return gameDao.getRecommendationsForUser(userId,userPreferences.stream().map(Genre::getId).collect(Collectors.toList()),amount);
+        List<Game> games = gameDao.getRecommendationsForUser(userId,userPreferences.stream().map(Genre::getId).collect(Collectors.toList()), max);
+        if(games.size() < min) {
+            return new ArrayList<>();
+        }
+        return games;
     }
 
     @Override

@@ -82,6 +82,18 @@
                                     </a>
                                 </li>
                                 <li>
+                                    <a href="<c:url value="/profile/settings/"/>">
+                                        <div class="valign-wrapper profile-dropdown-link">
+                                            <span class="material-icons">
+                                                settings
+                                            </span>
+                                            <span>
+                                                <spring:message code="account.settings"/>
+                                            </span>
+                                        </div>
+                                    </a>
+                                </li>
+                                <li>
                                     <a href="<c:url value="/logout"/>">
                                         <div class="valign-wrapper profile-dropdown-link">
                                             <span class="material-icons">

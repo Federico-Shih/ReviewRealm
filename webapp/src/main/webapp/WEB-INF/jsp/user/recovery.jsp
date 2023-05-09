@@ -8,6 +8,7 @@
     <title><spring:message code="validation.title" arguments="PAGE.ARGUMENTS" /></title> <!-- Compiled and minified CSS -->
     <link rel="stylesheet" type="text/css" href="<c:url value="/css/materialize.min.css" />" media="screen,projection"/>
     <link rel="stylesheet" href="<c:url value="/css/main.css" />">
+    <link rel="stylesheet" href="<c:url value="/css/user.css" />">
     <link rel="stylesheet" href="<c:url value="/css/review/review-page.css" />">
     <!-- Compiled and minified JavaScript -->
     <script src="<c:url value="/js/materialize.min.js" />"></script>
@@ -28,6 +29,33 @@
     </c:if>
     <article class="card">
         <div class="card-content">
+            <c:if test="${registered}">
+                <div class="card green darken-1">
+                    <div class="card-content white-text row">
+                        <div class="col s1">
+                            <i class="material-icons medium">email</i>
+                        </div>
+                        <div class="col s11">
+                            <span class="card-title"><spring:message code="registered.success.title" /></span>
+                            <p><spring:message code="validation.email.sent"/></p>
+                        </div>
+                    </div>
+                </div>
+            </c:if>
+            <c:if test="${resent}">
+                <div class="card lime darken-3">
+                    <div class="card-content white-text row">
+                        <div class="col s1">
+                            <i class="material-icons medium">email</i>
+                        </div>
+                        <div class="col s11">
+                            <span class="card-title"><spring:message code="resend.email.success.title" /></span>
+                            <p><spring:message code="validation.email.sent"/></p>
+                        </div>
+                    </div>
+                </div>
+            </c:if>
+
             <h5><spring:message code="validation.title" /></h5>
             <c:url var="validateUrl" value="/validate" />
             <form action="${validateUrl}" method="post">
