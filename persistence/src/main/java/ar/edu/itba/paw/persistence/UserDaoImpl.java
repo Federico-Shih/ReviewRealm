@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.dtos.SaveUserDTO;
+import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.persistenceinterfaces.UserDao;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,14 +21,17 @@ public class UserDaoImpl implements UserDao {
 
     private final SimpleJdbcInsert followJdbcInsert;
 
-    private final static RowMapper<User> USER_ROW_MAPPER = (resultSet, i) -> new User(resultSet.getLong("id"),
-            resultSet.getString("username"),
-            resultSet.getString("email"),
-            resultSet.getString("password"),
-            new ArrayList<>(),
-            resultSet.getBoolean("enabled"),
-            resultSet.getLong("reputation"));
+    private final static RowMapper<User> USER_ROW_MAPPER = (resultSet, i) -> {
+        List<Genre> roles = new ArrayList<>();
 
+        return new User(resultSet.getLong("id"),
+                resultSet.getString("username"),
+                resultSet.getString("email"),
+                resultSet.getString("password"),
+                roles,
+                resultSet.getBoolean("enabled"),
+                resultSet.getLong("reputation"));
+    };
     private final static RowMapper<Follow> FOLLOW_ROW_MAPPER = ((resultSet, i) -> new Follow(resultSet.getLong("userId"), resultSet.getLong("following")));
 
     private final static RowMapper<Role> ROLE_ROW_MAPPER = (((resultSet, i) -> new Role(resultSet.getString("roleName"))));

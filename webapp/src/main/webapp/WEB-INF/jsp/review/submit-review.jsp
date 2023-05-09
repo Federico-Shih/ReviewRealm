@@ -4,6 +4,8 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <html>
+<c:url value="/review/submit/${game.id}" var="submitEndpoint"/>
+<c:url value="/review/submit" var="searchEndpoint"/>
 <head>
     <title><spring:message code="review.page.title"/></title>
     <link rel="stylesheet" type="text/css" href="<c:url value="/css/materialize.min.css" />" media="screen,projection"/>
@@ -18,6 +20,26 @@
         document.addEventListener('DOMContentLoaded', function () {
             const elems = document.querySelectorAll('select');
             var instances = M.FormSelect.init(elems, {});
+            document.querySelector("#searchInput").addEventListener("keypress", function (e) {
+                if (e.keyCode === 13) {
+                    document.querySelector("#searchButton").click();
+                    e.preventDefault();
+                }
+            });
+            document.querySelector("#submitForm").addEventListener("submit", function (e) {
+                var form = document.querySelector("#submitForm");
+                console.log(e.submitter.id);
+                if (e.submitter.id === "searchButton" || e.submitter.id === "searchInput") {
+                    form.action = "${searchEndpoint}";
+                    form.method = "get";
+                } else if (e.submitter.id === "createButton") {
+                    form.action = "${submitEndpoint}";
+                } else {
+                    form.method = "get";
+                    form.action = "${searchEndpoint}";
+                    form.querySelector("#gameId").value = e.submitter.id;
+                }
+            });
         });
     </script>
     <link rel="shortcut icon" type="image/png" href="<c:url value="/static/review_realm_logo_white_32px.png" />">
@@ -27,29 +49,25 @@
 <spring:message code="reviewForm.title.placeholder" var="titlePlaceholder"/>
 <spring:message code="reviewForm.content.placeholder" var="contentPlaceholder"/>
 <spring:message code="review.author.generic" var="authorPlaceholder"/>
-<c:url value="/review/submit/${game.id}" var="submitEndpoint"/>
-<c:url value="/review/submit" var="searchEndpoint"/>
+
 <c:url value="/game/${game.id}" var="gameUrl" />
 
 <body>
 <jsp:include page="/WEB-INF/jsp/static-components/navbar.jsp"/>
 <div class="container">
     <div class="row">
+        <form:form modelAttribute="reviewForm" action="${submitEndpoint}" method="post" id="submitForm">
         <div class="col s12 m8">
             <div class="card card-background">
-                <form:form modelAttribute="reviewForm" action="${submitEndpoint}" method="post">
-                    <div class="rating-input valign-wrapper">
-                        <div class="number-input">
-                            <form:input
-                                    path="reviewRating"
-                                    id="review-rating"
-                                    type="number"
-                                    class="white-text"
-                                    placeholder="10"
-                            />
-
-                        </div>
-                        <div>/10</div>
+                    <div class="rating-input inline valign-wrapper">
+                        <form:input
+                                path="reviewRating"
+                                id="review-rating"
+                                type="number"
+                                cssClass="white-text number-input"
+                                placeholder="10"
+                        />
+                        <div class="total-rating number-input">/10</div>
                     </div>
                     <div class="card-content card-content-container">
                         <div class="card-title review-card-title row valign-wrapper">
@@ -152,12 +170,11 @@
                             </label>
                         </div>
                         <div class="row">
-                            <button class="${(selectedGameId==0)? " disabled ":" "}waves-effect waves-light btn submit-btn s2 offset-s10 col" type="submit">
+                            <button id="createButton" class="${(selectedGameId==0)? " disabled ":" "}waves-effect waves-light btn submit-btn s2 offset-s10 col" type="submit">
                                 <spring:message code="reviewForm.create"/>
                             </button>
                         </div>
                     </div>
-                </form:form>
             </div>
         </div>
         <div class="col s12 m4">
@@ -166,40 +183,43 @@
                 <c:set var="gameUrl" value="${gameUrl}" scope="request" />
                 <c:import url="/WEB-INF/jsp/games/short-game-details.jsp" />
             </c:if>
-            <form action="${searchEndpoint}" method="get">
                 <div class="search-game-list">
-                    <input name="search" class="z-depth-1-half search-field white-text" value="${searchField}" placeholder="<spring:message code="game.list.placeholder.search"/>">
-                    <button class="btn-flat button-color white-text" type="submit" ><i class="material-icons" >search</i></button>
+                    <input id="searchInput" name="search" class="z-depth-1-half search-field white-text" value="${searchField}" placeholder="<spring:message code="game.list.placeholder.search"/>">
+                    <button id="searchButton" class="btn-flat button-color white-text" type="submit" ><i class="material-icons" >search</i></button>
                     <input name="gameId" value="${selectedGameId}" type="hidden"/>
                     <%-- TODO: revisar esto --%>
                     <%--porque seguramente esta rre mal pero no tenia otra forma que se me ocurra--%>
                 </div>
-            </form>
             <c:if test="${empty searchedGames && !empty searchField}">
                 <span><spring:message code="game.list.notfound"/></span>
             </c:if>
             <c:if test="${!(empty searchedGames)}">
-                <c:forEach items="${searchedGames}" var="gameIterator">
-                    <div class="card card-background">
-                        <a href="?gameId=${gameIterator.id}" class="no-a-decoration">
-                            <div class="card-content">
-                                <div>
-                                    <c:url value="${gameIterator.imageUrl}" var="imgUrl" />
-                                    <img src="${imgUrl}" alt="game-image" class="game-image"/>
+                <div class="search-results-list">
+                    <c:forEach items="${searchedGames}" var="gameIterator">
+                        <c:url var="gameUrl" value="?reviewRating=${reviewForm.reviewRating}&reviewTitle=${reviewForm.reviewTitle}&reviewContent=${reviewForm.reviewContent}&platform=${reviewForm.platform}&difficulty=${reviewForm.difficulty}&gameLength=${reviewForm.gameLength}&unit=${reviewForm.unit}&gameId=${gameIterator.id}" />
+                        <div class="card-background">
+                            <a href="${gameUrl}" id="${gameIterator.id}" class="no-a-decoration searchResult">
+                                <div class="search-result-container">
+                                    <div>
+                                        <c:url value="${gameIterator.imageUrl}" var="imgUrl" />
+                                        <img src="${imgUrl}" alt="game-image" class="search-result-image"/>
+                                    </div>
+                                    <div class="search-result-container-text">
+                                        <h6><c:out value="${gameIterator.name}"/></h6>
+                                        <div>
+                                            <c:forEach var="genre" items="${gameIterator.genres}" end="1">
+                                                <span class="chip-small"><spring:message code="${genre.name}"/> </span>
+                                            </c:forEach>
+                                        </div>
+                                    </div>
                                 </div>
-                                <h5><c:out value="${gameIterator.name}"/></h5>
-                                <div>
-                                    <span><spring:message code="genres"/> </span>
-                                    <c:forEach var="genre" items="${gameIterator.genres}">
-                                        <span class="chip-small"><spring:message code="${genre.name}"/> </span>
-                                    </c:forEach>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                </c:forEach>
+                            </a>
+                        </div>
+                    </c:forEach>
+                </div>
             </c:if>
         </div>
+        </form:form>
     </div>
 </div>
 </body>

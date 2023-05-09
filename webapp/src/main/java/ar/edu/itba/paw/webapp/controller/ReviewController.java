@@ -62,7 +62,7 @@ public class ReviewController extends PaginatedController implements QueryContro
                                          @RequestParam(value = "search", defaultValue = "") String search,
                                          @ModelAttribute("reviewForm") final SubmitReviewForm form) {
         ModelAndView mav = new ModelAndView("/review/submit-review");
-
+        LOGGER.debug("hola");
         if(gameId != 0) {
             Optional<Game> reviewedGame = gameService.getGameById(gameId);
             if (!reviewedGame.isPresent()) {
@@ -116,7 +116,7 @@ public class ReviewController extends PaginatedController implements QueryContro
         User author = AuthenticationHelper.getLoggedUser(userService);
         Optional<Game> reviewedGame = gameService.getGameById(gameId);
         if (!reviewedGame.isPresent()) {
-            return new ModelAndView("static-components/not-found");
+            throw new ObjectNotFoundException("Game with id " + gameId + " not found");
         }
         createdReview = reviewService.createReview(
                 form.getReviewTitle(),

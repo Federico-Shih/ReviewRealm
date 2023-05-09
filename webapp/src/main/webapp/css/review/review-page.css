@@ -25,15 +25,41 @@
     top: 20px;
     right: 15px;
     height: 40px;
-    padding-left: 5px;
-    padding-right: 5px;
-    border: 2px solid white;
-    border-radius: 15px;
+    width: 4.5em;
+}
+
+.total-rating {
+    position: absolute;
+    right: 0;
+    bottom: 7px;
+}
+
+input::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+    opacity: 0.3; /* Firefox */
+}
+
+input:-ms-input-placeholder { /* Internet Explorer 10-11 */
+    opacity: 0.3; /* Firefox */
+}
+
+input::-ms-input-placeholder { /* Microsoft Edge */
+    opacity: 0.3; /* Firefox */
+}
+
+textarea::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+    opacity: 0.3; /* Firefox */
+}
+
+textarea:-ms-input-placeholder { /* Internet Explorer 10-11 */
+    opacity: 0.3; /* Firefox */
+}
+
+textarea::-ms-input-placeholder { /* Microsoft Edge */
+    opacity: 0.3; /* Firefox */
 }
 
 .number-input {
-    width: 2em;
-    font-size: 24px;
+    font-size: 24px !important;
 }
 
 .submit-btn {
@@ -71,4 +97,45 @@ input[type=number] {
 
 .dropdown-container {
     width: 150px !important;
+}
+
+.link-button {
+    background: none!important;
+    border: none;
+    padding: 0!important;
+    /*optional*/
+    /*input has OS specific font-family*/
+    cursor: pointer;
+}
+
+.search-result-container {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    padding: 10px 10px 10px 0;
+    overflow: hidden;
+    border-radius: 5px;
+    border: 1px solid #444155;
+}
+
+.search-result-container-text {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.search-result-container > h6 {
+    text-overflow: ellipsis;
+}
+
+.search-result-image {
+    width: 100px;
+    height: 100px;
+    object-fit: contain;
+}
+
+.search-results-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
