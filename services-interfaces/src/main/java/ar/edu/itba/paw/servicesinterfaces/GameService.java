@@ -13,10 +13,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface GameService {
-    Game createGame(String name, String description,String developer, String publisher, String imageid, List<Integer> genres,
-                    LocalDate publishedDate);
 
-    Game createGame(SubmitGameDTO gameDTO);
+    Optional<Game> createGame(SubmitGameDTO gameDTO, long userId);
 
     Optional<Game> getGameById(Long id);
 

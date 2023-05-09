@@ -23,7 +23,6 @@ import java.util.*;
 public class GameDaoImpl implements GameDao, PaginationDao<GameFilter> {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsertGames;
-
     private final SimpleJdbcInsert jdbcInsertGenreForGames;
 
     @Autowired
@@ -40,8 +39,7 @@ public class GameDaoImpl implements GameDao, PaginationDao<GameFilter> {
         return genre.get();
     };
 
-    @Override
-    public Game create(String name,String description,String developer, String publisher, String imageid, List<Genre> genres, LocalDate publishDate) {
+    private Map<String,Object> prepareArgumentsForGame(String name,String description,String developer, String publisher, String imageid, LocalDate publishDate, boolean suggested) {
         Map<String,Object> args = new HashMap<>();
         args.put("name",name);
         args.put("description",description);
@@ -49,19 +47,28 @@ public class GameDaoImpl implements GameDao, PaginationDao<GameFilter> {
         args.put("publisher",publisher);
         args.put("imageid",imageid);
         args.put("publishDate", Timestamp.valueOf(publishDate.atStartOfDay()));
+        args.put("suggestion", suggested);
+        return args;
+    }
 
-        final Number id = jdbcInsertGames.executeAndReturnKey(args);
-
+    private void addGenresToDB(Number id, List<Genre> genres, SimpleJdbcInsert insert) {
+        Map<String,Object> args = new HashMap<>();
         for(Genre g : genres){
-            args = new HashMap<>();
-
             args.put("gameId",id.longValue());
             args.put("genreId",g.getId());
-
-            jdbcInsertGenreForGames.execute(args);
+            insert.execute(args);
         }
-        return new Game(id.longValue(),name,description,developer,publisher,CommonRowMappers.IMAGE_PREFIX + imageid,genres,publishDate,0d);
     }
+
+    @Override
+    public Optional<Game> create(String name,String description,String developer, String publisher, String imageid, List<Genre> genres, LocalDate publishDate, boolean suggested) {
+        Map<String,Object> args = prepareArgumentsForGame(name,description,developer,publisher,imageid, publishDate, suggested);
+        final Number id = jdbcInsertGames.executeAndReturnKey(args);
+        addGenresToDB(id, genres, jdbcInsertGenreForGames);
+        // esto quizás debería hacerse en el Service, pero quiero que create devuelva Optional
+        return (suggested)? Optional.empty() : Optional.of(new Game(id.longValue(),name,description,developer,publisher,CommonRowMappers.IMAGE_PREFIX + imageid,genres,publishDate,0d));
+    }
+
 
     @Override
     public Optional<Game> getById(Long id) {
@@ -120,6 +127,7 @@ public class GameDaoImpl implements GameDao, PaginationDao<GameFilter> {
                 .withSimilar("g.name", filter.getGameContent())
                 .withList("gg.genreid", filter.getGameGenres())
                 .withExact("g.publisher", filter.getPublisher())
+                .withExact("g.suggestion", false)
                 .withExact("g.developer", filter.getDeveloper());
         List<Object> preparedStatementArgs = new ArrayList<>(queryBuilder.toArguments());
 
@@ -144,7 +152,7 @@ public class GameDaoImpl implements GameDao, PaginationDao<GameFilter> {
 
     @Override
     public List<Game> getRecommendationsForUser(Long userId, List<Integer> userPreferences, Integer amount) {
-        QueryBuilder queryBuilder = new QueryBuilder().withList("gg.genreid", userPreferences);
+        QueryBuilder queryBuilder = new QueryBuilder().withList("gg.genreid", userPreferences).withExact("g.suggestion",false);
         String filterString = queryBuilder.toQuery();
         List<Object> preparedStatementArgs = new ArrayList<>(queryBuilder.toArguments());
         if (!filterString.isEmpty()) {
@@ -169,6 +177,7 @@ public class GameDaoImpl implements GameDao, PaginationDao<GameFilter> {
                 .withSimilar("g.name", filter.getGameContent())
                 .withList("gg.genreid", filter.getGameGenres())
                 .withExact("g.publisher", filter.getPublisher())
+                .withExact("g.suggestion", false)
                 .withExact("g.developer", filter.getDeveloper());
 
         return jdbcTemplate.queryForObject("SELECT COUNT(distinct g.id) FROM " + toTableString(filter) +

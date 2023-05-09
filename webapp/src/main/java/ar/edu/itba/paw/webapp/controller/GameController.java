@@ -132,8 +132,10 @@ public class GameController extends PaginatedController implements QueryControll
             return createGameForm(gameForm);
         }
         try {
-            Game game = gs.createGame(gameForm.toSubmitDTO());
-            return new ModelAndView("redirect:/game/" + game.getId());
+            Optional<Game> game = gs.createGame(gameForm.toSubmitDTO(), AuthenticationHelper.getLoggedUser(us).getId());
+            return (game.isPresent())? new ModelAndView("redirect:/game/" + game.get().getId())
+                    :
+                    new ModelAndView("redirect:/game/list"); //TODO: Hacer un toast de que llegó la sugerencia
         } catch (IOException e) {
             LOGGER.error("Failed to create image: {}", e.getMessage());
             errors.addError(new ObjectError("image", "game.submit.errors.failedimg"));

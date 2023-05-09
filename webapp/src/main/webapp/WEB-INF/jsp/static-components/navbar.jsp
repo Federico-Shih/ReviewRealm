@@ -81,6 +81,20 @@
                                         </div>
                                     </a>
                                 </li>
+                                <c:if test="${!isModerator}">
+                                    <li>
+                                        <a href="<c:url value="/game/submit"/>">
+                                            <div class="valign-wrapper profile-dropdown-link">
+                                                <span class="material-icons">
+                                                    add
+                                                </span>
+                                                <span>
+                                                    <spring:message code="navbar.suggest"/>
+                                                </span>
+                                            </div>
+                                        </a>
+                                    </li>
+                                </c:if>
                                 <li>
                                     <a href="<c:url value="/profile/settings/"/>">
                                         <div class="valign-wrapper profile-dropdown-link">

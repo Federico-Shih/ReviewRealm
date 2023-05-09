@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Service
@@ -44,35 +45,27 @@ public class GameServiceImpl implements GameService {
         this.reviewDao = reviewDao;
         this.genreServ = genreServ;
         this.imgService = imgService;
-
         this.userService = userService;
     }
 
     @Override
-    public Game createGame(String name, String description , String developer, String publisher, String imageid, List<Integer> genres, LocalDate publishedDate) {
-        LOGGER.info("Creating game - name: {}, developer: {}", name, publisher);
-        List<Genre> genreList = new ArrayList<>();
-        Optional<Genre> g;
-        for (Integer c : genres) {
-             g = genreServ.getGenreById(c);
-            g.ifPresent(genreList::add);
-        }
-        return gameDao.create(name,description,developer,publisher, imageid, genreList, publishedDate);
-    }
-
-    @Override
-    public Game createGame(SubmitGameDTO gameDTO) {
+    public Optional<Game> createGame(SubmitGameDTO gameDTO, long userId) {
         Image img = imgService.uploadImage(gameDTO.getImageData(), gameDTO.getMediatype());
         if (img == null) {
             throw new RuntimeException("Error creating image");
         }
-        return createGame(gameDTO.getName(),
-                gameDTO.getDescription(),
-                gameDTO.getDeveloper(),
-                gameDTO.getPublisher(),
-                img.getId(),
-                gameDTO.getGenres(),
-                LocalDate.now());
+
+        boolean isModerator = userService.getUserRoles(userId).stream().anyMatch(role -> role.getRoleName().equals("MODERATOR"));
+
+        LOGGER.info("{} game - name: {}, developer: {}", isModerator? "Creating":"Suggesting",gameDTO.getName(), gameDTO.getName());
+        List<Genre> genreList = new ArrayList<>();
+        Optional<Genre> g;
+        for (Integer c : gameDTO.getGenres()) {
+            g = genreServ.getGenreById(c);
+            g.ifPresent(genreList::add);
+        }
+        // TODO: Habría que preguntar si acá hay que armar el optional o si está bien como está hecho en el Dao, porque creo los Dao deberían devolver Optional
+        return gameDao.create(gameDTO.getName(), gameDTO.getDescription(), gameDTO.getDeveloper(), gameDTO.getPublisher(), img.getId(), genreList, LocalDate.now(), !isModerator);
     }
 
     @Override

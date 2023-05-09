@@ -46,7 +46,14 @@
         <div class="card form-text">
             <div class="card-content">
                 <div class="card-title">
-                    <spring:message code="game.submit.title" />
+                    <c:choose>
+                        <c:when test="${isModerator}">
+                            <spring:message code="game.submit.title" />
+                        </c:when>
+                        <c:otherwise>
+                            <spring:message code="game.submit.title.suggest" />
+                        </c:otherwise>
+                    </c:choose>
                 </div>
                 <div class="row">
                     <div class="input-field col s12">
@@ -120,7 +127,14 @@
             </div>
             <div class="card-action">
                 <button class="btn" type="submit">
-                    <spring:message code="game.submit.create" />
+                    <c:choose>
+                        <c:when test="${isModerator}">
+                           <spring:message code="game.submit.create" />
+                        </c:when>
+                        <c:otherwise>
+                            <spring:message code="game.submit.submit.suggestion" />
+                        </c:otherwise>
+                    </c:choose>
                 </button>
             </div>
         </div>
