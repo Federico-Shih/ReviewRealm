@@ -12,4 +12,18 @@ public class DisabledNotification {
     public NotificationType getNotificationType() {
         return notificationType;
     }
+
+    @Override
+    public int hashCode() {
+        return notificationType.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) return true;
+        if (!(obj instanceof DisabledNotification))
+            return false;
+        DisabledNotification disabledNotification = (DisabledNotification) obj;
+        return disabledNotification.notificationType.equals(this.notificationType);
+    }
 }

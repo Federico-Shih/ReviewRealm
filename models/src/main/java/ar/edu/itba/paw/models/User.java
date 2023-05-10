@@ -1,9 +1,8 @@
 package ar.edu.itba.paw.models;
 
 import ar.edu.itba.paw.enums.Genre;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+
+import java.util.*;
 
 public class User {
 
@@ -13,10 +12,19 @@ public class User {
     private String password;
     private List<Genre> preferences;
     private final boolean enabled;
+    private final Long reputation;
+    private final Set<DisabledNotification> disabledNotifications;
+    private final Set<Role> roles;
 
-   private final Long reputation;
-
-    public User(Long id, String username, String email, String password, List<Genre> preferences, boolean enabled, Long reputation) {
+    public User(Long id,
+                String username,
+                String email,
+                String password,
+                List<Genre> preferences,
+                boolean enabled,
+                Long reputation,
+                Set<DisabledNotification> disabledNotifications,
+                Set<Role> roles) {
         this.id = id;
         this.username = username;
         this.email = email;
@@ -24,13 +32,13 @@ public class User {
         this.preferences = preferences;
         this.enabled = enabled;
         this.reputation = reputation;
+        this.disabledNotifications = disabledNotifications;
+        this.roles = roles;
     }
 
     public User(Long id, String username, String email, String password) {
-        this(id, username, email, password, new ArrayList<>(), false,0L);
+        this(id, username, email, password, new ArrayList<>(), false,0L, new HashSet<>(), new HashSet<>());
     }
-
-
 
     public Long getId() {
         return id;
@@ -78,6 +86,14 @@ public class User {
 
     public boolean isEnabled() {
         return enabled;
+    }
+
+    public Set<Role> getRoles() {
+        return roles;
+    }
+
+    public Set<DisabledNotification> getDisabledNotifications() {
+        return disabledNotifications;
     }
 }
 

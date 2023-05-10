@@ -15,13 +15,16 @@ import org.springframework.stereotype.Component;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 @Component
 public class PawUserDetailsService implements UserDetailsService {
     private static final Logger LOGGER = LoggerFactory.getLogger(PawUserDetailsService.class);
 
+    private static final boolean NON_EXPIRED = true;
+    private static final boolean NON_LOCKED = true;
+    private static final boolean NON_CREDENTIALS_LOCKED = true;
     private final UserService us;
 
     private final Pattern BCRYPT_PATTERN = Pattern
@@ -37,18 +40,17 @@ public class PawUserDetailsService implements UserDetailsService {
         final User user = us.getUserByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("No user found for email: " + email));
 
-        if (!user.isEnabled()) throw new UsernameNotFoundException("User not enabled");
         if(!BCRYPT_PATTERN.matcher(user.getPassword()).matches()) {
             throw new UsernameNotFoundException("User password is not hashed");
         }
 
-        final List<Role> roleList = us.getUserRoles(user.getId());
+        final Set<Role> roleList = user.getRoles();
         //TODO: implement logic to grant only required authorities
         final Collection<GrantedAuthority> authorities = new HashSet<>();
         roleList.forEach((role -> authorities.add(new SimpleGrantedAuthority(String.format("ROLE_%s", role.getRoleName())))));
         //authorities.add(new SimpleGrantedAuthority("ROLE_REVIEWER"));
         // TODO: definir roles (más de uno por user)
         LOGGER.debug("User {} logged in - email: {}", user.getId(), user.getEmail());
-        return new PawAuthUserDetails(user.getEmail(), user.getPassword(), authorities);
+        return new PawAuthUserDetails(user.getEmail(), user.getPassword(), user.isEnabled(), NON_EXPIRED, NON_CREDENTIALS_LOCKED, NON_LOCKED,  authorities);
     }
 }

@@ -26,8 +26,6 @@ public interface UserDao {
 
     boolean follows(final long userId, final long id);
 
-    List<Role> getRoles(final long id);
-
     List<Integer> getPreferencesById(long userId);
 
     void setPreferences(List<Integer> genres, long userId);
@@ -35,8 +33,6 @@ public interface UserDao {
     Paginated<User> getSearchedUsers(int page, int pageSize, int offset, String search);
 
     Long getTotalAmountOfUsers();
-
-    List<DisabledNotification> getDisabledNotifications(long userId);
 
     void disableNotification(long userId, String notificationType);
 

@@ -10,6 +10,7 @@ import ar.edu.itba.paw.dtos.ordering.ReviewOrderCriteria;
 import ar.edu.itba.paw.enums.Difficulty;
 import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.enums.Platform;
+import ar.edu.itba.paw.exceptions.UserNotFoundException;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.persistenceinterfaces.GameDao;
 import ar.edu.itba.paw.persistenceinterfaces.ReviewDao;
@@ -55,7 +56,11 @@ public class GameServiceImpl implements GameService {
             throw new RuntimeException("Error creating image");
         }
 
-        boolean isModerator = userService.getUserRoles(userId).stream().anyMatch(role -> role.getRoleName().equals("MODERATOR"));
+        boolean isModerator = userService
+                .getUserById(userId)
+                .orElseThrow(() -> new UserNotFoundException("user.notfound"))
+                .getRoles()
+                .stream().anyMatch(role -> role.getRoleName().equals("MODERATOR"));
 
         LOGGER.info("{} game - name: {}, developer: {}", isModerator? "Creating":"Suggesting",gameDTO.getName(), gameDTO.getName());
         List<Genre> genreList = new ArrayList<>();

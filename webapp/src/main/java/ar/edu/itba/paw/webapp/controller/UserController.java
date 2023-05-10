@@ -23,6 +23,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Controller
@@ -114,7 +115,7 @@ public class UserController {
     }
 
     private void authWithoutPassword(User user) {
-         List<Role> roles = us.getUserRoles(user.getId());
+         Set<Role> roles = user.getRoles();
          List<GrantedAuthority> authorities = roles.stream().map(p -> new SimpleGrantedAuthority("ROLE_" + p.getRoleName())).collect(Collectors.toList());
          Authentication result = new UsernamePasswordAuthenticationToken(new PawAuthUserDetails(user.getEmail(), user.getPassword(), authorities), null, authorities);
          SecurityContextHolder.getContext().setAuthentication(result);

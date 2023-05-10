@@ -26,7 +26,7 @@ public class ReviewServiceImplTest {
 
     private static final long REVIEWID = 23;
 
-    private static final User USER = new User(1L, "InflusearchGames", "email", "password", new ArrayList<>(), true,0L);
+    private static final User USER = new User(1L, "InflusearchGames", "email", "password");
 
     private static final Game GAME = new Game(3L,"Martians Attack"
             ,"","","","",new ArrayList<>(), LocalDate.now(),8.8);

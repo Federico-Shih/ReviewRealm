@@ -177,11 +177,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<Role> getUserRoles(Long userId) {
-        return userDao.getRoles(userId);
-    }
-
-    @Override
     public boolean validateToken(String token) throws TokenExpiredException {
         Optional<ExpirationToken> expToken = tokenDao.getByToken(token);
         if (expToken.isPresent() && expToken.get().getExpiration().isBefore(LocalDateTime.now())) {
@@ -250,7 +245,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public Map<NotificationType, Boolean> getUserNotificationSettings(Long userId) {
         Map<NotificationType, Boolean> notificationSettings = new HashMap<>();
-        List<DisabledNotification> disabledNotifications = userDao.getDisabledNotifications(userId);
+        Set<DisabledNotification> disabledNotifications = userDao.findById(userId).orElseThrow(() -> new UserNotFoundException("user.notfound")).getDisabledNotifications();
         for (DisabledNotification disabledNotification : disabledNotifications) {
             notificationSettings.put(disabledNotification.getNotificationType(), false);
         }
@@ -264,7 +259,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Boolean isNotificationEnabled(Long userId, NotificationType notificationType) {
-        List<DisabledNotification> disabledNotifications = userDao.getDisabledNotifications(userId);
+        Set<DisabledNotification> disabledNotifications = userDao.findById(userId).orElseThrow(() -> new UserNotFoundException("user.notfound")).getDisabledNotifications();
         return disabledNotifications.stream().noneMatch(disabledNotification -> disabledNotification.getNotificationType().equals(notificationType));
     }
 

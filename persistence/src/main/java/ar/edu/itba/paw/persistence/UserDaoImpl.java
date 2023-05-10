@@ -1,11 +1,11 @@
 package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.dtos.SaveUserDTO;
-import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.persistenceinterfaces.UserDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
@@ -21,17 +21,34 @@ public class UserDaoImpl implements UserDao {
 
     private final SimpleJdbcInsert followJdbcInsert;
 
-    private final static RowMapper<User> USER_ROW_MAPPER = (resultSet, i) -> {
-        List<Genre> roles = new ArrayList<>();
+    private final static RowMapper<User> USER_ROW_MAPPER = (resultSet, i) -> new User(resultSet.getLong("id"),
+            resultSet.getString("username"),
+            resultSet.getString("email"),
+            resultSet.getString("password"),
+            new ArrayList<>(),
+            resultSet.getBoolean("enabled"),
+            resultSet.getLong("reputation"),
+            new HashSet<>(),
+            new HashSet<>());
 
-        return new User(resultSet.getLong("id"),
-                resultSet.getString("username"),
-                resultSet.getString("email"),
-                resultSet.getString("password"),
-                roles,
-                resultSet.getBoolean("enabled"),
-                resultSet.getLong("reputation"));
+    private final static ResultSetExtractor<List<User>> USER_MAPPER = (resultSet) -> {
+      Map<Long, User> users = new TreeMap<>();
+      while(resultSet.next()) {
+          final Long id = resultSet.getLong("id");
+          users.putIfAbsent(id, USER_ROW_MAPPER.mapRow(resultSet, resultSet.getRow()));
+          final User user = users.get(id);
+          final String roleName = resultSet.getString("roleName");
+          if(roleName != null) {
+              user.getRoles().add(new Role(roleName));
+          }
+          final String notificationName = resultSet.getString("notificationType");
+          if (notificationName != null) {
+              user.getDisabledNotifications().add(new DisabledNotification(notificationName));
+          }
+      }
+      return new ArrayList<>(users.values());
     };
+
     private final static RowMapper<Follow> FOLLOW_ROW_MAPPER = ((resultSet, i) -> new Follow(resultSet.getLong("userId"), resultSet.getLong("following")));
 
     private final static RowMapper<Role> ROLE_ROW_MAPPER = (((resultSet, i) -> new Role(resultSet.getString("roleName"))));
@@ -69,9 +86,6 @@ public class UserDaoImpl implements UserDao {
         stringBuilder.append("SET ");
         boolean first = true;
         if (updateUser.getUsername() != null) {
-            if (!first) {
-                stringBuilder.append(", ");
-            }
             stringBuilder.append("username = ?");
             args.add(updateUser.getUsername());
             first = false;
@@ -105,7 +119,8 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public Optional<User> findById(final long id) {
-        return jdbcTemplate.query("SELECT * FROM users WHERE id = ?", USER_ROW_MAPPER, id).stream().findFirst();
+        return jdbcTemplate.query("SELECT * FROM users u " + toUserDataString() +" WHERE id = ?",
+                USER_MAPPER, id).stream().findFirst();
     }
 
     @Override
@@ -121,29 +136,29 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public Optional<User> getByEmail(String email) {
-        return jdbcTemplate.query("SELECT * FROM users WHERE email = ?", USER_ROW_MAPPER, email).stream().findFirst();
+        return jdbcTemplate.query("SELECT * FROM users u " + toUserDataString() + " WHERE email = ?", USER_MAPPER, email).stream().findFirst();
     }
 
     @Override
     public Optional<User> getByUsername(String username) {
-        return jdbcTemplate.query("SELECT * FROM users WHERE username = ?", USER_ROW_MAPPER, username).stream().findFirst();
+        return jdbcTemplate.query("SELECT * FROM users u " + toUserDataString() + " WHERE username = ?", USER_MAPPER, username).stream().findFirst();
     }
 
     @Override
     public List<User> getFollowers(final long id) {
-        return jdbcTemplate.query("SELECT u.id, u.username, u.email, u.password, u.enabled, u.reputation " +
-                "FROM followers as f JOIN users as u ON f.userId = u.id " +
+        return jdbcTemplate.query("SELECT u.id, u.username, u.email, u.password, u.enabled, u.reputation, roleName, notificationType " +
+                "FROM followers as f JOIN users as u ON f.userId = u.id " + toUserDataString() +
                 "WHERE f.following = ?",
-                USER_ROW_MAPPER,
+                USER_MAPPER,
                 id);
     }
 
     @Override
     public List<User> getFollowing(long id) {
-        return jdbcTemplate.query("SELECT u.id, u.username, u.email, u.password, u.enabled, u.reputation " +
-                "FROM followers as f JOIN users as u ON f.following = u.id " +
-                "WHERE userId = ?",
-                USER_ROW_MAPPER,
+        return jdbcTemplate.query("SELECT u.id, u.username, u.email, u.password, u.enabled, u.reputation, roleName, notificationType " +
+                "FROM followers as f JOIN users as u ON f.following = u.id " + toUserDataString() +
+                "WHERE f.userid = ?",
+                USER_MAPPER,
                 id);
     }
 
@@ -176,11 +191,6 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public List<Role> getRoles(long id) {
-        return jdbcTemplate.query("SELECT * FROM user_roles NATURAL JOIN roles WHERE userId = ?", ROLE_ROW_MAPPER, id);
-    }
-
-    @Override
     public List<Integer> getPreferencesById(long userId){
         return jdbcTemplate.query("SELECT genreId FROM genreforusers WHERE userId = ?", GENRE_ROW_MAPPER, userId);
     }
@@ -195,18 +205,13 @@ public class UserDaoImpl implements UserDao {
     }
     @Override
     public Paginated<User> getSearchedUsers(int page, int pageSize, int offset, String search) {
-        List<User> users = jdbcTemplate.query("SELECT * FROM users WHERE username ILIKE ? LIMIT ? OFFSET ?", USER_ROW_MAPPER, "%" + search + "%", pageSize, offset);
+        List<User> users = jdbcTemplate.query("SELECT * FROM users u " + toUserDataString() + " WHERE username ILIKE ? LIMIT ? OFFSET ?", USER_MAPPER, "%" + search + "%", pageSize, offset);
         return new Paginated<>(page, pageSize, offset, users);
     }
 
     @Override
     public Long getTotalAmountOfUsers() {
         return jdbcTemplate.queryForObject("SELECT count(*) from users", Long.class);
-    }
-
-    @Override
-    public List<DisabledNotification> getDisabledNotifications(long userId) {
-        return jdbcTemplate.query("SELECT * FROM user_disabled_notifications NATURAL JOIN notifications WHERE userId = ?", DISABLED_NOTIFICATION_ROW_MAPPER, userId);
     }
 
     @Override
@@ -222,5 +227,12 @@ public class UserDaoImpl implements UserDao {
     @Override
     public boolean modifyReputation(long id, int reputation) {
         return jdbcTemplate.update("UPDATE users SET reputation = reputation + ? WHERE id = ?", reputation, id) == 1;
+    }
+
+    private String toUserDataString() {
+        return " LEFT OUTER JOIN user_roles ON u.id = user_roles.userId " +
+                "LEFT OUTER JOIN roles ON user_roles.roleId = roles.roleId " +
+                "LEFT OUTER JOIN user_disabled_notifications ON u.id = user_disabled_notifications.userId " +
+                "LEFT OUTER JOIN notifications ON user_disabled_notifications.notificationId = notifications.notificationId ";
     }
 }
