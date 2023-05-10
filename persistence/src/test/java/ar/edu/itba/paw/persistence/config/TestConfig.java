@@ -37,14 +37,6 @@ public class TestConfig {
         return ds;
     }
 
-    @Bean(initMethod = "migrate")
-    public Flyway flyway() {
-        return Flyway.configure()
-                .dataSource(dataSource())
-                .locations("classpath:db/migration")
-                .baselineOnMigrate(true)
-                .load();
-    }
     @Bean
     public DataSourceInitializer dataSourceInitializer(final DataSource dataSource) {
         final DataSourceInitializer dsi = new DataSourceInitializer();
@@ -54,8 +46,8 @@ public class TestConfig {
     }
     private DatabasePopulator databasePopulator() {
         final ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
-//        populator.addScript(hsqldbSql);
-//        populator.addScript(schemaSql);
+        populator.addScript(hsqldbSql);
+        populator.addScript(schemaSql);
         return populator;
     }
 }
