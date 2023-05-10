@@ -10,6 +10,8 @@ import ar.edu.itba.paw.models.Game;
 import ar.edu.itba.paw.models.Paginated;
 import ar.edu.itba.paw.models.Review;
 import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.persistence.helpers.CommonRowMappers;
+import ar.edu.itba.paw.persistence.helpers.QueryBuilder;
 import ar.edu.itba.paw.persistenceinterfaces.GameDao;
 import ar.edu.itba.paw.persistenceinterfaces.PaginationDao;
 import ar.edu.itba.paw.persistenceinterfaces.ReviewDao;
@@ -107,6 +109,8 @@ public class ReviewDaoImpl implements ReviewDao, PaginationDao<ReviewFilter> {
                 .withList("gg.genreid", filter.getFilterGameGenres())
                 .withList("ap.genreid", filter.getAuthorPreferences())
                 .withSimilar("r.content", filter.getReviewContent())
+                 .OR()
+                 .withSimilar("r.title", filter.getReviewContent())
                 .withList("r.authorid", filter.getAuthors())
                 .withExact("r.gameid", filter.getGameId());
         List<Object> preparedArgs = new ArrayList<>(query.toArguments());

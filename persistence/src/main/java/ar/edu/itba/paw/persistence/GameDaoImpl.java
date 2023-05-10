@@ -5,6 +5,8 @@ import ar.edu.itba.paw.dtos.ordering.GameOrderCriteria;
 import ar.edu.itba.paw.dtos.ordering.Ordering;
 import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.models.*;
+import ar.edu.itba.paw.persistence.helpers.CommonRowMappers;
+import ar.edu.itba.paw.persistence.helpers.QueryBuilder;
 import ar.edu.itba.paw.persistenceinterfaces.GameDao;
 import ar.edu.itba.paw.persistenceinterfaces.PaginationDao;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,7 +68,7 @@ public class GameDaoImpl implements GameDao, PaginationDao<GameFilter> {
         final Number id = jdbcInsertGames.executeAndReturnKey(args);
         addGenresToDB(id, genres, jdbcInsertGenreForGames);
         // esto quizás debería hacerse en el Service, pero quiero que create devuelva Optional
-        return (suggested)? Optional.empty() : Optional.of(new Game(id.longValue(),name,description,developer,publisher,CommonRowMappers.IMAGE_PREFIX + imageid,genres,publishDate,0d));
+        return (suggested)? Optional.empty() : Optional.of(new Game(id.longValue(),name,description,developer,publisher, CommonRowMappers.IMAGE_PREFIX + imageid,genres,publishDate,0d));
     }
 
 

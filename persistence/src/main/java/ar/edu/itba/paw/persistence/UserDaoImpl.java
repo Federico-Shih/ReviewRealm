@@ -2,6 +2,7 @@ package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.dtos.SaveUserDTO;
 import ar.edu.itba.paw.models.*;
+import ar.edu.itba.paw.persistence.helpers.UpdateBuilder;
 import ar.edu.itba.paw.persistenceinterfaces.UserDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -75,46 +76,11 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public int update(long id, SaveUserDTO saveUserDTO) {
-        List<Object> args = new ArrayList<>();
-        String updateString = toUpdateString(saveUserDTO, args);
-        args.add(id);
-        return jdbcTemplate.update("UPDATE users " + updateString + " WHERE id = ?", args.toArray());
-    }
-
-    private String toUpdateString(SaveUserDTO updateUser, List<Object> args) {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("SET ");
-        boolean first = true;
-        if (updateUser.getUsername() != null) {
-            stringBuilder.append("username = ?");
-            args.add(updateUser.getUsername());
-            first = false;
-        }
-        if (updateUser.getEmail() != null) {
-            if (!first) {
-                stringBuilder.append(", ");
-            }
-            stringBuilder.append("email = ?");
-            args.add(updateUser.getEmail());
-            first = false;
-        }
-        if (updateUser.getPassword() != null) {
-            if (!first) {
-                stringBuilder.append(", ");
-            }
-            stringBuilder.append("password = ?");
-            args.add(updateUser.getPassword());
-            first = false;
-        }
-        if (updateUser.isEnabled() != null) {
-            if (!first) {
-                stringBuilder.append(", ");
-            }
-            stringBuilder.append("enabled = ?");
-            args.add(updateUser.isEnabled());
-        }
-        stringBuilder.append(" ");
-        return stringBuilder.toString();
+        UpdateBuilder updateBuilder = new UpdateBuilder().set("username", saveUserDTO.getUsername())
+                .set("email", saveUserDTO.getEmail())
+                .set("password", saveUserDTO.getPassword())
+                .set("enabled", saveUserDTO.isEnabled());
+        return jdbcTemplate.update("UPDATE users " + updateBuilder.toQuery() + " WHERE id = ?", updateBuilder.getParameters().toArray());
     }
 
     @Override
