@@ -8,7 +8,6 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link type="text/css" rel="stylesheet" href="<c:url value="/css/materialize.min.css" />" media="screen,projection"/>
     <link rel="stylesheet" href="<c:url value="/css/main.css" />">
-    <link rel="stylesheet" href="<c:url value="/css/flex.css" />">
     <link rel="stylesheet" href="<c:url value="/css/review.css" />">
     <link rel="stylesheet" href="<c:url value="/css/game.css" />"/>
     <link rel="stylesheet" href="<c:url value="/css/profile.css" />"/>
@@ -117,12 +116,12 @@
                     </div>
                 </a>
             </c:forEach>
-            <c:if test="${fn:length(games) == 0}">
-                <div style="margin-bottom: 20px">
-                    <span><spring:message code="profile.nofavorites"/></span>
-                </div>
-            </c:if>
         </div>
+        <c:if test="${fn:length(games) == 0}">
+            <div class="margin-bottom-2">
+                <span><spring:message code="profile.nofavorites"/></span>
+            </div>
+        </c:if>
     </div>
     <div class="divider-h"></div>
     <div class="profile-reviews-panel">
@@ -130,42 +129,10 @@
             <spring:message code="profile.reviews" arguments="${profile.username}"/>
             <span class="profile-reviews-count">(${fn:length(reviews)})</span>
         </h5>
-        <div class="profile-review-list">
+        <div class="row">
             <c:forEach var="review" items="${reviews}">
-                <div class="card review-card">
-                    <div class="review-card-header">
-                        <div class="review-card-header-start">
-                            <a id="review-card-game-title" href="<c:url value="/game/${review.reviewedGame.id}"/>">
-                            <span>
-                                <c:out value="${review.reviewedGame.name}"/>
-                            </span>
-                            </a>
-                            <div>
-                                <c:forEach var="genre" items="${review.reviewedGame.genres}">
-                                    <span class="chip-small">
-                                        <a href="<c:url value="/game/list?f-gen=${genre.id}"/>" class="white-text">
-                                                <spring:message code="${genre.name}"/>
-                                        </a>
-                                    </span>
-                                </c:forEach>
-                            </div>
-                        </div>
-                        <div class="review-card-header-end">
-                            <span id="review-card-score"><c:out value="${review.rating}"/></span>
-                            <span id="review-card-score-outof">/10</span>
-                            <i class="material-icons small">star</i>
-                        </div>
-                    </div>
-                    <div class="divider-h"></div>
-                    <div class="review-card-body">
-                        <c:url value="/review/${review.id}" var="reviewUrl"/>
-                        <a href="${reviewUrl}">
-                            <span id="review-card-title"><c:out value="${review.title}"/></span>
-                        </a>
-                        <span id="review-card-content"><c:out value="${review.content}"/></span>
-                        <span id="review-card-date"><c:out value="${review.createdFormatted}"/></span>
-                    </div>
-                </div>
+                <c:set var="review" value="${review}" scope="request" />
+                <c:import url="/WEB-INF/jsp/review/review-card.jsp" />
             </c:forEach>
             <c:if test="${fn:length(reviews) == 0}">
                 <div>

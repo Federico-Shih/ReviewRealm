@@ -6,10 +6,9 @@
 .review-card-title {
     width: 90%;
 }
-/* TODO Agregar un resizing a las imagenes para que ocupe toda la pantalla*/
+
 .game-image {
     width: 100%;
-    height: 180px;
     object-fit: contain;
 }
 
@@ -109,29 +108,27 @@ input[type=number] {
     cursor: pointer;
 }
 
-.search-result-container {
+.short-game-container {
     display: flex;
-    flex-direction: row;
-    gap: 10px;
-    padding: 10px 10px 10px 0;
+    flex-direction: column;
+    padding: 4%;
     overflow: hidden;
     border-radius: 5px;
     border: 1px solid #444155;
 }
 
-.search-result-container-text {
+.short-game-container-text {
     display: flex;
     flex-direction: column;
     gap: 10px;
 }
 
-.search-result-container > h6 {
+.short-game-container > h6 {
     text-overflow: ellipsis;
 }
 
 .search-result-image {
-    width: 100px;
-    height: 100px;
+    width: 100%;
     object-fit: contain;
 }
 

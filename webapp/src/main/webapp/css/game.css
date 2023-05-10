@@ -9,7 +9,7 @@
     border-radius: 10px;
     color: white;
     margin-top: 2%;
-    height: 400px;
+    height: 365px;
 }
 
 .game-card-for-list-small{
@@ -27,7 +27,7 @@
 
 .game-img{
     width: 100%;
-    height: 250px;
+    height: 200px;
     object-fit: contain;
 }
 
@@ -43,7 +43,7 @@
     justify-content: flex-start;
     align-items: baseline;
     margin-top: 2%;
-    width: 100%;
+    width: 90%;
 }
 
 .game-details-page{
@@ -53,13 +53,9 @@
     width: 100%;
     height: 100%;
 }
+
 .game-details-section{
-    display: flex;
-    flex-direction: row;
-    justify-content: space-evenly;
-    align-items: center;
     width: 96%;
-    height:40%;
     margin:2%
 }
 
@@ -67,20 +63,18 @@
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-    width: 65%;
-    height: 100%;
-    padding-right:2%;
+    height: auto;
+    padding-right: 2%;
+    margin-bottom: 2%;
 }
 
 .game-card{
     display: flex;
     flex-direction: column;
     justify-content: space-around;
-    width: 35%;
-    /*height: 100%;*/
     background: #13112D;
     margin-right: 5%;
-    padding: 2%;
+    padding: 2% !important;
     border: 1px solid #444155;
     border-radius: 25px;
 }
@@ -111,11 +105,11 @@
     font-weight: 600; /* bold */
 }
 .game-card-details-extra-number{
-    font-size: 14px;
+    font-size: 26px;
     font-weight: 700; /* bold */
 }
 .game-card-details-extra-minor {
-    font-size: 10px;
+    font-size: 16px;
     font-weight: 400; /* regular */
 }
 .game-card-title{
@@ -144,7 +138,7 @@
 .game-title{
     font-size: 36px;
     font-weight: 600;
-    white-space: nowrap;
+    white-space: wrap;
 }
 
 .game-genre{
@@ -184,7 +178,6 @@
     flex-direction: column;
     justify-content: flex-start;
     width: 96%;
-    height: 20%;
     margin: 2%
 }
 .statistics-list{

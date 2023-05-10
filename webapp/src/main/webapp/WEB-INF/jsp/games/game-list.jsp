@@ -29,13 +29,12 @@
     <jsp:param name="selected" value="game-list"/>
 </jsp:include>
 <c:url value="/game/list/" var="queryFinish"/>
-<div>
-    <div class="row">
-        <form action="${queryFinish}">
-            <div class="col s2" style="width: 20%;">
-                <div class="review-filters-panel-section" >
+<div >
+    <form action="${queryFinish}" class="review-list-page">
+        <div class="left-panel">
+            <div>
                     <div class="review-filters-panel-section">
-                        <button type="submit" class="btn truncate" style="width: 100%"><spring:message code="apply.filters"/></button>
+                        <button type="submit" class="btn truncate"><spring:message code="apply.filters"/></button>
                         <span class="review-filters-panel-title"><spring:message code="order.by"/></span>
                         <div>
                             <c:forEach var="criteria" items="${orderCriteria}">
@@ -66,16 +65,16 @@
                             <i class="material-icons">clear</i>
                             <span><spring:message code="remove.filters"/></span>
                         </button></a>
-                        <ul class="collapsible" style="width: 100%">
-                            <li style="width: 100%">
-                                <div class="collapsible-header filters-header" style="width: 100%">
+                        <ul class="collapsible">
+                            <li class="full-width">
+                                <div class="collapsible-header filters-header">
                                     <i class="material-icons">videogame_asset</i>
                                     <span class="review-filters-panel-subtitle"><spring:message code="review.genres"/></span>
                                     <i class="material-icons right">arrow_drop_down</i>
                                 </div>
                                 <div class="collapsible-body row filters-container">
                                     <c:forEach var="genre" items="${filters.selectedGenres}">
-                                        <p class="col s6">
+                                        <p class="col s12 l6">
                                             <label>
                                                 <input name="f-gen" value="${genre.id}" type="checkbox" class="filled-in" checked/>
                                                 <span><spring:message code="${genre.name}"/></span>
@@ -83,7 +82,7 @@
                                         </p>
                                     </c:forEach>
                                     <c:forEach var="genre" items="${filters.unselectedGenres}">
-                                        <p class="col s6">
+                                        <p class="col s12 l6">
                                             <label>
                                                 <input name="f-gen" value="${genre.id}" type="checkbox" class="filled-in"/>
                                                 <span><spring:message code="${genre.name}"/></span>
@@ -95,85 +94,90 @@
                         </ul>
                     </div>
                 </div>
+
+        </div>
+        <div>
+            <div class="divider-v" id="filter-panel-divider"></div>
+        </div>
+        <div class="right-panel">
+            <div class="search-game-list ">
+                <input name="search" class="z-depth-1-half search-field" type="search" value="${searchField}"
+                       placeholder="<spring:message code="game.list.placeholder.search"/>">
+                <button class="btn-flat button-color white-text" type="submit"><i class="material-icons">search</i>
+                </button>
             </div>
-            <div class="col push-s1 s8">
-                <div class="search-game-list">
-                    <input name="search" class="z-depth-1-half search-field" type="search" value="${searchField}"
-                           placeholder="<spring:message code="game.list.placeholder.search"/>">
-                    <button class="btn-flat button-color white-text" type="submit"><i class="material-icons">search</i>
-                    </button>
-                </div>
-            </div>
-        </form>
-        <c:if test="${empty games}">
-            <div class="col s9 center-align">
-                <span><spring:message code="game.list.notfound"/></span>
-            </div>
-        </c:if>
-        <div class="col s9 center-align" >
-            <div class="row">
+            <div class="review-card-list row">
+                <c:if test="${empty games}">
+                    <div class="col s12">
+                        <span><spring:message code="game.list.notfound"/></span>
+                    </div>
+                </c:if>
                 <c:forEach items="${games}" var="game">
-                    <div class="col s12 m6">
-                        <div class="game-card-for-list z-depth-2">
-                            <a href="<c:url value="/game/${game.id}"/>">
-                                <c:url value="${game.imageUrl}" var="imgUrl" />
-                                <img class="game-img" src="${imgUrl}"
-                                     alt="<c:out value="${game.name}"/>">
-                            </a>
-                            <div class="game-card-details">
-                                <div class="game-card-details-text">
-                                    <a class="game-card-title white-text" href="<c:url value="/game/${game.id}"/>">
-                                        <span ><c:out value="${game.name}"/></span>
-                                    </a>
-                                    <span class="game-card-text"><spring:message code="publishing.date"
-                                                                                 arguments="${game.publishDate}"/></span>
-                                    <span class="game-card-text"><spring:message code="developer"
-                                                                                 arguments="${game.developer}"/></span>
-                                </div>
-                                <div class="game-card-details-extra">
-                                    <div class="game-genres">
-                                        <c:forEach items="${game.genres}" var="genre" end="1">
-                                            <a href="${queriesToKeepAtRemoveFilters}&f-gen=${genre.id}" class="white-text">
-                                            <span class="chip-small">
-                                                <spring:message code="${genre.name}"/>
-                                            </span>
-                                            </a>
-                                        </c:forEach>
+                    <div class="col s12 l6">
+                        <div>
+                            <div class="game-card-for-list z-depth-2">
+                                <a href="<c:url value="/game/${game.id}"/>">
+                                    <c:url value="${game.imageUrl}" var="imgUrl" />
+                                    <img class="game-img" src="${imgUrl}"
+                                         alt="<c:out value="${game.name}"/>">
+                                </a>
+                                <div class="game-card-details">
+                                    <div class="game-card-details-text">
+                                        <a class="game-card-title white-text" href="<c:url value="/game/${game.id}"/>">
+                                            <span ><c:out value="${game.name}"/></span>
+                                        </a>
+                                        <div class="game-genres">
+                                            <c:forEach items="${game.genres}" var="genre" end="1">
+                                                <a href="${queriesToKeepAtRemoveFilters}&f-gen=${genre.id}" class="white-text">
+                                                <span class="chip-small">
+                                                    <spring:message code="${genre.name}"/>
+                                                </span>
+                                                </a>
+                                            </c:forEach>
+                                        </div>
+                                        <span class="game-card-text"><spring:message code="publishing.date"
+                                                                                     arguments="${game.publishDate}"/></span>
+                                        <span class="game-card-text"><spring:message code="developer"
+                                                                                     arguments="${game.developer}"/></span>
                                     </div>
-                                    <c:if test="${game.averageRating >0}">
-                                <span class="game-card-details-extra-text"><spring:message
-                                        code="game.details.review.statistics.rating"/></span>
-                                        <span class=game-card-details-extra-number>${game.averageRatingString}
-                                        <span class="game-card-details-extra-minor">/10</span>
-                                    </span>
-                                    </c:if>
+                                    <div class="game-card-details-extra">
+
+                                        <c:if test="${game.averageRating >0}">
+                                    <span class="game-card-details-extra-text"><spring:message
+                                            code="game.details.review.statistics.rating"/></span>
+                                            <span class=game-card-details-extra-number>${game.averageRatingString}
+                                            <span class="game-card-details-extra-minor">/10</span>
+                                        </span>
+                                        </c:if>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </c:forEach>
             </div>
-            <ul class="center-align pagination">
-                <c:if test="${currentPage > 1}">
-                    <li class="waves-effect"><a href="${queriesToKeepAtPageChange}page=${currentPage-1}"><i
-                            class="material-icons">chevron_left</i></a></li>
-                </c:if>
-                <c:forEach var="i" begin="${initialPage}" end="${maxPages}">
-                    <c:if test="${i == currentPage}">
-                        <li class="pagination-active"><a href="${queriesToKeepAtPageChange}page=${i}">${i}</a></li>
+            <div class="row">
+                <ul class="center-align pagination">
+                    <c:if test="${currentPage > 1}">
+                        <li class="waves-effect"><a href="${queriesToKeepAtPageChange}page=${currentPage-1}"><i
+                                class="material-icons">chevron_left</i></a></li>
                     </c:if>
-                    <c:if test="${i != currentPage}">
-                        <li class="waves-effect"><a href="${queriesToKeepAtPageChange}page=${i}">${i}</a></li>
+                    <c:forEach var="i" begin="${initialPage}" end="${maxPages}">
+                        <c:if test="${i == currentPage}">
+                            <li class="pagination-active"><a href="${queriesToKeepAtPageChange}page=${i}">${i}</a></li>
+                        </c:if>
+                        <c:if test="${i != currentPage}">
+                            <li class="waves-effect"><a href="${queriesToKeepAtPageChange}page=${i}">${i}</a></li>
+                        </c:if>
+                    </c:forEach>
+                    <c:if test="${currentPage < maxPages}">
+                        <li class="waves-effect"><a href="${queriesToKeepAtPageChange}page=${currentPage+1}"><i
+                                class="material-icons">chevron_right</i></a></li>
                     </c:if>
-                </c:forEach>
-                <c:if test="${currentPage < maxPages}">
-                    <li class="waves-effect"><a href="${queriesToKeepAtPageChange}page=${currentPage+1}"><i
-                            class="material-icons">chevron_right</i></a></li>
-                </c:if>
-            </ul>
+                </ul>
+            </div>
         </div>
-    </div>
-
+    </form>
 </div>
 
 </body>

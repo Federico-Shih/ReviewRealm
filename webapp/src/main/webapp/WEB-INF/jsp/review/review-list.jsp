@@ -33,7 +33,7 @@
     <div class="left-panel">
         <form action="${applyFilters}" class="review-filters-panel">
             <div class="review-filters-panel-section">
-                <button type="submit" class="btn" style="width: 100%"><spring:message code="apply.filters"/></button>
+                <button type="submit" class="btn"><spring:message code="apply.filters"/></button>
                 <span class="review-filters-panel-title"><spring:message code="order.by"/></span>
                 <div>
                     <c:forEach var="criteria" items="${orderCriteria}">
@@ -64,16 +64,16 @@
                     <i class="material-icons">clear</i>
                     <span><spring:message code="remove.filters"/></span>
                 </button></a>
-                <ul class="collapsible" style="width: 100%">
-                    <li style="width: 100%">
-                        <div class="collapsible-header filters-header" style="width: 100%">
+                <ul class="collapsible review-filters-collapsible-button">
+                    <li>
+                        <div class="collapsible-header filters-header f-row f-ai-center">
                             <i class="material-icons">videogame_asset</i>
                             <span class="review-filters-panel-subtitle"><spring:message code="review.genres"/></span>
                             <i class="material-icons right">arrow_drop_down</i>
                         </div>
                         <div class="collapsible-body row filters-container">
                             <c:forEach var="genre" items="${filters.selectedGenres}">
-                                <p class="col s6">
+                                <p class="col s12 l6">
                                     <label>
                                         <input name="f-gen" value="${genre.id}" type="checkbox" class="filled-in" checked/>
                                         <span><spring:message code="${genre.name}"/></span>
@@ -81,7 +81,7 @@
                                 </p>
                             </c:forEach>
                             <c:forEach var="genre" items="${filters.unselectedGenres}">
-                                <p class="col s6">
+                                <p class="col s12 l6">
                                     <label>
                                         <input name="f-gen" value="${genre.id}" type="checkbox" class="filled-in"/>
                                         <span><spring:message code="${genre.name}"/></span>
@@ -114,9 +114,8 @@
     <div>
         <div class="divider-v" id="filter-panel-divider"></div>
     </div>
-
     <div class="right-panel">
-        <div class="review-card-list">
+        <div class="review-card-list row">
             <c:if test="${empty reviews}">
                 <div>
                     <span><spring:message code="review.list.notfound"/></span>
@@ -126,70 +125,8 @@
                 </div>
             </c:if>
             <c:forEach var="review" items="${reviews}">
-                <div class="card review-card">
-                    <div class="review-card-header">
-                        <div class="review-card-header-start">
-                            <a id="review-card-game-title" href="./game/<c:out value="${review.reviewedGame.id}"/>">
-                            <span >
-                                <c:out value="${review.reviewedGame.name}"/>
-                            </span>
-                            </a>
-                            <div>
-                                <c:forEach var="genre" items="${review.reviewedGame.genres}">
-                                    <span class="chip-small">
-                                        <a href="<c:url value="/game/list?f-gen=${genre.id}"/>" class="white-text">
-                                                <spring:message code="${genre.name}"/>
-                                        </a>
-                                    </span>
-                                </c:forEach>
-                            </div>
-                        </div>
-                        <div class="review-card-header-end">
-                            <span id="review-card-score"><c:out value="${review.rating}"/></span>
-                            <span id="review-card-score-outof">/10</span>
-                            <i class="material-icons small">star</i>
-                        </div>
-                    </div>
-                    <div class="divider-h"></div>
-                    <div class="review-card-body">
-                        <c:url value="/review/${review.id}" var="reviewUrl" />
-                        <a href="${reviewUrl}">
-                            <span id="review-card-title"><c:out value="${review.title}"/></span>
-                        </a>
-                        <span id="review-card-content"><c:out value="${review.content}"/></span>
-                        <span id="review-card-date"><c:out value="${review.createdFormatted}"/></span>
-                    </div>
-                    <div class="divider-h"></div>
-                    <div class="review-card-footer">
-                    <c:url value="/profile/${review.author.id}" var="profileUrl" />
-                    <a href="${profileUrl}" id="review-card-bottom-text review-card-author">
-                        <spring:message code="review.by" arguments="@${review.author.username}"/>
-                    </a>
-                            <%--                    TODO: PREFERENCIAS DE USUARIO--%>
-                            <%--                    <c:forEach var="genre" items="${review.author.preferences}">--%>
-                            <%--                        <span class="chip-small-inverted"><c:out value="${genre.name}"/></span>--%>
-                            <%--                    </c:forEach>--%>
-                        <div class="review-card-feedback-footer">
-                            <c:url value="/review/feedback/${review.id}" var="updateFeedback" />
-
-                            <form name="likeFeedbackForm" class="feedback-form" method="post" action="${updateFeedback}">
-                                <button name="feedback" class="btn-flat waves-effect waves-light ${ (review.feedback == "LIKE")? "white-text":""}" value="LIKE">
-                                    <i class="material-icons">thumb_up</i>
-                                </button>
-                                <input type="hidden" name="url" value="${baseUrl}"/>
-                            </form>
-                            <form name="dislikeFeedbackForm" class="feedback-form" method="post" action="${updateFeedback}" >
-                                <button name="feedback" class="btn-flat waves-effect waves-light ${ (review.feedback == "DISLIKE")? "white-text":""}" value="DISLIKE">
-                                    <i class="material-icons">thumb_down</i>
-                                </button>
-                                <input type="hidden" name="url" value="${baseUrl}"/>
-                            </form>
-                            <c:if test="${review.likeCounter != 0}">
-                                <span><c:out value="${review.likeCounter}"/></span>
-                            </c:if>
-                        </div>
-                    </div>
-                </div>
+                <c:set var="review" value="${review}" scope="request" />
+                <c:import url="/WEB-INF/jsp/review/review-card.jsp" />
             </c:forEach>
         </div>
         <div class="row">

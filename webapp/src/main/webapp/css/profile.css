@@ -49,9 +49,8 @@
 .profile-favorite-games-panel-list {
     display: flex;
     flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: start;
-    gap: 7.5%;
+    flex-wrap: nowrap;
+    justify-content: space-around;
 }
 
 .profile-favorite-game {
@@ -60,13 +59,6 @@
 
 .profile-reviews-panel {
     padding: 0 5%;
-}
-
-.profile-review-list {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    flex-wrap: wrap;
 }
 
 .profile-reviews-count {

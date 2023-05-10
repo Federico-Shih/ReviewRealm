@@ -24,18 +24,15 @@
 <body>
 <jsp:include page="/WEB-INF/jsp/static-components/navbar.jsp"/>
 <div class="container">
-    <c:if test="${emailSuccess}">
-        <h4 class="green-text"><spring:message code="resend.email.sent" /></h4>
-    </c:if>
     <article class="card">
         <div class="card-content">
             <c:if test="${registered}">
                 <div class="card green darken-1">
-                    <div class="card-content white-text row">
-                        <div class="col s1">
+                    <div class="card-content white-text f-row f-gap-2">
+                        <div>
                             <i class="material-icons medium">email</i>
                         </div>
-                        <div class="col s11">
+                        <div>
                             <span class="card-title"><spring:message code="registered.success.title" /></span>
                             <p><spring:message code="validation.email.sent"/></p>
                         </div>
@@ -44,11 +41,11 @@
             </c:if>
             <c:if test="${resent}">
                 <div class="card lime darken-3">
-                    <div class="card-content white-text row">
-                        <div class="col s1">
+                    <div class="card-content white-text f-row f-gap-2">
+                        <div>
                             <i class="material-icons medium">email</i>
                         </div>
-                        <div class="col s11">
+                        <div>
                             <span class="card-title"><spring:message code="resend.email.success.title" /></span>
                             <p><spring:message code="validation.email.sent"/></p>
                         </div>

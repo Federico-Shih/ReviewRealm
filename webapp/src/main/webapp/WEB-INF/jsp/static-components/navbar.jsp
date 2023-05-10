@@ -24,25 +24,25 @@
 <div>
     <nav>
         <div class="navbar">
-            <div>
+            <div class="f-row">
                 <a href="<c:url value="/"/>" class="navbar-logo">
                     <img class="navbar-logo-image" src="<c:url value="/static/review_realm_logo_white_630px.png"/>" alt="Review Realm Logo">
-                    <span class="navbar-logo-title">Review Realm</span>
+                    <span class="navbar-logo-title hide-on-med-and-down">Review Realm</span>
                 </a>
             </div>
-            <div>
-                <ul class="navbar-options center">
+            <div class="full-width">
+                <ul class="navbar-options-list center">
                     <c:if test="${loggedUser != null}">
-                        <li>
+                        <li class="navbar-option">
                             <a href="<c:url value="/for-you"/>" class="${param.selected == "for-you" ? "chosen-tab" : "" }">
                                 <span><spring:message code="navbar.foryou"/></span>
                             </a>
                         </li>
                     </c:if>
-                    <li><a href="<c:url value="/game/list"/>" class="${param.selected == "game-list" ? "chosen-tab" : "" }"><span><spring:message code="navbar.games"/></span></a></li>
-                    <li><a href="<c:url value="/"/>" class="${param.selected == "review-list" ? "chosen-tab" : "" }"><span><spring:message code="navbar.reviews"/></span></a></li>
+                    <li class="navbar-option"><a href="<c:url value="/game/list"/>" class="${param.selected == "game-list" ? "chosen-tab" : "" }"><span><spring:message code="navbar.games"/></span></a></li>
+                    <li class="navbar-option"><a href="<c:url value="/"/>" class="${param.selected == "review-list" ? "chosen-tab" : "" }"><span><spring:message code="navbar.reviews"/></span></a></li>
                     <c:if test="${isModerator}">
-                        <li>
+                        <li class="navbar-option">
                             <a href="<c:url value="/game/submit" />" class="${param.selected == "gameSubmit" ? "chosen-tab": ""}">
                                 <spring:message code="navbar.submitgame" />
                             </a>
@@ -51,7 +51,7 @@
                     <c:if test="${loggedUser != null}">
                         <li class="navbar-dropdown-container">
                             <a class="dropdown-trigger btn navbar-dropdown" href="#" data-target="dropdownProfile">
-                                <span>
+                                <span class="overflow-ellipsis">
                                     <spring:message code="navbar.welcome" arguments="${loggedUser.username}"/>
                                 </span>
                                 <i class="material-icons right">arrow_drop_down</i>
@@ -60,10 +60,10 @@
                                 <li>
                                     <a href="<c:url value="/profile/${loggedUser.id}"/>" class="${param.selected == "profile" ? "chosen-tab" : "" }">
                                         <div class="valign-wrapper profile-dropdown-link">
-                                            <span class="material-icons">
+                                            <span class="material-icons small">
                                                 account_circle
                                             </span>
-                                                <span>
+                                            <span class="overflow-ellipsis">
                                                 <spring:message code="navbar.profile"/>
                                             </span>
                                         </div>
@@ -75,7 +75,7 @@
                                             <span class="material-icons">
                                                 create
                                             </span>
-                                            <span>
+                                            <span class="overflow-ellipsis">
                                                 <spring:message code="navbar.create"/>
                                             </span>
                                         </div>
@@ -88,7 +88,7 @@
                                                 <span class="material-icons">
                                                     add
                                                 </span>
-                                                <span>
+                                                <span class="overflow-ellipsis">
                                                     <spring:message code="navbar.suggest"/>
                                                 </span>
                                             </div>
@@ -101,7 +101,7 @@
                                             <span class="material-icons">
                                                 settings
                                             </span>
-                                            <span>
+                                            <span class="overflow-ellipsis">
                                                 <spring:message code="account.settings"/>
                                             </span>
                                         </div>
@@ -113,7 +113,7 @@
                                             <span class="material-icons">
                                                 logout
                                             </span>
-                                                <span>
+                                            <span class="overflow-ellipsis">
                                                 <spring:message code="navbar.logout"/>
                                             </span>
                                         </div>

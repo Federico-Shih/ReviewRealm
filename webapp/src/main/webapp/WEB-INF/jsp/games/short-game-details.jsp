@@ -13,27 +13,29 @@
 <link rel="stylesheet" href="<c:url value="/css/review/review-page.css" />">
 <!-- Compiled and minified JavaScript -->
 <script src="<c:url value="/js/materialize.min.js" />"></script>
-<div class="card card-background">
-    <div class="card-content">
+<div class="card-background">
+    <div class="short-game-container">
         <div>
             <c:url value="${game.imageUrl}" var="imgUrl"/>
             <img src="${imgUrl}" alt="game-image" class="game-image"/>
         </div>
-        <a href="${gameUrl}">
-            <h5><c:out value="${game.name}"/></h5>
-        </a>
-        <div>
-            <span><spring:message code="developer" arguments="${game.developer}"/></span>
-        </div>
-        <div>
-            <span><spring:message code="genres"/> </span>
-            <c:forEach var="genre" items="${game.genres}">
+        <div class="short-game-container-text">
+            <a href="${gameUrl}">
+                <h5><c:out value="${game.name}"/></h5>
+            </a>
+            <div>
+                <span><spring:message code="developer" arguments="${game.developer}"/></span>
+            </div>
+            <div>
+                <span><spring:message code="genres"/> </span>
+                <c:forEach var="genre" items="${game.genres}">
                 <span class="chip-small">
                     <a href="<c:url value="/game/list?f-gen=${genre.id}"/>" class="white-text">
                             <spring:message code="${genre.name}"/>
                     </a>
                 </span>
-            </c:forEach>
+                </c:forEach>
+            </div>
         </div>
     </div>
 </div>

@@ -9,7 +9,6 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link type="text/css" rel="stylesheet" href="<c:url value="/css/materialize.min.css" />" media="screen,projection"/>
     <link rel="stylesheet" href="<c:url value="/css/main.css" />">
-    <link rel="stylesheet" href="<c:url value="/css/flex.css" />">
     <link rel="stylesheet" href="<c:url value="/css/profile.css" />"/>
     <link rel="shortcut icon" type="image/png" href="<c:url value="/static/review_realm_logo_white_32px.png" />">
     <script src="<c:url value="/js/materialize.min.js" />"></script>

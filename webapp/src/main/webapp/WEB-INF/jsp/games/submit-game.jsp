@@ -106,16 +106,19 @@
                     <div class="input-field col s12">
                         <ul class="collapsible white-text">
                             <li>
-                                <div class="collapsible-header collapsible-btn">
-                                    <i class="material-icons">style</i>
-                                    <spring:message code="game.submit.form.genres" />
+                                <div class="collapsible-header collapsible-btn f-row f-jc-sbetween">
+                                    <div class="f-row">
+                                        <i class="material-icons">style</i>
+                                        <spring:message code="game.submit.form.genres" />
+                                    </div>
+                                    <i class="material-icons">arrow_drop_down</i>
                                 </div>
-                                <div class="collapsible-body row" style="margin-left: 0; margin-right: 0">
+                                <div class="collapsible-body row no-margin">
                                     <c:forEach items="${genres}" var="genre">
-                                        <span class="col s3">
+                                        <span class="col s6 l4">
                                             <label>
                                                 <input name="genres" id="${genre.id}" type="checkbox" value="${genre.id}" class="filled-in checkbox" />
-                                                <span><spring:message code="${genre.name}" /></span>
+                                                <span class="no-wrap"><spring:message code="${genre.name}" /></span>
                                             </label>
                                         </span>
                                     </c:forEach>

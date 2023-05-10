@@ -1,10 +1,10 @@
 
 .left-panel {
-    width: 22%;
+    width: 30%;
 }
 
 .right-panel {
-    width: 78%;
+    width: 70%;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -21,16 +21,11 @@
 
 .review-card-list {
     padding: 1%;
-    width: 80%;
+    width: 95%;
     height: fit-content;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    flex-wrap: wrap;
 }
 
 .review-card {
-    width: 48%;
     height: fit-content;
 }
 
@@ -39,7 +34,7 @@
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    padding: 0 4%;
+    padding: 1% 4%;
 }
 
 .review-card-header-start {
@@ -47,7 +42,7 @@
     flex-direction: column;
     align-items: flex-start;
     padding: 10px 0;
-    width: 70%;
+    width: 65%;
 }
 
 .review-card-header-end {
@@ -55,6 +50,7 @@
     flex-direction: row;
     justify-content: flex-end;
     align-items: baseline;
+    width: 35%;
 }
 
 .review-card-body {
@@ -70,11 +66,28 @@
     justify-content: space-between;
     padding: 2% 4%;
 }
+
 .review-card-feedback-footer{
     display: flex;
     flex-direction: row;
     justify-content: flex-end;
     align-items: baseline;
+    font-size: 12px;
+    gap: 12%;
+    width: 50%;
+}
+
+.review-card-feedback-footer-big{
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: baseline;
+    font-size: 14px;
+    gap: 2%;
+}
+
+.like-dislike-buttons {
+    font-size: 16px !important;
 }
 
 #review-card-game-title {
@@ -91,6 +104,7 @@
 #review-card-score {
     font-size: 40px;
     font-weight: 700; /* bold */
+    white-space: nowrap;
 }
 
 #review-card-score-outof {
@@ -98,6 +112,10 @@
     font-weight: 400; /* regular */
     margin-right: 4px;
     white-space: nowrap;
+}
+
+#review-card-star {
+    font-size: 20px;
 }
 
 #review-card-title {
@@ -109,6 +127,9 @@
 #review-card-content {
     font-size: 14px;
     font-weight: 400;
+    height: 3em;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 #review-card-date {
@@ -149,7 +170,7 @@
 }
 
 .review-filters-panel-subtitle {
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 700;
 }
 
@@ -157,6 +178,10 @@
     display: flex;
     gap: 4px;
     margin: 6px 0;
+}
+
+.review-filters-collapsible-button {
+    margin-right: 24px;
 }
 
 #filter-panel-divider {
@@ -175,3 +200,12 @@
     color: white !important;
     background-color: #D84315;
 }
+
+.review-game-length {
+    padding: 5px;
+}
+
+.review-tags-panel {
+    margin-top: 5px;
+}
+

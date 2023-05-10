@@ -20,14 +20,14 @@
 <c:url value="/game/list/" var="gameList"/>
 <c:url value="/" var="baseUrl"></c:url>
 <jsp:include page="../static-components/navbar.jsp"/>
-<div class="row" style="margin:2%">
+<div class="row margin-2">
     <div class="col s12 valign-wrapper breadcrumb-align">
         <a href="${gameList}" class="breadcrumb"><spring:message code="game.list.placeholder.search" /></a>
         <a href="#" class="breadcrumb"><c:out value="${game.name}" /></a>
     </div>
 </div>
-<div class="game-details-section">
-    <div class="game-details">
+<div class="game-details-section row">
+    <div class="game-details col s12 l7">
         <span class="game-title"><c:out value="${game.name}"/></span>
         <div class="game-genres">
             <span class="game-genre"><spring:message code="genres"/></span>
@@ -39,7 +39,7 @@
         <p class="game-description"><c:out value="${game.description}"/></p>
         <div class="divider"></div>
     </div>
-    <div class="game-card">
+    <div class="game-card col s12 l4 push-l1">
         <c:url value="${game.imageUrl}" var="imageUrl" />
         <img class="game-img" src="${imageUrl}" alt="Game image">
         <span class="game-card-text">
@@ -108,55 +108,8 @@
             </div>
         </c:if>
         <c:forEach var="review" items="${gameReviewData.reviewList}">
-            <div class="col s12 m6">
-                <div class="card">
-                    <div class="review-card-header">
-                        <div class="review-card-header-start">
-                            <a href="<c:url value="/review/${review.id}"/>">
-                                <span id="review-card-title"><c:out value="${review.title}"/></span>
-                            </a>
-                        </div>
-                        <div class="review-card-header-end">
-                            <span id="review-card-score"><c:out value="${review.rating}"/></span>
-                            <span id="review-card-score-outof">/10</span>
-                            <i class="material-icons small">star</i>
-                        </div>
-                    </div>
-                    <div class="review-card-body">
-                        <span id="review-card-content"><c:out value="${review.content}"/></span>
-                        <span id="review-card-date"><c:out value="${review.createdFormatted}"/></span>
-                    </div>
-                    <div class="divider"></div>
-                    <div class="review-card-footer">
-                        <span id="review-card-bottom-text review-card-author">
-                            <spring:message code="review.by" arguments="@${review.author.username}"/>
-                        </span>
-                            <%--                            <c:forEach var="genre" items="${review.author.}">--%>
-                            <%--                                <span class="chip-small-inverted"><c:out value="${genre.name}"/></span>--%>
-                            <%--                            </c:forEach>--%>
-                        <div class="review-card-feedback-footer">
-                            <c:url value="/review/feedback/${review.id}" var="updateFeedback" />
-
-                            <form name="likeFeedbackForm" class="feedback-form" method="post" action="${updateFeedback}">
-                                <button name="feedback" class="btn-flat waves-effect waves-light ${ (review.feedback == "LIKE")? "white-text":""}" value="LIKE">
-                                    <i class="material-icons">thumb_up</i>
-                                </button>
-                                <input type="hidden" name="url" value="${baseUrl}"/>
-                            </form>
-                            <form name="dislikeFeedbackForm" class="feedback-form" method="post" action="${updateFeedback}" >
-                                <button name="feedback" class="btn-flat waves-effect waves-light ${ (review.feedback == "DISLIKE")? "white-text":""}" value="DISLIKE">
-                                    <i class="material-icons">thumb_down</i>
-                                </button>
-                                <input type="hidden" name="url" value="${baseUrl}"/>
-                            </form>
-                            <c:if test="${review.likeCounter != 0}">
-                                <span><c:out value="${review.likeCounter}"/></span>
-                            </c:if>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
+            <c:set var="review" value="${review}" scope="request" />
+            <c:import url="/WEB-INF/jsp/review/review-card.jsp" />
         </c:forEach>
         <c:if test="${fn:length(gameReviewData.reviewList) % 2 == 1}">
             <div class="col m6"></div>

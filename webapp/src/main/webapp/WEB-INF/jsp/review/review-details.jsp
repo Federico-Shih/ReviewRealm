@@ -37,7 +37,7 @@
 <c:url value="/" var="baseUrl"/>
 <body>
 <jsp:include page="/WEB-INF/jsp/static-components/navbar.jsp"/>
-<div class="row" style="margin: 2%;">
+<div class="row margin-2">
     <c:url value="/" var="reviewList" />
     <div class="col s12">
         <a href="${reviewList}" class="breadcrumb"><spring:message code="review.search" /></a>
@@ -46,7 +46,7 @@
 </div>
 <div class="container">
     <div class="row">
-        <div class="col s12 m8">
+        <div class="col s12 l8">
             <div class="card card-background">
                 <div class="card-content">
                     <div class="card-title row">
@@ -54,7 +54,7 @@
                             <c:out value="${review.title}" />
                         </div>
                         <div class="col s2 ${isModerated ? "" : "s4 right"} right-align">
-                            <span style="font-weight: bold"><c:out value="${review.rating}" /></span>/10
+                            <span id="review-card-score"><c:out value="${review.rating}" /></span>/10
                         </div>
                         <c:if test="${isModerated}">
                         <div class="col s2 right-align">
@@ -66,8 +66,8 @@
                                         <li>
                                             <c:url value="/review/delete/${review.id}" var="moderateUrl" />
                                             <form action="${moderateUrl}" method="post" >
-                                                <button class="waves-effect btn-flat valign-wrapper red-text" style="display: flex" type="submit">
-                                                    <i class="material-icons">delete_outline</i>
+                                                <button class="waves-effect btn-flat valign-wrapper red-text f-row f-ai-center" type="submit">
+                                                    <i class="material-icons">delete</i>
                                                     <span><spring:message code="review.delete" /></span>
                                                 </button>
                                             </form>
@@ -82,32 +82,32 @@
                         <c:out value="${review.content}" />
                     </div>
                     <div class="divider"></div>
-                    <div class="review-card-feedback-footer">
+                    <div class="review-card-feedback-footer-big">
+                        <c:if test="${review.likeCounter != 0}">
+                            <span><c:out value="${review.likeCounter}"/></span>
+                        </c:if>
                         <c:url value="/review/feedback/${review.id}" var="updateFeedback" />
                         <form name="likeFeedbackForm" class="feedback-form" method="post" action="${updateFeedback}">
                                 <button name="feedback" class="btn-flat waves-effect waves-light ${(review.feedback == "LIKE")? "white-text":""}" value="LIKE">
-                                    <i class="material-icons">thumb_up</i>
+                                    <i class="material-icons like-dislike-buttons">thumb_up</i>
                                 </button>
                                 <input type="hidden" name="url" value="${baseUrl}"/>
                         </form>
                         <form name="dislikeFeedbackForm" class="feedback-form" method="post" action="${updateFeedback}" >
                                 <button name="feedback" class="btn-flat waves-effect waves-light ${(review.feedback == "DISLIKE")? "white-text":""}" value="DISLIKE">
-                                    <i class="material-icons">thumb_down</i>
+                                    <i class="material-icons like-dislike-buttons">thumb_down</i>
                                 </button>
                                 <input type="hidden" name="url" value="${baseUrl}"/>
                         </form>
-                        <c:if test="${review.likeCounter != 0}">
-                        <span><c:out value="${review.likeCounter}"/></span>
-                        </c:if>
                     </div>
                     <div class="divider"></div>
-                    <div class="row" style="padding: 5px">
+                    <div class="row review-game-length">
                         <spring:message code="review.gameLength" />:
                         <c:out value="${reviewExtra.gametime}" />
                         <spring:message code="${reviewExtra.unit.code}" />
                     </div>
                     <div class="divider"></div>
-                    <div class="row" style="margin-top: 5px">
+                    <div class="row review-tags-panel">
                         <div class="col s12">
                             <spring:message code="review.tags" />
                             <c:if test="${review.platform != null}">
@@ -140,7 +140,7 @@
                 </div>
             </div>
         </div>
-        <div class="col s12 m4">
+        <div class="col s12 l4">
             <c:set var="game" value="${game}" scope="request" />
             <c:set var="gameUrl" value="${gameUrl}" scope="request" />
             <c:import url="/WEB-INF/jsp/games/short-game-details.jsp" />

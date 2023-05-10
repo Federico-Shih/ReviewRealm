@@ -16,7 +16,7 @@
 </head>
 <body>
     <jsp:include page="../static-components/navbar.jsp"/>
-    <div class="row" style="margin:2%">
+    <div class="row margin-2">
         <div class="col s12 valign-wrapper breadcrumb-align">
             <a href="<c:url value="."/>" class="breadcrumb"><c:out value="${username}"/></a>
             <a href="#" class="breadcrumb"><spring:message code="${page}" /></a>

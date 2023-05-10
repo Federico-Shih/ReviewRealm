@@ -90,7 +90,6 @@
                                     placeholder='${titlePlaceholder}'
                                     type="text"
                                     class="input-general"
-                                    style="color: black;"
                             />
                             <form:errors path="reviewTitle" cssClass="error" element="p"/>
                         </div>
@@ -101,8 +100,7 @@
                                     placeholder='${contentPlaceholder}'
                                     path="reviewContent"
                                     id="review-content"
-                                    class="materialize-textarea review-content-input input-general"
-                                    style="color: black;"/>
+                                    class="materialize-textarea review-content-input input-general"/>
                             <form:errors path="reviewContent" cssClass="error" element="p"/>
                         </div>
                         <div>
@@ -137,7 +135,7 @@
                             <div class="col s12">
                                 <form:label for="gamelength" path="gameLength"><spring:message code="review.gameLength" /></form:label>
                             </div>
-                            <div class="col s10">
+                            <div class="col s8">
                                 <form:input
                                         path="gameLength"
                                         id="gamelength"
@@ -147,7 +145,7 @@
                                 />
                                 <form:errors path="gameLength" cssClass="error" element="p" />
                             </div>
-                            <div class="col s2">
+                            <div class="col s4">
                                 <form:select name="unit" path="unit" id="unit" cssClass="browser-default">
                                     <c:forEach items="${units}" var="unit">
                                         <option value="${unit}">
@@ -169,8 +167,8 @@
                                 <span><spring:message code="reviewForm.replayability" /></span>
                             </label>
                         </div>
-                        <div class="row">
-                            <button id="createButton" class="${(selectedGameId==0)? " disabled ":" "}waves-effect waves-light btn submit-btn s2 offset-s10 col" type="submit">
+                        <div class="f-row f-jc-end">
+                            <button id="createButton" class="${(selectedGameId==0)? " disabled ":" "}waves-effect waves-light btn submit-btn" type="submit">
                                 <spring:message code="reviewForm.create"/>
                             </button>
                         </div>
@@ -199,12 +197,12 @@
                         <c:url var="gameUrl" value="?reviewRating=${reviewForm.reviewRating}&reviewTitle=${reviewForm.reviewTitle}&reviewContent=${reviewForm.reviewContent}&platform=${reviewForm.platform}&difficulty=${reviewForm.difficulty}&gameLength=${reviewForm.gameLength}&unit=${reviewForm.unit}&gameId=${gameIterator.id}" />
                         <div class="card-background">
                             <a href="${gameUrl}" id="${gameIterator.id}" class="no-a-decoration searchResult">
-                                <div class="search-result-container">
+                                <div class="short-game-container">
                                     <div>
                                         <c:url value="${gameIterator.imageUrl}" var="imgUrl" />
                                         <img src="${imgUrl}" alt="game-image" class="search-result-image"/>
                                     </div>
-                                    <div class="search-result-container-text">
+                                    <div class="short-game-container-text">
                                         <h6><c:out value="${gameIterator.name}"/></h6>
                                         <div>
                                             <c:forEach var="genre" items="${gameIterator.genres}" end="1">
