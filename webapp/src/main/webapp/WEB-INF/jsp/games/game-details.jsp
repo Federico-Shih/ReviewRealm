@@ -18,7 +18,6 @@
 <body>
 <c:url value="/review/submit?gameId=${game.id}" var="sumbitReview"/>
 <c:url value="/game/list/" var="gameList"/>
-<c:url value="/" var="baseUrl"></c:url>
 <jsp:include page="../static-components/navbar.jsp"/>
 <div class="row margin-2">
     <div class="col s12 valign-wrapper breadcrumb-align">

@@ -24,7 +24,6 @@
     <script src="<c:url value="/js/reviewfeedback.js" />"></script>
 </head>
 <c:url value="/" var="applyFilters"/>
-<c:url value="/" var="baseUrl"/>
 
 <body class="background has-background-black">
 <jsp:include page="../static-components/navbar.jsp"><jsp:param name="selected" value="review-list" /></jsp:include>

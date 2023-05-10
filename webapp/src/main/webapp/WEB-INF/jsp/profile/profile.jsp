@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="<c:url value="/css/profile.css" />"/>
     <link rel="shortcut icon" type="image/png" href="<c:url value="/static/review_realm_logo_white_32px.png" />">
     <script src="<c:url value="/js/materialize.min.js" />"></script>
+    <script src="<c:url value="/js/reviewfeedback.js"/> "></script>
     <title><spring:message code="profile.title"/></title>
 </head>
 
