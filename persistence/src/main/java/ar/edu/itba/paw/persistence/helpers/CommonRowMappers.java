@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.persistence.helpers;
 
 import ar.edu.itba.paw.enums.Difficulty;
+import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.enums.Platform;
 import ar.edu.itba.paw.enums.ReviewFeedback;
 import ar.edu.itba.paw.models.Game;
@@ -9,6 +10,7 @@ import ar.edu.itba.paw.models.User;
 import org.springframework.jdbc.core.RowMapper;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 public interface CommonRowMappers{
     String IMAGE_PREFIX = "/images/";
@@ -58,7 +60,12 @@ public interface CommonRowMappers{
                 resultSet.getBoolean("completed"),
                 resultSet.getBoolean("replayability"),
                  null,
-                (resultSet.getLong("likes")-resultSet.getLong("dislikes"))
+                (resultSet.getLong("likes") - resultSet.getLong("dislikes"))
         );
     });
+     RowMapper  <Genre> GAME_GENRE_ROW_MAPPER = (resultSet, i) -> {
+        Optional<Genre> genre = Genre.getById(resultSet.getInt("genreId"));
+        if (!genre.isPresent()) throw new IllegalStateException();
+        return genre.get();
+    };
 }

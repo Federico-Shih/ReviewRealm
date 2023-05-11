@@ -4,6 +4,7 @@ import ar.edu.itba.paw.dtos.*;
 import ar.edu.itba.paw.dtos.ordering.Ordering;
 import ar.edu.itba.paw.dtos.ordering.ReviewOrderCriteria;
 import ar.edu.itba.paw.enums.Difficulty;
+import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.enums.Platform;
 import ar.edu.itba.paw.enums.ReviewFeedback;
 import ar.edu.itba.paw.models.Game;
@@ -17,6 +18,7 @@ import ar.edu.itba.paw.persistenceinterfaces.PaginationDao;
 import ar.edu.itba.paw.persistenceinterfaces.ReviewDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
@@ -60,6 +62,8 @@ public class ReviewDaoImpl implements ReviewDao, PaginationDao<ReviewFilter> {
         args.put("gameId", reviewedGame.getId());
         args.put("authorId", author.getId());
         args.put("createddate", Timestamp.valueOf(LocalDateTime.now()));
+        args.put("likes", 0);
+        args.put("dislikes", 0);
         if (difficulty != null) {
             args.put("difficulty", difficulty.toString());
         }
@@ -78,23 +82,39 @@ public class ReviewDaoImpl implements ReviewDao, PaginationDao<ReviewFilter> {
         final Number id = jdbcInsertReview.executeAndReturnKey(args);
         return new Review(id.longValue(), author, title, content, LocalDateTime.now(), rating, reviewedGame, difficulty, gameLength, platform, completed, replayable,null,0L);
     }
+    private final static ResultSetExtractor<List<Review>> REVIEW_MAPPER = (resultSet) -> {
+        Map<Long,Review> reviews = new LinkedHashMap<>();
+        while(resultSet.next()){
+            Long id = resultSet.getLong("id");
+            reviews.putIfAbsent(id, CommonRowMappers.REVIEW_ROW_MAPPER.mapRow(resultSet, resultSet.getRow()));
+            Review review = reviews.get(id);
+            review.getReviewedGame().getGenres().add(CommonRowMappers.GAME_GENRE_ROW_MAPPER.mapRow(resultSet, resultSet.getRow()));
+            String feedback = resultSet.getString("feedback");
+            if(review.getFeedback() == null && feedback != null) {
+                review.setFeedback(ReviewFeedback.valueOf(feedback));
+            }
+        }
+        return new ArrayList<>(reviews.values());
+    };
 
     @Override
     public Optional<Review> findById(Long id, Long activeUserId) {
         Optional<Review> review = jdbcTemplate.query("SELECT * FROM reviews " +
                 "JOIN games as g ON g.id = reviews.gameid " +
                 "JOIN users as u ON u.id = reviews.authorid " +
-                "WHERE reviews.id = ?", CommonRowMappers.REVIEW_ROW_MAPPER, id)
+                "LEFT OUTER JOIN reviewfeedback as rf ON rf.reviewid = reviews.id " +
+                "LEFT OUTER JOIN genreforgames as gg ON gg.gameid = reviews.gameid " +
+                "WHERE reviews.id = ?", REVIEW_MAPPER, id)
                 .stream()
                 .findFirst();
-        if (review.isPresent()) {
-            Review existentReview = review.get();
-            if(activeUserId != null) {
-                ReviewFeedback feedback = getReviewFeedback(id, activeUserId);
-                existentReview.setFeedback(feedback);
-            }
-            existentReview.getReviewedGame().setGenres(gameDao.getGenresByGame(existentReview.getReviewedGame().getId()));
-        }
+//        if (review.isPresent()) {
+//            Review existentReview = review.get();
+//            if(activeUserId != null) {
+//                ReviewFeedback feedback = getReviewFeedback(id, activeUserId);
+//                existentReview.setFeedback(feedback);
+//            }
+//            existentReview.getReviewedGame().setGenres(gameDao.getGenresByGame(existentReview.getReviewedGame().getId()));
+//        }
         return review;
     }
     @Override
@@ -117,7 +137,7 @@ public class ReviewDaoImpl implements ReviewDao, PaginationDao<ReviewFilter> {
         preparedArgs.add(pagination.getPageSize());
         preparedArgs.add(pagination.getOffset());
         List<Review> reviews = jdbcTemplate.query(
-                "SELECT DISTINCT * FROM " +
+                "SELECT "+getTableColumnString()+" FROM " +
                         toTableString(filter)+
                         query.toQuery()+
                         toOrderString(ordering) +
@@ -138,7 +158,10 @@ public class ReviewDaoImpl implements ReviewDao, PaginationDao<ReviewFilter> {
 
         return new Paginated<>(pagination.getPageNumber(), pagination.getPageSize(), totalPages, reviews);
     }
-
+    private String getTableColumnString(){
+        return "distinct r.id, r.authorid, r.gameid, r.title, r.content, r.createddate, r.rating, r.difficulty, r.gamelength, r.platform, r.completed, r.replayability,r.likes,r.dislikes," +
+                " u.id, u.email,u.username, g.name, g.description, g.imageid,g.publisher, g.developer, g.publishdate, g.ratingsum, g.reviewcount";
+    }
     @Override
     public Long count(ReviewFilter filter) {
         QueryBuilder query = new QueryBuilder()
@@ -192,7 +215,7 @@ public class ReviewDaoImpl implements ReviewDao, PaginationDao<ReviewFilter> {
         boolean response = jdbcTemplate.update("UPDATE reviewfeedback SET feedback = ? WHERE userid = ? and reviewid = ?",
                 feedback.name(), userId, reviewId) == 1 ;
         if(response){
-            response = jdbcTemplate.update("UPDATE reviews SET likes = likes + ?, dislikes = dislikes + ? WHERE id = ?",
+            response = jdbcTemplate.update("UPDATE reviews SET likes = coalesce(likes,0) + ?, dislikes = coalesce(dislikes,0) + ? WHERE id = ?",
                     (oldFeedback == ReviewFeedback.LIKE ? -1 : 1),
                     (oldFeedback == ReviewFeedback.DISLIKE ? -1 : 1),
                     reviewId) == 1;
@@ -207,7 +230,7 @@ public class ReviewDaoImpl implements ReviewDao, PaginationDao<ReviewFilter> {
         args.put("userId",userId);
         args.put("feedback",feedback.name());
         jdbcInsertFeedback.execute(args);
-         return jdbcTemplate.update("UPDATE reviews SET likes = likes + ?, dislikes = dislikes + ? WHERE id = ?",
+         return jdbcTemplate.update("UPDATE reviews SET likes = coalesce(likes,0) + ?, dislikes = coalesce(dislikes,0) + ? WHERE id = ?",
                     (feedback == ReviewFeedback.LIKE ? 1: 0),
                     (feedback == ReviewFeedback.DISLIKE ? 1 : 0),
                     reviewId) == 1;
@@ -218,7 +241,7 @@ public class ReviewDaoImpl implements ReviewDao, PaginationDao<ReviewFilter> {
         boolean response = jdbcTemplate.update("DELETE FROM reviewfeedback WHERE userid = ? and reviewid = ?",
                 userId, reviewId) == 1 ;
         if(response){
-            response = jdbcTemplate.update("UPDATE reviews SET likes = likes + ?, dislikes = dislikes + ? WHERE id = ?",
+            response = jdbcTemplate.update("UPDATE reviews SET likes = coalesce(likes,0) + ?, dislikes = coalesce(dislikes,0) + ? WHERE id = ?",
                     (oldFeedback == ReviewFeedback.LIKE ? -1 : 0),
                     (oldFeedback == ReviewFeedback.DISLIKE ? -1 : 0),
                     reviewId) == 1;

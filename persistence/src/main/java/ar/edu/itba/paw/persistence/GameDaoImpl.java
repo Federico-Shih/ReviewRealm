@@ -12,6 +12,7 @@ import ar.edu.itba.paw.persistenceinterfaces.PaginationDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCallback;
+import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
@@ -35,10 +36,18 @@ public class GameDaoImpl implements GameDao, PaginationDao<GameFilter> {
         this.jdbcInsertGenreForGames = new SimpleJdbcInsert(ds).withTableName("genreForGames");
     }
 
-    private final static RowMapper  <Genre> GAME_GENRE_ROW_MAPPER = (resultSet, i) -> {
-        Optional<Genre> genre = Genre.getById(resultSet.getInt("genreId"));
-        if (!genre.isPresent()) throw new IllegalStateException();
-        return genre.get();
+
+
+    private final static ResultSetExtractor<List<Game>> GAME_MAPPER = (resultSet) -> {
+    Map<Long,Game> games = new LinkedHashMap<>();
+    while(resultSet.next()){
+        Long id = resultSet.getLong("id");
+        games.putIfAbsent(id, CommonRowMappers.GAME_ROW_MAPPER.mapRow(resultSet, resultSet.getRow()));
+        Game game = games.get(id);
+        Genre genre = CommonRowMappers.GAME_GENRE_ROW_MAPPER.mapRow(resultSet,resultSet.getRow());
+        game.getGenres().add(genre);
+    }
+     return new ArrayList<>(games.values());
     };
 
     private Map<String,Object> prepareArgumentsForGame(String name,String description,String developer, String publisher, String imageid, LocalDate publishDate, boolean suggested) {
@@ -74,8 +83,9 @@ public class GameDaoImpl implements GameDao, PaginationDao<GameFilter> {
 
     @Override
     public Optional<Game> getById(Long id) {
-        Optional<Game> game = jdbcTemplate.query("SELECT * FROM games where id = ?",CommonRowMappers.GAME_ROW_MAPPER,id).stream().findFirst();
-        game.ifPresent(value -> value.setGenres(this.getGenresByGame(id)));
+        Optional<Game> game = jdbcTemplate.query("SELECT * FROM games LEFT OUTER JOIN genreforgames ON games.id = genreforgames.gameid " +
+                "WHERE id = ?",GAME_MAPPER,id).stream().findFirst();
+//        game.ifPresent(value -> value.setGenres(this.getGenresByGame(id)));
         return game;
     }
 
@@ -116,7 +126,7 @@ public class GameDaoImpl implements GameDao, PaginationDao<GameFilter> {
     @Override
     public List<Genre> getGenresByGame(Long id) {
         return jdbcTemplate.query("SELECT * FROM genreforgames g " +
-                "WHERE g.gameid = ?",GAME_GENRE_ROW_MAPPER,id);
+                "WHERE g.gameid = ?",CommonRowMappers.GAME_GENRE_ROW_MAPPER,id);
     }
 
     @Override
@@ -136,7 +146,7 @@ public class GameDaoImpl implements GameDao, PaginationDao<GameFilter> {
         preparedStatementArgs.add(page.getPageSize());
         preparedStatementArgs.add(page.getOffset());
 
-        List<Game> games = jdbcTemplate.query("SELECT DISTINCT *  FROM " + toTableString(filter) +
+        List<Game> games = jdbcTemplate.query("SELECT "+getTableColumnString()+" FROM " + toTableString(filter) +
                 queryBuilder.toQuery() +
                 toOrderString(ordering)+
                 " LIMIT ? OFFSET ?", preparedStatementArgs.toArray(), CommonRowMappers.GAME_ROW_MAPPER);
@@ -144,6 +154,9 @@ public class GameDaoImpl implements GameDao, PaginationDao<GameFilter> {
             g.setGenres(this.getGenresByGame(g.getId()));
         }
         return new Paginated<>(page.getPageNumber(), page.getPageSize(), totalPages, games);
+    }
+    private String getTableColumnString(){
+        return "distinct g.id, g.name, g.description, g.developer, g.publisher, g.imageid, g.publishdate, g.ratingsum, g.reviewcount";
     }
 
     @Override
@@ -162,7 +175,7 @@ public class GameDaoImpl implements GameDao, PaginationDao<GameFilter> {
         }
         preparedStatementArgs.add(userId);
         preparedStatementArgs.add(amount);
-        List<Game> games = jdbcTemplate.query("SELECT DISTINCT *, cast(g.ratingsum as real) / coalesce(nullif(g.reviewcount,0),1) as avg " +
+        List<Game> games = jdbcTemplate.query("SELECT "+ getTableColumnString()+ " ,cast(g.ratingsum as real) / coalesce(nullif(g.reviewcount,0),1) as avg " +
                 "FROM games g INNER JOIN genreforgames gg on g.id = gg.gameid " + filterString +
                 "NOT EXISTS(select * from reviews where reviews.gameid = g.id and reviews.authorid=?)"+
                 " ORDER BY avg desc LIMIT ? ",CommonRowMappers.GAME_ROW_MAPPER,preparedStatementArgs.toArray());

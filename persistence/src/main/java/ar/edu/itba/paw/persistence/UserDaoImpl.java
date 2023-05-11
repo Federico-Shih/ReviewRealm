@@ -95,6 +95,7 @@ public class UserDaoImpl implements UserDao {
         args.put("username", username);
         args.put("email",email);
         args.put("password",password);
+        args.put("reputation",0);
 
         final Number id = jdbcInsert.executeAndReturnKey(args);
         return new User(id.longValue(), username, email, password);
@@ -192,7 +193,7 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public boolean modifyReputation(long id, int reputation) {
-        return jdbcTemplate.update("UPDATE users SET reputation = reputation + ? WHERE id = ?", reputation, id) == 1;
+        return jdbcTemplate.update("UPDATE users SET reputation = coalesce(reputation,0) + ? WHERE id = ?", reputation, id) == 1;
     }
 
     private String toUserDataString() {
