@@ -82,7 +82,7 @@ public class GameController extends PaginatedController implements QueryControll
         GameFilterBuilder filterBuilder = new GameFilterBuilder()
                 .withGameContent(search)
                 .withGameGenres(genresFilter);
-        GameFilter filter = filterBuilder.getFilter();
+        GameFilter filter = filterBuilder.build();
 
         Paginated<Game> games = gs.getAllGames(
                 Page.with(page != null ? page: INITIAL_PAGE, PAGE_SIZE),
@@ -133,9 +133,7 @@ public class GameController extends PaginatedController implements QueryControll
         }
         try {
             Optional<Game> game = gs.createGame(gameForm.toSubmitDTO(), AuthenticationHelper.getLoggedUser(us).getId());
-            return (game.isPresent())? new ModelAndView("redirect:/game/" + game.get().getId())
-                    :
-                    new ModelAndView("redirect:/game/list"); //TODO: Hacer un toast de que llegó la sugerencia
+            return game.map(value -> new ModelAndView("redirect:/game/" + value.getId())).orElseGet(() -> new ModelAndView("redirect:/game/list")); //TODO: Hacer un toast de que llegó la sugerencia
         } catch (IOException e) {
             LOGGER.error("Failed to create image: {}", e.getMessage());
             errors.addError(new ObjectError("image", "game.submit.errors.failedimg"));

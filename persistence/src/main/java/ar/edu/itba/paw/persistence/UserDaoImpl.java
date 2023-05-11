@@ -1,8 +1,13 @@
 package ar.edu.itba.paw.persistence;
 
+import ar.edu.itba.paw.dtos.Page;
 import ar.edu.itba.paw.dtos.SaveUserDTO;
+import ar.edu.itba.paw.dtos.UserFilter;
+import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.models.*;
+import ar.edu.itba.paw.persistence.helpers.QueryBuilder;
 import ar.edu.itba.paw.persistence.helpers.UpdateBuilder;
+import ar.edu.itba.paw.persistenceinterfaces.PaginationDao;
 import ar.edu.itba.paw.persistenceinterfaces.UserDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -16,7 +21,7 @@ import java.util.*;
 
 
 @Repository
-public class UserDaoImpl implements UserDao {
+public class UserDaoImpl implements UserDao, PaginationDao<UserFilter> {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
 
@@ -31,34 +36,36 @@ public class UserDaoImpl implements UserDao {
             resultSet.getLong("reputation"),
             new HashSet<>(),
             new HashSet<>());
-
-    private final static ResultSetExtractor<List<User>> USER_MAPPER = (resultSet) -> {
-      Map<Long, User> users = new TreeMap<>();
-      while(resultSet.next()) {
-          final Long id = resultSet.getLong("id");
-          users.putIfAbsent(id, USER_ROW_MAPPER.mapRow(resultSet, resultSet.getRow()));
-          final User user = users.get(id);
-          final String roleName = resultSet.getString("roleName");
-          if(roleName != null) {
-              user.getRoles().add(new Role(roleName));
-          }
-          final String notificationName = resultSet.getString("notificationType");
-          if (notificationName != null) {
-              user.getDisabledNotifications().add(new DisabledNotification(notificationName));
-          }
-      }
-      return new ArrayList<>(users.values());
-    };
-
     private final static RowMapper<Follow> FOLLOW_ROW_MAPPER = ((resultSet, i) -> new Follow(resultSet.getLong("userId"), resultSet.getLong("following")));
 
     private final static RowMapper<Role> ROLE_ROW_MAPPER = (((resultSet, i) -> new Role(resultSet.getString("roleName"))));
-
     private final static RowMapper<DisabledNotification> DISABLED_NOTIFICATION_ROW_MAPPER = ((resultSet, i) -> new DisabledNotification(resultSet.getString("notificationType")));
+    private final static RowMapper<Integer> GENRE_ROW_MAPPER = ((resultSet, i) -> resultSet.getInt("genreId"));
+
+    private final static ResultSetExtractor<List<User>> USER_MAPPER = (resultSet) -> {
+        Map<Long, User> users = new LinkedHashMap<>();
+        while(resultSet.next()) {
+            final Long id = resultSet.getLong("id");
+            users.putIfAbsent(id, USER_ROW_MAPPER.mapRow(resultSet, resultSet.getRow()));
+            final User user = users.get(id);
+            final String roleName = resultSet.getString("roleName");
+            if(roleName != null) {
+                user.getRoles().add(ROLE_ROW_MAPPER.mapRow(resultSet, resultSet.getRow()));
+            }
+            final String notificationName = resultSet.getString("notificationType");
+            if (notificationName != null) {
+                user.getDisabledNotifications().add(DISABLED_NOTIFICATION_ROW_MAPPER.mapRow(resultSet, resultSet.getRow()));
+            }
+            if (resultSet.getInt("genreId") != 0) {
+                user.getPreferences().add(Genre.getById(GENRE_ROW_MAPPER.mapRow(resultSet, resultSet.getRow())).get());
+            }
+        }
+        return new ArrayList<>(users.values());
+    };
+
 
     private final static RowMapper<FollowerFollowingCount> FOLLOWER_FOLLOWING_COUNT_ROW_MAPPER = (((resultSet, i) -> new FollowerFollowingCount(resultSet.getLong("follower_count"), resultSet.getLong("following_count"))));
 
-    private final static RowMapper<Integer> GENRE_ROW_MAPPER = ((resultSet, i) -> resultSet.getInt("genreId"));
 
     @Autowired
     public UserDaoImpl(final DataSource ds) {
@@ -79,13 +86,16 @@ public class UserDaoImpl implements UserDao {
         UpdateBuilder updateBuilder = new UpdateBuilder().set("username", saveUserDTO.getUsername())
                 .set("email", saveUserDTO.getEmail())
                 .set("password", saveUserDTO.getPassword())
-                .set("enabled", saveUserDTO.isEnabled());
+                .set("enabled", saveUserDTO.isEnabled())
+                .set("reputation", saveUserDTO.getReputation());
+
+        updateBuilder.getParameters().add(id);
         return jdbcTemplate.update("UPDATE users " + updateBuilder.toQuery() + " WHERE id = ?", updateBuilder.getParameters().toArray());
     }
 
     @Override
     public Optional<User> findById(final long id) {
-        return jdbcTemplate.query("SELECT * FROM users u " + toUserDataString() +" WHERE id = ?",
+        return jdbcTemplate.query("SELECT * FROM users u " + toUserDataString() + " WHERE id = ?",
                 USER_MAPPER, id).stream().findFirst();
     }
 
@@ -107,25 +117,44 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
+    public Paginated<User> findAll(Page page, UserFilter userFilter) {
+        int totalPages = getPageCount(userFilter, page.getPageSize());
+        if (page.getPageNumber() > totalPages || page.getPageNumber() < 1) {
+            return new Paginated<>(page.getPageNumber(), page.getPageSize(), totalPages, Collections.emptyList());
+        }
+        QueryBuilder queryBuilder = new QueryBuilder()
+                .withExact("u.id", userFilter.getId())
+                .withExact("u.username", userFilter.getUsername())
+                .withExact("u.email", userFilter.getEmail())
+                .withExact("u.enabled", userFilter.isEnabled())
+                .withExact("u.reputation", userFilter.getReputation())
+                .withSimilar("u.username", userFilter.getSearch());
+        queryBuilder.toArguments().add(page.getPageSize());
+        queryBuilder.toArguments().add(page.getOffset());
+        List<User> users = jdbcTemplate.query("SELECT * FROM users u " + queryBuilder.toQuery() + " LIMIT ? OFFSET ? ", USER_ROW_MAPPER, queryBuilder.toArguments().toArray());
+        return new Paginated<>(page.getPageNumber(), page.getPageSize(), totalPages, users);
+    }
+
+    @Override
     public Optional<User> getByUsername(String username) {
         return jdbcTemplate.query("SELECT * FROM users u " + toUserDataString() + " WHERE username = ?", USER_MAPPER, username).stream().findFirst();
     }
 
     @Override
     public List<User> getFollowers(final long id) {
-        return jdbcTemplate.query("SELECT u.id, u.username, u.email, u.password, u.enabled, u.reputation, roleName, notificationType " +
-                "FROM followers as f JOIN users as u ON f.userId = u.id " + toUserDataString() +
+        return jdbcTemplate.query("SELECT u.id, u.username, u.email, u.password, u.enabled, u.reputation " +
+                "FROM followers as f JOIN users as u ON f.userId = u.id " +
                 "WHERE f.following = ?",
-                USER_MAPPER,
+                USER_ROW_MAPPER,
                 id);
     }
 
     @Override
     public List<User> getFollowing(long id) {
-        return jdbcTemplate.query("SELECT u.id, u.username, u.email, u.password, u.enabled, u.reputation, roleName, notificationType " +
-                "FROM followers as f JOIN users as u ON f.following = u.id " + toUserDataString() +
+        return jdbcTemplate.query("SELECT u.id, u.username, u.email, u.password, u.enabled, u.reputation " +
+                "FROM followers as f JOIN users as u ON f.following = u.id " +
                 "WHERE f.userid = ?",
-                USER_MAPPER,
+                USER_ROW_MAPPER,
                 id);
     }
 
@@ -170,11 +199,6 @@ public class UserDaoImpl implements UserDao {
             jdbcTemplate.update("INSERT INTO genreforusers(genreid, userid) VALUES (?,?)", genId, userId);
         }
     }
-    @Override
-    public Paginated<User> getSearchedUsers(int page, int pageSize, int offset, String search) {
-        List<User> users = jdbcTemplate.query("SELECT * FROM users u " + toUserDataString() + " WHERE username ILIKE ? LIMIT ? OFFSET ?", USER_MAPPER, "%" + search + "%", pageSize, offset);
-        return new Paginated<>(page, pageSize, offset, users);
-    }
 
     @Override
     public Long getTotalAmountOfUsers() {
@@ -191,15 +215,23 @@ public class UserDaoImpl implements UserDao {
         jdbcTemplate.update("DELETE FROM user_disabled_notifications WHERE userId = ? AND notificationId = (SELECT notificationId FROM notifications WHERE notificationType = ? LIMIT 1)", userId, notificationType);
     }
 
-    @Override
-    public boolean modifyReputation(long id, int reputation) {
-        return jdbcTemplate.update("UPDATE users SET reputation = coalesce(reputation,0) + ? WHERE id = ?", reputation, id) == 1;
-    }
-
     private String toUserDataString() {
         return " LEFT OUTER JOIN user_roles ON u.id = user_roles.userId " +
                 "LEFT OUTER JOIN roles ON user_roles.roleId = roles.roleId " +
                 "LEFT OUTER JOIN user_disabled_notifications ON u.id = user_disabled_notifications.userId " +
-                "LEFT OUTER JOIN notifications ON user_disabled_notifications.notificationId = notifications.notificationId ";
+                "LEFT OUTER JOIN notifications ON user_disabled_notifications.notificationId = notifications.notificationId " +
+                "LEFT OUTER JOIN genreforusers ON u.id = genreforusers.userId ";
+    }
+
+    @Override
+    public Long count(UserFilter filter) {
+        QueryBuilder queryBuilder = new QueryBuilder()
+                .withExact("u.id", filter.getId())
+                .withExact("u.username", filter.getUsername())
+                .withExact("u.email", filter.getEmail())
+                .withExact("u.enabled", filter.isEnabled())
+                .withExact("u.reputation", filter.getReputation())
+                .withSimilar("u.username", filter.getSearch());
+        return jdbcTemplate.queryForObject("SELECT count(*) FROM users u " + queryBuilder.toQuery(), Long.class, queryBuilder.toArguments().toArray());
     }
 }

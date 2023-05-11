@@ -1,6 +1,9 @@
 package ar.edu.itba.paw.persistenceinterfaces;
 
+import ar.edu.itba.paw.dtos.Page;
 import ar.edu.itba.paw.dtos.SaveUserDTO;
+import ar.edu.itba.paw.dtos.UserFilter;
+import ar.edu.itba.paw.dtos.ordering.Ordering;
 import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.models.*;
 
@@ -15,6 +18,7 @@ public interface UserDao {
     User create(String username, String email, String password);
     Optional<User> getByEmail(String email);
     Optional<User> getByUsername(String username);
+    Paginated<User> findAll(Page page, UserFilter userFilter);
     Optional<User> findById(final long id);
     List<User> getFollowers(final long id);
     List<User> getFollowing(final long id);
@@ -30,13 +34,9 @@ public interface UserDao {
 
     void setPreferences(List<Integer> genres, long userId);
 
-    Paginated<User> getSearchedUsers(int page, int pageSize, int offset, String search);
-
     Long getTotalAmountOfUsers();
 
     void disableNotification(long userId, String notificationType);
 
     void enableNotification(long userId, String notificationType);
-
-    boolean modifyReputation(long id, int reputation);
 }

@@ -1,5 +1,8 @@
 package ar.edu.itba.paw.services;
 
+import ar.edu.itba.paw.dtos.Page;
+import ar.edu.itba.paw.dtos.UserFilter;
+import ar.edu.itba.paw.dtos.builders.UserFilterBuilder;
 import ar.edu.itba.paw.enums.NotificationType;
 import ar.edu.itba.paw.exceptions.*;
 import ar.edu.itba.paw.dtos.builders.SaveUserBuilder;
@@ -35,27 +38,20 @@ public class UserServiceImpl implements UserService {
     private final GenreService genreService;
     private final ValidationTokenDao tokenDao;
     private final MailingService mailingService;
-    private final Environment env;
-
     private static final int EXPIRATION_TIME = 60 * 60 * 24; // 24hs
-
-    @Autowired
-    private MessageSource messageSource;
 
     @Autowired
     public UserServiceImpl(UserDao userDao,
                            PasswordEncoder passwordEncoder,
                            GenreService genreService,
                            ValidationTokenDao tokenDao,
-                           MailingService mailingService,
-                           Environment env
+                           MailingService mailingService
     ) {
         this.userDao = userDao;
         this.passwordEncoder = passwordEncoder;
         this.genreService = genreService;
         this.tokenDao = tokenDao;
         this.mailingService = mailingService;
-        this.env = env;
     }
 
     @Override
@@ -75,34 +71,8 @@ public class UserServiceImpl implements UserService {
                 createdUser.getId(),
                 passwordEncoder.encode(password),
                 LocalDateTime.now().plusSeconds(EXPIRATION_TIME));
-        sendValidationTokenEmail(token, createdUser);
+        mailingService.sendValidationTokenEmail(token, createdUser);
         return createdUser;
-    }
-
-    private void sendValidationTokenEmail(ExpirationToken token, User user) {
-        Map<String, Object> templateVariables = new HashMap<>();
-        templateVariables.put("webBaseUrl", env.getProperty("mailing.weburl"));
-        templateVariables.put("token", token.getToken());
-        templateVariables.put("user", user.getUsername());
-
-        Object[] stringArgs = {};
-        String subject = messageSource.getMessage("email.validation.subject",
-                stringArgs, LocaleContextHolder.getLocale());
-
-        mailingService.sendEmail(user.getEmail(), subject, "validate", templateVariables);
-    }
-
-    private void sendChangePasswordEmail(ExpirationToken token, User user) {
-        Map<String, Object> templateVariables = new HashMap<>();
-        templateVariables.put("webBaseUrl", env.getProperty("mailing.weburl"));
-        templateVariables.put("token", token.getToken());
-        templateVariables.put("user", user.getUsername());
-
-        Object[] stringArgs = {};
-        String subject = messageSource.getMessage("email.changepassword.subject",
-                stringArgs, LocaleContextHolder.getLocale());
-
-        mailingService.sendEmail(user.getEmail(), subject, "changepassword", templateVariables);
     }
 
     @Override
@@ -121,23 +91,21 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Optional<User> getUserById(Long id) {
-        Optional<User> user = userDao.findById(id);
-        user.ifPresent(value -> value.setPreferences(getPreferences(id)));
-        return user;
+        return userDao.findById(id);
     }
 
     @Override
     public Optional<User> getUserByToken(String token) {
         ExpirationToken expirationToken = tokenDao.getByToken(token).orElseThrow(() -> new UserNotFoundException("user.notfound"));
-        return userDao.findById(expirationToken.getUserId());
+        return getUserById(expirationToken.getUserId());
     }
 
     @Override
     public void changeUserPassword(String email, String password) {
         LOGGER.info("Changing password: {}", email);
-        User user = userDao.getByEmail(email).orElseThrow(() -> new UserNotFoundException("notfound.user"));
+        User user = getUserByEmail(email).orElseThrow(() -> new UserNotFoundException("notfound.user"));
         SaveUserBuilder saveUserBuilder = new SaveUserBuilder().withPassword(passwordEncoder.encode(password));
-        userDao.update(user.getId(), saveUserBuilder.getSaveUserDTO());
+        userDao.update(user.getId(), saveUserBuilder.build());
     }
 
     @Override
@@ -185,14 +153,14 @@ public class UserServiceImpl implements UserService {
         expToken.ifPresent((expirationToken) -> {
             User user = userDao.findById(expirationToken.getUserId()).orElseThrow(() -> new UserNotFoundException("illegal.state"));
             SaveUserBuilder userBuilder = new SaveUserBuilder().withEnabled(true).withPassword(expirationToken.getPassword());
-            userDao.update(user.getId(), userBuilder.getSaveUserDTO());
+            userDao.update(user.getId(), userBuilder.build());
         });
         return expToken.isPresent();
     }
 
     @Override
     public void resendToken(String email) throws UserAlreadyEnabled {
-        User user = userDao.getByEmail(email).orElseThrow(() -> new UserNotFoundException("user.notfound"));
+        User user = getUserByEmail(email).orElseThrow(() -> new UserNotFoundException("user.notfound"));
         if (user.isEnabled()) {
             throw new UserAlreadyEnabled();
         }
@@ -200,37 +168,30 @@ public class UserServiceImpl implements UserService {
         if (token == null) {
             throw new UserNotFoundException("user.not.found");
         }
-        sendValidationTokenEmail(token, user);
+        mailingService.sendValidationTokenEmail(token, user);
     }
 
     @Override
     public void refreshToken(String token) {
         ExpirationToken expirationToken = tokenDao.getByToken(token).orElseThrow(() -> new UserNotFoundException("user.notfound"));
-        User user = userDao.findById(expirationToken.getUserId()).orElseThrow(() -> new UserNotFoundException("user.notfound"));
+        User user = getUserById(expirationToken.getUserId()).orElseThrow(() -> new UserNotFoundException("user.notfound"));
         ExpirationToken newToken = tokenDao.refresh(user.getId(), generateToken());
         if (newToken == null) {
             throw new UserNotFoundException("user.not.found");
         }
-        sendValidationTokenEmail(newToken, user);
+        mailingService.sendValidationTokenEmail(newToken, user);
     }
 
     @Override
     public Paginated<User> getSearchedUsers(int page, int pageSize, String search) {
-        int totalPages = (int) Math.ceil(userDao.getTotalAmountOfUsers()/(double) pageSize);
-
-        if (page > totalPages || page <= 0) {
-            return new Paginated<>(page, pageSize, totalPages, new ArrayList<>());
-        }
-        int offset = (page - 1) * pageSize;
-
-        return userDao.getSearchedUsers(page, pageSize, offset, search);
+        return userDao.findAll(Page.with(page, pageSize), new UserFilterBuilder().withSearch(search).build());
     }
 
     @Override
     public void sendPasswordResetToken(String email) throws UserNotFoundException {
-        User user = userDao.getByEmail(email).orElseThrow(() -> new UserNotFoundException("user.notfound"));
+        User user = getUserByEmail(email).orElseThrow(() -> new UserNotFoundException("user.notfound"));
         ExpirationToken newToken = tokenDao.create(generateToken(), user.getId(), "", LocalDateTime.now().plusHours(EXPIRATION_TIME));
-        sendChangePasswordEmail(newToken, user);
+        mailingService.sendChangePasswordEmail(newToken, user);
     }
 
     @Override
@@ -239,13 +200,13 @@ public class UserServiceImpl implements UserService {
         if (existentToken.getExpiration().isBefore(LocalDateTime.now())) {
             throw new TokenExpiredException("token.expired");
         }
-        return userDao.update(existentToken.getUserId(), new SaveUserBuilder().withPassword(passwordEncoder.encode(password)).withEnabled(true).getSaveUserDTO()) == 1;
+        return userDao.update(existentToken.getUserId(), new SaveUserBuilder().withPassword(passwordEncoder.encode(password)).withEnabled(true).build()) == 1;
     }
 
     @Override
     public Map<NotificationType, Boolean> getUserNotificationSettings(Long userId) {
         Map<NotificationType, Boolean> notificationSettings = new HashMap<>();
-        Set<DisabledNotification> disabledNotifications = userDao.findById(userId).orElseThrow(() -> new UserNotFoundException("user.notfound")).getDisabledNotifications();
+        Set<DisabledNotification> disabledNotifications = getUserById(userId).orElseThrow(() -> new UserNotFoundException("user.notfound")).getDisabledNotifications();
         for (DisabledNotification disabledNotification : disabledNotifications) {
             notificationSettings.put(disabledNotification.getNotificationType(), false);
         }
@@ -259,7 +220,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Boolean isNotificationEnabled(Long userId, NotificationType notificationType) {
-        Set<DisabledNotification> disabledNotifications = userDao.findById(userId).orElseThrow(() -> new UserNotFoundException("user.notfound")).getDisabledNotifications();
+        Set<DisabledNotification> disabledNotifications = getUserById(userId).orElseThrow(() -> new UserNotFoundException("user.notfound")).getDisabledNotifications();
         return disabledNotifications.stream().noneMatch(disabledNotification -> disabledNotification.getNotificationType().equals(notificationType));
     }
 
@@ -301,6 +262,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean modifyUserReputation(long id, int reputation) {
-        return userDao.modifyReputation(id, reputation);
+        User user = userDao.findById(id).orElseThrow(() -> new UserNotFoundException("user.notfound"));
+        SaveUserBuilder builder = new SaveUserBuilder().withReputation(user.getReputation() + reputation);
+        return userDao.update(id, builder.build()) == 1;
     }
 }

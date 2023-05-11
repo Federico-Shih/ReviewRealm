@@ -25,7 +25,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.*;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Service
@@ -87,7 +86,7 @@ public class GameServiceImpl implements GameService {
     @Override
     public Paginated<Game> getAllGamesShort(Integer page, Integer pageSize, String searchQuery) {
         GameFilterBuilder gameFilterBuilder = new GameFilterBuilder().withGameContent(searchQuery);
-        return gameDao.findAll(Page.with(page, pageSize), gameFilterBuilder.getFilter(), new Ordering<>(OrderDirection.ASCENDING, GameOrderCriteria.NAME));
+        return gameDao.findAll(Page.with(page, pageSize), gameFilterBuilder.build(), new Ordering<>(OrderDirection.ASCENDING, GameOrderCriteria.NAME));
     }
 
     @Override
@@ -98,7 +97,7 @@ public class GameServiceImpl implements GameService {
     @Override
     public GameReviewData getReviewsByGameId(Long id, User activeUser) {
         // TODO: PAGINAR
-        ReviewFilter filter = new ReviewFilterBuilder().withGameId(id.intValue()).getFilter();
+        ReviewFilter filter = new ReviewFilterBuilder().withGameId(id.intValue()).build();
         List<Review> reviews = reviewDao.findAll(Page.with(1, 1000), filter, new Ordering<>(OrderDirection.DESCENDING, ReviewOrderCriteria.REVIEW_DATE),(activeUser !=null)? activeUser.getId() : null).getList();
         if(reviews.size()>0) {
             int sumRating = 0;

@@ -117,6 +117,15 @@ input[type=number] {
     border: 1px solid #444155;
 }
 
+.search-game-container {
+    display: flex;
+    flex-direction: row;
+    padding: 4%;
+    overflow: hidden;
+    border-radius: 5px;
+    border: 1px solid #444155;
+}
+
 .short-game-container-text {
     display: flex;
     flex-direction: column;

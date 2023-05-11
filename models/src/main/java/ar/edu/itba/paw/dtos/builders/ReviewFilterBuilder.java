@@ -36,7 +36,7 @@ public class ReviewFilterBuilder {
         return this;
     }
 
-    public ReviewFilter getFilter() {
+    public ReviewFilter build() {
         return new ReviewFilter(gameGenres, authorGenres, authors, reviewContent, gameId);
     }
 }

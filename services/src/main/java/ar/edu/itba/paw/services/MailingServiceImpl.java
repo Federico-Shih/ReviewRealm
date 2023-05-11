@@ -1,9 +1,14 @@
 package ar.edu.itba.paw.services;
 
+import ar.edu.itba.paw.models.ExpirationToken;
+import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.servicesinterfaces.MailingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.core.env.Environment;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -13,6 +18,7 @@ import org.thymeleaf.spring4.SpringTemplateEngine;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+import java.util.HashMap;
 import java.util.Map;
 
 @Service
@@ -25,8 +31,39 @@ public class MailingServiceImpl implements MailingService {
     private SpringTemplateEngine templateEngine;
     @Autowired
     private TaskExecutor taskExecutor;
+    @Autowired
+    private Environment env;
+    @Autowired
+    private MessageSource messageSource;
+
 
     private static final String FROM = "paw-2023a-04@hotmail.com";
+
+    public void sendValidationTokenEmail(ExpirationToken token, User user) {
+        Map<String, Object> templateVariables = new HashMap<>();
+        templateVariables.put("webBaseUrl", env.getProperty("mailing.weburl"));
+        templateVariables.put("token", token.getToken());
+        templateVariables.put("user", user.getUsername());
+
+        Object[] stringArgs = {};
+        String subject = messageSource.getMessage("email.validation.subject",
+                stringArgs, LocaleContextHolder.getLocale());
+
+        sendEmail(user.getEmail(), subject, "validate", templateVariables);
+    }
+
+    public void sendChangePasswordEmail(ExpirationToken token, User user) {
+        Map<String, Object> templateVariables = new HashMap<>();
+        templateVariables.put("webBaseUrl", env.getProperty("mailing.weburl"));
+        templateVariables.put("token", token.getToken());
+        templateVariables.put("user", user.getUsername());
+
+        Object[] stringArgs = {};
+        String subject = messageSource.getMessage("email.changepassword.subject",
+                stringArgs, LocaleContextHolder.getLocale());
+
+        sendEmail(user.getEmail(), subject, "changepassword", templateVariables);
+    }
 
     public void sendEmail(String mailTo, String mailSubject, String template, Map<String, Object> templateVariables) {
         taskExecutor.execute(() -> {

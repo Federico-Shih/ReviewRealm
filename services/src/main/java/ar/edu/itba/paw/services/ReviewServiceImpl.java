@@ -127,7 +127,7 @@ public class ReviewServiceImpl implements ReviewService {
         List<Integer> followingIds = followingUsers.stream().map((user -> user.getId().intValue())).collect(Collectors.toList());
         ReviewFilterBuilder filterBuilder = new ReviewFilterBuilder()
                 .withAuthors(followingIds);
-        return reviewDao.findAll(Page.with(1, size), filterBuilder.getFilter(), Ordering.defaultOrder(ReviewOrderCriteria.REVIEW_DATE), userId).getList();
+        return reviewDao.findAll(Page.with(1, size), filterBuilder.build(), Ordering.defaultOrder(ReviewOrderCriteria.REVIEW_DATE), userId).getList();
     }
 
     @Override
@@ -164,7 +164,7 @@ public class ReviewServiceImpl implements ReviewService {
     public List<Review> getUserReviews(long userId, User activeUser) {
         List<Integer> authors = new ArrayList<>();
         authors.add((int) userId);
-        return reviewDao.findAll(Page.with(1, 100), new ReviewFilterBuilder().withAuthors(authors).getFilter(), Ordering.defaultOrder(ReviewOrderCriteria.REVIEW_DATE), (activeUser != null)? activeUser.getId() : null ).getList();
+        return reviewDao.findAll(Page.with(1, 100), new ReviewFilterBuilder().withAuthors(authors).build(), Ordering.defaultOrder(ReviewOrderCriteria.REVIEW_DATE), (activeUser != null)? activeUser.getId() : null ).getList();
     }
 
     @Override

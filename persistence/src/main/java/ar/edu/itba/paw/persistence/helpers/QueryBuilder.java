@@ -13,6 +13,7 @@ public class QueryBuilder {
         if (querylist != null && querylist.size() > 0) {
             str.append(" ");
             str.append(operator);
+            str.append(" ");
             String gamesAmount = String.join(",", Collections.nCopies(querylist.size(), "?"));
             params.addAll(querylist);
             str.append(String.format(" %s IN (", queryField));
@@ -27,7 +28,7 @@ public class QueryBuilder {
         if (queryString != null) {
             str.append(" ");
             str.append(operator);
-            str.append(String.format("%s ILIKE ? ", queryField));
+            str.append(String.format(" %s ILIKE ? ", queryField));
             params.add("%" + queryString + "%");
             operator = "AND";
         }

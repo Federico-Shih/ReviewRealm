@@ -209,7 +209,7 @@ public class ProfileController extends PaginatedController {
         User loggedUser = AuthenticationHelper.getLoggedUser(userService);
 
         if(!search.isEmpty()) {
-            Paginated<User> searchedUsers = userService.getSearchedUsers(1, 5, search);
+            Paginated<User> searchedUsers = userService.getSearchedUsers(1, 6, search);
             super.paginate(mav, searchedUsers);
             mav.addObject("users", searchedUsers.getList());
         }

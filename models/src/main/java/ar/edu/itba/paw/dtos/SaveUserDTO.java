@@ -1,16 +1,21 @@
 package ar.edu.itba.paw.dtos;
 
+import java.util.Objects;
+
 public class SaveUserDTO {
     private final String username;
     private final String email;
     private final String password;
+
+    private final Long reputation;
     private final Boolean enabled;
 
-    public SaveUserDTO(String username, String email, String password, Boolean enabled) {
+    public SaveUserDTO(String username, String email, String password, Boolean enabled, Long reputation) {
         this.username = username;
         this.email = email;
         this.password = password;
         this.enabled = enabled;
+        this.reputation = reputation;
     }
 
     public String getUsername() {
@@ -27,5 +32,22 @@ public class SaveUserDTO {
 
     public Boolean isEnabled() {
         return enabled;
+    }
+
+    public Long getReputation() {
+        return reputation;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof SaveUserDTO)) return false;
+        SaveUserDTO that = (SaveUserDTO) o;
+        return Objects.equals(username, that.username) && Objects.equals(email, that.email) && Objects.equals(password, that.password) && Objects.equals(reputation, that.reputation) && Objects.equals(enabled, that.enabled);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(username, email, password, reputation, enabled);
     }
 }

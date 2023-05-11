@@ -22,6 +22,8 @@
     </a>
 </div>
 <div>
+    <c:url value="/search" var="search_url"/>
+    <form action="${search_url}" method="get">
     <nav>
         <div class="navbar">
             <div class="f-row">
@@ -29,6 +31,18 @@
                     <img class="navbar-logo-image" src="<c:url value="/static/review_realm_logo_white_630px.png"/>" alt="Review Realm Logo">
                     <span class="navbar-logo-title hide-on-med-and-down">Review Realm</span>
                 </a>
+            </div>
+            <div class="navbar-search">
+                <div class="input-field  valign-wrapper">
+                    <i class="material-icons prefix icon-prefix">search</i>
+                    <input
+                            name="search"
+                            class="z-depth-1-half nav-search-field"
+                            type="search"
+                            value="${search}"
+                            placeholder="<spring:message code="nav.placeholder.search"/>"
+                    >
+                </div>
             </div>
             <div class="full-width">
                 <ul class="navbar-options-list center">
@@ -129,5 +143,7 @@
                 </ul>
             </div>
         </div>
+
     </nav>
+    </form>
 </div>

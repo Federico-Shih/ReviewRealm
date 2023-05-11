@@ -36,7 +36,7 @@ public class GameFilterBuilder {
         this.isFavorite = isFavorite;
         return this;
     }
-    public GameFilter getFilter() {
+    public GameFilter build() {
         return new GameFilter(gameGenres, gameContent, developer, publisher, isFavorite);
     }
 }

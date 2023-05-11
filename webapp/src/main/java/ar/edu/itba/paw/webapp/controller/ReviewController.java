@@ -145,7 +145,7 @@ public class ReviewController extends PaginatedController implements QueryContro
         List<Genre> allGenres = genreService.getAllGenres();
         ReviewFilterBuilder filterBuilder = new ReviewFilterBuilder()
                 .withGameGenres(genresFilter);
-        ReviewFilter filters = filterBuilder.getFilter();
+        ReviewFilter filters = filterBuilder.build();
 
         Paginated<Review> reviewPaginated = reviewService.getAllReviews(
                 Page.with(page != null ? page : INITIAL_PAGE, pageSize != null ? pageSize : PAGE_SIZE),

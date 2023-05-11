@@ -1,6 +1,9 @@
 package ar.edu.itba.paw.persistence.tests;
 
+import ar.edu.itba.paw.dtos.Page;
 import ar.edu.itba.paw.dtos.builders.SaveUserBuilder;
+import ar.edu.itba.paw.dtos.builders.UserFilterBuilder;
+import ar.edu.itba.paw.models.Paginated;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.persistence.UserDaoImpl;
 import ar.edu.itba.paw.persistence.config.TestConfig;
@@ -67,17 +70,78 @@ public class UserDaoImplTest {
     }
 
     @Test
+    public void testFindAll() throws SQLException {
+//1.prepare
+        jdbcTemplate.execute("INSERT INTO users (id,username,email,password) VALUES ("+ID+",'"+USERNAME+"', '"+EMAIL+"','"+PASSWORD+"')");
+
+        //2.execute
+        Paginated<User> userlist = userDao.findAll(Page.with(1, 10), new UserFilterBuilder().build());
+
+        Assert.assertEquals(userlist.getTotalPages(), 1);
+        Assert.assertTrue(userlist.getList().contains(new User(ID,USERNAME,EMAIL, PASSWORD)));
+    }
+
+    @Test
+    public void testMultipleFilter() throws SQLException {
+        //1.prepare
+        jdbcTemplate.execute("INSERT INTO users (id,username,email,password) VALUES ("+ID+",'"+USERNAME+"', '"+EMAIL+"','"+PASSWORD+"')");
+
+        jdbcTemplate.execute("INSERT INTO users (id,username,email,password) VALUES (2,'username2', 'email2','password2')");
+        jdbcTemplate.execute("INSERT INTO users (id,username,email,password) VALUES (3,'username3', 'email3','password3')");
+        jdbcTemplate.execute("INSERT INTO users (id,username,email,password) VALUES (4,'username4', 'email4','password4')");
+
+        //2.execute
+        Paginated<User> userlist = userDao.findAll(Page.with(1, 10), new UserFilterBuilder().withEmail("email2").build());
+
+        Assert.assertEquals(userlist.getTotalPages(), 1);
+        Assert.assertTrue(userlist.getList().contains(new User(2L,"username2", "email4", "password4")));
+    }
+    @Test
+    public void wrongPaginationTest() {
+        jdbcTemplate.execute("INSERT INTO users (id,username,email,password) VALUES ("+ID+",'"+USERNAME+"', '"+EMAIL+"','"+PASSWORD+"')");
+        jdbcTemplate.execute("INSERT INTO users (id,username,email,password) VALUES (2,'username2', 'email2','password2')");
+        jdbcTemplate.execute("INSERT INTO users (id,username,email,password) VALUES (3,'username3', 'email3','password3')");
+        jdbcTemplate.execute("INSERT INTO users (id,username,email,password) VALUES (4,'username4', 'email4','password4')");
+        Assert.assertThrows(RuntimeException.class, () -> {
+            userDao.findAll(Page.with(0, 0), new UserFilterBuilder().build());
+        });
+
+        Paginated<User> userlist = userDao.findAll(Page.with(1000000, 10), new UserFilterBuilder().build());
+        Assert.assertEquals(userlist.getTotalPages(), 1);
+        Assert.assertEquals(userlist.getList().size(), 0);
+    }
+
+
+//    @Test
+//    public void testUserSearch() {
+//        jdbcTemplate.execute("INSERT INTO users (id,username,email,password) VALUES ("+ID+",'"+USERNAME+"', '"+EMAIL+"','"+PASSWORD+"')");
+//        jdbcTemplate.execute("INSERT INTO users (id,username,email,password) VALUES (2,'username2', 'email2','password2')");
+//        jdbcTemplate.execute("INSERT INTO users (id,username,email,password) VALUES (3,'username3', 'email3','password3')");
+//        jdbcTemplate.execute("INSERT INTO users (id,username,email,password) VALUES (4,'username4', 'email4','password4')");
+//        Paginated<User> userlist = userDao.findAll(Page.with(1, 10), new UserFilterBuilder().withSearch("user").build());
+//        Assert.assertEquals(userlist.getTotalPages(), 1);
+//        Assert.assertTrue(userlist.getList().contains(new User(ID,USERNAME,EMAIL, PASSWORD)));
+//        Assert.assertTrue(userlist.getList().contains(new User(2L,"username2", "email2", "password2")));
+//        Assert.assertTrue(userlist.getList().contains(new User(3L,"username3", "email3", "password3")));
+//        Assert.assertTrue(userlist.getList().contains(new User(4L,"username4", "email4", "password4")));
+//
+//        Paginated<User> userlist2 = userDao.findAll(Page.with(1, 10), new UserFilterBuilder().withSearch("aaaaaaaa").build());
+//        Assert.assertTrue(userlist2.getList().isEmpty());
+//    }
+
+    @Test
     public void testUpdate() throws SQLException {
         jdbcTemplate.execute("INSERT INTO users (id,username,email,password, enabled) VALUES ("+ID+",'"+USERNAME+"', '"+EMAIL+"','"+PASSWORD+"', "+ ENABLED +")");
 
         SaveUserBuilder userBuilder = new SaveUserBuilder();
-        int update = userDao.update(ID, userBuilder.withEmail("newEmail").withPassword("newPassword").withEnabled(false).getSaveUserDTO());
+        int update = userDao.update(ID, userBuilder.withEmail("newEmail").withPassword("newPassword").withEnabled(false).withReputation(1000L).build());
 
         Assert.assertEquals(update, 1);
         jdbcTemplate.query("SELECT * FROM users WHERE id = ?", new Object[]{ID}, rs -> {
             Assert.assertEquals(rs.getString("email"), "newEmail");
             Assert.assertEquals(rs.getString("password"), "newPassword");
             Assert.assertFalse(rs.getBoolean("enabled"));
+            Assert.assertEquals(rs.getLong("reputation"), 1000L);
         });
     }
 

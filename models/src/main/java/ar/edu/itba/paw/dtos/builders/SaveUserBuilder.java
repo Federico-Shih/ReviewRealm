@@ -7,6 +7,7 @@ public class SaveUserBuilder {
     private String email = null;
     private String password = null;
     private Boolean enabled = null;
+    private Long reputation;
 
     public SaveUserBuilder withUsername(String username) {
         this.username = username;
@@ -28,7 +29,12 @@ public class SaveUserBuilder {
         return this;
     }
 
-    public SaveUserDTO getSaveUserDTO() {
-        return new SaveUserDTO(username, email, password, enabled);
+    public SaveUserBuilder withReputation(Long reputation) {
+        this.reputation = reputation;
+        return this;
+    }
+
+    public SaveUserDTO build() {
+        return new SaveUserDTO(username, email, password, enabled, reputation);
     }
 }
