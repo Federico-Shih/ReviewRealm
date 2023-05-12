@@ -15,6 +15,12 @@
     <script src="<c:url value="/js/materialize.min.js" />"></script>
     <script src="<c:url value="/js/reviewfeedback.js"/> "></script>
     <title><spring:message code="profile.title"/></title>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var elems = document.querySelectorAll('.tooltipped');
+            var instances = M.Tooltip.init(elems, {});
+        });
+    </script>
 </head>
 
 <body>
@@ -28,7 +34,17 @@
                  src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"
                  alt="profilePic"/> <!-- TODO: imágenes de perfil -->
             <div class="profile-info-panel-info f-column f-jc-center">
-                <span class="profile-user-name">${profile.username}</span>
+                <span class="profile-user-name">
+                    ${profile.username}
+                    <c:if test="${userModerator}">
+                         <span class="tooltipped" data-position="top" data-tooltip="<spring:message code="profile.moderator" />">
+                            <i class="material-icons profile-user-name">
+                                engineering
+                            </i>
+                         </span>
+                    </c:if>
+                </span>
+
                 <c:if test="${!(empty profile.preferences)}">
                     <div class="profile-preferences">
                         <span><spring:message code="profile.fanof"/></span>

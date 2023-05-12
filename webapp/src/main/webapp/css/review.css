@@ -10,6 +10,13 @@
     align-items: center;
 }
 
+.divider-h {
+    border-top: 1px solid #444155;
+    position: relative;
+    left: 0 !important;
+    width: 100% !important;
+}
+
 .review-list-page {
     display: flex;
     flex-direction: row;

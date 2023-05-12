@@ -2,11 +2,8 @@ package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.exceptions.UserNotFoundException;
 import ar.edu.itba.paw.forms.NotificationsForm;
-import ar.edu.itba.paw.models.FollowerFollowingCount;
+import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.forms.EditPreferencesForm;
-import ar.edu.itba.paw.models.Game;
-import ar.edu.itba.paw.models.Paginated;
-import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.servicesinterfaces.GameService;
 import ar.edu.itba.paw.servicesinterfaces.GenreService;
 import ar.edu.itba.paw.servicesinterfaces.ReviewService;
@@ -33,6 +30,8 @@ public class ProfileController extends PaginatedController {
     private final GameService gameService;
     private final GenreService genreService;
 
+    private static final String MODERATOR = "MODERATOR";
+
     private final static int RECOMMENDED_GAMES_COUNT = 3;
     @Autowired
     public ProfileController(UserService userService, ReviewService reviewService,
@@ -58,6 +57,7 @@ public class ProfileController extends PaginatedController {
 
         mav.addObject("games",gameService.getFavoriteGamesFromUser(userId));
         mav.addObject("profile",user.get());
+        mav.addObject("userModerator", user.get().getRoles().contains(new Role(MODERATOR)));
         mav.addObject("reviews",reviewService.getUserReviews(userId,loggedUser));
         FollowerFollowingCount ffc = userService.getFollowerFollowingCount(userId);
         mav.addObject("followerCount", ffc.getFollowerCount());

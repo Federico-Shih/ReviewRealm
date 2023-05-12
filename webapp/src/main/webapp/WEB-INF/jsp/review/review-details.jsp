@@ -77,11 +77,11 @@
                         </div>
                         </c:if>
                     </div>
-                    <div class="divider"></div>
+                    <div class="divider-h"></div>
                     <div class="card-content-container-detail">
                         <c:out value="${review.content}" />
                     </div>
-                    <div class="divider"></div>
+                    <div class="divider-h"></div>
                     <div class="review-card-feedback-footer-big">
                         <c:if test="${review.likeCounter != 0}">
                             <span><c:out value="${review.likeCounter}"/></span>
@@ -100,13 +100,13 @@
                                 <input type="hidden" name="url" value="${baseUrl}"/>
                         </form>
                     </div>
-                    <div class="divider"></div>
+                    <div class="divider-h"></div>
                     <div class="row review-game-length">
                         <spring:message code="review.gameLength" />:
                         <c:out value="${reviewExtra.gametime}" />
                         <spring:message code="${reviewExtra.unit.code}" />
                     </div>
-                    <div class="divider"></div>
+                    <div class="divider-h"></div>
                     <div class="row review-tags-panel">
                         <div class="col s12">
                             <spring:message code="review.tags" />
