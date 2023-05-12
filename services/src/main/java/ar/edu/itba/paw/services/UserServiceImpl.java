@@ -266,4 +266,12 @@ public class UserServiceImpl implements UserService {
         SaveUserBuilder builder = new SaveUserBuilder().withReputation(user.getReputation() + reputation);
         return userDao.update(id, builder.build()) == 1;
     }
+
+    @Override
+    public void changeUserAvatar(long userId, long imageId) throws Exception {
+        if(imageId>6 || imageId<1)
+            throw new Exception("");
+        SaveUserBuilder builder = new SaveUserBuilder().withAvatar(imageId);
+        userDao.update(userId, builder.build());
+    }
 }

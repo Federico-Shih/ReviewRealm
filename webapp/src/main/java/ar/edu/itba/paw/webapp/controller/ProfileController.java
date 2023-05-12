@@ -9,6 +9,7 @@ import ar.edu.itba.paw.servicesinterfaces.GenreService;
 import ar.edu.itba.paw.servicesinterfaces.ReviewService;
 import ar.edu.itba.paw.servicesinterfaces.UserService;
 import ar.edu.itba.paw.webapp.auth.AuthenticationHelper;
+import org.hibernate.validator.internal.util.logging.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -173,6 +174,23 @@ public class ProfileController extends PaginatedController {
         } catch (RuntimeException err) {
             LOGGER.error("Unexpected error: {}", err.getMessage());
             return editPreferences(form);
+        }
+        return new ModelAndView(String.format("redirect:/profile/%d", userId));
+    }
+
+    @RequestMapping(value= "/profile/settings/avatar", method=RequestMethod.GET)
+    public ModelAndView avatarSetting() {
+        return new ModelAndView("profile/choose-avatar");
+    }
+
+    @RequestMapping(value="/profile/settings/avatar/{id:\\d+}", method=RequestMethod.POST)
+    public ModelAndView changeAvatar(@PathVariable(value = "id") long imageId) {
+        long userId = AuthenticationHelper.getLoggedUser(userService).getId();
+        try {
+            userService.changeUserAvatar(userId, imageId);
+        } catch (Exception err) {
+            LOGGER.error("Unexpected error: {}", err.getMessage());
+            return avatarSetting();
         }
         return new ModelAndView(String.format("redirect:/profile/%d", userId));
     }

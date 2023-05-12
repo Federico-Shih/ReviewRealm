@@ -39,4 +39,5 @@ public interface UserDao {
     void disableNotification(long userId, String notificationType);
 
     void enableNotification(long userId, String notificationType);
+
 }

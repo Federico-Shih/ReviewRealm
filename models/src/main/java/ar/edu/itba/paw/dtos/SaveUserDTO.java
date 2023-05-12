@@ -8,14 +8,18 @@ public class SaveUserDTO {
     private final String password;
 
     private final Long reputation;
+
+    private Long avatar;
+
     private final Boolean enabled;
 
-    public SaveUserDTO(String username, String email, String password, Boolean enabled, Long reputation) {
+    public SaveUserDTO(String username, String email, String password, Boolean enabled, Long reputation, Long avatar) {
         this.username = username;
         this.email = email;
         this.password = password;
         this.enabled = enabled;
         this.reputation = reputation;
+        this.avatar = avatar;
     }
 
     public String getUsername() {
@@ -37,6 +41,8 @@ public class SaveUserDTO {
     public Long getReputation() {
         return reputation;
     }
+
+    public Long getAvatar() { return avatar;}
 
     @Override
     public boolean equals(Object o) {

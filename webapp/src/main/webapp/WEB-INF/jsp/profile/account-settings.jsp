@@ -34,6 +34,12 @@
                 <span class=""><spring:message code="account.settings.email.notifications"/></span>
             </a>
         </li>
+        <li class="full-width settings-option">
+            <a href="<c:url value="/profile/settings/avatar"/>" class="full-width no-a-decoration waves-effect waves-light border-button f-row f-jc-start f-ai-center f-gap-2">
+                <i class="material-icons medium">account_circle</i>
+                <span class=""><spring:message code="account.settings.avatar"/></span>
+            </a>
+        </li>
     </ul>
 </div>
 </body>

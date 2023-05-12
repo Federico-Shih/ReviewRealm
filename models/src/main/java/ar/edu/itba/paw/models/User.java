@@ -16,6 +16,8 @@ public class User {
     private final Set<DisabledNotification> disabledNotifications;
     private final Set<Role> roles;
 
+    private final Long avatarId;
+
     public User(Long id,
                 String username,
                 String email,
@@ -24,7 +26,8 @@ public class User {
                 boolean enabled,
                 Long reputation,
                 Set<DisabledNotification> disabledNotifications,
-                Set<Role> roles) {
+                Set<Role> roles,
+                Long avatarId) {
         this.id = id;
         this.username = username;
         this.email = email;
@@ -34,10 +37,11 @@ public class User {
         this.reputation = reputation;
         this.disabledNotifications = disabledNotifications;
         this.roles = roles;
+        this.avatarId = avatarId;
     }
 
     public User(Long id, String username, String email, String password) {
-        this(id, username, email, password, new ArrayList<>(), false,0L, new HashSet<>(), new HashSet<>());
+        this(id, username, email, password, new ArrayList<>(), false,0L, new HashSet<>(), new HashSet<>(), 0L);
     }
 
     public Long getId() {
@@ -74,6 +78,10 @@ public class User {
 
     public void setPreferences(List<Genre> preferences) {
         this.preferences = preferences;
+    }
+
+    public Long getAvatarId() {
+        return avatarId;
     }
 
     @Override

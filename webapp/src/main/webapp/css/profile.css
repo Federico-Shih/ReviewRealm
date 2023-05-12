@@ -4,7 +4,9 @@
 }
 
 .profile-info-panel-image {
-    width: 12%;
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
     border-radius: 50%;
     margin: 0 5%;
 }
@@ -101,4 +103,24 @@
 /* Show the tooltip text when you mouse over the tooltip container */
 .tooltip:hover .tooltiptext {
     visibility: visible;
+}
+
+.avatar-section-header {
+    font-size: 32px;
+    font-weight: 600;
+}
+
+.profile-avatar-card {
+    border: 5px solid #444155;
+    border-radius: 50%;
+    margin: 0 5%;
+    color: white;
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+}
+
+.avatar-button {
+    border: none;
+    background: none;
 }

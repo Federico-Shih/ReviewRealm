@@ -35,7 +35,8 @@ public class UserDaoImpl implements UserDao, PaginationDao<UserFilter> {
             resultSet.getBoolean("enabled"),
             resultSet.getLong("reputation"),
             new HashSet<>(),
-            new HashSet<>());
+            new HashSet<>(),
+            resultSet.getLong("avatar"));
     private final static RowMapper<Follow> FOLLOW_ROW_MAPPER = ((resultSet, i) -> new Follow(resultSet.getLong("userId"), resultSet.getLong("following")));
 
     private final static RowMapper<Role> ROLE_ROW_MAPPER = (((resultSet, i) -> new Role(resultSet.getString("roleName"))));
@@ -87,7 +88,8 @@ public class UserDaoImpl implements UserDao, PaginationDao<UserFilter> {
                 .set("email", saveUserDTO.getEmail())
                 .set("password", saveUserDTO.getPassword())
                 .set("enabled", saveUserDTO.isEnabled())
-                .set("reputation", saveUserDTO.getReputation());
+                .set("reputation", saveUserDTO.getReputation())
+                .set("avatar", saveUserDTO.getAvatar());
 
         updateBuilder.getParameters().add(id);
         return jdbcTemplate.update("UPDATE users " + updateBuilder.toQuery() + " WHERE id = ?", updateBuilder.getParameters().toArray());
@@ -106,6 +108,7 @@ public class UserDaoImpl implements UserDao, PaginationDao<UserFilter> {
         args.put("email",email);
         args.put("password",password);
         args.put("reputation",0);
+        args.put("avatar",0);
 
         final Number id = jdbcInsert.executeAndReturnKey(args);
         return new User(id.longValue(), username, email, password);
@@ -214,6 +217,7 @@ public class UserDaoImpl implements UserDao, PaginationDao<UserFilter> {
     public void enableNotification(long userId, String notificationType) {
         jdbcTemplate.update("DELETE FROM user_disabled_notifications WHERE userId = ? AND notificationId = (SELECT notificationId FROM notifications WHERE notificationType = ? LIMIT 1)", userId, notificationType);
     }
+
 
     private String toUserDataString() {
         return " LEFT OUTER JOIN user_roles ON u.id = user_roles.userId " +

@@ -52,4 +52,6 @@ public interface UserService {
     Boolean hasPreferencesSet(User user);
 
     boolean modifyUserReputation(long id, int reputation);
+
+    void changeUserAvatar(long userId, long imageId) throws Exception;
 }

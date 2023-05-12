@@ -201,7 +201,7 @@ public class UserServiceImplTest {
     @Test
     public void validateExistentToken() throws TokenExpiredException {
         Mockito.when(tokenDao.getByToken("aaa")).thenReturn(Optional.of(new ExpirationToken(1L, "aaa", 1L, "aaa", LocalDateTime.MAX)));
-        Mockito.when(userDao.update(1L, new SaveUserDTO(USERNAME, EMAIL, PASSWORD, false, 10L))).thenReturn(1);
+        Mockito.when(userDao.update(1L, new SaveUserDTO(USERNAME, EMAIL, PASSWORD, false, 10L, 1L))).thenReturn(1);
         Mockito.when(userDao.findById(1L)).thenReturn(Optional.of(new User(1L, USERNAME, EMAIL, PASSWORD)));
         Assert.assertTrue(us.validateToken("aaa"));
         Mockito.verify(userDao, Mockito.times(1)).update(eq(1L), Mockito.any());
@@ -215,13 +215,13 @@ public class UserServiceImplTest {
 
     @Test(expected = UserAlreadyEnabled.class)
     public void resendTokenUserEnabled() throws UserAlreadyEnabled {
-        Mockito.when(userDao.getByEmail(EMAIL)).thenReturn(Optional.of(new User(1L, USERNAME, EMAIL, PASSWORD, new ArrayList<>(), true, 10L, new HashSet<>(), new HashSet<>())));
+        Mockito.when(userDao.getByEmail(EMAIL)).thenReturn(Optional.of(new User(1L, USERNAME, EMAIL, PASSWORD, new ArrayList<>(), true, 10L, new HashSet<>(), new HashSet<>(), 0L)));
         us.resendToken(EMAIL);
     }
 
     @Test(expected = UserNotFoundException.class)
     public void resendTokenDoesNotExistButUserCreated() throws UserAlreadyEnabled {
-        Mockito.when(userDao.getByEmail(EMAIL)).thenReturn(Optional.of(new User(1L, USERNAME, EMAIL, PASSWORD, new ArrayList<>(), false, 10L, new HashSet<>(), new HashSet<>())));
+        Mockito.when(userDao.getByEmail(EMAIL)).thenReturn(Optional.of(new User(1L, USERNAME, EMAIL, PASSWORD, new ArrayList<>(), false, 10L, new HashSet<>(), new HashSet<>(),0L)));
         Mockito.when(tokenDao.refresh(1L, "aaa")).thenReturn(null);
         us.resendToken(EMAIL);
     }
@@ -229,7 +229,7 @@ public class UserServiceImplTest {
     @Test
     public void resendTokenSuccessTest() throws UserAlreadyEnabled {
         ExpirationToken token = new ExpirationToken(1L, "aaa", 1L, "aaa", LocalDateTime.MAX);
-        User user = new User(1L, USERNAME, EMAIL, PASSWORD, new ArrayList<>(), false, 10L, new HashSet<>(), new HashSet<>());
+        User user = new User(1L, USERNAME, EMAIL, PASSWORD, new ArrayList<>(), false, 10L, new HashSet<>(), new HashSet<>(), 0L);
         Mockito.when(userDao.getByEmail(eq(EMAIL))).thenReturn(Optional.of(user));
         Mockito.when(tokenDao.refresh(eq(1L), anyString())).thenReturn(token);
         us.resendToken(EMAIL);

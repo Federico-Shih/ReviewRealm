@@ -14,6 +14,7 @@
     <link rel="shortcut icon" type="image/png" href="<c:url value="/static/review_realm_logo_white_32px.png" />">
     <script src="<c:url value="/js/materialize.min.js" />"></script>
     <script src="<c:url value="/js/reviewfeedback.js"/> "></script>
+
     <title><spring:message code="profile.title"/></title>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -23,6 +24,8 @@
     </script>
 </head>
 
+<c:set var="avatar" value="/static/avatars/${profile.avatarId}.png"/>
+
 <body>
 <jsp:include page="../static-components/navbar.jsp">
     <jsp:param name="selected" value="profile"/>
@@ -31,8 +34,8 @@
     <div class="profile-info-panel f-row f-jc-sbetween">
         <div class="f-row f-ai-center">
             <img class="profile-info-panel-image"
-                 src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"
-                 alt="profilePic"/> <!-- TODO: imágenes de perfil -->
+                 src="<c:url value="${avatar}"/>"
+                 alt="profilePic"/>
             <div class="profile-info-panel-info f-column f-jc-center">
                 <span class="profile-user-name">
                     ${profile.username}
@@ -47,7 +50,7 @@
 
                 <c:if test="${!(empty profile.preferences)}">
                     <div class="profile-preferences">
-                        <span><spring:message code="profile.fanof"/></span>
+                        <span class="white-text no-wrap"><spring:message code="profile.fanof"/></span>
                         <div class="profile-preferences-list f-gap-1">
                             <c:forEach var="genre" items="${profile.preferences}">
                                 <span class="chip-small-inverted"><spring:message code="${genre.name}"/></span>
@@ -57,15 +60,19 @@
                 </c:if>
                 <div class="profile-followers">
                     <a href="<c:url value="/profile/${profile.id}/followers"/>">
-                    <span class="white-text"><spring:message code="profile.followers"
+                    <span class="white-text no-wrap"><spring:message code="profile.followers"
                                                              arguments="${followerCount}"/></span>
                     </a>
                     <div class="divider-v profile-followers-text-divider"></div>
                     <a href="<c:url value="/profile/${profile.id}/following"/>">
-            <span class="white-text">
-              <spring:message code="profile.following" arguments="${followingCount}"/>
-            </span>
+                        <span class="white-text no-wrap">
+                          <spring:message code="profile.following" arguments="${followingCount}"/>
+                        </span>
                     </a>
+                    <div class="divider-v profile-followers-text-divider"></div>
+                    <span class=${profile.reputation > 0 ? "green-text" : (profile.reputation==0)? "white-text" : "red-text"}>
+                        <spring:message code="profile.reputation" arguments="${profile.reputation}"/>
+                    </span>
                 </div>
                 <div class="">
                     <c:if test="${!isProfileSelf}">
