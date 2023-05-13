@@ -17,6 +17,7 @@ import ar.edu.itba.paw.servicesinterfaces.GenreService;
 import ar.edu.itba.paw.servicesinterfaces.MailingService;
 import ar.edu.itba.paw.servicesinterfaces.UserService;
 import ar.edu.itba.paw.persistenceinterfaces.UserDao;
+import jdk.nashorn.internal.parser.Token;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -145,17 +146,20 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean validateToken(String token) throws TokenExpiredException {
+    public Optional<User> validateToken(String token) throws TokenExpiredException {
         Optional<ExpirationToken> expToken = tokenDao.getByToken(token);
         if (expToken.isPresent() && expToken.get().getExpiration().isBefore(LocalDateTime.now())) {
             throw new TokenExpiredException("token.expired");
         }
-        expToken.ifPresent((expirationToken) -> {
-            User user = userDao.findById(expirationToken.getUserId()).orElseThrow(() -> new UserNotFoundException("illegal.state"));
-            SaveUserBuilder userBuilder = new SaveUserBuilder().withEnabled(true).withPassword(expirationToken.getPassword());
-            userDao.update(user.getId(), userBuilder.build());
-        });
-        return expToken.isPresent();
+        if (!expToken.isPresent()) {
+            return Optional.empty();
+        }
+        ExpirationToken expirationToken = expToken.get();
+        User user = userDao.findById(expirationToken.getUserId()).orElseThrow(() -> new UserNotFoundException("illegal.state"));
+        SaveUserBuilder userBuilder = new SaveUserBuilder().withEnabled(true).withPassword(expirationToken.getPassword());
+        userDao.update(user.getId(), userBuilder.build());
+        tokenDao.delete(expirationToken.getId());
+        return Optional.of(user);
     }
 
     @Override
@@ -164,21 +168,21 @@ public class UserServiceImpl implements UserService {
         if (user.isEnabled()) {
             throw new UserAlreadyEnabled();
         }
-        ExpirationToken token = tokenDao.refresh(user.getId(), generateToken());
-        if (token == null) {
-            throw new UserNotFoundException("user.not.found");
-        }
-        mailingService.sendValidationTokenEmail(token, user);
+        ExpirationToken token = tokenDao.findLastPasswordToken(user.getId()).orElseThrow(() -> new UserNotFoundException("user.notfound"));
+        ExpirationToken newToken = tokenDao.create(generateToken(), user.getId(), token.getPassword(), LocalDateTime.now().plusHours(EXPIRATION_TIME));
+        tokenDao.delete(token.getId());
+        mailingService.sendValidationTokenEmail(newToken, user);
     }
 
     @Override
     public void refreshToken(String token) {
         ExpirationToken expirationToken = tokenDao.getByToken(token).orElseThrow(() -> new UserNotFoundException("user.notfound"));
         User user = getUserById(expirationToken.getUserId()).orElseThrow(() -> new UserNotFoundException("user.notfound"));
-        ExpirationToken newToken = tokenDao.refresh(user.getId(), generateToken());
+        ExpirationToken newToken = tokenDao.create(generateToken(), user.getId(), expirationToken.getPassword(), LocalDateTime.now().plusHours(EXPIRATION_TIME));
         if (newToken == null) {
             throw new UserNotFoundException("user.not.found");
         }
+        tokenDao.delete(expirationToken.getId());
         mailingService.sendValidationTokenEmail(newToken, user);
     }
 

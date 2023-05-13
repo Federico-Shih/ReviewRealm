@@ -31,7 +31,7 @@ public interface UserService {
 
     boolean userFollowsId(Long userId, Long otherId);
 
-    boolean validateToken(String token) throws TokenExpiredException;
+    Optional<User> validateToken(String token) throws TokenExpiredException;
 
     void resendToken(String email) throws UserAlreadyEnabled;
 

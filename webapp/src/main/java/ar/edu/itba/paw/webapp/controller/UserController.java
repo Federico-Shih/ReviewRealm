@@ -23,6 +23,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -93,21 +94,19 @@ public class UserController {
 
     @RequestMapping(value = "/validate", method = RequestMethod.POST)
     public ModelAndView validateToken(@RequestParam("validationCode") String code, @ModelAttribute("resendEmailForm") ResendEmailForm form) {
-        boolean validated;
+        Optional<User> user;
         try {
-            validated = us.validateToken(code);
+            user = us.validateToken(code);
         } catch (TokenExpiredException e) {
             LOGGER.error("Token expired " + code);
             us.refreshToken(code);
             return new ModelAndView("user/recovery").addObject("expiredToken", true);
         }
-        if (!validated) {
+        if (!user.isPresent()) {
             return new ModelAndView("user/recovery").addObject("unknownToken", true);
         }
-        User user;
         try {
-            user = us.getUserByToken(code).orElseThrow(() -> new UserNotFoundException("User not found for token " + code));
-            authWithoutPassword(user);
+            authWithoutPassword(user.get());
         } catch (UserNotFoundException e) {
             return new ModelAndView("user/recovery").addObject("unknownToken", true);
         }

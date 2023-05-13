@@ -8,8 +8,9 @@ import java.util.Optional;
 public interface ValidationTokenDao {
 
     ExpirationToken create(String token, long userId, String password, LocalDateTime expiration);
+    Optional<ExpirationToken> findLastPasswordToken(long userId);
 
-    ExpirationToken refresh(long userId, String token);
+    boolean delete(Long id);
 
     Optional<ExpirationToken> getByToken(String token);
 }

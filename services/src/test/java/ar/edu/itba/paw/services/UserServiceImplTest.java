@@ -195,7 +195,7 @@ public class UserServiceImplTest {
     @Test
     public void tokenNotExistent() throws TokenExpiredException {
         Mockito.when(tokenDao.getByToken("aaa")).thenReturn(Optional.empty());
-        Assert.assertFalse(us.validateToken("aaa"));
+        Assert.assertFalse(us.validateToken("aaa").isPresent());
     }
 
     @Test
@@ -203,8 +203,9 @@ public class UserServiceImplTest {
         Mockito.when(tokenDao.getByToken("aaa")).thenReturn(Optional.of(new ExpirationToken(1L, "aaa", 1L, "aaa", LocalDateTime.MAX)));
         Mockito.when(userDao.update(1L, new SaveUserDTO(USERNAME, EMAIL, PASSWORD, false, 10L, 1L))).thenReturn(1);
         Mockito.when(userDao.findById(1L)).thenReturn(Optional.of(new User(1L, USERNAME, EMAIL, PASSWORD)));
-        Assert.assertTrue(us.validateToken("aaa"));
+        Assert.assertTrue(us.validateToken("aaa").isPresent());
         Mockito.verify(userDao, Mockito.times(1)).update(eq(1L), Mockito.any());
+        Mockito.verify(tokenDao, Mockito.times(1)).delete(1L);
     }
 
     @Test(expected = UserNotFoundException.class)
@@ -219,21 +220,17 @@ public class UserServiceImplTest {
         us.resendToken(EMAIL);
     }
 
-    @Test(expected = UserNotFoundException.class)
-    public void resendTokenDoesNotExistButUserCreated() throws UserAlreadyEnabled {
-        Mockito.when(userDao.getByEmail(EMAIL)).thenReturn(Optional.of(new User(1L, USERNAME, EMAIL, PASSWORD, new ArrayList<>(), false, 10L, new HashSet<>(), new HashSet<>(),0L)));
-        Mockito.when(tokenDao.refresh(1L, "aaa")).thenReturn(null);
-        us.resendToken(EMAIL);
-    }
-
     @Test
     public void resendTokenSuccessTest() throws UserAlreadyEnabled {
         ExpirationToken token = new ExpirationToken(1L, "aaa", 1L, "aaa", LocalDateTime.MAX);
+        ExpirationToken newToken = new ExpirationToken(2L, "aaas", 1L, "aaa", LocalDateTime.MAX);
         User user = new User(1L, USERNAME, EMAIL, PASSWORD, new ArrayList<>(), false, 10L, new HashSet<>(), new HashSet<>(), 0L);
         Mockito.when(userDao.getByEmail(eq(EMAIL))).thenReturn(Optional.of(user));
-        Mockito.when(tokenDao.refresh(eq(1L), anyString())).thenReturn(token);
+        Mockito.when(tokenDao.findLastPasswordToken(1L)).thenReturn(Optional.of(token));
+        Mockito.when(tokenDao.create(anyString(), anyLong(), anyString(), any())).thenReturn(newToken);
         us.resendToken(EMAIL);
-        Mockito.verify(mailingService, Mockito.times(1)).sendValidationTokenEmail(eq(token), eq(user));
+        Mockito.verify(mailingService, Mockito.times(1)).sendValidationTokenEmail(eq(newToken), eq(user));
+        Mockito.verify(tokenDao, Mockito.times(1)).delete(eq(token.getId()));
     }
 
     /*

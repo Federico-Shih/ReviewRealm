@@ -1,6 +1,5 @@
 package ar.edu.itba.paw.persistence;
 
-import ar.edu.itba.paw.exceptions.UserNotFoundException;
 import ar.edu.itba.paw.models.ExpirationToken;
 import ar.edu.itba.paw.persistenceinterfaces.ValidationTokenDao;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,17 +51,19 @@ public class ValidationTokenDaoImpl implements ValidationTokenDao {
     }
 
     @Override
-    public ExpirationToken refresh(long userId, String tokenString) {
-        Optional<ExpirationToken> token = jdbcTemplate
+    public Optional<ExpirationToken> findLastPasswordToken(long userId) {
+        return jdbcTemplate
                 .query(
-                        "SELECT * FROM tokens WHERE userid = ? ORDER BY expiration DESC",
+                        "SELECT * FROM tokens WHERE userid = ? AND password <> '' ORDER BY expiration DESC",
                         ROW_MAPPER,
                         userId)
                 .stream()
                 .findFirst();
-        if (!token.isPresent()) return null;
-        ExpirationToken lastToken = token.get();
-        return create(tokenString, lastToken.getUserId(), lastToken.getPassword(), lastToken.getExpiration());
+    }
+
+    @Override
+    public boolean delete(Long id) {
+        return jdbcTemplate.update("DELETE FROM tokens WHERE id = ?", id) > 0;
     }
 
     @Override
