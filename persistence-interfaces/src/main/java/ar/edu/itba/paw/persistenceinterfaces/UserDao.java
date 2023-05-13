@@ -30,7 +30,7 @@ public interface UserDao {
 
     boolean follows(final long userId, final long id);
 
-    List<Integer> getPreferencesById(long userId);
+    List<Genre> getPreferencesById(long userId);
 
     void setPreferences(List<Integer> genres, long userId);
 

@@ -47,33 +47,43 @@
         <div class="divider-h"></div>
         <div class="review-card-footer">
             <c:url value="/profile/${review.author.id}" var="profileUrl" />
-            <a href="${profileUrl}" id="review-card-bottom-text">
-                <span id="review-card-author">
-                    <spring:message code="review.by" arguments="@${review.author.username}"/>
-                </span>
-            </a>
-            <div class="review-card-feedback-footer">
-                <c:if test="${review.likeCounter != 0}">
-                    <span><c:out value="${review.likeCounter}"/></span>
-                </c:if>
-                <c:url value="/review/feedback/${review.id}" var="updateFeedback" />
-                <form name="likeFeedbackForm" class="feedback-form no-margin" method="post" action="${updateFeedback}">
-                    <button name="feedback" class="no-padding btn-flat waves-effect waves-light ${ (review.feedback == "LIKE")? "white-text":""}" value="LIKE">
-                        <i class="material-icons like-dislike-buttons">thumb_up</i>
-                    </button>
-                    <input type="hidden" name="url" value="${baseUrl}"/>
-                </form>
-                <form name="dislikeFeedbackForm" class="feedback-form no-margin" method="post" action="${updateFeedback}" >
-                    <button name="feedback" class="no-padding btn-flat waves-effect waves-light ${ (review.feedback == "DISLIKE")? "white-text":""}" value="DISLIKE">
-                        <i class="material-icons like-dislike-buttons">thumb_down</i>
-                    </button>
-                    <input type="hidden" name="url" value="${baseUrl}"/>
-                </form>
+            <div class="f-row">
+                <div class="review-card-author-footer">
+                    <a href="${profileUrl}" id="review-card-bottom-text">
+                        <span id="review-card-author">
+                            <spring:message code="review.by" arguments="@${review.author.username}"/>
+                        </span>
+                    </a>
+                </div>
+                <div class="review-card-feedback-footer">
+                    <c:if test="${review.likeCounter != 0}">
+                        <span><c:out value="${review.likeCounter}"/></span>
+                    </c:if>
+                    <c:url value="/review/feedback/${review.id}" var="updateFeedback" />
+                    <form name="likeFeedbackForm" class="feedback-form no-margin" method="post" action="${updateFeedback}">
+                        <button name="feedback" class="no-padding btn-flat waves-effect waves-light ${ (review.feedback == "LIKE")? "white-text":""}" value="LIKE">
+                            <i class="material-icons like-dislike-buttons">thumb_up</i>
+                        </button>
+                        <input type="hidden" name="url" value="${baseUrl}"/>
+                    </form>
+                    <form name="dislikeFeedbackForm" class="feedback-form no-margin" method="post" action="${updateFeedback}" >
+                        <button name="feedback" class="no-padding btn-flat waves-effect waves-light ${ (review.feedback == "DISLIKE")? "white-text":""}" value="DISLIKE">
+                            <i class="material-icons like-dislike-buttons">thumb_down</i>
+                        </button>
+                        <input type="hidden" name="url" value="${baseUrl}"/>
+                    </form>
+                </div>
             </div>
-            <%--                    TODO: PREFERENCIAS DE USUARIO--%>
-            <%--                    <c:forEach var="genre" items="${review.author.preferences}">--%>
-            <%--                        <span class="chip-small-inverted"><c:out value="${genre.name}"/></span>--%>
-            <%--                    </c:forEach>--%>
+            <div class="review-card-preferences-footer">
+                <c:if test="${!(empty review.author.preferences)}">
+                    <span id="review-card-preferences">
+                        <spring:message code="review.author.preferences"/>
+                    </span>
+                </c:if>
+                <c:forEach var="genre" items="${review.author.preferences}">
+                    <span class="chip-small-inverted"><spring:message code="${genre.name}"/></span>
+                </c:forEach>
+            </div>
         </div>
     </div>
 </div>

@@ -69,8 +69,7 @@
 
 .review-card-footer {
     display: flex;
-    flex-direction: row;
-    justify-content: space-between;
+    flex-direction: column;
     padding: 2% 4%;
 }
 
@@ -81,7 +80,23 @@
     align-items: baseline;
     font-size: 12px;
     gap: 12%;
-    width: 50%;
+    width: 40%;
+}
+.review-card-author-footer{
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    font-size: 12px;
+    width: 55%;
+}
+.review-card-preferences-footer{
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: baseline;
+    gap: 2%;
+    flex-wrap: wrap;
 }
 
 .review-card-feedback-footer-big{
@@ -151,6 +166,10 @@
 }
 
 #review-card-author {
+    font-size: 14px;
+    font-weight: 500; /*medium*/
+}
+#review-card-preferences{
     font-size: 14px;
     font-weight: 500; /*medium*/
 }

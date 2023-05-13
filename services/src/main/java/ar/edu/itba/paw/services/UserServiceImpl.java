@@ -247,13 +247,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<Genre> getPreferences(long userId) {
-        List<Genre> list = new ArrayList<>();
-        Optional<Genre> genre;
-        for(Integer genreId : userDao.getPreferencesById(userId)){
-            genre = genreService.getGenreById(genreId);
-            genre.ifPresent(list::add);
-        }
-        return list;
+        return userDao.getPreferencesById(userId);
     }
 
     private String generateToken() {

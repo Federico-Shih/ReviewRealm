@@ -4,10 +4,7 @@ import ar.edu.itba.paw.dtos.*;
 import ar.edu.itba.paw.dtos.builders.ReviewFilterBuilder;
 import ar.edu.itba.paw.dtos.ordering.Ordering;
 import ar.edu.itba.paw.dtos.ordering.ReviewOrderCriteria;
-import ar.edu.itba.paw.enums.Difficulty;
-import ar.edu.itba.paw.enums.NotificationType;
-import ar.edu.itba.paw.enums.Platform;
-import ar.edu.itba.paw.enums.ReviewFeedback;
+import ar.edu.itba.paw.enums.*;
 import ar.edu.itba.paw.models.Game;
 import ar.edu.itba.paw.models.Paginated;
 import ar.edu.itba.paw.models.Review;
@@ -112,7 +109,7 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public Paginated<Review> getAllReviews(Page page, ReviewFilter filter, Ordering<ReviewOrderCriteria> ordering, User activeUser) {
-        return reviewDao.findAll(page, filter, ordering,(activeUser != null)? activeUser.getId() : null);
+       return reviewDao.findAll(page, filter, ordering, (activeUser != null) ? activeUser.getId() : null);
     }
 
     @Override

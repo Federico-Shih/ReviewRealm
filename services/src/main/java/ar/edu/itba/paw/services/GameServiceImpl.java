@@ -78,6 +78,11 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
+    public List<Genre> getGameGenresById(Long id) {
+        return gameDao.getGenresByGame(id);
+    }
+
+    @Override
     public Paginated<Game> getAllGames(Page page, GameFilter filter, Ordering<GameOrderCriteria> ordering)
     {
         return gameDao.findAll(page, filter, ordering);

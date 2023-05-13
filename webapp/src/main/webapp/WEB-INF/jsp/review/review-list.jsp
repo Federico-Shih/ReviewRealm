@@ -63,6 +63,11 @@
                     <i class="material-icons">clear</i>
                     <span><spring:message code="remove.filters"/></span>
                 </button></a>
+                <c:if test="${setPreferences}">
+                    <a href="${queriesToKeepAtRemoveFilters}${favGameGenreFilters}"><button type="button" class="btn">
+                        <span><spring:message code="set.favgenres"/></span>
+                    </button></a>
+                </c:if>
                 <ul class="collapsible review-filters-collapsible-button">
                     <li>
                         <div class="collapsible-header filters-header f-row f-ai-center">

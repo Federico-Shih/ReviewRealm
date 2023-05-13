@@ -53,4 +53,14 @@ public class ReviewServiceImplTest {
         long id = optReview.get().getId();
         Assert.assertEquals(REVIEWID, id);
     }
+    @Test
+    public void testGetReviewByIdNotFound() {
+        Mockito.when(reviewDao.findById(REVIEWID,null))
+                .thenReturn(Optional.empty());
+
+        Optional<Review> optReview = rs.getReviewById(REVIEWID,null);
+
+        Assert.assertFalse(optReview.isPresent());
+    }
+
 }

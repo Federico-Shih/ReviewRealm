@@ -135,6 +135,9 @@
                             <a href="<c:url value="/profile/${review.author.id}" />">
                                 <spring:message code="review.by" arguments="@${review.author.username}" />
                             </a>
+                            <c:forEach var="genre" items="${review.author.preferences}">
+                                <span class="chip-small-inverted"><spring:message code="${genre.name}"/></span>
+                            </c:forEach>
                         </div>
                     </div>
                 </div>

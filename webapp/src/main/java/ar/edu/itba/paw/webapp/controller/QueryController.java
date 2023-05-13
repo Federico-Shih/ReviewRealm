@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.webapp.controller;
 
-import org.javatuples.Pair;
+
+import ar.edu.itba.paw.models.Pair;
 
 import java.util.List;
 
@@ -10,9 +11,9 @@ public interface QueryController {
         StringBuilder str = new StringBuilder();
         str.append("?");
         entries.forEach((pair) -> {
-            str.append(pair.getValue0());
+            str.append(pair.getKey());
             str.append("=");
-            str.append(pair.getValue1());
+            str.append(pair.getValue());
             str.append("&");
         });
         return str.toString();

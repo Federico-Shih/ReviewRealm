@@ -38,17 +38,7 @@ public class GameDaoImpl implements GameDao, PaginationDao<GameFilter> {
 
 
 
-    private final static ResultSetExtractor<List<Game>> GAME_MAPPER = (resultSet) -> {
-    Map<Long,Game> games = new LinkedHashMap<>();
-    while(resultSet.next()){
-        Long id = resultSet.getLong("id");
-        games.putIfAbsent(id, CommonRowMappers.GAME_ROW_MAPPER.mapRow(resultSet, resultSet.getRow()));
-        Game game = games.get(id);
-        Genre genre = CommonRowMappers.GAME_GENRE_ROW_MAPPER.mapRow(resultSet,resultSet.getRow());
-        game.getGenres().add(genre);
-    }
-     return new ArrayList<>(games.values());
-    };
+
 
     private Map<String,Object> prepareArgumentsForGame(String name,String description,String developer, String publisher, String imageid, LocalDate publishDate, boolean suggested) {
         Map<String,Object> args = new HashMap<>();
@@ -84,8 +74,8 @@ public class GameDaoImpl implements GameDao, PaginationDao<GameFilter> {
     @Override
     public Optional<Game> getById(Long id) {
         Optional<Game> game = jdbcTemplate.query("SELECT * FROM games LEFT OUTER JOIN genreforgames ON games.id = genreforgames.gameid " +
-                "WHERE id = ?",GAME_MAPPER,id).stream().findFirst();
-//        game.ifPresent(value -> value.setGenres(this.getGenresByGame(id)));
+                "WHERE id = ?",CommonRowMappers.GAME_ROW_MAPPER,id).stream().findFirst();
+        game.ifPresent(value -> value.setGenres(this.getGenresByGame(id)));
         return game;
     }
 
@@ -126,7 +116,7 @@ public class GameDaoImpl implements GameDao, PaginationDao<GameFilter> {
     @Override
     public List<Genre> getGenresByGame(Long id) {
         return jdbcTemplate.query("SELECT * FROM genreforgames g " +
-                "WHERE g.gameid = ?",CommonRowMappers.GAME_GENRE_ROW_MAPPER,id);
+                "WHERE g.gameid = ?",CommonRowMappers.GENRE_ROW_MAPPER,id);
     }
 
     @Override

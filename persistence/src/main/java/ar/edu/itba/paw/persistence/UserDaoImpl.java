@@ -2,9 +2,11 @@ package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.dtos.Page;
 import ar.edu.itba.paw.dtos.SaveUserDTO;
+import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.dtos.UserFilter;
 import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.models.*;
+import ar.edu.itba.paw.persistence.helpers.CommonRowMappers;
 import ar.edu.itba.paw.persistence.helpers.QueryBuilder;
 import ar.edu.itba.paw.persistence.helpers.UpdateBuilder;
 import ar.edu.itba.paw.persistenceinterfaces.PaginationDao;
@@ -190,8 +192,8 @@ public class UserDaoImpl implements UserDao, PaginationDao<UserFilter> {
     }
 
     @Override
-    public List<Integer> getPreferencesById(long userId){
-        return jdbcTemplate.query("SELECT genreId FROM genreforusers WHERE userId = ?", GENRE_ROW_MAPPER, userId);
+    public List<Genre> getPreferencesById(long userId){
+        return jdbcTemplate.query("SELECT genreId FROM genreforusers WHERE userId = ?", CommonRowMappers.GENRE_ROW_MAPPER, userId);
     }
 
     @Override

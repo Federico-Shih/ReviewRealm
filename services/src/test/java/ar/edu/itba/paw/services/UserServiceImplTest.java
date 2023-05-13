@@ -155,14 +155,10 @@ public class UserServiceImplTest {
 
     @Test
     public void testGetPreferences() {
-        List<Integer> list = new ArrayList<>();
-        Integer roguelikeId = Genre.ROGUELIKE.getId();
-        Integer adventureId = Genre.ADVENTURE.getId();
-        list.add(roguelikeId);
-        list.add(adventureId);
+        List<Genre> list = new ArrayList<>();
+        list.add(Genre.ROGUELIKE);
+        list.add(Genre.ADVENTURE);
         when(userDao.getPreferencesById(ID)).thenReturn(list);
-        when(genreService.getGenreById(roguelikeId)).thenReturn(Optional.of(Genre.ROGUELIKE));
-        when(genreService.getGenreById(adventureId)).thenReturn(Optional.of(Genre.ADVENTURE));
 
         List<Genre> secondList = new ArrayList<>();
         secondList.add(Genre.ROGUELIKE);

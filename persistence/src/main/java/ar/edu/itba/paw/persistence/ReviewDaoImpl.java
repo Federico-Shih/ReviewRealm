@@ -7,15 +7,13 @@ import ar.edu.itba.paw.enums.Difficulty;
 import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.enums.Platform;
 import ar.edu.itba.paw.enums.ReviewFeedback;
-import ar.edu.itba.paw.models.Game;
-import ar.edu.itba.paw.models.Paginated;
-import ar.edu.itba.paw.models.Review;
-import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.persistence.helpers.CommonRowMappers;
 import ar.edu.itba.paw.persistence.helpers.QueryBuilder;
 import ar.edu.itba.paw.persistenceinterfaces.GameDao;
 import ar.edu.itba.paw.persistenceinterfaces.PaginationDao;
 import ar.edu.itba.paw.persistenceinterfaces.ReviewDao;
+import ar.edu.itba.paw.persistenceinterfaces.UserDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
@@ -26,7 +24,7 @@ import javax.sql.DataSource;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.*;
-import org.javatuples.Pair;
+import java.util.stream.Collectors;
 
 @Repository
 public class ReviewDaoImpl implements ReviewDao, PaginationDao<ReviewFilter> {
@@ -36,13 +34,16 @@ public class ReviewDaoImpl implements ReviewDao, PaginationDao<ReviewFilter> {
     private final SimpleJdbcInsert jdbcInsertFeedback;
     private final GameDao gameDao;
 
+    private final UserDao userDao;
+
     @Autowired
-    public ReviewDaoImpl(DataSource ds, GameDao gameDao) {
+    public ReviewDaoImpl(DataSource ds, GameDao gameDao, UserDao userDao){
         this.jdbcTemplate = new JdbcTemplate(ds);
         this.jdbcInsertReview = new SimpleJdbcInsert(ds).withTableName("reviews")
                 .usingGeneratedKeyColumns("id");
         this.jdbcInsertFeedback = new SimpleJdbcInsert(ds).withTableName("reviewfeedback");
         this.gameDao = gameDao;
+        this.userDao = userDao;
     }
 
     public Review create(String title,
@@ -82,39 +83,28 @@ public class ReviewDaoImpl implements ReviewDao, PaginationDao<ReviewFilter> {
         final Number id = jdbcInsertReview.executeAndReturnKey(args);
         return new Review(id.longValue(), author, title, content, LocalDateTime.now(), rating, reviewedGame, difficulty, gameLength, platform, completed, replayable,null,0L);
     }
-    private final static ResultSetExtractor<List<Review>> REVIEW_MAPPER = (resultSet) -> {
-        Map<Long,Review> reviews = new LinkedHashMap<>();
-        while(resultSet.next()){
-            Long id = resultSet.getLong("id");
-            reviews.putIfAbsent(id, CommonRowMappers.REVIEW_ROW_MAPPER.mapRow(resultSet, resultSet.getRow()));
-            Review review = reviews.get(id);
-            review.getReviewedGame().getGenres().add(CommonRowMappers.GAME_GENRE_ROW_MAPPER.mapRow(resultSet, resultSet.getRow()));
-            String feedback = resultSet.getString("feedback");
-            if(review.getFeedback() == null && feedback != null) {
-                review.setFeedback(ReviewFeedback.valueOf(feedback));
-            }
+    private final static ResultSetExtractor<Map<Long,ReviewFeedback>> USER_REVIEW_FEEDBACK_MAPPER = (resultSet) -> {
+        Map<Long,ReviewFeedback> reviewFeedbackMap = new HashMap<>();
+        while(resultSet.next()) {
+            reviewFeedbackMap.put(resultSet.getLong("reviewid"), ReviewFeedback.valueOf(resultSet.getString("feedback")));
         }
-        return new ArrayList<>(reviews.values());
+        return reviewFeedbackMap;
     };
-
     @Override
     public Optional<Review> findById(Long id, Long activeUserId) {
         Optional<Review> review = jdbcTemplate.query("SELECT * FROM reviews " +
                 "JOIN games as g ON g.id = reviews.gameid " +
-                "JOIN users as u ON u.id = reviews.authorid " +
-                "LEFT OUTER JOIN reviewfeedback as rf ON rf.reviewid = reviews.id " +
-                "LEFT OUTER JOIN genreforgames as gg ON gg.gameid = reviews.gameid " +
-                "WHERE reviews.id = ?", REVIEW_MAPPER, id)
+                "JOIN users as u ON u.id = reviews.authorid "+
+                "WHERE reviews.id = ?", CommonRowMappers.REVIEW_ROW_MAPPER, id)
                 .stream()
                 .findFirst();
-//        if (review.isPresent()) {
-//            Review existentReview = review.get();
-//            if(activeUserId != null) {
-//                ReviewFeedback feedback = getReviewFeedback(id, activeUserId);
-//                existentReview.setFeedback(feedback);
-//            }
-//            existentReview.getReviewedGame().setGenres(gameDao.getGenresByGame(existentReview.getReviewedGame().getId()));
-//        }
+       if (review.isPresent()) {
+           if(activeUserId != null) {
+               review.get().setFeedback(getReviewFeedback(id, activeUserId));
+           }
+           review.get().getAuthor().setPreferences(userDao.getPreferencesById(review.get().getAuthor().getId()));
+           review.get().getReviewedGame().setGenres(gameDao.getGenresByGame(review.get().getReviewedGame().getId()));
+        }
         return review;
     }
     @Override
@@ -143,19 +133,24 @@ public class ReviewDaoImpl implements ReviewDao, PaginationDao<ReviewFilter> {
                         toOrderString(ordering) +
                         " LIMIT ? OFFSET ?"
                 , CommonRowMappers.REVIEW_ROW_MAPPER, preparedArgs.toArray());
+        Map<Long, List<Genre>> userPreferredGenres = new HashMap<>();
+        Map<Long, List<Genre>> gameGenres = new HashMap<>();
         if( activeUserId != null) {
-            List<Pair<Long,ReviewFeedback>> reviewFeedbacks = jdbcTemplate.query("SELECT * FROM reviewfeedback WHERE userid = ?",
-                    (rs, rowNum) -> new Pair<>(rs.getLong("reviewid"), ReviewFeedback.valueOf(rs.getString("feedback"))), activeUserId);
+            Map<Long,ReviewFeedback> reviewFeedbacks = jdbcTemplate.query("SELECT * FROM reviewfeedback WHERE userid = ?", USER_REVIEW_FEEDBACK_MAPPER, activeUserId);
             for (Review review: reviews){
-                review.getReviewedGame().setGenres(gameDao.getGenresByGame(review.getReviewedGame().getId()));
-                review.setFeedback(reviewFeedbacks.stream().filter(pair -> pair.getValue0().equals(review.getId())).findFirst().map(Pair::getValue1).orElse(null));
-            }
-        }else{
-            for (Review review: reviews){
-                review.getReviewedGame().setGenres(gameDao.getGenresByGame(review.getReviewedGame().getId()));
+                review.setFeedback(reviewFeedbacks.get(review.getId()));
             }
         }
-
+        for (Review r : reviews){
+            if (!userPreferredGenres.containsKey(r.getAuthor().getId())) {
+                userPreferredGenres.put(r.getAuthor().getId(), userDao.getPreferencesById(r.getAuthor().getId()));
+            }
+            if(!gameGenres.containsKey(r.getReviewedGame().getId())){
+                gameGenres.put(r.getReviewedGame().getId(), gameDao.getGenresByGame(r.getReviewedGame().getId()));
+            }
+            r.getAuthor().setPreferences(userPreferredGenres.get(r.getAuthor().getId()));
+            r.getReviewedGame().setGenres(gameGenres.get(r.getReviewedGame().getId()));
+        }
         return new Paginated<>(pagination.getPageNumber(), pagination.getPageSize(), totalPages, reviews);
     }
     private String getTableColumnString(){

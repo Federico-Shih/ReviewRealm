@@ -8,15 +8,12 @@ import ar.edu.itba.paw.dtos.ordering.Ordering;
 import ar.edu.itba.paw.dtos.ordering.ReviewOrderCriteria;
 import ar.edu.itba.paw.enums.*;
 import ar.edu.itba.paw.exceptions.ObjectNotFoundException;
-import ar.edu.itba.paw.models.Paginated;
-import ar.edu.itba.paw.models.Review;
-import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.servicesinterfaces.GenreService;
 import ar.edu.itba.paw.servicesinterfaces.ReviewService;
 import ar.edu.itba.paw.forms.SubmitReviewForm;
 import ar.edu.itba.paw.webapp.controller.datacontainers.CalculatedFilter;
 import ar.edu.itba.paw.webapp.exceptions.ResourceNotFoundException;
-import org.javatuples.Pair;
 import ar.edu.itba.paw.servicesinterfaces.UserService;
 import ar.edu.itba.paw.webapp.auth.AuthenticationHelper;
 import org.slf4j.Logger;
@@ -25,7 +22,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Controller;
-import ar.edu.itba.paw.models.Game;
 import ar.edu.itba.paw.servicesinterfaces.GameService;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -165,19 +161,32 @@ public class ReviewController extends PaginatedController implements QueryContro
         mav.addObject("selectedOrderCriteria", GameOrderCriteria.fromValue(orderCriteria));
 
         List<Pair<String, Object>> queriesToKeepAtPageChange = new ArrayList<>();
-        queriesToKeepAtPageChange.add(Pair.with("o-crit", orderCriteria));
-        queriesToKeepAtPageChange.add(Pair.with("o-dir", orderDirection));
-        queriesToKeepAtPageChange.add(Pair.with("pageSize", pageSize));
-        queriesToKeepAtPageChange.addAll(genresFilter.stream().map((value) -> Pair.with("f-gen", (Object)value)).collect(Collectors.toList()));
+        queriesToKeepAtPageChange.add(Pair.of("o-crit", orderCriteria));
+        queriesToKeepAtPageChange.add(Pair.of("o-dir", orderDirection));
+        queriesToKeepAtPageChange.add(Pair.of("pageSize", pageSize));
+        queriesToKeepAtPageChange.addAll(genresFilter.stream().map((value) -> Pair.of("f-gen", (Object)value)).collect(Collectors.toList()));
 
         mav.addObject("queriesToKeepAtPageChange", toQueryString(queriesToKeepAtPageChange));
 
         List<Pair<String, Object>> queriesToKeepAtRemoveFilters = new ArrayList<>();
-        queriesToKeepAtRemoveFilters.add(Pair.with("o-crit", orderCriteria));
-        queriesToKeepAtRemoveFilters.add(Pair.with("o-dir", orderDirection));
-        queriesToKeepAtRemoveFilters.add(Pair.with("pageSize", pageSize));
+        List<Pair<String, Object>> favGameGenreFilters= new ArrayList<>();
+      //List<Pair<String,Object>> favUserPrefFilters = new ArrayList<>();
+        if(loggedUser != null){
 
+            loggedUser.getPreferences().forEach((pref) ->{
+            //    favUserPrefFilters.add(Pair.of("f-pref",pref.getId()));
+                favGameGenreFilters.add(Pair.of("f-gen",pref.getId()));
+            });
+        }
+        queriesToKeepAtRemoveFilters.add(Pair.of("o-crit", orderCriteria));
+        queriesToKeepAtRemoveFilters.add(Pair.of("o-dir", orderDirection));
+        queriesToKeepAtRemoveFilters.add(Pair.of("pageSize", pageSize));
+
+        mav.addObject("setPreferences",!favGameGenreFilters.isEmpty());
         mav.addObject("queriesToKeepAtRemoveFilters", toQueryString(queriesToKeepAtRemoveFilters));
+        mav.addObject("favGameGenreFilters", toQueryString(favGameGenreFilters).replaceFirst("\\?",""));
+        //mav.addObject("favUserPrefFilters", toQueryString(favUserPrefFilters));
+
         return mav;
     }
 

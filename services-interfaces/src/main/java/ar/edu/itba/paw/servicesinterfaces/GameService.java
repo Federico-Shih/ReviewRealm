@@ -3,6 +3,7 @@ package ar.edu.itba.paw.servicesinterfaces;
 import ar.edu.itba.paw.dtos.*;
 import ar.edu.itba.paw.dtos.ordering.GameOrderCriteria;
 import ar.edu.itba.paw.dtos.ordering.Ordering;
+import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.models.Game;
 import ar.edu.itba.paw.models.Paginated;
 import ar.edu.itba.paw.models.GameReviewData;
@@ -17,6 +18,8 @@ public interface GameService {
     Optional<Game> createGame(SubmitGameDTO gameDTO, long userId);
 
     Optional<Game> getGameById(Long id);
+
+    List<Genre> getGameGenresById(Long id);
 
     Paginated<Game> getAllGames(Page page, GameFilter filter, Ordering<GameOrderCriteria> ordering);
 

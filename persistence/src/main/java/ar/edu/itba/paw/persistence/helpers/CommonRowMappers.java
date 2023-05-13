@@ -63,7 +63,7 @@ public interface CommonRowMappers{
                 (resultSet.getLong("likes") - resultSet.getLong("dislikes"))
         );
     });
-     RowMapper  <Genre> GAME_GENRE_ROW_MAPPER = (resultSet, i) -> {
+     RowMapper  <Genre> GENRE_ROW_MAPPER = (resultSet, i) -> {
         Optional<Genre> genre = Genre.getById(resultSet.getInt("genreId"));
         if (!genre.isPresent()) throw new IllegalStateException();
         return genre.get();

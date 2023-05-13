@@ -13,7 +13,6 @@ import ar.edu.itba.paw.servicesinterfaces.GenreService;
 import ar.edu.itba.paw.servicesinterfaces.UserService;
 import ar.edu.itba.paw.webapp.auth.AuthenticationHelper;
 import ar.edu.itba.paw.webapp.controller.datacontainers.CalculatedFilter;
-import org.javatuples.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -103,17 +102,17 @@ public class GameController extends PaginatedController implements QueryControll
         mav.addObject("selectedOrderCriteria", GameOrderCriteria.fromValue(orderCriteria));
 
         List<Pair<String, Object>> queriesToKeepAtPageChange = new ArrayList<>();
-        queriesToKeepAtPageChange.add(Pair.with("o-crit", orderCriteria));
-        queriesToKeepAtPageChange.add(Pair.with("o-dir", orderDirection));
-        queriesToKeepAtPageChange.add(Pair.with("search", search));
-        queriesToKeepAtPageChange.addAll(genresFilter.stream().map((value) -> Pair.with("f-gen", (Object)value)).collect(Collectors.toList()));
+        queriesToKeepAtPageChange.add(Pair.of("o-crit", orderCriteria));
+        queriesToKeepAtPageChange.add(Pair.of("o-dir", orderDirection));
+        queriesToKeepAtPageChange.add(Pair.of("search", search));
+        queriesToKeepAtPageChange.addAll(genresFilter.stream().map((value) -> Pair.of("f-gen", (Object)value)).collect(Collectors.toList()));
 
         mav.addObject("queriesToKeepAtPageChange", toQueryString(queriesToKeepAtPageChange));
 
         List<Pair<String, Object>> queriesToKeepAtRemoveFilters = new ArrayList<>();
-        queriesToKeepAtRemoveFilters.add(Pair.with("o-crit", orderCriteria));
-        queriesToKeepAtRemoveFilters.add(Pair.with("o-dir", orderDirection));
-        queriesToKeepAtRemoveFilters.add(Pair.with("search", search));
+        queriesToKeepAtRemoveFilters.add(Pair.of("o-crit", orderCriteria));
+        queriesToKeepAtRemoveFilters.add(Pair.of("o-dir", orderDirection));
+        queriesToKeepAtRemoveFilters.add(Pair.of("search", search));
 
         mav.addObject("queriesToKeepAtRemoveFilters", toQueryString(queriesToKeepAtRemoveFilters));
         return mav;
