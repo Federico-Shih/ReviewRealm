@@ -1,9 +1,12 @@
 package ar.edu.itba.paw.persistence.tests;
 
+import ar.edu.itba.paw.dtos.SaveReviewDTO;
 import ar.edu.itba.paw.enums.Difficulty;
 import ar.edu.itba.paw.enums.Platform;
 import ar.edu.itba.paw.enums.ReviewFeedback;
+import ar.edu.itba.paw.models.Game;
 import ar.edu.itba.paw.models.Review;
+import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.persistence.ReviewDaoImpl;
 import ar.edu.itba.paw.persistence.config.TestConfig;
 import org.junit.Assert;
@@ -21,6 +24,7 @@ import org.springframework.test.jdbc.JdbcTestUtils;
 import javax.sql.DataSource;
 import java.sql.Blob;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -221,4 +225,53 @@ public class ReviewDaoImplTest {
         Assert.assertNull(review.get().getFeedback());
 
     }
+
+//    @Test
+//    public void testReviewUpdate() {
+//        //Setup
+//        Map<String,Object> reviewArgs = new HashMap<>();
+//
+//        reviewArgs.put("authorid",USER_ID1);
+//        reviewArgs.put("gameid",GAME_ID1);
+//        reviewArgs.put("title",TITLE);
+//        reviewArgs.put("content",CONTENT);
+//        reviewArgs.put("createddate",TIMESTAMP);
+//        reviewArgs.put("rating",RATING);
+//        reviewArgs.put("difficulty",DIFFICULTY.toString());
+//        reviewArgs.put("platform",PLATFORM.toString());
+//        reviewArgs.put("gamelength",GAME_LENGTH);
+//        reviewArgs.put("replayability",REPLAYABILITY);
+//        reviewArgs.put("completed",COMPLETED);
+//        Long id = jdbcInsertForReviews.executeAndReturnKey(reviewArgs).longValue();
+//        //Test
+//
+//        reviewDao.update(id, new SaveReviewDTO("New Title", "New Content", 5, Difficulty.HARD, 10.0, Platform.PC, true, false));
+//        Optional<Review> updatedReview = jdbcTemplate.query("SELECT * FROM reviews WHERE id = ?", (resultSet, i) -> new Review(
+//                resultSet.getLong("id"),
+//                null,
+//                resultSet.getString("title"),
+//                resultSet.getString("content"),
+//                resultSet.getTimestamp("createddate").toLocalDateTime(),
+//                resultSet.getInt("rating"),
+//                null,
+//                resultSet.getString("difficulty") != null ? Difficulty.valueOf(resultSet.getString("difficulty").toUpperCase()) : null,
+//                resultSet.getDouble("gamelength"),
+//                resultSet.getString("platform") != null ? Platform.valueOf(resultSet.getString("platform").toUpperCase()) : null,
+//                resultSet.getBoolean("completed"),
+//                resultSet.getBoolean("replayability"),
+//                null,
+//                0L
+//        ), id).stream().findFirst();
+//
+//        Assert.assertTrue(updatedReview.isPresent());
+//        Assert.assertEquals(updatedReview.get().getId(), id);
+//        Assert.assertEquals(updatedReview.get().getTitle(), "New Title");
+//        Assert.assertEquals(updatedReview.get().getContent(), "New Content");
+//        Assert.assertEquals(5, (int) updatedReview.get().getRating());
+//        Assert.assertEquals(updatedReview.get().getDifficulty(), Difficulty.HARD);
+//        Assert.assertEquals(10.0, updatedReview.get().getGameLength() != null ? updatedReview.get().getGameLength() : 0, 0.0);
+//        Assert.assertEquals(updatedReview.get().getPlatform(), Platform.PC);
+//        Assert.assertTrue(updatedReview.get().getCompleted() != null ? updatedReview.get().getCompleted() : false);
+//        Assert.assertFalse(updatedReview.get().getReplayability() != null ? updatedReview.get().getReplayability() : true);
+//    }
 }

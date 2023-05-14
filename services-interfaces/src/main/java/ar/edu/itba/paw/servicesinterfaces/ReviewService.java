@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.servicesinterfaces;
 
+import ar.edu.itba.paw.dtos.SaveReviewDTO;
 import ar.edu.itba.paw.dtos.ordering.Ordering;
 import ar.edu.itba.paw.dtos.Page;
 import ar.edu.itba.paw.dtos.ReviewFilter;
@@ -26,6 +27,17 @@ public interface ReviewService {
                         Platform platform,
                         Boolean completed,
                         Boolean replayable);
+
+    int updateReview(Long id,
+                     String title,
+                     String content,
+                     Integer rating,
+                     Difficulty difficulty,
+                     Double gameLength,
+                     Platform platform,
+                     Boolean completed,
+                     Boolean replayable);
+
     Optional<Review> getReviewById(Long id, User activeUser);
 
     List<Review> getUserReviews(long userId,User activeUser);

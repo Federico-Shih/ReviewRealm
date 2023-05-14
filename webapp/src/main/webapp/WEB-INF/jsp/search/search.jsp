@@ -95,7 +95,7 @@
                     <c:forEach items="${games}" var="game">
                         <c:url var="gameUrl" value="/game/${game.id}" />
                         <div class="search-result-background">
-                            <a href="${gameUrl}" id="${game.id}" class="no-a-decoration searchResult">
+                            <a href="${gameUrl}" id="${game.id}" class="no-a-decoration search-result">
                                 <div class="search-game-container">
                                     <div>
                                         <c:url value="${game.imageUrl}" var="imgUrl" />

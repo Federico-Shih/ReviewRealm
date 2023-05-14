@@ -10,6 +10,7 @@ import ar.edu.itba.paw.enums.ReviewFeedback;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.persistence.helpers.CommonRowMappers;
 import ar.edu.itba.paw.persistence.helpers.QueryBuilder;
+import ar.edu.itba.paw.persistence.helpers.UpdateBuilder;
 import ar.edu.itba.paw.persistenceinterfaces.GameDao;
 import ar.edu.itba.paw.persistenceinterfaces.PaginationDao;
 import ar.edu.itba.paw.persistenceinterfaces.ReviewDao;
@@ -83,6 +84,7 @@ public class ReviewDaoImpl implements ReviewDao, PaginationDao<ReviewFilter> {
         final Number id = jdbcInsertReview.executeAndReturnKey(args);
         return new Review(id.longValue(), author, title, content, LocalDateTime.now(), rating, reviewedGame, difficulty, gameLength, platform, completed, replayable,null,0L);
     }
+
     private final static ResultSetExtractor<Map<Long,ReviewFeedback>> USER_REVIEW_FEEDBACK_MAPPER = (resultSet) -> {
         Map<Long,ReviewFeedback> reviewFeedbackMap = new HashMap<>();
         while(resultSet.next()) {
@@ -90,6 +92,22 @@ public class ReviewDaoImpl implements ReviewDao, PaginationDao<ReviewFilter> {
         }
         return reviewFeedbackMap;
     };
+
+    @Override
+    public int update(Long id, SaveReviewDTO reviewDTO) {
+        UpdateBuilder updateBuilder = new UpdateBuilder()
+                .set("title", reviewDTO.getTitle())
+                .set("content", reviewDTO.getContent())
+                .set("rating", reviewDTO.getRating())
+                .set("difficulty", reviewDTO.getDifficulty())
+                .set("replayability", reviewDTO.getReplayable())
+                .set("completed", reviewDTO.getCompleted())
+                .set("platform", reviewDTO.getPlatform())
+                .set("gamelength", reviewDTO.getGameLength());
+        updateBuilder.getParameters().add(id);
+        return jdbcTemplate.update("UPDATE reviews " + updateBuilder.toQuery() + " WHERE id = ?", updateBuilder.getParameters().toArray());
+    }
+
     @Override
     public Optional<Review> findById(Long id, Long activeUserId) {
         Optional<Review> review = jdbcTemplate.query("SELECT * FROM reviews " +

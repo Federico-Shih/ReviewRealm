@@ -14,7 +14,6 @@ public enum GamelengthUnit {
         return number * rate;
     }
 
-
     public String getCode() {
         return code;
     }

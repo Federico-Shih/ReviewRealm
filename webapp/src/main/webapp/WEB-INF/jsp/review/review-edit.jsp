@@ -4,70 +4,53 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <html>
-<c:url value="/review/submit/${game.id}" var="submitEndpoint"/>
-<c:url value="/review/submit" var="searchEndpoint"/>
 <head>
-    <title><spring:message code="review.page.title"/></title>
+    <title><spring:message code="review.edit.page" arguments="PAGE.ARGUMENTS" /></title> <!-- Compiled and minified CSS -->
     <link rel="stylesheet" type="text/css" href="<c:url value="/css/materialize.min.css" />" media="screen,projection"/>
     <link rel="stylesheet" href="<c:url value="/css/main.css" />">
     <link rel="stylesheet" href="<c:url value="/css/review/review-page.css" />">
     <link rel="stylesheet" href="<c:url value="/css/game.css" />">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-
     <!-- Compiled and minified JavaScript -->
     <script src="<c:url value="/js/materialize.min.js" />"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             <c:if test="${reviewForm.platform != null}">
-                document.querySelector("#platform").value = "${reviewForm.platform}";
+            document.querySelector("#platform").value = "${reviewForm.platform}";
             </c:if>
             <c:if test="${reviewForm.completed}">
-                document.querySelector("#completed").setAttribute("checked", "checked");
+            document.querySelector("#completed").setAttribute("checked", "checked");
             </c:if>
             <c:if test="${reviewForm.replayability}">
-                document.querySelector("#replayable").setAttribute("checked", "checked");
+            document.querySelector("#replayable").setAttribute("checked", "checked");
             </c:if>
 
             const elems = document.querySelectorAll('select');
             var instances = M.FormSelect.init(elems, {});
-            document.querySelector("#searchInput").addEventListener("keypress", function (e) {
-                if (e.keyCode === 13) {
-                    document.querySelector("#searchButton").click();
-                    e.preventDefault();
-                }
-            });
-            document.querySelector("#submitForm").addEventListener("submit", function (e) {
-                var form = document.querySelector("#submitForm");
-                if (e.submitter.id === "searchButton" || e.submitter.id === "searchInput") {
-                    form.action = "${searchEndpoint}";
-                    form.method = "get";
-                } else if (e.submitter.id === "createButton") {
-                    form.action = "${submitEndpoint}";
-                } else {
-                    form.method = "post";
-                    form.action = "${searchEndpoint}?gameId=" + e.submitter.id;
-                    form.querySelector("#gameId").value = e.submitter.id;
-                }
-            });
         });
     </script>
     <link rel="shortcut icon" type="image/png" href="<c:url value="/static/review_realm_logo_white_32px.png" />">
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
 </head>
-
+<!-- general variables
+<%--<spring:message code="reviewForm.title.placeholder" var="titlePlaceholder"/>--%>
+<%--<spring:message code="reviewForm.content.placeholder" var="contentPlaceholder"/>--%>
+<%--<spring:message code="review.author.generic" var="authorPlaceholder"/>--%>
+<%--<c:url value="/game/${game.id}" var="gameUrl" />--%>
+-->
+<body>
+<jsp:include page="/WEB-INF/jsp/static-components/navbar.jsp"/>
 <spring:message code="reviewForm.title.placeholder" var="titlePlaceholder"/>
 <spring:message code="reviewForm.content.placeholder" var="contentPlaceholder"/>
 <spring:message code="review.author.generic" var="authorPlaceholder"/>
 
 <c:url value="/game/${game.id}" var="gameUrl" />
-
+<c:url value="/review/${id}/edit" var="reviewEditEndpoint" />
 <body>
-<jsp:include page="/WEB-INF/jsp/static-components/navbar.jsp"/>
 <div class="container">
     <div class="row">
-        <form:form modelAttribute="reviewForm" action="${submitEndpoint}" method="post" id="submitForm">
-        <div class="col s12 m8">
-            <div class="card card-background">
+        <form:form modelAttribute="reviewForm" action="${reviewEditEndpoint}" method="post" id="submitForm">
+            <div class="col s12 m8">
+                <div class="card card-background">
                     <div class="rating-input inline valign-wrapper">
                         <form:input
                                 path="reviewRating"
@@ -81,12 +64,7 @@
                     <div class="card-content card-content-container">
                         <div class="card-title review-card-title row valign-wrapper">
                             <div class="col s12 flow-text">
-                                <c:if test="${selectedGameId != 0}">
-                                    <spring:message code="review.title" arguments="${game.name}"/>
-                                </c:if>
-                                <c:if test="${selectedGameId == 0}">
-                                    <spring:message code="review.new"/>
-                                </c:if>
+                                <spring:message code="review.title" arguments="${game.name}"/>
                             </div>
                         </div>
                         <form:errors path="reviewRating" cssClass="error" element="p"/>
@@ -177,54 +155,20 @@
                             </label>
                         </div>
                         <div class="f-row f-jc-end">
-                            <button id="createButton" class="${(selectedGameId==0)? " disabled ":" "}waves-effect waves-light btn submit-btn" type="submit">
-                                <spring:message code="reviewForm.create"/>
+                            <button id="save-button" class="waves-effect waves-light btn submit-btn" type="submit">
+                                <spring:message code="edit.form.save"/>
                             </button>
                         </div>
                     </div>
+                </div>
             </div>
-        </div>
-        <div class="col s12 m4">
-            <c:if test="${selectedGameId!=0}">
-                <c:set var="game" value="${game}" scope="request" />
-                <c:set var="gameUrl" value="${gameUrl}" scope="request" />
-                <c:import url="/WEB-INF/jsp/games/short-game-details.jsp" />
-            </c:if>
-                <div class="search-game-list">
-                    <input id="searchInput" name="search" class="z-depth-1-half search-field white-text" value="${searchField}" placeholder="<spring:message code="game.list.placeholder.search"/>">
-                    <button id="searchButton" class="btn-flat button-color white-text" type="submit" ><i class="material-icons" >search</i></button>
-                    <input name="gameId" value="${selectedGameId}" type="hidden"/>
-                    <%-- TODO: revisar esto --%>
-                    <%--porque seguramente esta rre mal pero no tenia otra forma que se me ocurra--%>
-                </div>
-            <c:if test="${empty searchedGames && !empty searchField}">
-                <span><spring:message code="game.list.notfound"/></span>
-            </c:if>
-            <c:if test="${!(empty searchedGames)}">
-                <div class="search-results-list">
-                    <c:forEach items="${searchedGames}" var="gameIterator">
-                        <div class="card-background">
-                            <button type="submit" id="${gameIterator.id}" class="no-a-decoration search-result btn-flat">
-                                <div class="search-game-container">
-                                    <div>
-                                        <c:url value="${gameIterator.imageUrl}" var="imgUrl" />
-                                        <img src="${imgUrl}" alt="game-image" class="search-result-image"/>
-                                    </div>
-                                    <div class="short-game-container-text">
-                                        <h6><c:out value="${gameIterator.name}"/></h6>
-                                        <div class="genres-container">
-                                            <c:forEach var="genre" items="${gameIterator.genres}" end="1">
-                                                <span class="chip-small"><spring:message code="${genre.name}"/> </span>
-                                            </c:forEach>
-                                        </div>
-                                    </div>
-                                </div>
-                            </button>
-                        </div>
-                    </c:forEach>
-                </div>
-            </c:if>
-        </div>
+            <div class="col s12 m4">
+                <c:if test="${game.id != 0}">
+                    <c:set var="game" value="${game}" scope="request" />
+                    <c:set var="gameUrl" value="${gameUrl}" scope="request" />
+                    <c:import url="/WEB-INF/jsp/games/short-game-details.jsp" />
+                </c:if>
+            </div>
         </form:form>
     </div>
 </div>

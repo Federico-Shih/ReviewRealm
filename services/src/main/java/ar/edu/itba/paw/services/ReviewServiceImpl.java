@@ -86,6 +86,26 @@ public class ReviewServiceImpl implements ReviewService {
         return review;
     }
 
+    @Override
+    public int updateReview(Long id, String title,
+                            String content,
+                            Integer rating,
+                            Difficulty difficulty,
+                            Double gameLength,
+                            Platform platform,
+                            Boolean completed,
+                            Boolean replayable) {
+        return reviewDao.update(id,
+                new SaveReviewDTO(title,
+                        content,
+                        rating,
+                        difficulty,
+                        gameLength,
+                        platform,
+                        completed,
+                        replayable));
+    }
+
     private void updateFavoriteGames(long userId, Review review) {
         Optional<Long> toDelete = Optional.empty();
         List<Review> bestReviews = reviewDao.getBestReviews(userId);

@@ -9,16 +9,24 @@ import ar.edu.itba.paw.dtos.ordering.ReviewOrderCriteria;
 import ar.edu.itba.paw.enums.*;
 import ar.edu.itba.paw.exceptions.ObjectNotFoundException;
 import ar.edu.itba.paw.models.*;
+import ar.edu.itba.paw.exceptions.UserNotFoundException;
+import ar.edu.itba.paw.exceptions.WrongAccessException;
+import ar.edu.itba.paw.forms.EditReviewForm;
+import ar.edu.itba.paw.models.Paginated;
+import ar.edu.itba.paw.models.Review;
+import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.servicesinterfaces.GenreService;
 import ar.edu.itba.paw.servicesinterfaces.ReviewService;
 import ar.edu.itba.paw.forms.SubmitReviewForm;
 import ar.edu.itba.paw.webapp.controller.datacontainers.CalculatedFilter;
+import ar.edu.itba.paw.webapp.controller.datacontainers.ComputedReviewData;
 import ar.edu.itba.paw.webapp.exceptions.ResourceNotFoundException;
 import ar.edu.itba.paw.servicesinterfaces.UserService;
 import ar.edu.itba.paw.webapp.auth.AuthenticationHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Controller;
@@ -53,16 +61,15 @@ public class ReviewController extends PaginatedController implements QueryContro
         this.userService = userService;
     }
 
-    @RequestMapping(value = "/review/submit", method = RequestMethod.GET)
+    @RequestMapping(value = "/review/submit", method = {RequestMethod.GET, RequestMethod.POST})
     public ModelAndView createReviewForm(@RequestParam(value = "gameId", defaultValue = "0", required = false) Long gameId,
                                          @RequestParam(value = "search", defaultValue = "") String search,
                                          @ModelAttribute("reviewForm") final SubmitReviewForm form) {
         ModelAndView mav = new ModelAndView("/review/submit-review");
-        LOGGER.debug("hola");
-        if(gameId != 0) {
+        if(gameId != null && gameId != 0) {
             Optional<Game> reviewedGame = gameService.getGameById(gameId);
             if (!reviewedGame.isPresent()) {
-                return new ModelAndView("static-components/not-found");
+                throw new ObjectNotFoundException("game.notfound");
             }
             mav.addObject("game", reviewedGame.get());
         }
@@ -93,6 +100,7 @@ public class ReviewController extends PaginatedController implements QueryContro
         mav.addObject("game", review.get().getReviewedGame());
         mav.addObject("reviewExtra", ComputedReviewData.factory(review.get()));
         mav.addObject("isModerated", roles.contains(new SimpleGrantedAuthority("ROLE_MODERATOR")));
+        mav.addObject("isOwner", loggedUser != null && Objects.equals(loggedUser.getId(), review.get().getAuthor().getId()));
         return mav;
     }
 
@@ -224,39 +232,41 @@ public class ReviewController extends PaginatedController implements QueryContro
         return new ModelAndView("redirect:" + url);
     }
 
-
-
-    public static class ComputedReviewData {
-        private final Double gametime;
-
-        private final GamelengthUnit unit;
-
-        public static ComputedReviewData factory(Review review) {
-            if (review == null || review.getGameLength() == null) return null;
-            return new ComputedReviewData(review);
+    @RequestMapping(value = "/review/{id:\\d+}/edit", method = RequestMethod.GET)
+    public ModelAndView editReviewForm(@PathVariable("id") Long reviewId, @ModelAttribute("reviewForm") EditReviewForm form) {
+        User user = AuthenticationHelper.getLoggedUser(userService);
+        if (user == null) {
+            throw new UserNotFoundException("user.notfound");
         }
-
-        private ComputedReviewData(Review review) {
-            if (review == null || review.getGameLength() == null)
-                throw new IllegalStateException();
-            if (review.getGameLength() > GamelengthUnit.HOURS.toSeconds(1.0)) {
-                this.gametime = review.getGameLength() / GamelengthUnit.HOURS.toSeconds(1.0);
-                this.unit = GamelengthUnit.HOURS;
-            } else {
-                this.gametime = review.getGameLength() / GamelengthUnit.MINUTES.toSeconds(1.0);
-                this.unit = GamelengthUnit.MINUTES;
-            }
+        Review review = reviewService.getReviewById(reviewId, user).orElseThrow(() -> new ObjectNotFoundException("review.notfound"));
+        if (!review.getAuthor().equals(user)) {
+            throw new WrongAccessException();
         }
-
-        public Double getGametime() {
-            return Math.round(gametime * 100) / 100.0;
-        }
-
-        public GamelengthUnit getUnit() {
-            return unit;
-        }
-
+        form.fromReview(review);
+        ModelAndView mav = new ModelAndView("review/review-edit");
+        mav.addObject("game", review.getReviewedGame());
+        mav.addObject("id", reviewId);
+        mav.addObject("platforms", Platform.values());
+        mav.addObject("difficulties", Difficulty.values());
+        mav.addObject("units", GamelengthUnit.values());
+        return mav;
     }
 
 
+    @RequestMapping(value = "/review/{id:\\d+}/edit", method = RequestMethod.POST)
+    public ModelAndView editReview(@PathVariable("id") Long reviewId, @Valid @ModelAttribute("reviewForm") EditReviewForm form, final BindingResult errors) {
+        User user = AuthenticationHelper.getLoggedUser(userService);
+        if (errors.hasErrors()) {
+            return editReviewForm(reviewId, form);
+        }
+        Review review = reviewService.getReviewById(reviewId, user).orElseThrow(() -> new ObjectNotFoundException("review.notfound"));
+        if (!review.getAuthor().equals(user)) {
+            throw new WrongAccessException();
+        }
+        int update = reviewService.updateReview(review.getId(), form.getReviewTitle(), form.getReviewContent(), form.getReviewRating(), form.getDifficultyEnum(), form.getGameLengthSeconds(), form.getPlatformEnum(),  form.getReplayability(),  form.getReplayability());
+        if (update == 0) {
+            throw new ObjectNotFoundException("review.notfound");
+        }
+        return new ModelAndView("redirect:/review/" + reviewId);
+    }
 }

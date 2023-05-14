@@ -25,6 +25,9 @@ public interface ReviewDao {
                          Platform platform,
                          Boolean completed,
                          Boolean replayable);
+
+    int update(Long id, SaveReviewDTO reviewDTO);
+
     Optional<Review> findById(Long id, Long activeUserId);
 
     Paginated<Review> findAll(Page pagination, ReviewFilter filter, Ordering<ReviewOrderCriteria> ordering, Long activeUserId);

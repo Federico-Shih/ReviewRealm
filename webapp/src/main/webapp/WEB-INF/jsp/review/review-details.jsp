@@ -53,18 +53,22 @@
                         <div class="col s8">
                             <c:out value="${review.title}" />
                         </div>
-                        <div class="col s2 ${isModerated ? "" : "s4 right"} right-align">
+                        <div class="col s4 right-align">
                             <span id="review-card-score"><c:out value="${review.rating}" /></span>/10
-                        </div>
-                        <c:if test="${isModerated}">
-                        <div class="col s2 right-align">
-                                <div>
+                            <c:if test="${isModerated || isOwner}">
+                                <span>
                                     <a class="dropdown-trigger btn valign-wrapper" href="#" data-target="dropdown-mod">
                                         <i class="material-icons" aria-hidden="true">settings</i>
                                     </a>
                                     <ul id="dropdown-mod" class="dropdown-content dropdown-container">
-                                        <li>
+                                        <li class="actions-container">
                                             <c:url value="/review/delete/${review.id}" var="moderateUrl" />
+                                            <c:if test="${isOwner}">
+                                                <a href="<c:url value="/review/${review.id}/edit"/> " class="valign-wrapper white-text f-row f-ai-center normal-link">
+                                                    <i class="material-icons">edit</i>
+                                                    <span><spring:message code="review.edit" /></span>
+                                                </a>
+                                            </c:if>
                                             <form action="${moderateUrl}" method="post" >
                                                 <button class="waves-effect btn-flat valign-wrapper red-text f-row f-ai-center" type="submit">
                                                     <i class="material-icons">delete</i>
@@ -73,9 +77,10 @@
                                             </form>
                                         </li>
                                     </ul>
-                                </div>
+                                </span>
+                            </c:if>
                         </div>
-                        </c:if>
+
                     </div>
                     <div class="divider-h"></div>
                     <div class="card-content-container-detail">
