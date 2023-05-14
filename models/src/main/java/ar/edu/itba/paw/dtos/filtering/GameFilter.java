@@ -1,25 +1,24 @@
-package ar.edu.itba.paw.dtos;
-
-import ar.edu.itba.paw.enums.Genre;
+package ar.edu.itba.paw.dtos.filtering;
 
 import java.util.List;
-import java.util.Optional;
 
 public class GameFilter {
     private final List<Integer> gameGenres;
     private final String gameContent;
     private final String developer;
     private final String publisher;
-
+    private final Float minRating;
+    private final Float maxRating;
     private final Boolean isFavorite;
-
     private final Boolean isSuggested;
 
-    public GameFilter(List<Integer> gameGenres, String gameContent, String developer, String publisher, Boolean isFavorite, Boolean isSuggested) {
+    public GameFilter(List<Integer> gameGenres, String gameContent, String developer, String publisher, Float minRating, Float maxRating, Boolean isFavorite, Boolean isSuggested) {
         this.gameGenres = gameGenres;
         this.gameContent = gameContent;
         this.developer = developer;
         this.publisher = publisher;
+        this.minRating = minRating;
+        this.maxRating = maxRating;
         this.isFavorite = isFavorite;
         this.isSuggested = isSuggested;
     }
@@ -40,6 +39,15 @@ public class GameFilter {
         return publisher;
     }
 
+    public Float getMinRating() {
+        return minRating;
+    }
+
+    public Float getMaxRating() {
+        return maxRating;
+    }
+
+    //TODO: implementar en el DAO
     public Boolean getFavorite() {
         return isFavorite;
     }

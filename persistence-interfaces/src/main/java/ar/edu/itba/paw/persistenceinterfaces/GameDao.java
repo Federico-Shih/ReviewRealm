@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.persistenceinterfaces;
 
 import ar.edu.itba.paw.dtos.*;
+import ar.edu.itba.paw.dtos.filtering.GameFilter;
 import ar.edu.itba.paw.dtos.ordering.GameOrderCriteria;
 import ar.edu.itba.paw.dtos.ordering.Ordering;
 import ar.edu.itba.paw.exceptions.ObjectNotFoundException;

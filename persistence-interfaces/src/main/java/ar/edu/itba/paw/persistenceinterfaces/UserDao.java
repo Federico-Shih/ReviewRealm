@@ -1,14 +1,14 @@
 package ar.edu.itba.paw.persistenceinterfaces;
 
 import ar.edu.itba.paw.dtos.Page;
-import ar.edu.itba.paw.dtos.SaveUserDTO;
-import ar.edu.itba.paw.dtos.UserFilter;
-import ar.edu.itba.paw.dtos.ordering.Ordering;
+import ar.edu.itba.paw.dtos.saving.SaveUserDTO;
+import ar.edu.itba.paw.dtos.filtering.UserFilter;
 import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.models.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface UserDao {
     boolean exists(final long id);
@@ -30,9 +30,9 @@ public interface UserDao {
 
     boolean follows(final long userId, final long id);
 
-    List<Genre> getPreferencesById(long userId);
+    Set<Genre> getPreferences(final long userId);
 
-    void setPreferences(List<Integer> genres, long userId);
+    void setPreferences(Set<Integer> genres, long userId);
 
     Long getTotalAmountOfUsers();
 

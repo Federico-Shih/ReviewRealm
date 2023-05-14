@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -69,7 +70,7 @@ public class ProfileController extends PaginatedController {
         if (loggedUser != null) {
             mav.addObject("isProfileSelf", loggedUser.equals(user.get()));
             mav.addObject("following", userService.userFollowsId(loggedUser.getId(), userId));
-            mav.addObject("userHasNotSetPreferences", loggedUser.equals(user.get()) && !userService.hasPreferencesSet(user.get()));
+            mav.addObject("userHasNotSetPreferences", loggedUser.equals(user.get()) && !loggedUser.hasPreferencesSet());
         }
         return mav;
     }
@@ -173,7 +174,7 @@ public class ProfileController extends PaginatedController {
             return editPreferences(form);
         }
         try {
-            userService.setPreferences(form.getGenres(), userId);
+            userService.setPreferences(new HashSet<>(form.getGenres()), userId);
         } catch (RuntimeException err) {
             LOGGER.error("Unexpected error: {}", err.getMessage());
             return editPreferences(form);
@@ -238,7 +239,7 @@ public class ProfileController extends PaginatedController {
         mav.addObject("search", search);
         mav.addObject("reviewsFollowing", reviewService.getReviewsFromFollowingByUser(loggedUser.getId(), size));
         mav.addObject("user", loggedUser);
-        mav.addObject("userSetPreferences", userService.hasPreferencesSet(loggedUser));
+        mav.addObject("userSetPreferences", loggedUser.hasPreferencesSet());
         mav.addObject("size", size);
 
         return mav;

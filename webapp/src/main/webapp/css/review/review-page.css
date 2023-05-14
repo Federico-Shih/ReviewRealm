@@ -102,7 +102,6 @@ input[type=number] {
     padding: 5px;
     margin-top: 20px;
     margin-bottom: 20px;
-    min-height: 150px;
 }
 
 .dropdown-container {
@@ -183,4 +182,9 @@ input[type=number] {
     display: flex;
     flex-direction: column;
     gap: 10px;
+}
+
+.search-result-game-title {
+    font-size: 24px;
+    font-weight: bold;
 }

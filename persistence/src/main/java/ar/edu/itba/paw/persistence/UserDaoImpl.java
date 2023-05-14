@@ -1,10 +1,9 @@
 package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.dtos.Page;
-import ar.edu.itba.paw.dtos.SaveUserDTO;
+import ar.edu.itba.paw.dtos.saving.SaveUserDTO;
 import ar.edu.itba.paw.enums.Genre;
-import ar.edu.itba.paw.dtos.UserFilter;
-import ar.edu.itba.paw.enums.Genre;
+import ar.edu.itba.paw.dtos.filtering.UserFilter;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.persistence.helpers.CommonRowMappers;
 import ar.edu.itba.paw.persistence.helpers.QueryBuilder;
@@ -33,7 +32,7 @@ public class UserDaoImpl implements UserDao, PaginationDao<UserFilter> {
             resultSet.getString("username"),
             resultSet.getString("email"),
             resultSet.getString("password"),
-            new ArrayList<>(),
+            new HashSet<>(),
             resultSet.getBoolean("enabled"),
             resultSet.getLong("reputation"),
             new HashSet<>(),
@@ -192,12 +191,12 @@ public class UserDaoImpl implements UserDao, PaginationDao<UserFilter> {
     }
 
     @Override
-    public List<Genre> getPreferencesById(long userId){
-        return jdbcTemplate.query("SELECT genreId FROM genreforusers WHERE userId = ?", CommonRowMappers.GENRE_ROW_MAPPER, userId);
+    public Set<Genre> getPreferences(long userId){
+        return new HashSet<>(jdbcTemplate.query("SELECT genreId FROM genreforusers WHERE userId = ?", CommonRowMappers.GENRE_ROW_MAPPER, userId));
     }
 
     @Override
-    public void setPreferences(List<Integer> genres, long userId) {
+    public void setPreferences(Set<Integer> genres, long userId) {
         jdbcTemplate.update("DELETE FROM genreforusers WHERE userid = ?",userId);
         // Si tuvieramos muchos géneros a la vez (10 o más), deberíamos utilizar batchUpdate
         for(Integer genId : genres) {

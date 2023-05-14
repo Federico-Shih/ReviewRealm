@@ -1,16 +1,8 @@
 package ar.edu.itba.paw.persistence.tests;
 
-import ar.edu.itba.paw.dtos.Page;
-import ar.edu.itba.paw.dtos.builders.SaveUserBuilder;
-import ar.edu.itba.paw.dtos.builders.UserFilterBuilder;
-import ar.edu.itba.paw.models.Paginated;
-import ar.edu.itba.paw.models.User;
-import ar.edu.itba.paw.persistence.UserDaoImpl;
 import ar.edu.itba.paw.persistence.config.TestConfig;
 import ar.edu.itba.paw.persistenceinterfaces.ValidationTokenDao;
-import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -19,9 +11,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.jdbc.JdbcTestUtils;
 
 import javax.sql.DataSource;
-import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = TestConfig.class)

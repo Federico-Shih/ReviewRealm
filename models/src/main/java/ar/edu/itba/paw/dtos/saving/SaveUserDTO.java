@@ -1,4 +1,4 @@
-package ar.edu.itba.paw.dtos;
+package ar.edu.itba.paw.dtos.saving;
 
 import java.util.Objects;
 

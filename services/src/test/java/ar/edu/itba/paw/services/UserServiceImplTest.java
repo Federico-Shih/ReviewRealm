@@ -1,6 +1,6 @@
 package ar.edu.itba.paw.services;
 
-import ar.edu.itba.paw.dtos.SaveUserDTO;
+import ar.edu.itba.paw.dtos.saving.SaveUserDTO;
 import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.exceptions.*;
 import ar.edu.itba.paw.models.*;
@@ -153,20 +153,6 @@ public class UserServiceImplTest {
 
     }
 
-    @Test
-    public void testGetPreferences() {
-        List<Genre> list = new ArrayList<>();
-        list.add(Genre.ROGUELIKE);
-        list.add(Genre.ADVENTURE);
-        when(userDao.getPreferencesById(ID)).thenReturn(list);
-
-        List<Genre> secondList = new ArrayList<>();
-        secondList.add(Genre.ROGUELIKE);
-        secondList.add(Genre.ADVENTURE);
-
-        Assert.assertEquals(secondList, us.getPreferences(ID));
-    }
-
     @Test(expected = UserNotFoundException.class)
     public void followUserDoesNotExist() {
         Mockito.when(userDao.exists(1L)).thenReturn(false);
@@ -212,7 +198,7 @@ public class UserServiceImplTest {
 
     @Test(expected = UserAlreadyEnabled.class)
     public void resendTokenUserEnabled() throws UserAlreadyEnabled {
-        Mockito.when(userDao.getByEmail(EMAIL)).thenReturn(Optional.of(new User(1L, USERNAME, EMAIL, PASSWORD, new ArrayList<>(), true, 10L, new HashSet<>(), new HashSet<>(), 0L)));
+        Mockito.when(userDao.getByEmail(EMAIL)).thenReturn(Optional.of(new User(1L, USERNAME, EMAIL, PASSWORD, new HashSet<>(), true, 10L, new HashSet<>(), new HashSet<>(), 0L)));
         us.resendToken(EMAIL);
     }
 
@@ -220,7 +206,7 @@ public class UserServiceImplTest {
     public void resendTokenSuccessTest() throws UserAlreadyEnabled {
         ExpirationToken token = new ExpirationToken(1L, "aaa", 1L, "aaa", LocalDateTime.MAX);
         ExpirationToken newToken = new ExpirationToken(2L, "aaas", 1L, "aaa", LocalDateTime.MAX);
-        User user = new User(1L, USERNAME, EMAIL, PASSWORD, new ArrayList<>(), false, 10L, new HashSet<>(), new HashSet<>(), 0L);
+        User user = new User(1L, USERNAME, EMAIL, PASSWORD, new HashSet<>(), false, 10L, new HashSet<>(), new HashSet<>(), 0L);
         Mockito.when(userDao.getByEmail(eq(EMAIL))).thenReturn(Optional.of(user));
         Mockito.when(tokenDao.findLastPasswordToken(1L)).thenReturn(Optional.of(token));
         Mockito.when(tokenDao.create(anyString(), anyLong(), anyString(), any())).thenReturn(newToken);

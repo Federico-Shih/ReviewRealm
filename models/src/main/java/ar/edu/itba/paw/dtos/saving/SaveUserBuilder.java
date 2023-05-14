@@ -1,6 +1,4 @@
-package ar.edu.itba.paw.dtos.builders;
-
-import ar.edu.itba.paw.dtos.SaveUserDTO;
+package ar.edu.itba.paw.dtos.saving;
 
 public class SaveUserBuilder {
     private String username = null;

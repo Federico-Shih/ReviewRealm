@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.models;
 
 import ar.edu.itba.paw.enums.Difficulty;
+import ar.edu.itba.paw.enums.GamelengthUnit;
 import ar.edu.itba.paw.enums.Platform;
 import ar.edu.itba.paw.enums.ReviewFeedback;
 import org.jetbrains.annotations.Nullable;
@@ -95,6 +96,22 @@ public class Review {
 
     public Double getGameLength() {
         return gameLength;
+    }
+
+    public Pair<GamelengthUnit, Double> getGameLengthInUnits() {
+        GamelengthUnit unit;
+        double gametime;
+        if(gameLength == null) {
+            return null;
+        }
+        if (gameLength > GamelengthUnit.HOURS.toSeconds(1.0)) {
+            gametime = gameLength / GamelengthUnit.HOURS.toSeconds(1.0);
+            unit = GamelengthUnit.HOURS;
+        } else {
+            gametime = gameLength / GamelengthUnit.MINUTES.toSeconds(1.0);
+            unit = GamelengthUnit.MINUTES;
+        }
+        return Pair.of(unit, gametime);
     }
 
     public Platform getPlatform() {

@@ -37,8 +37,10 @@
                  src="<c:url value="${avatar}"/>"
                  alt="profilePic"/>
             <div class="profile-info-panel-info f-column f-jc-center">
-                <span class="profile-user-name">
-                    ${profile.username}
+                <div class="f-row f-ai-center f-gap-2">
+                    <span class="profile-user-name">
+                        ${profile.username}
+                    </span>
                     <c:if test="${userModerator}">
                          <span class="tooltipped" data-position="top" data-tooltip="<spring:message code="profile.moderator" />">
                             <i class="material-icons profile-user-name">
@@ -46,14 +48,19 @@
                             </i>
                          </span>
                     </c:if>
-                </span>
+                </div>
+
 
                 <c:if test="${!(empty profile.preferences)}">
                     <div class="profile-preferences">
                         <span class="white-text no-wrap"><spring:message code="profile.fanof"/></span>
-                        <div class="profile-preferences-list f-gap-1">
+                        <div class="profile-preferences-list f-gap-1 full-width">
                             <c:forEach var="genre" items="${profile.preferences}">
-                                <span class="chip-small-inverted"><spring:message code="${genre.name}"/></span>
+                                <span class="chip-small-inverted">
+                                    <a class="rr-blue-text" href="<c:url value="/game/list?f-gen=${genre.id}"/>">
+                                        <spring:message code="${genre.name}"/>
+                                    </a>
+                                </span>
                             </c:forEach>
                         </div>
                     </div>

@@ -42,7 +42,21 @@
                 <span id="review-card-title"><c:out value="${review.title}"/></span>
             </a>
             <span id="review-card-content"><c:out value="${review.content}"/></span>
-            <span id="review-card-date"><c:out value="${review.createdFormatted}"/></span>
+            <div class="f-row f-jc-sbetween full-width">
+                <div>
+                    <span id="review-time-played">
+                        <c:if test="${review.gameLength != null}">
+                            <spring:message code="review.gameLength" />:
+                            <c:out value="${review.gameLengthInUnits.value}" />
+                            <spring:message code="${review.gameLengthInUnits.key.code}" />
+                        </c:if>
+                        <c:if test="${review.completed}">
+                            (<spring:message code="reviewForm.completed"/>)
+                        </c:if>
+                    </span>
+                </div>
+                <span id="review-card-date"><c:out value="${review.createdFormatted}"/></span>
+            </div>
         </div>
         <div class="divider-h"></div>
         <div class="review-card-footer">
@@ -56,9 +70,7 @@
                     </a>
                 </div>
                 <div class="review-card-feedback-footer">
-                    <c:if test="${review.likeCounter != 0}">
-                        <span><c:out value="${review.likeCounter}"/></span>
-                    </c:if>
+                    <span><c:out value="${review.likeCounter}"/></span>
                     <c:url value="/review/feedback/${review.id}" var="updateFeedback" />
                     <form name="likeFeedbackForm" class="feedback-form no-margin" method="post" action="${updateFeedback}">
                         <button name="feedback" class="no-padding btn-flat waves-effect waves-light ${ (review.feedback == "LIKE")? "white-text":""}" value="LIKE">
@@ -81,7 +93,11 @@
                     </span>
                 </c:if>
                 <c:forEach var="genre" items="${review.author.preferences}">
-                    <span class="chip-small-inverted"><spring:message code="${genre.name}"/></span>
+                    <span class="chip-small-inverted">
+                        <a href="<c:url value="/game/list?f-gen=${genre.id}"/>" class="rr-blue-text">
+                                    <spring:message code="${genre.name}"/>
+                            </a>
+                    </span>
                 </c:forEach>
             </div>
         </div>

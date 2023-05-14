@@ -18,16 +18,10 @@
     <script src="<c:url value="/js/reviewfeedback.js" />"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
 </head>
-<!-- general variables
-<%--<spring:message code="reviewForm.title.placeholder" var="titlePlaceholder"/>--%>
-<%--<spring:message code="reviewForm.content.placeholder" var="contentPlaceholder"/>--%>
-<%--<spring:message code="review.author.generic" var="authorPlaceholder"/>--%>
-<%--<c:url value="/game/${game.id}" var="gameUrl" />--%>
--->
 <body>
 <jsp:include page="/WEB-INF/jsp/static-components/navbar.jsp"/>
 <div class="row">
-    <div class="col m10 push-m1 s12 l6 push-l3">
+    <div class="col m10 push-m1 s12 xl8 push-xl2">
         <c:if test="${fn:length(search) == 0}">
             <h4>
                 <spring:message code="search.noSearch" />

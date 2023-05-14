@@ -1,11 +1,21 @@
 package ar.edu.itba.paw.enums;
 
+import java.util.Optional;
+
 public enum Difficulty {
-    HARD("difficulty.hard"), MEDIUM("difficulty.medium"), EASY("difficulty.easy");
+    HARD(0, "difficulty.hard"), MEDIUM(1, "difficulty.medium"), EASY(2, "difficulty.easy");
+
+    private final Integer id;
     private final String code;
-    Difficulty(String code) {
+    Difficulty(Integer id, String code) {
+        this.id = id;
         this.code = code;
     }
+
+    public Integer getId() {
+        return id;
+    }
+
     public String getCode() {
         return code;
     }
@@ -13,6 +23,15 @@ public enum Difficulty {
     @Override
     public String toString() {
         return super.name();
+    }
+
+    public static Optional<Difficulty> getById(int id) {
+        for (Difficulty difficulty : values()) {
+            if (difficulty.id == id) {
+                return Optional.of(difficulty);
+            }
+        }
+        return Optional.empty();
     }
 }
 

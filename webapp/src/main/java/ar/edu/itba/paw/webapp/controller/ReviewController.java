@@ -1,11 +1,14 @@
 package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.dtos.*;
-import ar.edu.itba.paw.dtos.builders.ReviewFilterBuilder;
+import ar.edu.itba.paw.dtos.filtering.ReviewFilter;
+import ar.edu.itba.paw.dtos.filtering.ReviewFilterBuilder;
 import ar.edu.itba.paw.dtos.ordering.GameOrderCriteria;
 import ar.edu.itba.paw.dtos.ordering.OrderDirection;
 import ar.edu.itba.paw.dtos.ordering.Ordering;
 import ar.edu.itba.paw.dtos.ordering.ReviewOrderCriteria;
+import ar.edu.itba.paw.dtos.searching.ReviewSearchFilter;
+import ar.edu.itba.paw.dtos.searching.ReviewSearchFilterBuilder;
 import ar.edu.itba.paw.enums.*;
 import ar.edu.itba.paw.exceptions.ObjectNotFoundException;
 import ar.edu.itba.paw.models.*;
@@ -18,8 +21,7 @@ import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.servicesinterfaces.GenreService;
 import ar.edu.itba.paw.servicesinterfaces.ReviewService;
 import ar.edu.itba.paw.forms.SubmitReviewForm;
-import ar.edu.itba.paw.webapp.controller.datacontainers.CalculatedFilter;
-import ar.edu.itba.paw.webapp.controller.datacontainers.ComputedReviewData;
+import ar.edu.itba.paw.webapp.controller.datacontainers.FilteredList;
 import ar.edu.itba.paw.webapp.exceptions.ResourceNotFoundException;
 import ar.edu.itba.paw.servicesinterfaces.UserService;
 import ar.edu.itba.paw.webapp.auth.AuthenticationHelper;
@@ -98,7 +100,6 @@ public class ReviewController extends PaginatedController implements QueryContro
         ModelAndView mav = new ModelAndView("/review/review-details");
         mav.addObject("review", review.get());
         mav.addObject("game", review.get().getReviewedGame());
-        mav.addObject("reviewExtra", ComputedReviewData.factory(review.get()));
         mav.addObject("isModerated", roles.contains(new SimpleGrantedAuthority("ROLE_MODERATOR")));
         mav.addObject("isOwner", loggedUser != null && Objects.equals(loggedUser.getId(), review.get().getAuthor().getId()));
         return mav;
@@ -140,20 +141,48 @@ public class ReviewController extends PaginatedController implements QueryContro
             @RequestParam(value = "o-crit", defaultValue = "0") Integer orderCriteria,
             @RequestParam(value = "o-dir", defaultValue = "0") Integer orderDirection,
             @RequestParam(value = "f-gen", defaultValue = "") List<Integer> genresFilter,
+            @RequestParam(value = "f-tpl", defaultValue = "") String timePlayedFilter,
+            @RequestParam(value = "f-prf", defaultValue = "") List<Integer> preferencesFilter,
+            @RequestParam(value = "f-plt", defaultValue = "") List<Integer> platformsFilter,
+            @RequestParam(value = "f-dif", defaultValue = "") List<Integer> difficultyFilter,
+            @RequestParam(value = "f-cpt", defaultValue = "") Boolean completedFilter,
             @RequestParam(value = "page", defaultValue = "1") Integer page,
-            @RequestParam(value = "pageSize", defaultValue = "8") Integer pageSize
-            /*,@RequestParam(value = "f-pref", defaultValue = "") List<Long> preferencesFilter*/
+            @RequestParam(value = "pageSize", defaultValue = "") Integer pageSize
     ) {
         final ModelAndView mav = new ModelAndView("review/review-list");
         User loggedUser = AuthenticationHelper.getLoggedUser(userService);
         List<Genre> allGenres = genreService.getAllGenres();
-        ReviewFilterBuilder filterBuilder = new ReviewFilterBuilder()
-                .withGameGenres(genresFilter);
-        ReviewFilter filters = filterBuilder.build();
 
-        Paginated<Review> reviewPaginated = reviewService.getAllReviews(
+        double minTimePlayed = 0;
+        try {
+            minTimePlayed = Double.parseDouble(timePlayedFilter);
+        } catch (Exception ignored) {}
+
+        ReviewSearchFilterBuilder searchFilterBuilder = new ReviewSearchFilterBuilder()
+                .withGenres(genresFilter)
+                .withPlatforms(
+                        platformsFilter.stream()
+                        .map(Platform::getById)
+                        .filter(Optional::isPresent)
+                        .map(Optional::get)
+                        .collect(Collectors.toList())
+                )
+                .withDifficulties(
+                        difficultyFilter.stream()
+                        .map(Difficulty::getById)
+                        .filter(Optional::isPresent)
+                        .map(Optional::get)
+                        .collect(Collectors.toList())
+                )
+                .withCompleted((completedFilter!=null && completedFilter)? true : null)
+                .withPreferences(preferencesFilter)
+                .withMinTimePlayed(minTimePlayed);
+
+        ReviewSearchFilter searchFilter = searchFilterBuilder.build();
+
+        Paginated<Review> reviewPaginated = reviewService.searchReviews(
                 Page.with(page != null ? page : INITIAL_PAGE, pageSize != null ? pageSize : PAGE_SIZE),
-                filters,
+                searchFilter,
                 new Ordering<>(OrderDirection.fromValue(orderDirection), ReviewOrderCriteria.fromValue(orderCriteria)),
                 loggedUser
         );
@@ -164,37 +193,43 @@ public class ReviewController extends PaginatedController implements QueryContro
         mav.addObject("totalReviews", reviewPaginated.getTotalPages());
         mav.addObject("orderCriteria", ReviewOrderCriteria.values());
         mav.addObject("orderDirections", OrderDirection.values());
-        mav.addObject("filters", new CalculatedFilter(genresFilter, new ArrayList<>(), allGenres));
+        mav.addObject("genresFilter", new FilteredList<Genre>(allGenres, (genre) -> genresFilter.contains(genre.getId())));
+        mav.addObject("preferencesFilter", new FilteredList<Genre>(allGenres, (preference) -> preferencesFilter.contains(preference.getId())));
+        mav.addObject("platformsFilter", new FilteredList<Platform>(Arrays.asList(Platform.values()), (platform) -> platformsFilter.contains(platform.getId())));
+        mav.addObject("difficultiesFilter", new FilteredList<Difficulty>(Arrays.asList(Difficulty.values()), (difficulty) -> difficultyFilter.contains(difficulty.getId())));
+        mav.addObject("completedFilter", completedFilter);
         mav.addObject("selectedOrderDirection", OrderDirection.fromValue(orderDirection));
         mav.addObject("selectedOrderCriteria", GameOrderCriteria.fromValue(orderCriteria));
+        mav.addObject("minTimePlayed", minTimePlayed);
+        if(orderCriteria== 0 && orderDirection == 0 && genresFilter.isEmpty() && timePlayedFilter.isEmpty() && preferencesFilter.isEmpty() && platformsFilter.isEmpty() && difficultyFilter.isEmpty() && completedFilter == null) {
+            mav.addObject("showResetFiltersButton", false);
+        } else {
+            mav.addObject("showResetFiltersButton", true);
+        }
 
         List<Pair<String, Object>> queriesToKeepAtPageChange = new ArrayList<>();
         queriesToKeepAtPageChange.add(Pair.of("o-crit", orderCriteria));
         queriesToKeepAtPageChange.add(Pair.of("o-dir", orderDirection));
         queriesToKeepAtPageChange.add(Pair.of("pageSize", pageSize));
         queriesToKeepAtPageChange.addAll(genresFilter.stream().map((value) -> Pair.of("f-gen", (Object)value)).collect(Collectors.toList()));
+        queriesToKeepAtPageChange.addAll(preferencesFilter.stream().map((value) -> Pair.of("f-prf", (Object)value)).collect(Collectors.toList()));
+        queriesToKeepAtPageChange.addAll(platformsFilter.stream().map((value) -> Pair.of("f-plt", (Object)value)).collect(Collectors.toList()));
+        queriesToKeepAtPageChange.addAll(difficultyFilter.stream().map((value) -> Pair.of("f-dif", (Object)value)).collect(Collectors.toList()));
+        queriesToKeepAtPageChange.add(Pair.of("f-cpt", completedFilter));
+        queriesToKeepAtPageChange.add(Pair.of("f-tpl", timePlayedFilter));
 
         mav.addObject("queriesToKeepAtPageChange", toQueryString(queriesToKeepAtPageChange));
 
         List<Pair<String, Object>> queriesToKeepAtRemoveFilters = new ArrayList<>();
-        List<Pair<String, Object>> favGameGenreFilters= new ArrayList<>();
-      //List<Pair<String,Object>> favUserPrefFilters = new ArrayList<>();
-        if(loggedUser != null){
 
-            loggedUser.getPreferences().forEach((pref) ->{
-            //    favUserPrefFilters.add(Pair.of("f-pref",pref.getId()));
-                favGameGenreFilters.add(Pair.of("f-gen",pref.getId()));
-            });
-        }
-        queriesToKeepAtRemoveFilters.add(Pair.of("o-crit", orderCriteria));
-        queriesToKeepAtRemoveFilters.add(Pair.of("o-dir", orderDirection));
-        queriesToKeepAtRemoveFilters.add(Pair.of("pageSize", pageSize));
-
-        mav.addObject("setPreferences",!favGameGenreFilters.isEmpty());
         mav.addObject("queriesToKeepAtRemoveFilters", toQueryString(queriesToKeepAtRemoveFilters));
-        mav.addObject("favGameGenreFilters", toQueryString(favGameGenreFilters).replaceFirst("\\?",""));
-        //mav.addObject("favUserPrefFilters", toQueryString(favUserPrefFilters));
 
+        if(loggedUser == null || !loggedUser.hasPreferencesSet()) {
+            mav.addObject("showFavoritesShortcut", false);
+        } else {
+            mav.addObject("showFavoritesShortcut", true);
+            mav.addObject("userPreferences", loggedUser.getPreferences().stream().map(Genre::getId).collect(Collectors.toList()));
+        }
         return mav;
     }
 

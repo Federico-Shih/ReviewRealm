@@ -3,13 +3,14 @@ package ar.edu.itba.paw.servicesinterfaces;
 import ar.edu.itba.paw.dtos.*;
 import ar.edu.itba.paw.dtos.ordering.GameOrderCriteria;
 import ar.edu.itba.paw.dtos.ordering.Ordering;
+import ar.edu.itba.paw.dtos.saving.SubmitGameDTO;
+import ar.edu.itba.paw.dtos.searching.GameSearchFilter;
 import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.models.Game;
 import ar.edu.itba.paw.models.Paginated;
 import ar.edu.itba.paw.models.GameReviewData;
 import ar.edu.itba.paw.models.User;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -22,7 +23,7 @@ public interface GameService {
 
     List<Genre> getGameGenresById(Long id);
 
-    Paginated<Game> getAllGames(Page page, GameFilter filter, Ordering<GameOrderCriteria> ordering);
+    Paginated<Game> searchGames(Page page, GameSearchFilter filter, Ordering<GameOrderCriteria> ordering);
 
     Paginated<Game> getAllGamesShort(Integer page, Integer pageSize,String searchQuery);
 

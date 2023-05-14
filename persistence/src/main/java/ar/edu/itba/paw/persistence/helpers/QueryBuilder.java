@@ -58,6 +58,50 @@ public class QueryBuilder {
         return this;
     }
 
+    public <T>QueryBuilder withGreaterOrEqual(String queryField, T queryContent) {
+        if (queryContent != null) {
+            str.append(" ");
+            str.append(operator);
+            str.append(String.format(" %s >= ? ", queryField));
+            params.add(queryContent);
+            operator = "AND";
+        }
+        return this;
+    }
+
+    public <T>QueryBuilder withLessOrEqual(String queryField, T queryContent) {
+        if (queryContent != null) {
+            str.append(" ");
+            str.append(operator);
+            str.append(String.format(" %s <= ? ", queryField));
+            params.add(queryContent);
+            operator = "AND";
+        }
+        return this;
+    }
+
+    public <T>QueryBuilder withGreater(String queryField, T queryContent) {
+        if (queryContent != null) {
+            str.append(" ");
+            str.append(operator);
+            str.append(String.format(" %s > ? ", queryField));
+            params.add(queryContent);
+            operator = "AND";
+        }
+        return this;
+    }
+
+    public <T>QueryBuilder withLess(String queryField, T queryContent) {
+        if (queryContent != null) {
+            str.append(" ");
+            str.append(operator);
+            str.append(String.format(" %s < ? ", queryField));
+            params.add(queryContent);
+            operator = "AND";
+        }
+        return this;
+    }
+
     public QueryBuilder OR() {
         if (!this.operator.equals("")) {
             this.operator = "OR";
@@ -66,6 +110,13 @@ public class QueryBuilder {
     }
     public QueryBuilder NOT(){
         this.not = !this.not;
+        return this;
+    }
+
+    public QueryBuilder AND() {
+        if (!this.operator.equals("")) {
+            this.operator = "AND";
+        }
         return this;
     }
 

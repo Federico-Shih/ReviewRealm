@@ -1,9 +1,11 @@
 package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.dtos.*;
-import ar.edu.itba.paw.dtos.builders.ReviewFilterBuilder;
+import ar.edu.itba.paw.dtos.filtering.ReviewFilter;
+import ar.edu.itba.paw.dtos.filtering.ReviewFilterBuilder;
 import ar.edu.itba.paw.dtos.ordering.Ordering;
 import ar.edu.itba.paw.dtos.ordering.ReviewOrderCriteria;
+import ar.edu.itba.paw.dtos.searching.ReviewSearchFilter;
 import ar.edu.itba.paw.enums.*;
 import ar.edu.itba.paw.models.Game;
 import ar.edu.itba.paw.models.Paginated;
@@ -140,8 +142,17 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Transactional(readOnly = true)
     @Override
-    public Paginated<Review> getAllReviews(Page page, ReviewFilter filter, Ordering<ReviewOrderCriteria> ordering, User activeUser) {
-       return reviewDao.findAll(page, filter, ordering, (activeUser != null) ? activeUser.getId() : null);
+    public Paginated<Review> searchReviews(Page page, ReviewSearchFilter searchFilter, Ordering<ReviewOrderCriteria> ordering, User activeUser) {
+        ReviewFilter filter = new ReviewFilterBuilder()
+                .withGameGenres(searchFilter.getGenres())
+                .withAuthorGenres(searchFilter.getPreferences())
+                .withReviewContent(searchFilter.getSearch())
+                .withMinTimePlayed(searchFilter.getMinTimePlayed())
+                .withPlatforms(searchFilter.getPlatforms())
+                .withDifficulties(searchFilter.getDifficulties())
+                .withCompleted(searchFilter.getCompleted())
+                .build();
+        return reviewDao.findAll(page, filter, ordering, (activeUser != null) ? activeUser.getId() : null);
     }
 
     @Transactional(readOnly = true)

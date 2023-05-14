@@ -25,7 +25,7 @@
             </div>
             <div class="col s12 center">
                 <c:forEach items="${profile.preferences}" var="favgenres">
-                    <span class="chip-small">
+                    <span class="chip-small-inverted">
                         <spring:message code="${favgenres.name}"/>
                     </span>
                 </c:forEach>

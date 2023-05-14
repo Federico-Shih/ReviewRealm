@@ -1,6 +1,4 @@
-package ar.edu.itba.paw.dtos.builders;
-
-import ar.edu.itba.paw.dtos.GameFilter;
+package ar.edu.itba.paw.dtos.filtering;
 
 import java.util.List;
 
@@ -9,7 +7,8 @@ public class GameFilterBuilder {
     private String gameContent = null;
     private String developer = null;
     private String publisher = null;
-
+    private Float minRating = null;
+    private Float maxRating = null;
     private Boolean isFavorite = null;
 
     private Boolean isSuggested = null;
@@ -39,12 +38,20 @@ public class GameFilterBuilder {
         return this;
     }
 
+    public GameFilterBuilder withRatingRange(Float minRating, Float maxRating) {
+        this.minRating = minRating;
+        this.maxRating = maxRating;
+        return this;
+    }
+
+
+
     public GameFilterBuilder withSuggestion(Boolean isSuggested) {
         this.isSuggested = isSuggested;
         return this;
     }
 
     public GameFilter build() {
-        return new GameFilter(gameGenres, gameContent, developer, publisher, isFavorite, isSuggested);
+        return new GameFilter(gameGenres, gameContent, developer, publisher, minRating, maxRating, isFavorite, isSuggested);
     }
 }

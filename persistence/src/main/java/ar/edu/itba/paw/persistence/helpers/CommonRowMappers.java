@@ -30,6 +30,7 @@ public interface CommonRowMappers{
     RowMapper<Review> REVIEW_ROW_MAPPER = ((resultSet, i) -> {
         String difficulty = resultSet.getString("difficulty");
         String platform = resultSet.getString("platform");
+
         return new Review(
                 resultSet.getLong("id"),
                 new User(
@@ -55,7 +56,7 @@ public interface CommonRowMappers{
 
                 ),
                 difficulty != null ? Difficulty.valueOf(difficulty.toUpperCase()) : null,
-                resultSet.getDouble("gamelength"),
+                resultSet.getString("gamelength") != null? resultSet.getDouble("gamelength") : null,
                 platform != null ? Platform.valueOf(platform.toUpperCase()) : null,
                 resultSet.getBoolean("completed"),
                 resultSet.getBoolean("replayability"),

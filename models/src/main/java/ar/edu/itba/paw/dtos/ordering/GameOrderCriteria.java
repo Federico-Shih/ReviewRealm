@@ -4,7 +4,8 @@ import java.util.Objects;
 
 public enum GameOrderCriteria implements OrderCriteria {
     PUBLISH_DATE(0,"order.criteria.game.publish.date", "publishDate"),
-    NAME(1,"order.criteria.game.name", "name");
+    NAME(1,"order.criteria.game.name", "name"),
+    AVERAGE_RATING(2,"game.details.review.statistics.rating", "avg_rating");
 
     final Integer value;
     final String localizedNameCode;

@@ -1,12 +1,16 @@
 package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.dtos.*;
-import ar.edu.itba.paw.dtos.builders.GameFilterBuilder;
-import ar.edu.itba.paw.dtos.builders.ReviewFilterBuilder;
+import ar.edu.itba.paw.dtos.filtering.GameFilter;
+import ar.edu.itba.paw.dtos.filtering.GameFilterBuilder;
+import ar.edu.itba.paw.dtos.filtering.ReviewFilter;
+import ar.edu.itba.paw.dtos.filtering.ReviewFilterBuilder;
 import ar.edu.itba.paw.dtos.ordering.GameOrderCriteria;
 import ar.edu.itba.paw.dtos.ordering.OrderDirection;
 import ar.edu.itba.paw.dtos.ordering.Ordering;
 import ar.edu.itba.paw.dtos.ordering.ReviewOrderCriteria;
+import ar.edu.itba.paw.dtos.saving.SubmitGameDTO;
+import ar.edu.itba.paw.dtos.searching.GameSearchFilter;
 import ar.edu.itba.paw.enums.Difficulty;
 import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.enums.Platform;
@@ -89,8 +93,14 @@ public class GameServiceImpl implements GameService {
 
     @Transactional(readOnly = true)
     @Override
-    public Paginated<Game> getAllGames(Page page, GameFilter filter, Ordering<GameOrderCriteria> ordering)
+    public Paginated<Game> searchGames(Page page, GameSearchFilter searchFilter, Ordering<GameOrderCriteria> ordering)
     {
+        GameFilter filter = new GameFilterBuilder()
+                .withGameContent(searchFilter.getSearch())
+                .withGameGenres(searchFilter.getGenres())
+                .withRatingRange(searchFilter.getMinRating(), searchFilter.getMaxRating())
+                .withSuggestion(searchFilter.getSuggestion())
+                .build();
         return gameDao.findAll(page, filter, ordering);
     }
 
@@ -159,10 +169,11 @@ public class GameServiceImpl implements GameService {
     @Transactional(readOnly = true)
     @Override
     public List<Game> getRecommendationsOfGamesForUser(Long userId) {
-        List <Genre> userPreferences = userService.getPreferences(userId);
-        if(userPreferences.isEmpty()){
+        Optional<User> user = userService.getUserById(userId);
+        if(!user.isPresent() || !user.get().hasPreferencesSet()){
             return new ArrayList<>();
         }
+        Set <Genre> userPreferences = user.get().getPreferences();
         List<Integer> preferencesIds = userPreferences.stream().map(Genre::getId).collect(Collectors.toList());
         Set<Game> userReviewedGames = getGamesReviewedByUser(userId);
         List<Long> idsToExclude = userReviewedGames.stream().map(Game::getId).collect(Collectors.toList());

@@ -14,13 +14,57 @@
     <link href="<c:url value="/css/game.css" />" rel="stylesheet"/>
     <link rel="stylesheet" href="<c:url value="/css/main.css" />">
     <link rel="stylesheet" href="<c:url value="/css/review.css"/>">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/14.6.1/nouislider.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/14.6.1/nouislider.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             var elems = document.querySelector('.collapsible');
             var instance = M.Collapsible.init(elems, { accordion: false });
-            <c:if test="${fn:length(filters.selectedGenres) > 0}">
+            <c:if test="${fn:length(genresFilter.selected) > 0}">
                 instance.open(0);
             </c:if>
+            <c:if test="${showFavoritesShortcut}">
+            genresButton = document.getElementById('auto-select-genres-button');
+            genresButton.addEventListener('click', function () {
+                const userPreferences = ${userPreferences};
+                const checkboxes = document.getElementsByName('f-gen');
+                for (let i = 0; i < checkboxes.length; i++) {
+                    const checkbox = checkboxes[i];
+                    checkbox.checked = !!userPreferences.includes(parseInt(checkbox.value));
+                }
+            });
+            </c:if>
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var rangeSlider = document.getElementById('range-slider');
+            var sliderValues = document.getElementById('f-rat');
+
+            const start = [ ${minRating}, ${maxRating} ];
+            const min = 1;
+            const max = 10;
+
+            noUiSlider.create(rangeSlider, {
+                start: start,
+                connect: true,
+                step: 0.1,
+                orientation: 'horizontal',
+                range: {
+                    'min': min,
+                    'max': max
+                },
+                tooltips: true,
+            });
+
+            rangeSlider.noUiSlider.on('update', function(values, handle) {
+                if(values[0] == min && values[1] == max) {
+                    sliderValues.value = '';
+                }
+                else {
+                    sliderValues.value = values.join('t');
+                }
+            });
         });
     </script>
 </head>
@@ -29,72 +73,94 @@
     <jsp:param name="selected" value="game-list"/>
 </jsp:include>
 <c:url value="/game/list/" var="queryFinish"/>
-<div >
+<div>
     <form action="${queryFinish}" class="review-list-page">
         <div class="left-panel">
             <div>
-                    <div class="review-filters-panel-section">
-                        <button type="submit" class="btn truncate"><spring:message code="apply.filters"/></button>
-                        <span class="review-filters-panel-title"><spring:message code="order.by"/></span>
-                        <div>
-                            <c:forEach var="criteria" items="${orderCriteria}">
-                                <p>
-                                    <label>
-                                        <input name="o-crit" value="${criteria.value}" type="radio" <c:if
-                                                test="${selectedOrderCriteria.value == criteria.value}"> checked </c:if>/>
-                                        <span><spring:message code="${criteria.localizedNameCode}"/></span>
-                                    </label>
-                                </p>
-                            </c:forEach>
-                            <div class="divider-h"></div>
-                            <c:forEach var="direction" items="${orderDirections}">
-                                <p>
-                                    <label>
-                                        <input name="o-dir" value="${direction.value}" type="radio" <c:if
-                                                test="${selectedOrderDirection.value == direction.value}"> checked </c:if>/>
-                                        <span><spring:message code="${direction.localizedNameCode}"/></span>
-                                    </label>
-                                </p>
-                            </c:forEach>
-                        </div>
-                    </div>
-                    <div class="divider-h"></div>
-                    <div class="review-filters-panel-section">
-                        <span class="review-filters-panel-title"><spring:message code="review.filters"/></span>
-                        <a href="${queriesToKeepAtRemoveFilters}"><button type="button" class="remove-filter-button btn-small blue-grey darken-3">
+                <div class="review-filters-panel-section">
+                    <button type="submit" class="btn truncate"><spring:message code="apply.filters"/></button>
+                    <c:if test="${showResetFiltersButton}">
+                        <a href="${queriesToKeepAtRemoveFilters}"><button type="button" class="remove-filter-button btn-small blue-grey darken-3 height-fit-content">
                             <i class="material-icons">clear</i>
                             <span><spring:message code="remove.filters"/></span>
                         </button></a>
-                        <ul class="collapsible">
-                            <li class="full-width">
-                                <div class="collapsible-header filters-header">
-                                    <i class="material-icons">videogame_asset</i>
-                                    <span class="review-filters-panel-subtitle"><spring:message code="review.genres"/></span>
-                                    <i class="material-icons right">arrow_drop_down</i>
-                                </div>
-                                <div class="collapsible-body row filters-container">
-                                    <c:forEach var="genre" items="${filters.selectedGenres}">
-                                        <p class="col s12 l6">
-                                            <label>
-                                                <input name="f-gen" value="${genre.id}" type="checkbox" class="filled-in" checked/>
-                                                <span><spring:message code="${genre.name}"/></span>
-                                            </label>
-                                        </p>
-                                    </c:forEach>
-                                    <c:forEach var="genre" items="${filters.unselectedGenres}">
-                                        <p class="col s12 l6">
-                                            <label>
-                                                <input name="f-gen" value="${genre.id}" type="checkbox" class="filled-in"/>
-                                                <span><spring:message code="${genre.name}"/></span>
-                                            </label>
-                                        </p>
-                                    </c:forEach>
-                                </div>
-                            </li>
-                        </ul>
+                    </c:if>
+                    <span class="review-filters-panel-title"><spring:message code="order.by"/></span>
+                    <div>
+                        <c:forEach var="criteria" items="${orderCriteria}">
+                            <p>
+                                <label>
+                                    <input name="o-crit" value="${criteria.value}" type="radio" <c:if
+                                            test="${selectedOrderCriteria.value == criteria.value}"> checked </c:if>/>
+                                    <span><spring:message code="${criteria.localizedNameCode}"/></span>
+                                </label>
+                            </p>
+                        </c:forEach>
+                        <div class="divider-h"></div>
+                        <c:forEach var="direction" items="${orderDirections}">
+                            <p>
+                                <label>
+                                    <input name="o-dir" value="${direction.value}" type="radio" <c:if
+                                            test="${selectedOrderDirection.value == direction.value}"> checked </c:if>/>
+                                    <span><spring:message code="${direction.localizedNameCode}"/></span>
+                                </label>
+                            </p>
+                        </c:forEach>
                     </div>
                 </div>
+                <div class="divider-h"></div>
+                <div class="review-filters-panel-section">
+                    <span class="review-filters-panel-title"><spring:message code="review.filters"/></span>
+                    <div class="f-row f-ai-center f-gap-2 full-width">
+                        <i class="material-icons">star</i>
+                        <span class="review-filters-panel-subtitle"><spring:message code="game.details.review.statistics.rating"/></span>
+                    </div>
+                    <div class="input-field range-slider">
+                        <div class="slider-styled" id="range-slider"></div>
+                    </div>
+                    <div class="input-field hide">
+                        <label for="f-rat"></label>
+                        <input class="white-text" type="text" id="f-rat" name="f-rat" readonly>
+                    </div>
 
+                    <ul class="collapsible">
+                        <li class="full-width">
+                            <div class="collapsible-header filters-header">
+                                <i class="material-icons">videogame_asset</i>
+                                <span class="review-filters-panel-subtitle"><spring:message code="review.genres"/></span>
+                                <i class="material-icons right">arrow_drop_down</i>
+                            </div>
+                            <div class="collapsible-body row filters-container">
+                                <c:if test="${showFavoritesShortcut}">
+                                    <div class="col s12">
+                                        <button type="button" id="auto-select-genres-button"
+                                                class="margin-top-2 btn-small blue-grey darken-3 height-fit-content">
+                                            <i class="material-icons left">favorite</i>
+                                            <span><spring:message code="set.favgenres"/></span>
+                                        </button>
+                                    </div>
+                                </c:if>
+                                <c:forEach var="genre" items="${genresFilter.selected}">
+                                    <p class="col s12 l6">
+                                        <label>
+                                            <input name="f-gen" value="${genre.id}" type="checkbox" class="filled-in" checked/>
+                                            <span><spring:message code="${genre.name}"/></span>
+                                        </label>
+                                    </p>
+                                </c:forEach>
+                                <c:forEach var="genre" items="${genresFilter.unselected}">
+                                    <p class="col s12 l6">
+                                        <label>
+                                            <input name="f-gen" value="${genre.id}" type="checkbox" class="filled-in"/>
+                                            <span><spring:message code="${genre.name}"/></span>
+                                        </label>
+                                    </p>
+                                </c:forEach>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
         </div>
         <div>
             <div class="divider-v" id="filter-panel-divider"></div>

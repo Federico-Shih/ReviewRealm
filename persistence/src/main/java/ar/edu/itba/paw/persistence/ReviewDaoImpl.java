@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.dtos.*;
+import ar.edu.itba.paw.dtos.filtering.ReviewFilter;
 import ar.edu.itba.paw.dtos.ordering.Ordering;
 import ar.edu.itba.paw.dtos.ordering.ReviewOrderCriteria;
 import ar.edu.itba.paw.enums.Difficulty;
@@ -120,38 +121,53 @@ public class ReviewDaoImpl implements ReviewDao, PaginationDao<ReviewFilter> {
            if(activeUserId != null) {
                review.get().setFeedback(getReviewFeedback(id, activeUserId));
            }
-           review.get().getAuthor().setPreferences(userDao.getPreferencesById(review.get().getAuthor().getId()));
+           review.get().getAuthor().setPreferences(userDao.getPreferences(review.get().getAuthor().getId()));
            review.get().getReviewedGame().setGenres(gameDao.getGenresByGame(review.get().getReviewedGame().getId()));
         }
         return review;
     }
+
+    private QueryBuilder getQueryBuilderFromFilter(ReviewFilter filter) {
+        QueryBuilder queryBuilder = new QueryBuilder()
+                .withList("gg.genreid", filter.getFilterGameGenres())
+                .withList("ap.genreid", filter.getAuthorPreferences())
+                .withSimilar("r.content", filter.getReviewContent())
+                .OR()
+                .withSimilar("r.title", filter.getReviewContent())
+                .AND()
+                .withList("r.authorid", filter.getAuthors())
+                .withExact("r.gameid", filter.getGameId())
+                .withExact("r.completed", filter.getCompleted());
+        if(filter.getMinTimePlayed() != null) {
+            queryBuilder = queryBuilder.withGreaterOrEqual("COALESCE(r.gamelength, 0)", 3600 * filter.getMinTimePlayed());
+        }
+        if(filter.getPlatforms() != null) {
+            queryBuilder = queryBuilder.withList("r.platform", filter.getPlatforms().stream().map(Platform::name).collect(Collectors.toList()));
+        }
+        if(filter.getDifficulties() != null) {
+            queryBuilder = queryBuilder.withList("r.difficulty", filter.getDifficulties().stream().map(Difficulty::name).collect(Collectors.toList()));
+        }
+        return queryBuilder;
+    }
+
     @Override
     public Paginated<Review> findAll(Page pagination, ReviewFilter filter, Ordering<ReviewOrderCriteria> ordering, Long activeUserId) {
         int totalPages = getPageCount(filter, pagination.getPageSize());
         if (pagination.getPageNumber() > totalPages || pagination.getPageNumber() <= 0) {
             return new Paginated<>(pagination.getPageNumber(), pagination.getPageSize(), totalPages, new ArrayList<>());
         }
-        QueryBuilder query = new QueryBuilder();
-
-         query = query
-                .withList("gg.genreid", filter.getFilterGameGenres())
-                .withList("ap.genreid", filter.getAuthorPreferences())
-                .withSimilar("r.content", filter.getReviewContent())
-                 .OR()
-                 .withSimilar("r.title", filter.getReviewContent())
-                .withList("r.authorid", filter.getAuthors())
-                .withExact("r.gameid", filter.getGameId());
+        QueryBuilder query = getQueryBuilderFromFilter(filter);
         List<Object> preparedArgs = new ArrayList<>(query.toArguments());
         preparedArgs.add(pagination.getPageSize());
         preparedArgs.add(pagination.getOffset());
         List<Review> reviews = jdbcTemplate.query(
-                "SELECT "+getTableColumnString()+" FROM " +
+                "SELECT "+getTableColumnString()+", COALESCE(likes - dislikes, 0) AS net_likes, COALESCE(likes + dislikes, 0) AS controversial FROM " +
                         toTableString(filter)+
                         query.toQuery()+
                         toOrderString(ordering) +
                         " LIMIT ? OFFSET ?"
                 , CommonRowMappers.REVIEW_ROW_MAPPER, preparedArgs.toArray());
-        Map<Long, List<Genre>> userPreferredGenres = new HashMap<>();
+        Map<Long, Set<Genre>> userPreferredGenres = new HashMap<>();
         Map<Long, List<Genre>> gameGenres = new HashMap<>();
         if( activeUserId != null) {
             Map<Long,ReviewFeedback> reviewFeedbacks = jdbcTemplate.query("SELECT * FROM reviewfeedback WHERE userid = ?", USER_REVIEW_FEEDBACK_MAPPER, activeUserId);
@@ -161,7 +177,7 @@ public class ReviewDaoImpl implements ReviewDao, PaginationDao<ReviewFilter> {
         }
         for (Review r : reviews){
             if (!userPreferredGenres.containsKey(r.getAuthor().getId())) {
-                userPreferredGenres.put(r.getAuthor().getId(), userDao.getPreferencesById(r.getAuthor().getId()));
+                userPreferredGenres.put(r.getAuthor().getId(), userDao.getPreferences(r.getAuthor().getId()));
             }
             if(!gameGenres.containsKey(r.getReviewedGame().getId())){
                 gameGenres.put(r.getReviewedGame().getId(), gameDao.getGenresByGame(r.getReviewedGame().getId()));
@@ -177,11 +193,7 @@ public class ReviewDaoImpl implements ReviewDao, PaginationDao<ReviewFilter> {
     }
     @Override
     public Long count(ReviewFilter filter) {
-        QueryBuilder query = new QueryBuilder()
-                .withList("gg.genreid", filter.getFilterGameGenres())
-                .withList("ap.genreid", filter.getAuthorPreferences())
-                .withSimilar("r.content", filter.getReviewContent())
-                .withList("r.authorid", filter.getAuthors());
+        QueryBuilder query = getQueryBuilderFromFilter(filter);
         List<Object> preparedArgs = new ArrayList<>(query.toArguments());
         return jdbcTemplate.queryForObject(
                 "SELECT COUNT(DISTINCT r.id) FROM " +

@@ -8,6 +8,7 @@ import ar.edu.itba.paw.enums.Genre;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 public interface UserService {
     User createUser(String username, String email, String password) throws EmailAlreadyExistsException, UsernameAlreadyExistsException;
@@ -18,8 +19,7 @@ public interface UserService {
 
     void changeUserPassword(String email, String password);
 
-    List<Genre> getPreferences(long userId);
-    void setPreferences(List<Integer> genres, long userId);
+    void setPreferences(Set<Integer> genres, long userId);
 
     List<User> getFollowers(Long id);
     List<User> getFollowing(Long id);
@@ -48,8 +48,6 @@ public interface UserService {
     Boolean isNotificationEnabled(Long userId, NotificationType notificationType);
 
     void setUserNotificationSettings(Long userId, Map<NotificationType, Boolean> notificationSettings);
-
-    Boolean hasPreferencesSet(User user);
 
     boolean modifyUserReputation(long id, int reputation);
 

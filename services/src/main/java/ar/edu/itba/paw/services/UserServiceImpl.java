@@ -1,11 +1,10 @@
 package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.dtos.Page;
-import ar.edu.itba.paw.dtos.UserFilter;
-import ar.edu.itba.paw.dtos.builders.UserFilterBuilder;
+import ar.edu.itba.paw.dtos.filtering.UserFilterBuilder;
 import ar.edu.itba.paw.enums.NotificationType;
 import ar.edu.itba.paw.exceptions.*;
-import ar.edu.itba.paw.dtos.builders.SaveUserBuilder;
+import ar.edu.itba.paw.dtos.saving.SaveUserBuilder;
 import ar.edu.itba.paw.exceptions.EmailAlreadyExistsException;
 import ar.edu.itba.paw.exceptions.UserAlreadyEnabled;
 import ar.edu.itba.paw.exceptions.UserNotFoundException;
@@ -77,17 +76,13 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     @Override
     public Optional<User> getUserByEmail(String email) {
-        Optional<User> user = userDao.getByEmail(email);
-        user.ifPresent(value -> value.setPreferences(getPreferences(user.get().getId())));
-        return user;
+        return userDao.getByEmail(email);
     }
 
     @Transactional(readOnly = true)
     @Override
     public Optional<User> getUserByUsername(String username) {
-        Optional<User> user = userDao.getByUsername(username);
-        user.ifPresent(value -> value.setPreferences(getPreferences(user.get().getId())));
-        return user;
+        return userDao.getByUsername(username);
     }
 
     @Transactional(readOnly = true)
@@ -272,21 +267,8 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    @Transactional(readOnly = true)
     @Override
-    public Boolean hasPreferencesSet(User user) {
-        return user.getPreferences().size() > 0;
-    }
-
-    @Transactional(readOnly = true)
-    @Override
-    public List<Genre> getPreferences(long userId) {
-        return userDao.getPreferencesById(userId);
-    }
-
-    @Transactional
-    @Override
-    public void setPreferences(List<Integer> genres, long userId){
+    public void setPreferences(Set<Integer> genres, long userId){
         LOGGER.info("User {} set genre preferences", userId);
         userDao.setPreferences(genres, userId);
     }

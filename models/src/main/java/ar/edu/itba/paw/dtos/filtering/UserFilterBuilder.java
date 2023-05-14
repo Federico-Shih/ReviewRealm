@@ -1,6 +1,4 @@
-package ar.edu.itba.paw.dtos.builders;
-
-import ar.edu.itba.paw.dtos.UserFilter;
+package ar.edu.itba.paw.dtos.filtering;
 
 public class UserFilterBuilder {
     private String username = null;

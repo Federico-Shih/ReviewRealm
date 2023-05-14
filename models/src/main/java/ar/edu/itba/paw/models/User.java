@@ -10,7 +10,7 @@ public class User {
     private final Long id;
     private final String email;
     private String password;
-    private List<Genre> preferences;
+    private Set<Genre> preferences;
     private final boolean enabled;
     private final Long reputation;
     private final Set<DisabledNotification> disabledNotifications;
@@ -22,7 +22,7 @@ public class User {
                 String username,
                 String email,
                 String password,
-                List<Genre> preferences,
+                Set<Genre> preferences,
                 boolean enabled,
                 Long reputation,
                 Set<DisabledNotification> disabledNotifications,
@@ -41,7 +41,7 @@ public class User {
     }
 
     public User(Long id, String username, String email, String password) {
-        this(id, username, email, password, new ArrayList<>(), false,0L, new HashSet<>(), new HashSet<>(), 0L);
+        this(id, username, email, password, new HashSet<>(), false,0L, new HashSet<>(), new HashSet<>(), 0L);
     }
 
     public Long getId() {
@@ -72,11 +72,15 @@ public class User {
         this.password = password;
     }
 
-    public List<Genre> getPreferences() {
+    public Set<Genre> getPreferences() {
         return preferences;
     }
 
-    public void setPreferences(List<Genre> preferences) {
+    public Boolean hasPreferencesSet() {
+        return !preferences.isEmpty();
+    }
+
+    public void setPreferences(Set<Genre> preferences) {
         this.preferences = preferences;
     }
 

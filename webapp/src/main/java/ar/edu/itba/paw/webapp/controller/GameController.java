@@ -1,10 +1,13 @@
 package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.dtos.*;
-import ar.edu.itba.paw.dtos.builders.GameFilterBuilder;
+import ar.edu.itba.paw.dtos.filtering.GameFilter;
+import ar.edu.itba.paw.dtos.filtering.GameFilterBuilder;
 import ar.edu.itba.paw.dtos.ordering.GameOrderCriteria;
 import ar.edu.itba.paw.dtos.ordering.OrderDirection;
 import ar.edu.itba.paw.dtos.ordering.Ordering;
+import ar.edu.itba.paw.dtos.searching.GameSearchFilter;
+import ar.edu.itba.paw.dtos.searching.GameSearchFilterBuilder;
 import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.forms.SubmitGameForm;
 import ar.edu.itba.paw.models.*;
@@ -12,7 +15,7 @@ import ar.edu.itba.paw.servicesinterfaces.GameService;
 import ar.edu.itba.paw.servicesinterfaces.GenreService;
 import ar.edu.itba.paw.servicesinterfaces.UserService;
 import ar.edu.itba.paw.webapp.auth.AuthenticationHelper;
-import ar.edu.itba.paw.webapp.controller.datacontainers.CalculatedFilter;
+import ar.edu.itba.paw.webapp.controller.datacontainers.FilteredList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,22 +74,34 @@ public class GameController extends PaginatedController implements QueryControll
     @RequestMapping(value = "/game/list", method = RequestMethod.GET)
     public ModelAndView gameList(
             @RequestParam(value = "page", defaultValue = "1") Integer page,
-            @RequestParam(value = "o-crit", defaultValue = "1") Integer orderCriteria,
+            @RequestParam(value = "pageSize", defaultValue = "") Integer pageSize,
+            @RequestParam(value = "o-crit", defaultValue = "0") Integer orderCriteria,
             @RequestParam(value = "o-dir", defaultValue = "0") Integer orderDirection,
             @RequestParam(value = "f-gen", defaultValue = "") List<Integer> genresFilter,
+            @RequestParam(value = "f-rat", defaultValue = "") String ratingFilter,
             @RequestParam(value = "search", defaultValue = "") String search ){
         final ModelAndView mav = new ModelAndView("games/game-list");
-
+        User loggedUser = AuthenticationHelper.getLoggedUser(us);
         List<Genre> allGenres = grs.getAllGenres();
-        GameFilterBuilder filterBuilder = new GameFilterBuilder()
-                .withGameContent(search)
-                .withGameGenres(genresFilter)
-                .withSuggestion(false);
-        GameFilter filter = filterBuilder.build();
 
-        Paginated<Game> games = gs.getAllGames(
-                Page.with(page != null ? page: INITIAL_PAGE, PAGE_SIZE),
-                filter,
+        GameSearchFilterBuilder searchFilterBuilder = new GameSearchFilterBuilder()
+                .withSearch(search)
+                .withSuggestion(false)
+                .withGenres(genresFilter);
+        float minRating = 1f;
+        float maxRating = 10f;
+        try {
+            String [] ratingFilterArray = ratingFilter.split("t");
+            minRating = Float.parseFloat(ratingFilterArray[0]);
+            maxRating = Float.parseFloat(ratingFilterArray[1]);
+            searchFilterBuilder = searchFilterBuilder.withRatingRange(minRating,maxRating);
+        } catch (Exception ignored) {}
+
+        GameSearchFilter searchFilter = searchFilterBuilder.build();
+
+        Paginated<Game> games = gs.searchGames(
+                Page.with(page != null ? page: INITIAL_PAGE, pageSize != null ? pageSize : PAGE_SIZE),
+                searchFilter,
                 new Ordering<>(OrderDirection.fromValue(orderDirection), GameOrderCriteria.fromValue(orderCriteria))
         );
 
@@ -98,24 +113,36 @@ public class GameController extends PaginatedController implements QueryControll
         mav.addObject("orderCriteria", GameOrderCriteria.values());
         mav.addObject("orderDirections", OrderDirection.values());
         mav.addObject("searchField",search);
-        mav.addObject("filters", new CalculatedFilter(genresFilter, new ArrayList<>(), allGenres));
+        mav.addObject("genresFilter", new FilteredList<Genre>(allGenres, (genre) -> genresFilter.contains(genre.getId())));
         mav.addObject("selectedOrderDirection", OrderDirection.fromValue(orderDirection));
         mav.addObject("selectedOrderCriteria", GameOrderCriteria.fromValue(orderCriteria));
+        mav.addObject("minRating", minRating);
+        mav.addObject("maxRating", maxRating);
+        if(orderCriteria == 0 && orderDirection == 0 && genresFilter.isEmpty() && search.isEmpty() && ratingFilter.isEmpty()){
+            mav.addObject("showResetFiltersButton", false);
+        } else {
+            mav.addObject("showResetFiltersButton", true);
+        }
 
         List<Pair<String, Object>> queriesToKeepAtPageChange = new ArrayList<>();
         queriesToKeepAtPageChange.add(Pair.of("o-crit", orderCriteria));
         queriesToKeepAtPageChange.add(Pair.of("o-dir", orderDirection));
         queriesToKeepAtPageChange.add(Pair.of("search", search));
+        queriesToKeepAtPageChange.add(Pair.of("f-rat", ratingFilter));
         queriesToKeepAtPageChange.addAll(genresFilter.stream().map((value) -> Pair.of("f-gen", (Object)value)).collect(Collectors.toList()));
 
         mav.addObject("queriesToKeepAtPageChange", toQueryString(queriesToKeepAtPageChange));
 
         List<Pair<String, Object>> queriesToKeepAtRemoveFilters = new ArrayList<>();
-        queriesToKeepAtRemoveFilters.add(Pair.of("o-crit", orderCriteria));
-        queriesToKeepAtRemoveFilters.add(Pair.of("o-dir", orderDirection));
-        queriesToKeepAtRemoveFilters.add(Pair.of("search", search));
 
         mav.addObject("queriesToKeepAtRemoveFilters", toQueryString(queriesToKeepAtRemoveFilters));
+
+        if(loggedUser == null || !loggedUser.hasPreferencesSet()) {
+            mav.addObject("showFavoritesShortcut", false);
+        } else {
+            mav.addObject("showFavoritesShortcut", true);
+            mav.addObject("userPreferences", loggedUser.getPreferences().stream().map(Genre::getId).collect(Collectors.toList()));
+        }
         return mav;
     }
 
@@ -162,13 +189,13 @@ public class GameController extends PaginatedController implements QueryControll
     public ModelAndView checkSubmissions() {
         ModelAndView mav = new ModelAndView("/games/game-addition");
 
-        GameFilterBuilder filterBuilder = new GameFilterBuilder()
-                .withGameContent("").withSuggestion(true);
-        GameFilter filter = filterBuilder.build();
+        GameSearchFilterBuilder searchFilterBuilder = new GameSearchFilterBuilder()
+                .withSuggestion(true);
+        GameSearchFilter searchFilterfilter = searchFilterBuilder.build();
 
-        Paginated<Game> games = gs.getAllGames(
+        Paginated<Game> games = gs.searchGames(
                 Page.with(INITIAL_PAGE, PAGE_SIZE),
-                filter,
+                searchFilterfilter,
                 new Ordering<>(OrderDirection.fromValue(0), GameOrderCriteria.fromValue(1))
         );
 

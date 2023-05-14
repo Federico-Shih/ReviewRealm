@@ -134,6 +134,7 @@ nav {
 .profile-dropdown {
     color: white !important;
     background-color: #13112D;
+    overflow: inherit;
 }
 
 .profile-dropdown-link {
@@ -219,12 +220,12 @@ nav {
 .navbar-search {
     display: flex;
     width: 100%;
-    margin-left: 30px;
+    margin-left: 3%;
     padding-top: 10px;
 }
 
 .icon-prefix {
-    top: 0 !important;
+    top: -4px !important;
 }
 
 .card {
@@ -279,6 +280,11 @@ nav {
     padding: 2px 6px;
     white-space: nowrap;
 }
+
+.rr-blue-text {
+    color: #13112D;
+}
+
 .btn-floating-color{
     background: #13112D;
     border: 1px solid #444155;
@@ -330,7 +336,7 @@ nav {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    max-width: 40%;
+    max-width: 55%;
 }
 
 .navbar-dropdown {
@@ -379,4 +385,31 @@ input::-webkit-inner-spin-button {
     padding: 5px 10px;
     color: white;
     width: fit-content;
+}
+
+.range-slider {
+    width: 80%;
+    margin: 40px 16px 8px 16px;
+}
+
+#range-slider {
+    height: 10px;
+}
+
+#range-slider .noUi-handle {
+    height: 18px;
+    width: 18px;
+    top: -5px;
+    right: -9px; /* half the width */
+    border-radius: 9px;
+}
+
+#range-slider .noUi-tooltip {
+    border: 0;
+    background: none;
+    color: white;
+}
+
+#range-slider .noUi-handle:before, .noUi-handle:after {
+    display: none;
 }

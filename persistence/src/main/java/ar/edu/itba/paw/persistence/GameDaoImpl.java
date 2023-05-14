@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.dtos.*;
+import ar.edu.itba.paw.dtos.filtering.GameFilter;
 import ar.edu.itba.paw.dtos.ordering.GameOrderCriteria;
 import ar.edu.itba.paw.dtos.ordering.Ordering;
 import ar.edu.itba.paw.enums.Genre;
@@ -12,8 +13,6 @@ import ar.edu.itba.paw.persistenceinterfaces.PaginationDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCallback;
-import org.springframework.jdbc.core.ResultSetExtractor;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
@@ -35,10 +34,6 @@ public class GameDaoImpl implements GameDao, PaginationDao<GameFilter> {
                 .usingGeneratedKeyColumns("id");
         this.jdbcInsertGenreForGames = new SimpleJdbcInsert(ds).withTableName("genreForGames");
     }
-
-
-
-
 
     private Map<String,Object> prepareArgumentsForGame(String name,String description,String developer, String publisher, String imageid, LocalDate publishDate, boolean suggested) {
         Map<String,Object> args = new HashMap<>();
@@ -131,24 +126,32 @@ public class GameDaoImpl implements GameDao, PaginationDao<GameFilter> {
                 "WHERE g.gameid = ?",CommonRowMappers.GENRE_ROW_MAPPER,id);
     }
 
+    private QueryBuilder getQueryBuilderFromFilter(GameFilter filter) {
+        return new QueryBuilder()
+                .withSimilar("g.name", filter.getGameContent())
+                .withList("gg.genreid", filter.getGameGenres())
+                .withExact("g.publisher", filter.getPublisher())
+                .withExact("g.suggestion", filter.getSuggested())
+                .withGreaterOrEqual("CASE WHEN g.reviewcount = 0 THEN 999999 ELSE (g.ratingsum/g.reviewcount) END", filter.getMinRating())
+                .withLessOrEqual("CASE WHEN g.reviewcount = 0 THEN -1 ELSE (g.ratingsum/g.reviewcount) END", filter.getMaxRating())
+                .withExact("g.developer", filter.getDeveloper());
+    }
+
     @Override
     public Paginated<Game> findAll(Page page, GameFilter filter, Ordering<GameOrderCriteria> ordering) {
         int totalPages = getPageCount(filter, page.getPageSize());
         if (page.getPageNumber() > totalPages || page.getPageNumber()<= 0) {
             return new Paginated<>(page.getPageNumber(), page.getPageSize(), totalPages, new ArrayList<>());
         }
-        QueryBuilder queryBuilder = new QueryBuilder()
-                .withSimilar("g.name", filter.getGameContent())
-                .withList("gg.genreid", filter.getGameGenres())
-                .withExact("g.publisher", filter.getPublisher())
-                .withExact("g.suggestion", filter.getSuggested())
-                .withExact("g.developer", filter.getDeveloper());
+
+        QueryBuilder queryBuilder = getQueryBuilderFromFilter(filter);
+
         List<Object> preparedStatementArgs = new ArrayList<>(queryBuilder.toArguments());
 
         preparedStatementArgs.add(page.getPageSize());
         preparedStatementArgs.add(page.getOffset());
 
-        List<Game> games = jdbcTemplate.query("SELECT "+getTableColumnString()+" FROM " + toTableString(filter) +
+        List<Game> games = jdbcTemplate.query("SELECT "+getTableColumnString()+", (ratingsum / NULLIF(reviewcount,0)) as avg_rating FROM " + toTableString(filter) +
                 queryBuilder.toQuery() +
                 toOrderString(ordering)+
                 " LIMIT ? OFFSET ?", preparedStatementArgs.toArray(), CommonRowMappers.GAME_ROW_MAPPER);
@@ -188,12 +191,7 @@ public class GameDaoImpl implements GameDao, PaginationDao<GameFilter> {
 
     @Override
     public Long count(GameFilter filter) {
-        QueryBuilder queryBuilder = new QueryBuilder()
-                .withSimilar("g.name", filter.getGameContent())
-                .withList("gg.genreid", filter.getGameGenres())
-                .withExact("g.publisher", filter.getPublisher())
-                .withExact("g.suggestion", false)
-                .withExact("g.developer", filter.getDeveloper());
+        QueryBuilder queryBuilder = getQueryBuilderFromFilter(filter);
 
         return jdbcTemplate.queryForObject("SELECT COUNT(distinct g.id) FROM " + toTableString(filter) +
                         queryBuilder.toQuery() ,
@@ -214,6 +212,6 @@ public class GameDaoImpl implements GameDao, PaginationDao<GameFilter> {
         return " ORDER BY " +
                 order.getOrderCriteria().getAltName()+
                 " " +
-                order.getOrderDirection().getAltName();
+                order.getOrderDirection().getAltName()+ " NULLS LAST ";
     }
 }
