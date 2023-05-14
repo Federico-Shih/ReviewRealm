@@ -21,6 +21,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.ArrayList;
@@ -48,7 +49,7 @@ public class ReviewServiceImpl implements ReviewService {
         this.env = env;
     }
 
-
+    @Transactional
     @Override
     public Review createReview(String title,
                                String content,
@@ -86,6 +87,7 @@ public class ReviewServiceImpl implements ReviewService {
         return review;
     }
 
+    @Transactional
     @Override
     public int updateReview(Long id, String title,
                             String content,
@@ -122,16 +124,20 @@ public class ReviewServiceImpl implements ReviewService {
         reviewDao.updateFavGames(userId, review.getId(), review.getReviewedGame().getId(), toDelete);
     }
 
+    @Transactional
     @Override
     public Optional<Review> getReviewById(Long id, User activeUser) {
         return reviewDao.findById(id, (activeUser != null)? activeUser.getId() : null);
     }
 
+
+    @Transactional(readOnly = true)
     @Override
     public Paginated<Review> getAllReviews(Page page, ReviewFilter filter, Ordering<ReviewOrderCriteria> ordering, User activeUser) {
        return reviewDao.findAll(page, filter, ordering, (activeUser != null) ? activeUser.getId() : null);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<Review> getReviewsFromFollowingByUser(Long userId, Integer size) {
         if(size<=0){
@@ -147,6 +153,7 @@ public class ReviewServiceImpl implements ReviewService {
         return reviewDao.findAll(Page.with(1, size), filterBuilder.build(), Ordering.defaultOrder(ReviewOrderCriteria.REVIEW_DATE), userId).getList();
     }
 
+    @Transactional
     @Override
     public boolean deleteReviewById(Long id) {
         LOGGER.info("Deleting review: {}", id);
@@ -177,6 +184,7 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     // TODO: paginar
+    @Transactional(readOnly = true)
     @Override
     public List<Review> getUserReviews(long userId, User activeUser) {
         List<Integer> authors = new ArrayList<>();
@@ -184,6 +192,7 @@ public class ReviewServiceImpl implements ReviewService {
         return reviewDao.findAll(Page.with(1, 100), new ReviewFilterBuilder().withAuthors(authors).build(), Ordering.defaultOrder(ReviewOrderCriteria.REVIEW_DATE), (activeUser != null)? activeUser.getId() : null ).getList();
     }
 
+    @Transactional
     @Override
     public boolean updateOrCreateReviewFeedback(Review review, User user, ReviewFeedback feedback) {
         ReviewFeedback oldFeedback = reviewDao.getReviewFeedback(review.getId(), user.getId());

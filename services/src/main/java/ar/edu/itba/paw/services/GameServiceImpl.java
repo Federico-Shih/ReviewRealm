@@ -24,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -51,6 +52,7 @@ public class GameServiceImpl implements GameService {
         this.userService = userService;
     }
 
+    @Transactional
     @Override
     public Optional<Game> createGame(SubmitGameDTO gameDTO, long userId) {
         Image img = imgService.uploadImage(gameDTO.getImageData(), gameDTO.getMediatype());
@@ -74,34 +76,39 @@ public class GameServiceImpl implements GameService {
         // TODO: Habría que preguntar si acá hay que armar el optional o si está bien como está hecho en el Dao, porque creo los Dao deberían devolver Optional
         return gameDao.create(gameDTO.getName(), gameDTO.getDescription(), gameDTO.getDeveloper(), gameDTO.getPublisher(), img.getId(), genreList, LocalDate.now(), !isModerator);
     }
-
+    @Transactional(readOnly = true)
     @Override
     public Optional<Game> getGameById(Long id) {
         return gameDao.getById(id);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<Genre> getGameGenresById(Long id) {
         return gameDao.getGenresByGame(id);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Paginated<Game> getAllGames(Page page, GameFilter filter, Ordering<GameOrderCriteria> ordering)
     {
         return gameDao.findAll(page, filter, ordering);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Paginated<Game> getAllGamesShort(Integer page, Integer pageSize, String searchQuery) {
         GameFilterBuilder gameFilterBuilder = new GameFilterBuilder().withGameContent(searchQuery);
         return gameDao.findAll(Page.with(page, pageSize), gameFilterBuilder.build(), new Ordering<>(OrderDirection.ASCENDING, GameOrderCriteria.NAME));
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Double getAverageGameReviewRatingById(Long id) {
         return gameDao.getAverageReviewRatingById(id);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public GameReviewData getReviewsByGameId(Long id, User activeUser) {
         // TODO: PAGINAR
@@ -135,22 +142,25 @@ public class GameServiceImpl implements GameService {
         return new GameReviewData(reviews,-1, null, null,-1,-1,-1);
     }
 
+    @Transactional
     @Override
     public void addNewReviewToGame(Long gameId, Integer rating) {
         gameDao.addNewReview(gameId, rating);
     }
 
+    @Transactional
     @Override
     public void deleteReviewFromGame(Long gameId, Integer reviewRating) {
         gameDao.deleteReview(gameId,reviewRating);
     }
 
+    @Transactional
     @Override
     public void updateReviewFromGame(Long gameId, Integer oldRating, Integer newRating) {
         gameDao.modifyReview(gameId, oldRating, newRating);
     }
 
-
+    @Transactional(readOnly = true)
     @Override
     public List<Game> getRecommendationsOfGamesForUser(Long userId, Integer min, Integer max) {
         List <Genre> userPreferences = userService.getPreferences(userId);
@@ -164,11 +174,13 @@ public class GameServiceImpl implements GameService {
         return games;
     }
 
+    @Transactional
     @Override
     public void acceptGame(long gameId) {
         decisionGame(gameDao::setSuggestedFalse, gameId);
     }
 
+    @Transactional
     @Override
     public void rejectGame(long gameId) {
         decisionGame(gameDao::deleteGame, gameId);
@@ -179,6 +191,7 @@ public class GameServiceImpl implements GameService {
             throw new NoSuchGameException(String.format("There's no game with such id: %d", gameId));
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<Game> getFavoriteGamesFromUser(long userId) {
         return gameDao.getFavoriteGamesFromUser(userId);
