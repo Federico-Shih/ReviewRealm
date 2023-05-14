@@ -7,7 +7,7 @@ import java.util.List;
 public class ReviewFilterBuilder {
     private List<Integer> gameGenres = null;
     private List<Integer> authorGenres = null;
-    private List<Integer> authors = null;
+    private List<Long> authors = null;
     private String reviewContent = null;
     private Integer gameId = null;
 
@@ -21,7 +21,7 @@ public class ReviewFilterBuilder {
         return this;
     }
 
-    public ReviewFilterBuilder withAuthors(List<Integer> authors) {
+    public ReviewFilterBuilder withAuthors(List<Long> authors) {
         this.authors = authors;
         return this;
     }

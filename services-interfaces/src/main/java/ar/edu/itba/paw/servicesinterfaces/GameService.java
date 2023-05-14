@@ -12,6 +12,7 @@ import ar.edu.itba.paw.models.User;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface GameService {
 
@@ -37,9 +38,10 @@ public interface GameService {
 
     void updateReviewFromGame(Long gameId,Integer oldRating,Integer newRating);
 
-    List<Game> getRecommendationsOfGamesForUser(Long userId, Integer min, Integer max);
-
     void acceptGame(long gameId);
 
     void rejectGame(long gameId);
+    List<Game> getRecommendationsOfGamesForUser(Long userId);
+
+    Set<Game> getGamesReviewedByUser(Long userId);
 }

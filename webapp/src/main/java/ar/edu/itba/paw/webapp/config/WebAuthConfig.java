@@ -68,7 +68,7 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                         "/profile/followers",
                         "/profile/follow/{\\d+}",
                         "/profile/unfollow/{\\d+}",
-                        "/for-you",
+                        "/for-you/**",
                         "/review/feedback/{id:\\d+}",
                         "/profile/settings/**",
                         "/review/{\\d+}/edit",

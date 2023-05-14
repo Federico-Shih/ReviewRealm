@@ -35,7 +35,7 @@ public class ImageServiceImpl implements ImageService {
             img = ImageIO.read(url);
         } catch (IOException e) {
             LOGGER.error("Error reading image url: {}", e.getMessage());
-            return null; // LOG ERROR NO SE PUDO LEER throw todo
+            return null;
         }
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try {
@@ -43,14 +43,14 @@ public class ImageServiceImpl implements ImageService {
             baos.flush();
         } catch (IOException e) {
             LOGGER.error("Error writing image: {}", e.getMessage());
-            return null;  // LOG ERROR NO SE PUDO ESCRIBIR throw todo
+            return null;
         }
         byte[] imageInByte = baos.toByteArray();
         try {
             baos.close();
         } catch (IOException e) {
             LOGGER.error("Error closing image: {}", e.getMessage());
-            return null;  // LOG ERROR NO SE PUDO CERRAR todo
+            return null;
         }
         return imageDao.uploadImage(imageInByte,"image/jpg");
     }

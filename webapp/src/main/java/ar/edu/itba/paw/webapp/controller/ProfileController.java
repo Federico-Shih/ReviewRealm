@@ -31,6 +31,8 @@ public class ProfileController extends PaginatedController {
     private final GameService gameService;
     private final GenreService genreService;
 
+    private final DiscoveryQueueData queueData;
+
     private static final String MODERATOR = "MODERATOR";
 
     private final static int RECOMMENDED_GAMES_COUNT = 3;
@@ -42,6 +44,7 @@ public class ProfileController extends PaginatedController {
         this.reviewService = reviewService;
         this.gameService = gameService;
         this.genreService = genreService;
+        this.queueData = new DiscoveryQueueData();
     }
 
     @RequestMapping(value = "/profile/{id:\\d+}", method = RequestMethod.GET)
@@ -231,10 +234,8 @@ public class ProfileController extends PaginatedController {
             super.paginate(mav, searchedUsers);
             mav.addObject("users", searchedUsers.getList());
         }
-
-        List<Game> recommendedGames = gameService.getRecommendationsOfGamesForUser(loggedUser.getId(),RECOMMENDED_GAMES_COUNT, RECOMMENDED_GAMES_COUNT);
+        queueData.setPosition(0);
         mav.addObject("search", search);
-        mav.addObject("recommendedGames", recommendedGames);
         mav.addObject("reviewsFollowing", reviewService.getReviewsFromFollowingByUser(loggedUser.getId(), size));
         mav.addObject("user", loggedUser);
         mav.addObject("userSetPreferences", userService.hasPreferencesSet(loggedUser));
@@ -243,5 +244,57 @@ public class ProfileController extends PaginatedController {
         return mav;
     }
 
+    @RequestMapping(value="/for-you/discovery", method = RequestMethod.GET)
+    public ModelAndView discoveryQueue(){
+        final ModelAndView mav = new ModelAndView("profile/discovery");
+        User loggedUser = AuthenticationHelper.getLoggedUser(userService);
+        List<Game> recommendedGames = gameService.getRecommendationsOfGamesForUser(loggedUser.getId());
+
+        if(recommendedGames.isEmpty()){
+            mav.addObject("emptyQueue",true);
+            return mav;
+        }
+
+        Integer queuePosition = queueData.getQueuePosition();
+        if( queuePosition > recommendedGames.size() ){
+            queueData.setPosition(0);
+        }
+
+        Game game = recommendedGames.get(queueData.getQueuePosition());
+        GameReviewData reviewData = gameService.getReviewsByGameId(game.getId(),loggedUser);
+
+        //Si esta el juego entonces si o si estan las reviews aunque sean vacias, no hay que chequear
+        mav.addObject("game",game);
+        mav.addObject("gameReviewData", reviewData);
+        mav.addObject("positionInQueue",queueData.getQueuePosition());
+        mav.addObject("isLast",queueData.getQueuePosition()+1 == recommendedGames.size());
+
+        return mav;
+    }
+    @RequestMapping(value = "/for-you/discovery/next", method = RequestMethod.POST)
+    public ModelAndView advanceDiscoveryQueue(){
+        queueData.setPosition(queueData.getQueuePosition() + 1);
+
+       return new ModelAndView("redirect:/for-you/discovery");
+    }
+    @RequestMapping(value = "/for-you/discovery/previous", method = RequestMethod.POST)
+    public ModelAndView regressDiscoveryQueue(){
+        Integer previous = queueData.getQueuePosition();
+        queueData.setPosition((previous>0)? previous-1 : previous );
+        return new ModelAndView("redirect:/for-you/discovery");
+    }
+    private static class DiscoveryQueueData {
+
+        private Integer queuePosition = 0;
+
+        public void setPosition(Integer queuePosition){
+            this.queuePosition = queuePosition;
+        }
+
+        public Integer getQueuePosition(){
+            return queuePosition;
+        }
+
+    }
 
 }

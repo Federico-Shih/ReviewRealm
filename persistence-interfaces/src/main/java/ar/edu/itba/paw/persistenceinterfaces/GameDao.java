@@ -25,7 +25,7 @@ public interface GameDao {
 
     List<Game> getFavoriteGamesFromUser(long userId);
 
-    List<Game> getRecommendationsForUser(Long userId, List<Integer> userPreferences,  Integer amount);
+    List<Game> getRecommendationsForUser(Long userId, List<Integer> userPreferences,List<Long> gamesToExclude);
 
     Double getAverageReviewRatingById(Long id);
 

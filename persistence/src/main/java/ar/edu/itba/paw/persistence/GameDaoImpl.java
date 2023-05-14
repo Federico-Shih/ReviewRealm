@@ -168,19 +168,17 @@ public class GameDaoImpl implements GameDao, PaginationDao<GameFilter> {
     }
 
     @Override
-    public List<Game> getRecommendationsForUser(Long userId, List<Integer> userPreferences, Integer amount) {
-        QueryBuilder queryBuilder = new QueryBuilder().withList("gg.genreid", userPreferences).withExact("g.suggestion",false);
+    public List<Game> getRecommendationsForUser(Long userId, List<Integer> userPreferences,List<Long> gamesToExclude) {
+        QueryBuilder queryBuilder = new QueryBuilder()
+                .withList("gg.genreid", userPreferences)
+                .withExact("g.suggestion",false)
+                .NOT().withList("g.id",gamesToExclude);
         String filterString = queryBuilder.toQuery();
         List<Object> preparedStatementArgs = new ArrayList<>(queryBuilder.toArguments());
-        if (!filterString.isEmpty()) {
-            filterString = filterString + " AND ";
-        }
-        preparedStatementArgs.add(userId);
-        preparedStatementArgs.add(amount);
         List<Game> games = jdbcTemplate.query("SELECT "+ getTableColumnString()+ " ,cast(g.ratingsum as real) / coalesce(nullif(g.reviewcount,0),1) as avg " +
-                "FROM games g INNER JOIN genreforgames gg on g.id = gg.gameid " + filterString +
-                "NOT EXISTS(select * from reviews where reviews.gameid = g.id and reviews.authorid=?)"+
-                " ORDER BY avg desc LIMIT ? ",CommonRowMappers.GAME_ROW_MAPPER,preparedStatementArgs.toArray());
+                " FROM games g INNER JOIN genreforgames gg on g.id = gg.gameid "
+                + filterString +
+                " ORDER BY avg desc",CommonRowMappers.GAME_ROW_MAPPER,preparedStatementArgs.toArray());
         for(Game g : games){
             g.setGenres(this.getGenresByGame(g.getId()));
         }

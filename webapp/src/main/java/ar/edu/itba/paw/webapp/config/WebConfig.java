@@ -1,6 +1,5 @@
 package ar.edu.itba.paw.webapp.config;
 
-import javafx.util.Builder;
 import org.flywaydb.core.Flyway;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

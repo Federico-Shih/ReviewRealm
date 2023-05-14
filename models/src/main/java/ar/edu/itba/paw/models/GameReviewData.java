@@ -60,4 +60,14 @@ public class GameReviewData {
     public String getAverageRatingString() {
         return String.format("%.2f", averageRating);
     }
+
+    public String getAverageGameTimeStringHs() {
+        return String.format("%.2f", averageGameTime/3600);
+    }
+    public String getReplayabilityString() {
+        return String.format("%.2f", replayability);
+    }
+    public String getCompletabilityString() {
+        return String.format("%.2f", completability);
+    }
 }

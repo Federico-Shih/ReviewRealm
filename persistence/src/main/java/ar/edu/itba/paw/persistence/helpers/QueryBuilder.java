@@ -9,6 +9,8 @@ public class QueryBuilder {
     private final List<Object> params = new LinkedList<>();
     private String operator = "";
 
+    private Boolean not = false;
+
     public <T>QueryBuilder withList(String queryField, List<T> querylist) {
         if (querylist != null && querylist.size() > 0) {
             str.append(" ");
@@ -16,10 +18,13 @@ public class QueryBuilder {
             str.append(" ");
             String gamesAmount = String.join(",", Collections.nCopies(querylist.size(), "?"));
             params.addAll(querylist);
-            str.append(String.format(" %s IN (", queryField));
+            str.append(String.format(" %s %s IN (", queryField,(not)? "NOT":""));
             str.append(gamesAmount);
             str.append(") ");
             operator = "AND";
+        }
+        if(not){
+            this.not = false;
         }
         return this;
     }
@@ -28,9 +33,13 @@ public class QueryBuilder {
         if (queryString != null) {
             str.append(" ");
             str.append(operator);
-            str.append(String.format(" %s ILIKE ? ", queryField));
+            str.append(String.format(" %s %s ILIKE ? ", queryField,(not)? "NOT":""));
+
             params.add("%" + queryString + "%");
             operator = "AND";
+        }
+        if(not){
+            this.not = false;
         }
         return this;
     }
@@ -39,9 +48,12 @@ public class QueryBuilder {
         if (queryContent != null) {
             str.append(" ");
             str.append(operator);
-            str.append(String.format(" %s = ? ", queryField));
+            str.append(String.format(" %s %s ? ", queryField,(not)? "<>":"="));
             params.add(queryContent);
             operator = "AND";
+        }
+        if(not){
+            this.not = false;
         }
         return this;
     }
@@ -50,6 +62,10 @@ public class QueryBuilder {
         if (!this.operator.equals("")) {
             this.operator = "OR";
         }
+        return this;
+    }
+    public QueryBuilder NOT(){
+        this.not = !this.not;
         return this;
     }
 

@@ -62,6 +62,7 @@ public class ReviewServiceImpl implements ReviewService {
                                Boolean completed,
                                Boolean replayable) {
         Review review = reviewDao.create(title, content, rating, reviewedGame, author, difficulty, gameLength, platform, completed, replayable);
+        LOGGER.info("Creating review - Game: {}, Author: {}, Title: {}, Rating: {}",author.getUsername(),reviewedGame.getName(),title,rating);
         gameService.addNewReviewToGame(reviewedGame.getId(), rating);
 
         List<User> authorFollowers = userService.getFollowers(author.getId());
@@ -97,7 +98,11 @@ public class ReviewServiceImpl implements ReviewService {
                             Platform platform,
                             Boolean completed,
                             Boolean replayable) {
-        return reviewDao.update(id,
+        Optional<Review> review = reviewDao.findById(id, null);
+        if(!review.isPresent()){
+            return 0;
+        }
+        int response = reviewDao.update(id,
                 new SaveReviewDTO(title,
                         content,
                         rating,
@@ -106,6 +111,8 @@ public class ReviewServiceImpl implements ReviewService {
                         platform,
                         completed,
                         replayable));
+        gameService.updateReviewFromGame(review.get().getReviewedGame().getId(), review.get().getRating(), rating);
+        return response;
     }
 
     private void updateFavoriteGames(long userId, Review review) {
@@ -147,7 +154,7 @@ public class ReviewServiceImpl implements ReviewService {
         if(followingUsers.isEmpty()){
             return new ArrayList<>();
         }
-        List<Integer> followingIds = followingUsers.stream().map((user -> user.getId().intValue())).collect(Collectors.toList());
+        List<Long> followingIds = followingUsers.stream().map((user -> user.getId())).collect(Collectors.toList());
         ReviewFilterBuilder filterBuilder = new ReviewFilterBuilder()
                 .withAuthors(followingIds);
         return reviewDao.findAll(Page.with(1, size), filterBuilder.build(), Ordering.defaultOrder(ReviewOrderCriteria.REVIEW_DATE), userId).getList();
@@ -156,13 +163,12 @@ public class ReviewServiceImpl implements ReviewService {
     @Transactional
     @Override
     public boolean deleteReviewById(Long id) {
-        LOGGER.info("Deleting review: {}", id);
         Optional<Review> review = getReviewById(id, null);
         if(review.isPresent()){
-            boolean op = reviewDao.deleteReview(id);
-            if(op){
-                gameService.deleteReviewFromGame(review.get().getReviewedGame().getId(), review.get().getRating());
-            }
+            reviewDao.deleteReview(id);
+            gameService.deleteReviewFromGame(review.get().getReviewedGame().getId(), review.get().getRating());
+            LOGGER.info("Deleting review: {}", id);
+
             Game game = review.get().getReviewedGame();
             User author = review.get().getAuthor();
             String userEmail = author.getEmail();
@@ -178,8 +184,9 @@ public class ReviewServiceImpl implements ReviewService {
 
                 mailingService.sendEmail(userEmail, subject, "deletedreview", templateVariables);
             }
-            return op;
+            return true;
         }
+        //TODO: Loggear error aca o en el controller?
         return false;
     }
 
@@ -187,8 +194,8 @@ public class ReviewServiceImpl implements ReviewService {
     @Transactional(readOnly = true)
     @Override
     public List<Review> getUserReviews(long userId, User activeUser) {
-        List<Integer> authors = new ArrayList<>();
-        authors.add((int) userId);
+        List<Long> authors = new ArrayList<>();
+        authors.add(userId);
         return reviewDao.findAll(Page.with(1, 100), new ReviewFilterBuilder().withAuthors(authors).build(), Ordering.defaultOrder(ReviewOrderCriteria.REVIEW_DATE), (activeUser != null)? activeUser.getId() : null ).getList();
     }
 
@@ -206,7 +213,6 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     private boolean deleteReviewFeedback(Review review, User user, ReviewFeedback oldFeedback) {
-       // ReviewFeedback oldFeedback = reviewDao.getReviewFeedback(review.getId(), user.getId());
         if(oldFeedback == null){
             return false;
         }

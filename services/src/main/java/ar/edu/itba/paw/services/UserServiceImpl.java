@@ -17,14 +17,10 @@ import ar.edu.itba.paw.servicesinterfaces.GenreService;
 import ar.edu.itba.paw.servicesinterfaces.MailingService;
 import ar.edu.itba.paw.servicesinterfaces.UserService;
 import ar.edu.itba.paw.persistenceinterfaces.UserDao;
-import jdk.nashorn.internal.parser.Token;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.core.env.Environment;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -143,13 +139,16 @@ public class UserServiceImpl implements UserService {
         if (!userDao.exists(otherId)) {
             throw new UserNotFoundException("notfound.otheruser");
         }
+        LOGGER.info("User {} followed user {}", userId, otherId);
         return userDao.createFollow(userId, otherId);
     }
 
     @Transactional
     @Override
     public boolean unfollowUserById(Long userId, Long otherId) {
-        return userDao.deleteFollow(userId, otherId);
+        boolean op = userDao.deleteFollow(userId, otherId);
+        LOGGER.info("User {} unfollowed user {}", userId, otherId);
+        return op;
     }
 
     @Transactional
@@ -163,6 +162,7 @@ public class UserServiceImpl implements UserService {
     public Optional<User> validateToken(String token) throws TokenExpiredException {
         Optional<ExpirationToken> expToken = tokenDao.getByToken(token);
         if (expToken.isPresent() && expToken.get().getExpiration().isBefore(LocalDateTime.now())) {
+            LOGGER.error("Token for User {} expired", expToken.get().getUserId());
             throw new TokenExpiredException("token.expired");
         }
         if (!expToken.isPresent()) {
@@ -173,6 +173,7 @@ public class UserServiceImpl implements UserService {
         SaveUserBuilder userBuilder = new SaveUserBuilder().withEnabled(true).withPassword(expirationToken.getPassword());
         userDao.update(user.getId(), userBuilder.build());
         tokenDao.delete(expirationToken.getId());
+        LOGGER.info("User {} validated token", user.getId());
         return Optional.of(user);
     }
 
@@ -181,12 +182,14 @@ public class UserServiceImpl implements UserService {
     public void resendToken(String email) throws UserAlreadyEnabled {
         User user = getUserByEmail(email).orElseThrow(() -> new UserNotFoundException("user.notfound"));
         if (user.isEnabled()) {
+            LOGGER.error("User {} already enabled", user.getId());
             throw new UserAlreadyEnabled();
         }
         ExpirationToken token = tokenDao.findLastPasswordToken(user.getId()).orElseThrow(() -> new UserNotFoundException("user.notfound"));
         ExpirationToken newToken = tokenDao.create(generateToken(), user.getId(), token.getPassword(), LocalDateTime.now().plusHours(EXPIRATION_TIME));
         tokenDao.delete(token.getId());
         mailingService.sendValidationTokenEmail(newToken, user);
+        LOGGER.info("User {} resent token", user.getId());
     }
 
     @Transactional
@@ -196,6 +199,7 @@ public class UserServiceImpl implements UserService {
         User user = getUserById(expirationToken.getUserId()).orElseThrow(() -> new UserNotFoundException("user.notfound"));
         ExpirationToken newToken = tokenDao.create(generateToken(), user.getId(), expirationToken.getPassword(), LocalDateTime.now().plusHours(EXPIRATION_TIME));
         if (newToken == null) {
+            LOGGER.error("User {} not found when refreshing token", user.getId());
             throw new UserNotFoundException("user.not.found");
         }
         tokenDao.delete(expirationToken.getId());
@@ -214,6 +218,7 @@ public class UserServiceImpl implements UserService {
         User user = getUserByEmail(email).orElseThrow(() -> new UserNotFoundException("user.notfound"));
         ExpirationToken newToken = tokenDao.create(generateToken(), user.getId(), "", LocalDateTime.now().plusHours(EXPIRATION_TIME));
         mailingService.sendChangePasswordEmail(newToken, user);
+        LOGGER.info("Sending User {} a password reset token", user.getId());
     }
 
     @Transactional
@@ -221,9 +226,12 @@ public class UserServiceImpl implements UserService {
     public boolean resetPassword(String token, String password) throws TokenExpiredException, TokenNotFoundException {
         ExpirationToken existentToken = tokenDao.getByToken(token).orElseThrow(() -> new TokenNotFoundException("token.notfound"));
         if (existentToken.getExpiration().isBefore(LocalDateTime.now())) {
+            LOGGER.error("Token for User {} password reset expired", existentToken.getUserId());
             throw new TokenExpiredException("token.expired");
         }
-        return userDao.update(existentToken.getUserId(), new SaveUserBuilder().withPassword(passwordEncoder.encode(password)).withEnabled(true).build()) == 1;
+        boolean op = userDao.update(existentToken.getUserId(), new SaveUserBuilder().withPassword(passwordEncoder.encode(password)).withEnabled(true).build()) == 1;
+        LOGGER.info("User {} reset password", existentToken.getUserId());
+        return op;
     }
 
     @Transactional(readOnly = true)
@@ -256,8 +264,10 @@ public class UserServiceImpl implements UserService {
         for (Map.Entry<NotificationType, Boolean> entry : notificationSettings.entrySet()) {
             if (entry.getValue() && !currentNotificationSettings.get(entry.getKey())) {
                 userDao.enableNotification(userId, entry.getKey().getTypeName());
+                LOGGER.info("User {} enabled notification {}", userId, entry.getKey().getTypeName());
             } else if (!entry.getValue() && currentNotificationSettings.get(entry.getKey())) {
                 userDao.disableNotification(userId, entry.getKey().getTypeName());
+                LOGGER.info("User {} disabled notification {}", userId, entry.getKey().getTypeName());
             }
         }
     }
@@ -277,6 +287,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public void setPreferences(List<Integer> genres, long userId){
+        LOGGER.info("User {} set genre preferences", userId);
         userDao.setPreferences(genres, userId);
     }
 
@@ -295,6 +306,7 @@ public class UserServiceImpl implements UserService {
             throw new InvalidAvatarException(imageId);
         SaveUserBuilder builder = new SaveUserBuilder().withAvatar(imageId);
         userDao.update(userId, builder.build());
+        LOGGER.info("User {} changed avatar to {}", userId, imageId);
     }
 
     private String generateToken() {

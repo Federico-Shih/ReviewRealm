@@ -35,3 +35,10 @@
     display: flex;
     justify-content: start;
 }
+.discovery-queue-row{
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    width: 100%;
+    padding: 2% 4%;
+}

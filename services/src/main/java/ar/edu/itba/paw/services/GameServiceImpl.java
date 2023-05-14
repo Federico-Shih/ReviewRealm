@@ -19,7 +19,6 @@ import ar.edu.itba.paw.servicesinterfaces.GameService;
 import ar.edu.itba.paw.servicesinterfaces.GenreService;
 import ar.edu.itba.paw.servicesinterfaces.ImageService;
 import ar.edu.itba.paw.servicesinterfaces.UserService;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -113,18 +112,15 @@ public class GameServiceImpl implements GameService {
     public GameReviewData getReviewsByGameId(Long id, User activeUser) {
         // TODO: PAGINAR
         ReviewFilter filter = new ReviewFilterBuilder().withGameId(id.intValue()).build();
-        List<Review> reviews = reviewDao.findAll(Page.with(1, 1000), filter, new Ordering<>(OrderDirection.DESCENDING, ReviewOrderCriteria.REVIEW_DATE),(activeUser !=null)? activeUser.getId() : null).getList();
-        if(reviews.size()>0) {
-            int sumRating = 0;
+        List<Review> reviews = reviewDao.findAll(Page.with(1, 1000), filter, new Ordering<>(OrderDirection.DESCENDING, ReviewOrderCriteria.REVIEW_DATE),activeUser.getId()).getList();
+        if(reviews.size() > 0) {
             HashMap<Difficulty, Integer> difficultyCount = new HashMap<>();
             HashMap<Platform, Integer> platformCount = new HashMap<>();
-
 
             double sumHours = 0;
             int sumReplayability = 0;
             int sumCompletability = 0;
             for (Review r : reviews) {
-                sumRating += r.getRating();
                 difficultyCount.put(r.getDifficulty(), difficultyCount.getOrDefault(r.getDifficulty(), 0) + 1);
                 platformCount.put(r.getPlatform(), platformCount.getOrDefault(r.getPlatform(), 0) + 1);
 
@@ -136,8 +132,8 @@ public class GameServiceImpl implements GameService {
             Optional<Map.Entry<Difficulty, Integer>> averageDiff = difficultyCount.entrySet().stream().max(Comparator.comparingInt(Map.Entry::getValue));
             platformCount.remove(null);
             Optional<Map.Entry<Platform, Integer>> averagePlatform = platformCount.entrySet().stream().max(Comparator.comparingInt(Map.Entry::getValue));
-            return new GameReviewData(reviews, (double) sumRating/  reviews.size(),(averageDiff.isPresent())? averageDiff.get().getKey() : null,(averagePlatform.isPresent())? averagePlatform.get().getKey() : null,
-                    sumHours / reviews.size(),(double) (sumReplayability/ reviews.size() )* 100, (double) (sumCompletability /reviews.size())*100);
+            return new GameReviewData(reviews, reviews.get(0).getReviewedGame().getAverageRating(),(averageDiff.isPresent())? averageDiff.get().getKey() : null,(averagePlatform.isPresent())? averagePlatform.get().getKey() : null,
+                    sumHours / reviews.size(), ((double)  sumReplayability/ reviews.size() )* 100,  ((double)sumCompletability /reviews.size())*100);
         }
         return new GameReviewData(reviews,-1, null, null,-1,-1,-1);
     }
@@ -162,16 +158,28 @@ public class GameServiceImpl implements GameService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<Game> getRecommendationsOfGamesForUser(Long userId, Integer min, Integer max) {
+    public List<Game> getRecommendationsOfGamesForUser(Long userId) {
         List <Genre> userPreferences = userService.getPreferences(userId);
         if(userPreferences.isEmpty()){
             return new ArrayList<>();
         }
-        List<Game> games = gameDao.getRecommendationsForUser(userId,userPreferences.stream().map(Genre::getId).collect(Collectors.toList()), max);
-        if(games.size() < min) {
-            return new ArrayList<>();
-        }
-        return games;
+        List<Integer> preferencesIds = userPreferences.stream().map(Genre::getId).collect(Collectors.toList());
+        Set<Game> userReviewedGames = getGamesReviewedByUser(userId);
+        List<Long> idsToExclude = userReviewedGames.stream().map(Game::getId).collect(Collectors.toList());
+
+        return gameDao.getRecommendationsForUser(userId,preferencesIds,idsToExclude);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Set<Game> getGamesReviewedByUser(Long userId) {
+        //TODO: revisar uso de DAOs llamadas circulares entre services
+        List<Long> authors = new ArrayList<>();
+        authors.add(userId);
+        List<Review> userReviews = reviewDao.findAll(Page.with(1, 100), new ReviewFilterBuilder().withAuthors(authors).build(), Ordering.defaultOrder(ReviewOrderCriteria.REVIEW_DATE),  null ).getList();
+        Set<Game> reviewedGames = new HashSet<>();
+        userReviews.forEach( review -> reviewedGames.add(review.getReviewedGame()));
+        return reviewedGames;
     }
 
     @Transactional

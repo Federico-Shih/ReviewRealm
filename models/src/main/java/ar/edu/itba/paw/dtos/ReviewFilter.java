@@ -8,12 +8,12 @@ public class ReviewFilter {
 
     List<Integer> authorPreferences;
 
-    List<Integer> authors;
+    List<Long> authors;
 
     String reviewContent;
     Integer gameId;
 
-    public ReviewFilter(List<Integer> filterGameGenres, List<Integer> authorPreferences, List<Integer> authors, String reviewContent, Integer gameId) {
+    public ReviewFilter(List<Integer> filterGameGenres, List<Integer> authorPreferences, List<Long> authors, String reviewContent, Integer gameId) {
         this.filterGameGenres = filterGameGenres;
         this.authorPreferences = authorPreferences;
         this.authors = authors;
@@ -33,7 +33,7 @@ public class ReviewFilter {
         return authorPreferences;
     }
 
-    public List<Integer> getAuthors() {
+    public List<Long> getAuthors() {
         return authors;
     }
 

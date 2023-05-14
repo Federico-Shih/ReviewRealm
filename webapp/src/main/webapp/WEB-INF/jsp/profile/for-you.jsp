@@ -22,10 +22,9 @@
 <c:url var="setPreferences" value="/profile/settings/preferences"/>
 <c:url var="searchUsers" value="/"/>
 <c:url value="/for-you" var="sendSearch"/>
-
+<c:url value="/for-you/discovery" var="discovery"/>
 <div class="for-you-page">
     <div class="for-you-section">
-        <span class="for-you-section-header"><spring:message code="for-you.games.header"/> </span>
         <div class="full-width row">
             <c:if test="${!userSetPreferences}">
                 <div class="card lime darken-3">
@@ -42,43 +41,21 @@
                     </div>
                 </div>
             </c:if>
-            <c:if test="${userSetPreferences && empty recommendedGames}">
-                <div class="card lime darken-3">
+            <c:if test="${userSetPreferences}">
+                <div class="card blue-grey darken-4">
                     <div class="card-content white-text f-row f-gap-2">
                         <div class="">
-                            <i class="material-icons medium">warning</i>
+                            <i class="material-icons medium">videogame_asset</i>
                         </div>
                         <div class="">
-                            <span class="card-title"><spring:message code="for-you.norecomendedgames" /></span>
-                            <a href="<c:url value="/profile/settings/preferences"/>" class="no-a-decoration btn-flat waves-effect waves-light border-button f-row f-jc-center f-ai-center">
-                                <span><spring:message code="for-you.norecomendedgames.doit"/></span>
+                            <span class="card-title"><spring:message code="for-you.discovery" /></span>
+                            <a href="<c:url value="/for-you/discovery"/>" class="no-a-decoration btn-flat waves-effect waves-light border-button f-row f-jc-center f-ai-center">
+                                <span><spring:message code="for-you.discovery.btn"/></span>
                             </a>
                         </div>
                     </div>
                 </div>
             </c:if>
-            <c:forEach items="${recommendedGames}" var="game">
-                <div class="col s12 l4">
-                    <div class="game-card-for-list z-depth-2">
-                        <a href="<c:url value="/game/${game.id}"/>">
-                            <c:url value="${game.imageUrl}" var="imgUrl" />
-                            <img class="game-img" src="${imgUrl}"
-                                 alt="<c:out value="${game.name}"/>">
-                        </a>
-                        <div class="game-card-details">
-                            <div class="game-card-details-text">
-                                <a class="game-card-title white-text" href="<c:url value="/game/${game.id}"/>">
-                                    <span ><c:out value="${game.name}"/></span>
-                                </a>
-                                <span class="game-card-text"><spring:message code="publishing.date"
-                                                                             arguments="${game.publishDate}"/></span>
-                                <span class="game-card-text"><spring:message code="developer"
-                                                                             arguments="${game.developer}"/></span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </c:forEach>
         </div>
     </div>
     <div class="for-you-section">
