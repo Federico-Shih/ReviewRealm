@@ -38,4 +38,8 @@ public interface GameService {
     void updateReviewFromGame(Long gameId,Integer oldRating,Integer newRating);
 
     List<Game> getRecommendationsOfGamesForUser(Long userId, Integer min, Integer max);
+
+    void acceptGame(long gameId);
+
+    void rejectGame(long gameId);
 }

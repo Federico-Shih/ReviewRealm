@@ -26,7 +26,7 @@
       <span class="avatar-section-header col s12"><spring:message code="profile.avatar.selection"/></span>
       <c:forEach begin="1" end="6" var="i">
         <div class="col s4 center">
-          <form method="post" action="<c:url value='/profile/settings/avatar/${i}'/>">
+          <form class="f-jc-center" method="post" action="<c:url value='/profile/settings/avatar/${i}'/>">
             <button class="avatar-button"  type="submit">
               <img class="profile-avatar-card" src="<c:url value="/static/avatars/${i}.png"/>" alt="avatarnumber${i}.png"/>
             </button>

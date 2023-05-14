@@ -13,12 +13,15 @@ public class GameFilter {
 
     private final Boolean isFavorite;
 
-    public GameFilter(List<Integer> gameGenres, String gameContent, String developer, String publisher, Boolean isFavorite) {
+    private final Boolean isSuggested;
+
+    public GameFilter(List<Integer> gameGenres, String gameContent, String developer, String publisher, Boolean isFavorite, Boolean isSuggested) {
         this.gameGenres = gameGenres;
         this.gameContent = gameContent;
         this.developer = developer;
         this.publisher = publisher;
         this.isFavorite = isFavorite;
+        this.isSuggested = isSuggested;
     }
 
     public List<Integer> getGameGenres() {
@@ -40,4 +43,6 @@ public class GameFilter {
     public Boolean getFavorite() {
         return isFavorite;
     }
+
+    public Boolean getSuggested() { return isSuggested; }
 }

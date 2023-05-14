@@ -12,6 +12,8 @@ public class GameFilterBuilder {
 
     private Boolean isFavorite = null;
 
+    private Boolean isSuggested = null;
+
     public GameFilterBuilder withGameGenres(List<Integer> genres) {
         this.gameGenres = genres;
         return this;
@@ -36,7 +38,13 @@ public class GameFilterBuilder {
         this.isFavorite = isFavorite;
         return this;
     }
+
+    public GameFilterBuilder withSuggestion(Boolean isSuggested) {
+        this.isSuggested = isSuggested;
+        return this;
+    }
+
     public GameFilter build() {
-        return new GameFilter(gameGenres, gameContent, developer, publisher, isFavorite);
+        return new GameFilter(gameGenres, gameContent, developer, publisher, isFavorite, isSuggested);
     }
 }

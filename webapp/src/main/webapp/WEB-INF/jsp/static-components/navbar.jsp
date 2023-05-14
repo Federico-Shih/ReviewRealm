@@ -57,8 +57,8 @@
                     <li class="navbar-option"><a href="<c:url value="/"/>" class="${param.selected == "review-list" ? "chosen-tab" : "" }"><span><spring:message code="navbar.reviews"/></span></a></li>
                     <c:if test="${isModerator}">
                         <li class="navbar-option">
-                            <a href="<c:url value="/game/submit" />" class="${param.selected == "gameSubmit" ? "chosen-tab": ""}">
-                                <spring:message code="navbar.submitgame" />
+                            <a href="<c:url value="/game/submissions" />" class="${param.selected == "gameSubmission" ? "chosen-tab": ""}">
+                                <spring:message code="navbar.gamesubmissions"/>
                             </a>
                         </li>
                     </c:if>
@@ -95,7 +95,6 @@
                                         </div>
                                     </a>
                                 </li>
-                                <c:if test="${!isModerator}">
                                     <li>
                                         <a href="<c:url value="/game/submit"/>">
                                             <div class="valign-wrapper profile-dropdown-link">
@@ -103,12 +102,12 @@
                                                     add
                                                 </span>
                                                 <span class="overflow-ellipsis">
-                                                    <spring:message code="navbar.suggest"/>
+                                                    <c:if test="${!isModerator}"><spring:message code="navbar.suggest"/></c:if>
+                                                    <c:if test="${isModerator}"><spring:message code="navbar.submitgame"/></c:if>
                                                 </span>
                                             </div>
                                         </a>
                                     </li>
-                                </c:if>
                                 <li>
                                     <a href="<c:url value="/profile/settings/"/>">
                                         <div class="valign-wrapper profile-dropdown-link">

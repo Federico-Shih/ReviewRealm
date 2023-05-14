@@ -12,6 +12,19 @@
     height: 365px;
 }
 
+.game-card-whole-for-list{
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    background: #13112D;
+    padding: 4%;
+    border: 1px solid #444155;
+    border-radius: 10px;
+    color: white;
+    margin-top: 2%;
+    height: auto;
+}
+
 .game-card-for-list-small{
     display: flex;
     flex-direction: column;
@@ -89,6 +102,13 @@
     flex-direction: column;
     justify-content: flex-start;
     width: 70%;
+    text-align: start;
+}
+.game-card-whole-details-text{
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    width: 100%;
     text-align: start;
 }
 .game-card-details-extra{
@@ -234,4 +254,18 @@
 #no-reviews-text{
     font-size: 20px;
     font-weight: 500;
+}
+
+.form-btns {
+    display: flex;
+    justify-content: space-evenly;
+    width: 80%;
+}
+
+#btn-accept {
+    background-color: #00C853 !important;
+}
+
+#btn-reject {
+    background-color: #d61025 !important;
 }

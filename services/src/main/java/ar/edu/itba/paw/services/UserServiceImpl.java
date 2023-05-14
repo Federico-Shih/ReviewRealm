@@ -266,9 +266,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void changeUserAvatar(long userId, long imageId) throws Exception {
+    public void changeUserAvatar(long userId, long imageId) throws InvalidAvatarException {
         if(imageId>6 || imageId<1)
-            throw new Exception("");
+            throw new InvalidAvatarException(imageId);
         SaveUserBuilder builder = new SaveUserBuilder().withAvatar(imageId);
         userDao.update(userId, builder.build());
     }

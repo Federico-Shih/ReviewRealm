@@ -35,4 +35,7 @@ public interface GameDao {
 
     void deleteReview(Long gameId,Integer rating);
 
+    boolean setSuggestedFalse(long gameId);
+
+    boolean deleteGame(long gameId);
 }

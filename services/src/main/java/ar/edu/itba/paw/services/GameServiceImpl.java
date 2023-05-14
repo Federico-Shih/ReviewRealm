@@ -10,6 +10,7 @@ import ar.edu.itba.paw.dtos.ordering.ReviewOrderCriteria;
 import ar.edu.itba.paw.enums.Difficulty;
 import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.enums.Platform;
+import ar.edu.itba.paw.exceptions.NoSuchGameException;
 import ar.edu.itba.paw.exceptions.UserNotFoundException;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.persistenceinterfaces.GameDao;
@@ -18,6 +19,7 @@ import ar.edu.itba.paw.servicesinterfaces.GameService;
 import ar.edu.itba.paw.servicesinterfaces.GenreService;
 import ar.edu.itba.paw.servicesinterfaces.ImageService;
 import ar.edu.itba.paw.servicesinterfaces.UserService;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +27,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -159,6 +162,21 @@ public class GameServiceImpl implements GameService {
             return new ArrayList<>();
         }
         return games;
+    }
+
+    @Override
+    public void acceptGame(long gameId) {
+        decisionGame(gameDao::setSuggestedFalse, gameId);
+    }
+
+    @Override
+    public void rejectGame(long gameId) {
+        decisionGame(gameDao::deleteGame, gameId);
+    }
+
+    private void decisionGame(Function<Long, Boolean> decisionFunction, Long gameId) {
+        if(!decisionFunction.apply(gameId))
+            throw new NoSuchGameException(String.format("There's no game with such id: %d", gameId));
     }
 
     @Override

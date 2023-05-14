@@ -121,6 +121,10 @@
 }
 
 .avatar-button {
+    display: flex;
+    justify-content: center;
+    border-radius: 50%;
+    cursor: pointer;
     border: none;
     background: none;
 }

@@ -80,7 +80,8 @@ public class GameController extends PaginatedController implements QueryControll
         List<Genre> allGenres = grs.getAllGenres();
         GameFilterBuilder filterBuilder = new GameFilterBuilder()
                 .withGameContent(search)
-                .withGameGenres(genresFilter);
+                .withGameGenres(genresFilter)
+                .withSuggestion(false);
         GameFilter filter = filterBuilder.build();
 
         Paginated<Game> games = gs.getAllGames(
@@ -118,6 +119,7 @@ public class GameController extends PaginatedController implements QueryControll
         return mav;
     }
 
+
     @RequestMapping(value = "/game/submit", method = RequestMethod.GET)
     public ModelAndView createGameForm(@ModelAttribute("gameForm") SubmitGameForm gameForm) {
         ModelAndView mav = new ModelAndView("games/submit-game");
@@ -132,7 +134,7 @@ public class GameController extends PaginatedController implements QueryControll
         }
         try {
             Optional<Game> game = gs.createGame(gameForm.toSubmitDTO(), AuthenticationHelper.getLoggedUser(us).getId());
-            return game.map(value -> new ModelAndView("redirect:/game/" + value.getId())).orElseGet(() -> new ModelAndView("redirect:/game/list")); //TODO: Hacer un toast de que llegó la sugerencia
+            return game.map(value -> new ModelAndView("redirect:/game/" + value.getId())).orElseGet(() -> new ModelAndView("redirect:/game/list"));
         } catch (IOException e) {
             LOGGER.error("Failed to create image: {}", e.getMessage());
             errors.addError(new ObjectError("image", "game.submit.errors.failedimg"));
@@ -140,5 +142,41 @@ public class GameController extends PaginatedController implements QueryControll
             LOGGER.error("Unknown error: {}", e.getMessage());
         }
         return createGameForm(gameForm);
+    }
+
+    @RequestMapping(value = "/game/submissions/{gameId:\\d+}/accept", method = RequestMethod.POST)
+    public ModelAndView acceptSubmission(@PathVariable(value="gameId") Long gameId) {
+        LOGGER.info("Accepting suggested game, id: {}", gameId);
+        gs.acceptGame(gameId);
+        return new ModelAndView("redirect:/game/submissions");
+    }
+
+    @RequestMapping(value = "/game/submissions/{gameId:\\d+}/reject", method = RequestMethod.POST)
+    public ModelAndView rejectSubmission(@PathVariable(value="gameId") Long gameId) {
+        LOGGER.info("Rejecting suggested game, id: {}", gameId);
+        gs.rejectGame(gameId);
+        return new ModelAndView("redirect:/game/submissions");
+    }
+
+    @RequestMapping(value = "/game/submissions", method = RequestMethod.GET)
+    public ModelAndView checkSubmissions() {
+        ModelAndView mav = new ModelAndView("/games/game-addition");
+
+        GameFilterBuilder filterBuilder = new GameFilterBuilder()
+                .withGameContent("").withSuggestion(true);
+        GameFilter filter = filterBuilder.build();
+
+        Paginated<Game> games = gs.getAllGames(
+                Page.with(INITIAL_PAGE, PAGE_SIZE),
+                filter,
+                new Ordering<>(OrderDirection.fromValue(0), GameOrderCriteria.fromValue(1))
+        );
+
+
+        super.paginate(mav,games);
+
+        mav.addObject("suggestedgames", games.getList());
+
+        return mav;
     }
 }

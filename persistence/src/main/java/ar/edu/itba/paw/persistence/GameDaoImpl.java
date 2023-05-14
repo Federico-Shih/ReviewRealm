@@ -114,6 +114,18 @@ public class GameDaoImpl implements GameDao, PaginationDao<GameFilter> {
     }
 
     @Override
+    public boolean setSuggestedFalse(long gameId) {
+        return jdbcTemplate.update("UPDATE games SET suggestion = false WHERE id = ?", gameId) == 1;
+    }
+
+    @Override
+    public boolean deleteGame(long gameId) {
+        // TODO: Hacer migración con delete cascade en genreforgames
+        jdbcTemplate.update("DELETE FROM genreforgames WHERE gameid = ?", gameId);
+        return jdbcTemplate.update("DELETE FROM games WHERE id = ?", gameId) == 1;
+    }
+
+    @Override
     public List<Genre> getGenresByGame(Long id) {
         return jdbcTemplate.query("SELECT * FROM genreforgames g " +
                 "WHERE g.gameid = ?",CommonRowMappers.GENRE_ROW_MAPPER,id);
@@ -129,7 +141,7 @@ public class GameDaoImpl implements GameDao, PaginationDao<GameFilter> {
                 .withSimilar("g.name", filter.getGameContent())
                 .withList("gg.genreid", filter.getGameGenres())
                 .withExact("g.publisher", filter.getPublisher())
-                .withExact("g.suggestion", false)
+                .withExact("g.suggestion", filter.getSuggested())
                 .withExact("g.developer", filter.getDeveloper());
         List<Object> preparedStatementArgs = new ArrayList<>(queryBuilder.toArguments());
 

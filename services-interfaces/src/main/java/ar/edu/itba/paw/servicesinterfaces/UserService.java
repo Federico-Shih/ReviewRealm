@@ -53,5 +53,5 @@ public interface UserService {
 
     boolean modifyUserReputation(long id, int reputation);
 
-    void changeUserAvatar(long userId, long imageId) throws Exception;
+    void changeUserAvatar(long userId, long imageId) throws InvalidAvatarException;
 }
