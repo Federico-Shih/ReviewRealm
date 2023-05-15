@@ -62,15 +62,18 @@
                                     </a>
                                     <ul id="dropdown-mod" class="dropdown-content dropdown-container">
                                         <li class="actions-container">
-                                            <c:url value="/review/delete/${review.id}" var="moderateUrl" />
                                             <c:if test="${isOwner}">
-                                                <a href="<c:url value="/review/${review.id}/edit"/> " class="valign-wrapper white-text f-row f-ai-center normal-link">
-                                                    <i class="material-icons">edit</i>
-                                                    <span><spring:message code="review.edit" /></span>
-                                                </a>
+                                                <c:url value="/review/${review.id}/edit" var="reviewEditUrl"/>
+                                                <form action="${reviewEditUrl}" method="get" >
+                                                    <button class="waves-effect btn-flat valign-wrapper white-text f-row f-ai-center highlight" type="submit">
+                                                        <i class="material-icons">edit</i>
+                                                        <span><spring:message code="review.edit"/></span>
+                                                    </button>
+                                                </form
                                             </c:if>
+                                            <c:url value="/review/delete/${review.id}" var="moderateUrl" />
                                             <form action="${moderateUrl}" method="post" >
-                                                <button class="waves-effect btn-flat valign-wrapper red-text f-row f-ai-center" type="submit">
+                                                <button class="waves-effect btn-flat valign-wrapper red-text f-row f-ai-center highlight" type="submit">
                                                     <i class="material-icons">delete</i>
                                                     <span><spring:message code="review.delete"/></span>
                                                 </button>

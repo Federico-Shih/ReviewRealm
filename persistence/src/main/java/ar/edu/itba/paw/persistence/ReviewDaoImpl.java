@@ -96,14 +96,14 @@ public class ReviewDaoImpl implements ReviewDao, PaginationDao<ReviewFilter> {
 
     @Override
     public int update(Long id, SaveReviewDTO reviewDTO) {
-        UpdateBuilder updateBuilder = new UpdateBuilder()
+        UpdateBuilder updateBuilder = new UpdateBuilder(true)
                 .set("title", reviewDTO.getTitle())
                 .set("content", reviewDTO.getContent())
                 .set("rating", reviewDTO.getRating())
-                .set("difficulty", reviewDTO.getDifficulty().toString())
+                .set("difficulty", reviewDTO.getDifficulty() != null ? reviewDTO.getDifficulty().toString() : null)
                 .set("replayability", reviewDTO.getReplayable())
                 .set("completed", reviewDTO.getCompleted())
-                .set("platform", reviewDTO.getPlatform().toString())
+                .set("platform", reviewDTO.getPlatform() != null ? reviewDTO.getPlatform().toString() : null)
                 .set("gamelength", reviewDTO.getGameLength());
         updateBuilder.getParameters().add(id);
         return jdbcTemplate.update("UPDATE reviews " + updateBuilder.toQuery() + " WHERE id = ?", updateBuilder.getParameters().toArray());

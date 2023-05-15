@@ -19,14 +19,9 @@
             var elems = document.querySelectorAll('.collapsible');
             var instances = M.Collapsible.init(elems, {});
 
-            var checkboxes = document.querySelectorAll('.checkbox');
-            var map = {};
-            checkboxes.forEach((element) => {
-               element.addEventListener('input', (value) => {
-                   map[element.id] = value.target.value;
-                   console.log(value.target.value);
-               })
-            });
+            <c:forEach items="${gameForm.genres}" var="genre">
+                document.querySelector('#${genre}').setAttribute("checked", "checked");
+            </c:forEach>
         });
     </script>
 </head>
@@ -47,7 +42,7 @@
             <div class="card-content">
                 <div class="card-title">
                     <c:choose>
-                        <c:when test="${isModerator}">
+                        <c:when test="${roles.moderator}">
                             <spring:message code="game.submit.title" />
                         </c:when>
                         <c:otherwise>
@@ -89,18 +84,18 @@
                         </form:label>
                     </div>
                     <div class="input-field file-field col s12">
-                        <div class="btn" type="">
-                            <span><spring:message code="game.submit.form.image" /></span>
-                            <input type="file" name="image" alt="image" accept="image/gif, image/png, image/jpeg" />
-                        </div>
-                        <div class="file-path-wrapper">
-                            <spring:message code="game.submit.placeholder.image" var="placeholderImage" />
-                            <input
-                                    class="file-path validate white-text"
-                                    type="text"
-                                    placeholder="${placeholderImage}"
-                            />
-                        </div>
+                            <div class="btn" type="">
+                                <span><spring:message code="game.submit.form.image" /></span>
+                                <form:input type="file" alt="image" id="image" accept="image/gif, image/png, image/jpeg"  path="image"/>
+                            </div>
+                            <div class="file-path-wrapper">
+                                <spring:message code="game.submit.placeholder.image" var="placeholderImage" />
+                                <input
+                                        class="file-path validate white-text"
+                                        type="text"
+                                        placeholder="${placeholderImage}"
+                                />
+                            </div>
                         <form:errors path="image" cssClass="error" element="p" />
                     </div>
                     <div class="input-field col s12">
@@ -131,7 +126,7 @@
             <div class="card-action">
                 <button class="btn" type="submit">
                     <c:choose>
-                        <c:when test="${isModerator}">
+                        <c:when test="${roles.moderator}">
                            <spring:message code="game.submit.create" />
                         </c:when>
                         <c:otherwise>

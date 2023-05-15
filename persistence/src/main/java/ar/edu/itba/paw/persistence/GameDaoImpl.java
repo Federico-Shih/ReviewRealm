@@ -140,7 +140,7 @@ public class GameDaoImpl implements GameDao, PaginationDao<GameFilter> {
     @Override
     public Paginated<Game> findAll(Page page, GameFilter filter, Ordering<GameOrderCriteria> ordering) {
         int totalPages = getPageCount(filter, page.getPageSize());
-        if (page.getPageNumber() > totalPages || page.getPageNumber()<= 0) {
+        if (page.getPageNumber() > totalPages || page.getPageNumber() <= 0) {
             return new Paginated<>(page.getPageNumber(), page.getPageSize(), totalPages, new ArrayList<>());
         }
 

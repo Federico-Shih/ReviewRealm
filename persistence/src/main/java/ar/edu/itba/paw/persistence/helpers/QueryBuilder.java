@@ -31,6 +31,7 @@ public class QueryBuilder {
 
     public QueryBuilder withSimilar(String queryField, String queryString) {
         if (queryString != null) {
+            queryString = queryString.replace("%", "\\%").replace("_", "\\_");
             str.append(" ");
             str.append(operator);
             str.append(String.format(" %s %s ILIKE ? ", queryField,(not)? "NOT":""));

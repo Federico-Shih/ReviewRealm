@@ -3,6 +3,7 @@ package ar.edu.itba.paw.webapp.controller;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.servicesinterfaces.UserService;
 import ar.edu.itba.paw.webapp.auth.AuthenticationHelper;
+import ar.edu.itba.paw.webapp.controller.datacontainers.RoleContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,8 +24,8 @@ public class GlobalControllerAdvice {
         return AuthenticationHelper.getLoggedUser(us);
     }
 
-    @ModelAttribute("isModerator")
-    public boolean isModerator() {
-        return AuthenticationHelper.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_MODERATOR"));
+    @ModelAttribute("roles")
+    public RoleContainer isModerator() {
+        return new RoleContainer(AuthenticationHelper.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_MODERATOR")));
     }
 }

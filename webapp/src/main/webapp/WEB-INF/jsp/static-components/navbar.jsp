@@ -55,7 +55,7 @@
                     </c:if>
                     <li class="navbar-option"><a href="<c:url value="/game/list"/>" class="${param.selected == "game-list" ? "chosen-tab" : "" }"><span><spring:message code="navbar.games"/></span></a></li>
                     <li class="navbar-option"><a href="<c:url value="/"/>" class="${param.selected == "review-list" ? "chosen-tab" : "" }"><span><spring:message code="navbar.reviews"/></span></a></li>
-                    <c:if test="${isModerator}">
+                    <c:if test="${roles.moderator}">
                         <li class="navbar-option">
                             <a href="<c:url value="/game/submissions" />" class="${param.selected == "gameSubmission" ? "chosen-tab": ""}">
                                 <spring:message code="navbar.gamesubmissions"/>
@@ -102,8 +102,8 @@
                                                     add
                                                 </span>
                                                 <span class="overflow-ellipsis">
-                                                    <c:if test="${!isModerator}"><spring:message code="navbar.suggest"/></c:if>
-                                                    <c:if test="${isModerator}"><spring:message code="navbar.submitgame"/></c:if>
+                                                    <c:if test="${!roles.moderator}"><spring:message code="navbar.suggest"/></c:if>
+                                                    <c:if test="${roles.moderator}"><spring:message code="navbar.submitgame"/></c:if>
                                                 </span>
                                             </div>
                                         </a>
