@@ -32,7 +32,6 @@ public class ProfileController extends PaginatedController {
     private final GameService gameService;
     private final GenreService genreService;
 
-    private final DiscoveryQueueData queueData;
 
     private static final String MODERATOR = "MODERATOR";
 
@@ -45,7 +44,6 @@ public class ProfileController extends PaginatedController {
         this.reviewService = reviewService;
         this.gameService = gameService;
         this.genreService = genreService;
-        this.queueData = new DiscoveryQueueData();
     }
 
     @RequestMapping(value = "/profile/{id:\\d+}", method = RequestMethod.GET)
@@ -263,7 +261,8 @@ public class ProfileController extends PaginatedController {
 
     @RequestMapping(value="/for-you", method = RequestMethod.GET)
     public ModelAndView forYouPage(@RequestParam(value = "size", defaultValue = "6") Integer size,
-                                   @RequestParam(value= "search", defaultValue = "") String search) {
+                                   @RequestParam(value= "search", defaultValue = "") String search,
+                                   @RequestParam(value= "endofqueue", defaultValue = "false") Boolean endOfQueue){
         final ModelAndView mav = new ModelAndView("profile/for-you");
         User loggedUser = AuthenticationHelper.getLoggedUser(userService);
 
@@ -272,68 +271,40 @@ public class ProfileController extends PaginatedController {
             super.paginate(mav, searchedUsers);
             mav.addObject("users", searchedUsers.getList());
         }
-        queueData.setPosition(0);
         mav.addObject("search", search);
         mav.addObject("reviewsFollowing", reviewService.getReviewsFromFollowingByUser(loggedUser.getId(), size));
         mav.addObject("user", loggedUser);
         mav.addObject("userSetPreferences", loggedUser.hasPreferencesSet());
         mav.addObject("size", size);
+        mav.addObject("endOfQueue", endOfQueue);
 
         return mav;
     }
 
     @RequestMapping(value="/for-you/discovery", method = RequestMethod.GET)
-    public ModelAndView discoveryQueue(){
+    public ModelAndView discoveryQueue(@RequestParam(value="position", defaultValue = "0") Integer position){
         final ModelAndView mav = new ModelAndView("profile/discovery");
         User loggedUser = AuthenticationHelper.getLoggedUser(userService);
         List<Game> recommendedGames = gameService.getRecommendationsOfGamesForUser(loggedUser.getId());
 
+        if(position<0){
+            return new ModelAndView("static-components/not-found");
+        }
         if(recommendedGames.isEmpty()){
             return new ModelAndView("redirect:/profile/settings/preferences?nothingForDiscovery=true");
         }
-
-        Integer queuePosition = queueData.getQueuePosition();
-        if( queuePosition > recommendedGames.size() ){
-            queueData.setPosition(0);
+        if( position>=recommendedGames.size() ){
+            return new ModelAndView("redirect:/for-you/?endofqueue=true");
         }
 
-        Game game = recommendedGames.get(queueData.getQueuePosition());
+        Game game = recommendedGames.get(position);
         GameReviewData reviewData = gameService.getReviewsByGameId(game.getId(),loggedUser);
 
         //Si esta el juego entonces si o si estan las reviews aunque sean vacias, no hay que chequear
         mav.addObject("game",game);
         mav.addObject("gameReviewData", reviewData);
-        mav.addObject("positionInQueue",queueData.getQueuePosition());
-        mav.addObject("isLast",queueData.getQueuePosition()+1 == recommendedGames.size());
+        mav.addObject("positionInQueue",position);
 
         return mav;
     }
-    @RequestMapping(value = "/for-you/discovery/next", method = RequestMethod.POST)
-    public ModelAndView advanceDiscoveryQueue(){
-        queueData.setPosition(queueData.getQueuePosition() + 1);
-
-       return new ModelAndView("redirect:/for-you/discovery");
-    }
-    @RequestMapping(value = "/for-you/discovery/previous", method = RequestMethod.POST)
-    public ModelAndView regressDiscoveryQueue(){
-        Integer previous = queueData.getQueuePosition();
-        queueData.setPosition((previous>0)? previous-1 : previous );
-        return new ModelAndView("redirect:/for-you/discovery");
-    }
-
-
-    private static class DiscoveryQueueData {
-
-        private Integer queuePosition = 0;
-
-        public void setPosition(Integer queuePosition){
-            this.queuePosition = queuePosition;
-        }
-
-        public Integer getQueuePosition(){
-            return queuePosition;
-        }
-
-    }
-
 }

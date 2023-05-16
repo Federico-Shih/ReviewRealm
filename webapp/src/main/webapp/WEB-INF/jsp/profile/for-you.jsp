@@ -14,6 +14,14 @@
     <script src="<c:url value="/js/materialize.min.js" />"></script>
     <script src="<c:url value="/js/reviewfeedback.js"/> "></script>
     <title><spring:message code="navbar.foryou"/></title>
+    <script>
+        <c:if test="${endOfQueue}">
+            document.addEventListener('DOMContentLoaded', function () {
+                M.toast({html: '<spring:message code="for-you.outofrecommended" />', classes: 'created-toast'});
+            });
+        </c:if>
+    </script>
+
 </head>
 <body>
 <jsp:include page="../static-components/navbar.jsp">

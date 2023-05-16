@@ -22,7 +22,6 @@
 <c:url value="/for-you/discovery/next" var="nextInQueue"/>
 <c:url value="/for-you/discovery/previous" var="previousInQueue"/>
 <jsp:include page="../static-components/navbar.jsp"/>
-<c:if test="${!emptyQueue}">
 <div class="game-details-section row">
     <div class="game-details col s12 l7">
         <span class="game-title"><c:out value="${game.name}"/></span>
@@ -94,12 +93,12 @@
     <c:url value="/for-you" var="forYou"/>
     <div class="discovery-queue-row">
         <c:if test="${positionInQueue != 0}">
-            <form action="${previousInQueue}" method="post">
+            <a href="?position=${positionInQueue - 1}">
                 <button class="btn waves-light">
                     <i class="material-icons left">chevron_left</i>
                     <span><spring:message code="for-you.previousqueue"/></span>
                 </button>
-            </form>
+            </a>
         </c:if>
         <c:if test="${positionInQueue == 0}">
             <a href="${forYou}">
@@ -109,22 +108,12 @@
                 </button>
             </a>
         </c:if>
-        <c:if test="${!isLast}">
-            <form action="${nextInQueue}" method="post">
+            <a href="?position=${positionInQueue+1}">
                 <button class="btn waves-light">
                     <span><spring:message code="for-you.nextqueue"/></span>
                     <i class="material-icons right">chevron_right</i>
                 </button>
-            </form>
-        </c:if>
-        <c:if test="${isLast}">
-            <a href="${forYou}">
-                <button class="btn waves-light" type="button">
-                    <span><spring:message code="for-you.return"/></span>
-                    <i class="material-icons right">chevron_right</i>
-                </button>
             </a>
-        </c:if>
 
     </div>
 <div class="game-review-section">
@@ -135,7 +124,7 @@
     <div class="game-review-card-list row">
         <c:if test="${empty gameReviewData.reviewList}">
             <div class="no-reviews">
-                <div class="s"></div>
+                <div></div>
                 <p id="no-reviews-text"><spring:message code="game.details.first.review"/></p>
             </div>
         </c:if>
@@ -148,6 +137,5 @@
         </c:if>
     </div>
 </div>
-</c:if>
 </body>
 </html>
