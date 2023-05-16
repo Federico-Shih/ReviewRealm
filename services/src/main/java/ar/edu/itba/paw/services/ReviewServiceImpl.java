@@ -151,6 +151,7 @@ public class ReviewServiceImpl implements ReviewService {
                 .withPlatforms(searchFilter.getPlatforms())
                 .withDifficulties(searchFilter.getDifficulties())
                 .withCompleted(searchFilter.getCompleted())
+                .withReviewContent(searchFilter.getSearch())
                 .build();
         return reviewDao.findAll(page, filter, ordering, (activeUser != null) ? activeUser.getId() : null);
     }

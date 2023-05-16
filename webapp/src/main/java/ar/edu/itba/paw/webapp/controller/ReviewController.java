@@ -1,9 +1,6 @@
 package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.dtos.*;
-import ar.edu.itba.paw.dtos.filtering.ReviewFilter;
-import ar.edu.itba.paw.dtos.filtering.ReviewFilterBuilder;
-import ar.edu.itba.paw.dtos.ordering.GameOrderCriteria;
 import ar.edu.itba.paw.dtos.ordering.OrderDirection;
 import ar.edu.itba.paw.dtos.ordering.Ordering;
 import ar.edu.itba.paw.dtos.ordering.ReviewOrderCriteria;
@@ -28,7 +25,6 @@ import ar.edu.itba.paw.webapp.auth.AuthenticationHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Controller;
@@ -147,7 +143,8 @@ public class ReviewController extends PaginatedController implements QueryContro
             @RequestParam(value = "f-dif", defaultValue = "") List<Integer> difficultyFilter,
             @RequestParam(value = "f-cpt", defaultValue = "") Boolean completedFilter,
             @RequestParam(value = "page", defaultValue = "1") Integer page,
-            @RequestParam(value = "pageSize", defaultValue = "") Integer pageSize
+            @RequestParam(value = "pageSize", defaultValue = "") Integer pageSize,
+            @RequestParam(value = "search", defaultValue = "") String search
     ) {
         final ModelAndView mav = new ModelAndView("review/review-list");
         User loggedUser = AuthenticationHelper.getLoggedUser(userService);
@@ -176,6 +173,7 @@ public class ReviewController extends PaginatedController implements QueryContro
                 )
                 .withCompleted((completedFilter!=null && completedFilter)? true : null)
                 .withPreferences(preferencesFilter)
+                .withSearch(search)
                 .withMinTimePlayed(minTimePlayed);
 
         ReviewSearchFilter searchFilter = searchFilterBuilder.build();
@@ -193,13 +191,14 @@ public class ReviewController extends PaginatedController implements QueryContro
         mav.addObject("totalReviews", reviewPaginated.getTotalPages());
         mav.addObject("orderCriteria", ReviewOrderCriteria.values());
         mav.addObject("orderDirections", OrderDirection.values());
+        mav.addObject("searchField", search);
         mav.addObject("genresFilter", new FilteredList<Genre>(allGenres, (genre) -> genresFilter.contains(genre.getId())));
         mav.addObject("preferencesFilter", new FilteredList<Genre>(allGenres, (preference) -> preferencesFilter.contains(preference.getId())));
         mav.addObject("platformsFilter", new FilteredList<Platform>(Arrays.asList(Platform.values()), (platform) -> platformsFilter.contains(platform.getId())));
         mav.addObject("difficultiesFilter", new FilteredList<Difficulty>(Arrays.asList(Difficulty.values()), (difficulty) -> difficultyFilter.contains(difficulty.getId())));
         mav.addObject("completedFilter", completedFilter);
         mav.addObject("selectedOrderDirection", OrderDirection.fromValue(orderDirection));
-        mav.addObject("selectedOrderCriteria", GameOrderCriteria.fromValue(orderCriteria));
+        mav.addObject("selectedOrderCriteria", ReviewOrderCriteria.fromValue(orderCriteria));
         mav.addObject("minTimePlayed", minTimePlayed);
         if(orderCriteria== 0 && orderDirection == 0 && genresFilter.isEmpty() && timePlayedFilter.isEmpty() && preferencesFilter.isEmpty() && platformsFilter.isEmpty() && difficultyFilter.isEmpty() && completedFilter == null) {
             mav.addObject("showResetFiltersButton", false);

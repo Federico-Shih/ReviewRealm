@@ -190,6 +190,15 @@ nav {
     color: white
 }
 
+.search-list-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: baseline;
+    margin-top: 2%;
+    width: 90%;
+}
+
 .search-field{
     width: 80%;
     height: 50px;
