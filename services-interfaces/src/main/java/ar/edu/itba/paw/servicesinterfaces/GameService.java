@@ -6,10 +6,7 @@ import ar.edu.itba.paw.dtos.ordering.Ordering;
 import ar.edu.itba.paw.dtos.saving.SubmitGameDTO;
 import ar.edu.itba.paw.dtos.searching.GameSearchFilter;
 import ar.edu.itba.paw.enums.Genre;
-import ar.edu.itba.paw.models.Game;
-import ar.edu.itba.paw.models.Paginated;
-import ar.edu.itba.paw.models.GameReviewData;
-import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -25,8 +22,7 @@ public interface GameService {
 
     Paginated<Game> searchGames(Page page, GameSearchFilter filter, Ordering<GameOrderCriteria> ordering);
 
-
-    GameReviewData getReviewsByGameId(Long id, User activeUser);
+    GameReviewData getGameReviewDataByGameId(Long id);
 
     Double getAverageGameReviewRatingById(Long id);
 

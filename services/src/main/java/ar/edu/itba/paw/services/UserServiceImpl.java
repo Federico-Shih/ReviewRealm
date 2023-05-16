@@ -10,9 +10,7 @@ import ar.edu.itba.paw.exceptions.UserAlreadyEnabled;
 import ar.edu.itba.paw.exceptions.UserNotFoundException;
 import ar.edu.itba.paw.exceptions.UsernameAlreadyExistsException;
 import ar.edu.itba.paw.models.*;
-import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.persistenceinterfaces.ValidationTokenDao;
-import ar.edu.itba.paw.servicesinterfaces.GenreService;
 import ar.edu.itba.paw.servicesinterfaces.MailingService;
 import ar.edu.itba.paw.servicesinterfaces.UserService;
 import ar.edu.itba.paw.persistenceinterfaces.UserDao;
@@ -32,7 +30,6 @@ public class UserServiceImpl implements UserService {
     private static final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
     private final UserDao userDao;
     private final PasswordEncoder passwordEncoder;
-    private final GenreService genreService;
     private final ValidationTokenDao tokenDao;
     private final MailingService mailingService;
     private static final int EXPIRATION_TIME = 60 * 60 * 24; // 24hs
@@ -40,13 +37,11 @@ public class UserServiceImpl implements UserService {
     @Autowired
     public UserServiceImpl(UserDao userDao,
                            PasswordEncoder passwordEncoder,
-                           GenreService genreService,
                            ValidationTokenDao tokenDao,
                            MailingService mailingService
     ) {
         this.userDao = userDao;
         this.passwordEncoder = passwordEncoder;
-        this.genreService = genreService;
         this.tokenDao = tokenDao;
         this.mailingService = mailingService;
     }

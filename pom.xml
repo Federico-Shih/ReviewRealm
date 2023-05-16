@@ -21,36 +21,20 @@
     <name>rootapp</name>
 
     <properties>
-
         <org.postgresql.version>42.2.5</org.postgresql.version>
-
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
         <maven.compiler.source>1.8</maven.compiler.source>
-
         <maven.compiler.target>1.8</maven.compiler.target>
-
-        <org.springframework.version>4.2.5.RELEASE</org.springframework.version>
-
+        <org.springframework.version>4.3.4.RELEASE</org.springframework.version>
         <servlet-api.version>2.5</servlet-api.version>
-
         <javax.servlet-api.version>4.0.1</javax.servlet-api.version>
-
         <jstl.version>1.2</jstl.version>
-
         <javax.validation-api.version>2.0.1.Final</javax.validation-api.version>
-
         <org.hibernate.validator>5.4.3.Final</org.hibernate.validator>
-
         <org.mockito.version>2.25.1</org.mockito.version>
-
         <org.junit.version>4.13.2</org.junit.version>
-
         <org.hsqldb.version>2.4.0</org.hsqldb.version>
-
-        <org.jetbrains.version>13.0</org.jetbrains.version>
-
-        <spring-security.version>4.0.4.RELEASE</spring-security.version>
+        <spring-security.version>4.2.0.RELEASE</spring-security.version>
         <org.slf4j.version>1.7.5</org.slf4j.version>
         <logback.version>1.1.2</logback.version>
         <logback-ext-spring.version>0.1.1</logback-ext-spring.version>
@@ -177,12 +161,6 @@
                 <artifactId>hsqldb</artifactId>
                 <version>${org.hsqldb.version}</version>
                 <scope>test</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>org.jetbrains</groupId>
-                <artifactId>annotations</artifactId>
-                <version>${org.jetbrains.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>

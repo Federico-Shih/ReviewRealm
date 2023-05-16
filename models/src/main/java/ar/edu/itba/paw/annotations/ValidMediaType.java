@@ -2,11 +2,9 @@ package ar.edu.itba.paw.annotations;
 
 import ar.edu.itba.paw.validators.MediaTypeValidator;
 import org.springframework.http.MediaType;
-
 import javax.validation.Constraint;
 import javax.validation.Payload;
 import java.lang.annotation.*;
-import java.util.List;
 
 @Documented
 @Constraint(validatedBy = MediaTypeValidator.class)

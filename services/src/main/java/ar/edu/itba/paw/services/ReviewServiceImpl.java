@@ -8,6 +8,7 @@ import ar.edu.itba.paw.dtos.ordering.ReviewOrderCriteria;
 import ar.edu.itba.paw.dtos.searching.ReviewSearchFilter;
 import ar.edu.itba.paw.enums.*;
 import ar.edu.itba.paw.models.*;
+import ar.edu.itba.paw.persistenceinterfaces.PaginationDao;
 import ar.edu.itba.paw.persistenceinterfaces.ReviewDao;
 import ar.edu.itba.paw.servicesinterfaces.GameService;
 import ar.edu.itba.paw.servicesinterfaces.MailingService;
@@ -22,7 +23,6 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.*;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
@@ -136,7 +136,7 @@ public class ReviewServiceImpl implements ReviewService {
         if(followingUsers.isEmpty()){
             return new ArrayList<>();
         }
-        List<Long> followingIds = followingUsers.stream().map((user -> user.getId())).collect(Collectors.toList());
+        List<Long> followingIds = followingUsers.stream().map((User::getId)).collect(Collectors.toList());
         ReviewFilterBuilder filterBuilder = new ReviewFilterBuilder()
                 .withAuthors(followingIds);
         return reviewDao.findAll(Page.with(1, size), filterBuilder.build(), Ordering.defaultOrder(ReviewOrderCriteria.REVIEW_DATE), userId).getList();
@@ -167,13 +167,12 @@ public class ReviewServiceImpl implements ReviewService {
         return false;
     }
 
-    // TODO: paginar
     @Transactional(readOnly = true)
     @Override
-    public List<Review> getUserReviews(Long userId, User activeUser) {
+    public Paginated<Review> getUserReviews(Page page, Long userId, User activeUser) {
         List<Long> authors = new ArrayList<>();
         authors.add(userId);
-        return reviewDao.findAll(Page.with(1, 100), new ReviewFilterBuilder().withAuthors(authors).build(), Ordering.defaultOrder(ReviewOrderCriteria.REVIEW_DATE), (activeUser != null)? activeUser.getId() : null ).getList();
+        return reviewDao.findAll(page, new ReviewFilterBuilder().withAuthors(authors).build(), Ordering.defaultOrder(ReviewOrderCriteria.REVIEW_DATE), (activeUser != null)? activeUser.getId() : null );
     }
 
     @Transactional
@@ -199,8 +198,14 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public List<Review> getReviewsFromGame(Long gameId, User activeUser) {
+    public Paginated<Review> getReviewsFromGame(Page page, Long gameId, User activeUser) {
         ReviewFilter filter = new ReviewFilterBuilder().withGameId(gameId).build();
-        return reviewDao.findAll(Page.with(1, 100), filter, Ordering.defaultOrder(ReviewOrderCriteria.REVIEW_DATE), (activeUser != null)? activeUser.getId() : null).getList();
+        return reviewDao.findAll(page, filter, Ordering.defaultOrder(ReviewOrderCriteria.REVIEW_DATE), (activeUser != null)? activeUser.getId() : null);
+    }
+
+    @Override
+    public List<Review> getAllReviewsFromGame(Long gameId, User activeUser) {
+        ReviewFilter filter = new ReviewFilterBuilder().withGameId(gameId).build();
+        return reviewDao.findAll(filter, Ordering.defaultOrder(ReviewOrderCriteria.REVIEW_DATE), (activeUser != null)? activeUser.getId() : null);
     }
 }

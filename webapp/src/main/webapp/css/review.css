@@ -34,6 +34,7 @@
 
 .review-card {
     height: fit-content;
+    min-height: 260px;
 }
 
 .review-card-header {

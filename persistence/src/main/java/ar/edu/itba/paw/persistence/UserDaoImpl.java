@@ -16,7 +16,6 @@ import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-
 import javax.sql.DataSource;
 import java.util.*;
 
@@ -198,7 +197,6 @@ public class UserDaoImpl implements UserDao, PaginationDao<UserFilter> {
     @Override
     public void setPreferences(Set<Integer> genres, long userId) {
         jdbcTemplate.update("DELETE FROM genreforusers WHERE userid = ?",userId);
-        // Si tuvieramos muchos géneros a la vez (10 o más), deberíamos utilizar batchUpdate
         for(Integer genId : genres) {
             jdbcTemplate.update("INSERT INTO genreforusers(genreid, userid) VALUES (?,?)", genId, userId);
         }

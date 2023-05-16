@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="<c:url value="/css/main.css" />">
     <link rel="stylesheet" href="<c:url value="/css/game.css" />">
     <link rel="stylesheet" href="<c:url value="/css/review.css" />">
+    <link rel="stylesheet" href="<c:url value="/css/for-you.css" />">
     <script src="<c:url value="/js/materialize.min.js" />"></script>
     <script src="<c:url value="/js/reviewfeedback.js"/>"></script>
     <link rel="shortcut icon" type="image/png" href="<c:url value="/static/review_realm_logo_white_32px.png" />">
@@ -59,7 +60,7 @@
         </span>
     </div>
 </div>
-<c:if test="${!empty gameReviewData.reviewList}">
+<c:if test="${!empty reviews}">
     <div class="statistics-section">
         <span class="game-review-section-header"> <spring:message code="game.details.review.statistics"/></span>
         <div class="statistics-list">
@@ -100,6 +101,33 @@
         </div>
     </div>
 </c:if>
+<c:if test="${discoveryQueue}">
+    <c:url value="/for-you" var="forYou"/>
+    <div class="discovery-queue-row">
+        <c:if test="${positionInQueue != 0}">
+            <a href="?position=${positionInQueue - 1}">
+                <button class="btn waves-light">
+                    <i class="material-icons left">chevron_left</i>
+                    <span><spring:message code="for-you.previousqueue"/></span>
+                </button>
+            </a>
+        </c:if>
+        <c:if test="${positionInQueue == 0}">
+            <a href="${forYou}">
+                <button class="btn waves-light" type="button">
+                    <i class="material-icons right">chevron_left</i>
+                    <span><spring:message code="for-you.return"/></span>
+                </button>
+            </a>
+        </c:if>
+        <a href="?position=${positionInQueue+1}">
+            <button class="btn waves-light">
+                <span><spring:message code="for-you.nextqueue"/></span>
+                <i class="material-icons right">chevron_right</i>
+            </button>
+        </a>
+    </div>
+</c:if>
 
 <div class="game-review-section">
     <div class="game-review-header">
@@ -107,19 +135,24 @@
         <a class="btn waves-effect-light" href="${sumbitReview}"><spring:message code="game.details.new.review"/></a>
     </div>
     <div class="game-review-card-list row">
-        <c:if test="${empty gameReviewData.reviewList}">
+        <c:if test="${empty reviews}">
             <div class="no-reviews">
                 <div class="s"></div>
                 <p id="no-reviews-text"><spring:message code="game.details.first.review"/></p>
             </div>
         </c:if>
-        <c:forEach var="review" items="${gameReviewData.reviewList}">
+        <c:forEach var="review" items="${reviews}">
             <c:set var="review" value="${review}" scope="request" />
             <c:import url="/WEB-INF/jsp/review/review-card.jsp" />
         </c:forEach>
-        <c:if test="${fn:length(gameReviewData.reviewList) % 2 == 1}">
+        <c:if test="${fn:length(reviews) % 2 == 1}">
             <div class="col m6"></div>
         </c:if>
+        <div class="col s12 center-align">
+            <c:if test="${fn:length(reviews) == currentPageSize}">
+                <button class="btn-flat btn-floating-color no-a-decoration"> <a href="${queryString}pageSize=${fn:length(reviews) + defaultPageSize}"> <spring:message code="for-you.more"/> </a></button>
+            </c:if>
+        </div>
     </div>
 </div>
 </body>

@@ -2,6 +2,7 @@ package ar.edu.itba.paw.dtos.filtering;
 
 import java.util.List;
 
+// To be used between Services and Persistence
 public class GameFilterBuilder {
     private List<Integer> gameGenres = null;
     private String gameContent = null;
@@ -9,8 +10,6 @@ public class GameFilterBuilder {
     private String publisher = null;
     private Float minRating = null;
     private Float maxRating = null;
-    private Boolean isFavorite = null;
-
     private Boolean isSuggested = null;
 
     public GameFilterBuilder withGameGenres(List<Integer> genres) {
@@ -33,18 +32,11 @@ public class GameFilterBuilder {
         return this;
     }
 
-    public GameFilterBuilder withFavorite(Boolean isFavorite) {
-        this.isFavorite = isFavorite;
-        return this;
-    }
-
     public GameFilterBuilder withRatingRange(Float minRating, Float maxRating) {
         this.minRating = minRating;
         this.maxRating = maxRating;
         return this;
     }
-
-
 
     public GameFilterBuilder withSuggestion(Boolean isSuggested) {
         this.isSuggested = isSuggested;
@@ -52,6 +44,6 @@ public class GameFilterBuilder {
     }
 
     public GameFilter build() {
-        return new GameFilter(gameGenres, gameContent, developer, publisher, minRating, maxRating, isFavorite, isSuggested);
+        return new GameFilter(gameGenres, gameContent, developer, publisher, minRating, maxRating, isSuggested);
     }
 }

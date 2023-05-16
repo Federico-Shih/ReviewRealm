@@ -30,6 +30,7 @@ public enum ReviewOrderCriteria implements OrderCriteria {
     public String getAltName() {
         return this.altName;
     }
+
     public static ReviewOrderCriteria fromValue(Integer value) {
         for (ReviewOrderCriteria orderCriteria : values()) {
             if (Objects.equals(orderCriteria.getValue(), value)){

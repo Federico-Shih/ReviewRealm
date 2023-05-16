@@ -1,11 +1,11 @@
 package ar.edu.itba.paw.dtos.filtering;
 
+// To be used between Services and Persistence
 public class UserFilterBuilder {
     private String username = null;
     private String email = null;
     private Long reputation = null;
     private Boolean enabled = null;
-
     private Long id = null;
     private String search;
 

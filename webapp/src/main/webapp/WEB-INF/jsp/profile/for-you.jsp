@@ -110,7 +110,7 @@
                 <c:import url="/WEB-INF/jsp/review/review-card.jsp" />
             </c:forEach>
         </div>
-        <div class="center-align">
+        <div class="f-row f-jc-center full-width">
             <c:if test="${fn:length(reviewsFollowing) == size}">
                 <button class="btn-flat btn-floating-color no-a-decoration"> <a href="?size=${fn:length(reviewsFollowing) + 6}"> <spring:message code="for-you.more"/> </a></button>
             </c:if>

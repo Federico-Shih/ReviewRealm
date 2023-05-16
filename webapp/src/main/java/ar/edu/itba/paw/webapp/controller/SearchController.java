@@ -30,6 +30,8 @@ public class SearchController {
     private final GameService gameService;
     private final ReviewService reviewService;
 
+    private final static int MAX_RESULTS = 6;
+
     @Autowired
     public SearchController(UserService userService, GameService gameService, ReviewService reviewService) {
         this.userService = userService;
@@ -43,13 +45,13 @@ public class SearchController {
             return new ModelAndView("search/search").addObject("users", new ArrayList<>()).addObject("games",
                     new ArrayList<>()).addObject("reviews", new ArrayList<>()).addObject("search", search);
         }
-        Paginated<User> users = userService.getSearchedUsers(1, 5, search);
+        Paginated<User> users = userService.getSearchedUsers(1, MAX_RESULTS, search);
         GameSearchFilterBuilder gameSearchFilterBuilder = new GameSearchFilterBuilder().withSearch(search);
-        Paginated<Game> games = gameService.searchGames(Page.with(1, 5),
+        Paginated<Game> games = gameService.searchGames(Page.with(1, MAX_RESULTS),
                 gameSearchFilterBuilder.build(),
                 new Ordering<>(OrderDirection.ASCENDING, GameOrderCriteria.NAME));
         ReviewSearchFilterBuilder reviewSearchFilterBuilder = new ReviewSearchFilterBuilder().withSearch(search);
-        Paginated<Review> reviews = reviewService.searchReviews(Page.with(1, 5),
+        Paginated<Review> reviews = reviewService.searchReviews(Page.with(1, MAX_RESULTS),
                 reviewSearchFilterBuilder.build(),
                 new Ordering<>(OrderDirection.DESCENDING, ReviewOrderCriteria.REVIEW_DATE),
                 AuthenticationHelper.getLoggedUser(userService));

@@ -3,7 +3,7 @@ package ar.edu.itba.paw.webapp.forms;
 import ar.edu.itba.paw.enums.Difficulty;
 import ar.edu.itba.paw.enums.GamelengthUnit;
 import ar.edu.itba.paw.enums.Platform;
-import ar.edu.itba.paw.exceptions.UnitNotSelectedException;
+import ar.edu.itba.paw.webapp.exceptions.UnitNotSelectedException;
 
 import javax.validation.constraints.*;
 

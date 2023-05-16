@@ -22,7 +22,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDate;
 import java.util.*;
 import java.util.function.Function;
@@ -37,7 +36,6 @@ public class GameServiceImpl implements GameService {
     private final ReviewService reviewService;
     private final GenreService genreServ;
     private final ImageService imgService;
-
     private final UserService userService;
 
     @Lazy
@@ -108,9 +106,8 @@ public class GameServiceImpl implements GameService {
 
     @Transactional(readOnly = true)
     @Override
-    public GameReviewData getReviewsByGameId(Long id, User activeUser) {
-        // TODO: PAGINAR
-        List<Review> reviews = reviewService.getReviewsFromGame(id,activeUser);
+    public GameReviewData   getGameReviewDataByGameId(Long id) {
+        List<Review> reviews = reviewService.getAllReviewsFromGame(id,null);
         if(reviews.size() > 0) {
             HashMap<Difficulty, Integer> difficultyCount = new HashMap<>();
             HashMap<Platform, Integer> platformCount = new HashMap<>();
@@ -126,14 +123,14 @@ public class GameServiceImpl implements GameService {
                 sumReplayability += (r.getReplayability()!= null)? ((r.getReplayability())? 1:0):0;
                 sumCompletability += (r.getCompleted() != null)? ((r.getCompleted())? 1:0):0;
             }
-            difficultyCount.remove(null); //Sacamos a todos los que no tenian difficulty de la ecuacion
+            difficultyCount.remove(null); //We remove all the ones that didn't have difficulty set
             Optional<Map.Entry<Difficulty, Integer>> averageDiff = difficultyCount.entrySet().stream().max(Comparator.comparingInt(Map.Entry::getValue));
             platformCount.remove(null);
             Optional<Map.Entry<Platform, Integer>> averagePlatform = platformCount.entrySet().stream().max(Comparator.comparingInt(Map.Entry::getValue));
-            return new GameReviewData(reviews, reviews.get(0).getReviewedGame().getAverageRating(),(averageDiff.isPresent())? averageDiff.get().getKey() : null,(averagePlatform.isPresent())? averagePlatform.get().getKey() : null,
+            return new GameReviewData(reviews.get(0).getReviewedGame().getAverageRating(),(averageDiff.isPresent())? averageDiff.get().getKey() : null,(averagePlatform.isPresent())? averagePlatform.get().getKey() : null,
                     sumHours / reviews.size(), ((double)  sumReplayability/ reviews.size() )* 100,  ((double)sumCompletability /reviews.size())*100);
         }
-        return new GameReviewData(reviews,-1, null, null,-1,-1,-1);
+        return new GameReviewData(-1, null, null,-1,-1,-1);
     }
 
     @Transactional
@@ -212,7 +209,7 @@ public class GameServiceImpl implements GameService {
     @Transactional
     @Override
     public void setFavoriteGames(long userId, List<Long> gameIds) {
-        gameDao.replaceAllFavoriteGames(userId, Optional.ofNullable(gameIds));
+        gameDao.replaceAllFavoriteGames(userId, gameIds==null? new ArrayList<>(): gameIds);
     }
 
 }

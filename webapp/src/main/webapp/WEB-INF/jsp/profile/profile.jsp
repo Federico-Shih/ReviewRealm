@@ -184,6 +184,11 @@
                     <span><spring:message code="profile.noreviews"/></span>
                 </div>
             </c:if>
+            <div class="col s12 center-align">
+                <c:if test="${fn:length(reviews) == currentPageSize}">
+                    <button class="btn-flat btn-floating-color no-a-decoration"> <a href="?pageSize=${fn:length(reviews) + defaultPageSize}"> <spring:message code="for-you.more"/> </a></button>
+                </c:if>
+            </div>
         </div>
     </div>
 </div>

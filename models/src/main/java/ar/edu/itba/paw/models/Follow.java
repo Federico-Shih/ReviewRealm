@@ -4,7 +4,6 @@ public class Follow {
     private final long userId;
     private final long following;
 
-
     public Follow(long userId, long following) {
         this.userId = userId;
         this.following = following;

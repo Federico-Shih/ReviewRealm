@@ -1,6 +1,9 @@
 package ar.edu.itba.paw.webapp.controller;
 
+import ar.edu.itba.paw.dtos.Page;
+import ar.edu.itba.paw.enums.RoleType;
 import ar.edu.itba.paw.exceptions.UserNotFoundException;
+import ar.edu.itba.paw.webapp.exceptions.ObjectNotFoundException;
 import ar.edu.itba.paw.webapp.forms.FavoriteGamesForm;
 import ar.edu.itba.paw.webapp.forms.NotificationsForm;
 import ar.edu.itba.paw.models.*;
@@ -32,10 +35,8 @@ public class ProfileController extends PaginatedController {
     private final GameService gameService;
     private final GenreService genreService;
 
-
-    private static final String MODERATOR = "MODERATOR";
-
-    private final static int RECOMMENDED_GAMES_COUNT = 3;
+    private final static int DEFAULT_PAGE_SIZE = 8;
+    private final static int INITIAL_REVIEWS_LOADED = 6;
     @Autowired
     public ProfileController(UserService userService, ReviewService reviewService,
                              GameService gameService, GenreService genreService){
@@ -50,14 +51,18 @@ public class ProfileController extends PaginatedController {
     public ModelAndView profile(@PathVariable(value="id") long userId,
                                 @RequestParam(value = "preferences-changed", required = false) Boolean preferencesChanged,
                                 @RequestParam(value = "avatar-changed", required = false) Boolean avatarChanged,
-                                @RequestParam(value = "notifications-changed", required = false) Boolean notificationsChanged
+                                @RequestParam(value = "notifications-changed", required = false) Boolean notificationsChanged,
+                                @RequestParam(value = "pageSize", required = false) Integer pageSize
     )
     {
         final ModelAndView mav = new ModelAndView("profile/profile");
         Optional<User> user = userService.getUserById(userId);
-        if(!user.isPresent())
-        {
-            return new ModelAndView("static-components/not-found");
+        if(!user.isPresent()) {
+            throw new ObjectNotFoundException();
+        }
+
+        if(pageSize==null || pageSize < 0) {
+            pageSize = DEFAULT_PAGE_SIZE;
         }
 
         User loggedUser = AuthenticationHelper.getLoggedUser(userService);
@@ -67,8 +72,10 @@ public class ProfileController extends PaginatedController {
         mav.addObject("notificationsChanged", notificationsChanged != null && notificationsChanged);
         mav.addObject("games",gameService.getFavoriteGamesFromUser(userId));
         mav.addObject("profile",user.get());
-        mav.addObject("userModerator", user.get().getRoles().contains(new Role(MODERATOR)));
-        mav.addObject("reviews",reviewService.getUserReviews(user.get().getId(),loggedUser));
+        mav.addObject("userModerator", user.get().getRoles().contains(new Role(RoleType.MODERATOR.getRole())));
+        mav.addObject("reviews",reviewService.getUserReviews(Page.with(1, pageSize),user.get().getId(),loggedUser).getList());
+        mav.addObject("currentPageSize", pageSize);
+        mav.addObject("defaultPageSize", DEFAULT_PAGE_SIZE);
         FollowerFollowingCount ffc = userService.getFollowerFollowingCount(userId);
         mav.addObject("followerCount", ffc.getFollowerCount());
         mav.addObject("followingCount", ffc.getFollowingCount());
@@ -87,9 +94,8 @@ public class ProfileController extends PaginatedController {
         mav.addObject("page", isFollowersPage ? "profile.followers.page" : "profile.following.page");
 
         Optional<User> user = userService.getUserById(userId);
-        if(!user.isPresent())
-        {
-            return new ModelAndView("static-components/not-found");
+        if(!user.isPresent()) {
+            throw new ObjectNotFoundException();
         }
         mav.addObject("username",user.get().getUsername());
 
@@ -107,14 +113,12 @@ public class ProfileController extends PaginatedController {
 
     @RequestMapping(value = "/profile/{id:\\d+}/following", method = RequestMethod.GET)
     public ModelAndView followingList(@PathVariable(value="id") long userId) {
-        ModelAndView mav = new ModelAndView("profile/friends-list");
         List<User> users = userService.getFollowing(userId);
         return friendsList(userId, false, users);
     }
 
     @RequestMapping(value = "/profile/{id:\\d+}/followers", method = RequestMethod.GET)
     public ModelAndView followersList(@PathVariable(value="id") long userId) {
-        ModelAndView mav = new ModelAndView("profile/friends-list");
         List<User> users = userService.getFollowers(userId);
         return friendsList(userId, true, users);
     }
@@ -127,7 +131,6 @@ public class ProfileController extends PaginatedController {
             userService.followUserById(loggedUser.getId(), userId);
         } catch (UserNotFoundException err) {
             LOGGER.error("Following unexistant user: {}", userId);
-            return profile(userId, false, false, false);
         } catch (RuntimeException err) {
             LOGGER.error("Unexpected error: {}", err.getMessage());
         }
@@ -138,12 +141,10 @@ public class ProfileController extends PaginatedController {
     public ModelAndView unfollowUser(@PathVariable(value = "id") long userId)
     {
         User loggedUser = AuthenticationHelper.getLoggedUser(userService);
-        // todo - que hacer cuando falla
         try {
             userService.unfollowUserById(loggedUser.getId(), userId);
         } catch (UserNotFoundException err) {
             LOGGER.error("Unfollowing unexistant user: {}", userId);
-            return profile(userId, false, false, false);
         } catch (RuntimeException err) {
             LOGGER.error("Unexpected error: {}", err.getMessage());
         }
@@ -160,9 +161,8 @@ public class ProfileController extends PaginatedController {
         long userId = AuthenticationHelper.getLoggedUser(userService).getId();
         final ModelAndView mav = new ModelAndView("profile/edit-preferences");
         Optional<User> user = userService.getUserById(userId);
-        if(!user.isPresent())
-        {
-            return new ModelAndView("static-components/not-found");
+        if(!user.isPresent()) {
+            throw new ObjectNotFoundException();
         }
         mav.addObject("profile",user.get());
         mav.addObject("availableGenres", genreService.getAllGenres().stream()
@@ -260,14 +260,18 @@ public class ProfileController extends PaginatedController {
     }
 
     @RequestMapping(value="/for-you", method = RequestMethod.GET)
-    public ModelAndView forYouPage(@RequestParam(value = "size", defaultValue = "6") Integer size,
+    public ModelAndView forYouPage(@RequestParam(value = "size", required = false) Integer size,
                                    @RequestParam(value= "search", defaultValue = "") String search,
                                    @RequestParam(value= "endofqueue", defaultValue = "false") Boolean endOfQueue){
         final ModelAndView mav = new ModelAndView("profile/for-you");
         User loggedUser = AuthenticationHelper.getLoggedUser(userService);
 
+        if(size == null || size < 0) {
+            size = DEFAULT_PAGE_SIZE;
+        }
+
         if(!search.isEmpty()) {
-            Paginated<User> searchedUsers = userService.getSearchedUsers(1, 6, search);
+            Paginated<User> searchedUsers = userService.getSearchedUsers(1, DEFAULT_PAGE_SIZE, search);
             super.paginate(mav, searchedUsers);
             mav.addObject("users", searchedUsers.getList());
         }
@@ -282,14 +286,20 @@ public class ProfileController extends PaginatedController {
     }
 
     @RequestMapping(value="/for-you/discovery", method = RequestMethod.GET)
-    public ModelAndView discoveryQueue(@RequestParam(value="position", defaultValue = "0") Integer position){
-        final ModelAndView mav = new ModelAndView("profile/discovery");
+    public ModelAndView discoveryQueue(@RequestParam(value="position", defaultValue = "0") Integer position,
+                                       @RequestParam(value = "pageSize", required = false) Integer pageSize){
+        final ModelAndView mav = new ModelAndView("games/game-details");
         User loggedUser = AuthenticationHelper.getLoggedUser(userService);
         List<Game> recommendedGames = gameService.getRecommendationsOfGamesForUser(loggedUser);
 
-        if(position<0){
-            return new ModelAndView("static-components/not-found");
+        if(position == null || position < 0){
+            position = 0;
         }
+
+        if(pageSize == null || pageSize<0){
+            pageSize = DEFAULT_PAGE_SIZE;
+        }
+
         if(recommendedGames.isEmpty()){
             return new ModelAndView("redirect:/profile/settings/preferences?nothingForDiscovery=true");
         }
@@ -298,13 +308,16 @@ public class ProfileController extends PaginatedController {
         }
 
         Game game = recommendedGames.get(position);
-        GameReviewData reviewData = gameService.getReviewsByGameId(game.getId(),loggedUser);
-
-        //Si esta el juego entonces si o si estan las reviews aunque sean vacias, no hay que chequear
         mav.addObject("game",game);
+        GameReviewData reviewData = gameService.getGameReviewDataByGameId(game.getId());
+        List<Review> reviews = reviewService.getReviewsFromGame(Page.with(1, pageSize), game.getId(), loggedUser).getList();
         mav.addObject("gameReviewData", reviewData);
-        mav.addObject("positionInQueue",position);
-
+        mav.addObject("reviews", reviews);
+        mav.addObject("currentPageSize", pageSize);
+        mav.addObject("defaultPageSize", DEFAULT_PAGE_SIZE);
+        mav.addObject("discoveryQueue",true);
+        mav.addObject("positionInQueue", position);
+        mav.addObject("queryString", "?position=" + position+"&");
         return mav;
     }
 }

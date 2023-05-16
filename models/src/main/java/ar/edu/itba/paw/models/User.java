@@ -1,7 +1,6 @@
 package ar.edu.itba.paw.models;
 
 import ar.edu.itba.paw.enums.Genre;
-
 import java.util.*;
 
 public class User {

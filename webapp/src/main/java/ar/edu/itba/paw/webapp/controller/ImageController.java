@@ -34,19 +34,7 @@ public class ImageController {
         headers.setContentType(MediaType.parseMediaType(image.getMediaType()));
         return new ResponseEntity<>(image.getImage(), headers, HttpStatus.OK);
     }
-    //TODO BORRAR
-    @RequestMapping(value="/images",method = RequestMethod.POST)
-    public ModelAndView submit(@ModelAttribute("ImageForm") final ImageForm form) {
-        ModelAndView mv = new ModelAndView("static-components/fileUpload");
-        Image img;
-        try {
-            img = imageService.uploadImage(form.getFile().getBytes(),form.getFile().getContentType());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        mv.addObject("imageUploaded",img);
-        return mv;
-    }
+
     @RequestMapping(value = "/images",method = RequestMethod.GET)
     public ModelAndView submitForm(@ModelAttribute("ImageForm") final ImageForm form){
         return new ModelAndView("static-components/fileUpload");

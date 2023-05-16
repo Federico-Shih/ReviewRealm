@@ -21,7 +21,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-
 import javax.sql.DataSource;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -187,6 +186,15 @@ public class ReviewDaoImpl implements ReviewDao, PaginationDao<ReviewFilter> {
         }
         return new Paginated<>(pagination.getPageNumber(), pagination.getPageSize(), totalPages, reviews);
     }
+
+    public List<Review> findAll(ReviewFilter filter, Ordering<ReviewOrderCriteria> ordering, Long activeUserId) {
+        Page page = Page.with(1, count(filter).intValue());
+        if(page.getPageSize() <=0){
+            return new ArrayList<>();
+        }
+        return findAll(page, filter, ordering, activeUserId).getList();
+    }
+
     private String getTableColumnString(){
         return "distinct r.id, r.authorid, r.gameid, r.title, r.content, r.createddate, r.rating, r.difficulty, r.gamelength, r.platform, r.completed, r.replayability,r.likes,r.dislikes," +
                 " u.id, u.email,u.username, g.name, g.description, g.imageid,g.publisher, g.developer, g.publishdate, g.ratingsum, g.reviewcount";

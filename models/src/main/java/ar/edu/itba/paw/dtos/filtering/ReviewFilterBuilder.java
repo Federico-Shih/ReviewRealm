@@ -2,9 +2,9 @@ package ar.edu.itba.paw.dtos.filtering;
 
 import ar.edu.itba.paw.enums.Difficulty;
 import ar.edu.itba.paw.enums.Platform;
-
 import java.util.List;
 
+// To be used between Services and Persistence
 public class ReviewFilterBuilder {
     private List<Integer> gameGenres = null;
     private List<Integer> authorGenres = null;

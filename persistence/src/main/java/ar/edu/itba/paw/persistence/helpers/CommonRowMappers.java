@@ -8,7 +8,6 @@ import ar.edu.itba.paw.models.Game;
 import ar.edu.itba.paw.models.Review;
 import ar.edu.itba.paw.models.User;
 import org.springframework.jdbc.core.RowMapper;
-
 import java.util.ArrayList;
 import java.util.Optional;
 

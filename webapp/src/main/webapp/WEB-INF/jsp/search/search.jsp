@@ -40,7 +40,7 @@
                             <spring:message code="search.reviews.title" />
                         </h5>
                         <div class="top-right">
-                            <a href="<c:url value="/" /> ">
+                            <a href="<c:url value="/?search=${search}" /> ">
                                 <spring:message code="search.viewmore" />
                             </a>
                         </div>

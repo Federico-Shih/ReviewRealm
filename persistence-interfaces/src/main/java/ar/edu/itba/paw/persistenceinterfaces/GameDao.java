@@ -4,12 +4,9 @@ import ar.edu.itba.paw.dtos.*;
 import ar.edu.itba.paw.dtos.filtering.GameFilter;
 import ar.edu.itba.paw.dtos.ordering.GameOrderCriteria;
 import ar.edu.itba.paw.dtos.ordering.Ordering;
-import ar.edu.itba.paw.exceptions.ObjectNotFoundException;
 import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.models.Game;
 import ar.edu.itba.paw.models.Paginated;
-
-
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -19,7 +16,7 @@ public interface GameDao {
 
     Optional<Game> create(String name,String description,String developer, String publisher, String imageid, List<Genre> genres, LocalDate publishDate, boolean suggested);
 
-    Optional<Game> getById(Long id) throws ObjectNotFoundException;
+    Optional<Game> getById(Long id);
 
     Paginated<Game> findAll(Page page, GameFilter filter, Ordering<GameOrderCriteria> ordering);
 
@@ -47,5 +44,5 @@ public interface GameDao {
 
     boolean deleteGame(long gameId);
 
-    void replaceAllFavoriteGames(long userId, Optional<List<Long>> gameIds);
+    void replaceAllFavoriteGames(long userId, List<Long> gameIds);
 }

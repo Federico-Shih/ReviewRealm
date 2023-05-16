@@ -12,7 +12,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
-
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -45,11 +44,9 @@ public class PawUserDetailsService implements UserDetailsService {
         }
 
         final Set<Role> roleList = user.getRoles();
-        //TODO: implement logic to grant only required authorities
         final Collection<GrantedAuthority> authorities = new HashSet<>();
         roleList.forEach((role -> authorities.add(new SimpleGrantedAuthority(String.format("ROLE_%s", role.getRoleName())))));
-        //authorities.add(new SimpleGrantedAuthority("ROLE_REVIEWER"));
-        // TODO: definir roles (más de uno por user)
+
         LOGGER.debug("User {} logged in - email: {}", user.getId(), user.getEmail());
         return new PawAuthUserDetails(user.getEmail(), user.getPassword(), user.isEnabled(), NON_EXPIRED, NON_CREDENTIALS_LOCKED, NON_LOCKED,  authorities);
     }

@@ -11,20 +11,20 @@
     <title><spring:message code="error404.title"/></title>
 </head>
 <body>
-<jsp:include page="navbar.jsp"/>
+<jsp:include page="../static-components/navbar.jsp"/>
 <div class="row">
     <div class="col s12 center">
-        <h4><spring:message code="error404.notfound"/></h4>
+        <h4><spring:message code="error403.title"/></h4>
     </div>
     <div class="col s12 center">
-        <h5><spring:message code="error404.wasteland"/></h5>
+        <h5><spring:message code="error403.description"/></h5>
     </div>
     <div class="col s12 center">
-        <h5><spring:message code="error404.solution"/></h5>
+        <h5><spring:message code="error403.solution"/></h5>
     </div>
     <div class="col s12 center">
         <a href="<c:url value="/"/>">
-            <img src="<c:url value="/static/gobackportal.png"/>" alt='<spring:message code="error404.redportal"/>'/>
+            <img src="<c:url value="/static/prohibited.jpg"/>" alt='<spring:message code="error403.altimage"/>'/>
         </a>
     </div>
 </div>

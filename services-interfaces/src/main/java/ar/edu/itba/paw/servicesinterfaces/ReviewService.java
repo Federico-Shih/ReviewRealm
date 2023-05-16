@@ -1,9 +1,7 @@
 package ar.edu.itba.paw.servicesinterfaces;
 
-import ar.edu.itba.paw.dtos.SaveReviewDTO;
 import ar.edu.itba.paw.dtos.ordering.Ordering;
 import ar.edu.itba.paw.dtos.Page;
-import ar.edu.itba.paw.dtos.filtering.ReviewFilter;
 import ar.edu.itba.paw.dtos.ordering.ReviewOrderCriteria;
 import ar.edu.itba.paw.dtos.searching.ReviewSearchFilter;
 import ar.edu.itba.paw.enums.Difficulty;
@@ -13,7 +11,6 @@ import ar.edu.itba.paw.models.Game;
 import ar.edu.itba.paw.models.Paginated;
 import ar.edu.itba.paw.models.Review;
 import ar.edu.itba.paw.models.User;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -41,13 +38,15 @@ public interface ReviewService {
 
     Optional<Review> getReviewById(Long id, User activeUser);
 
-    List<Review> getUserReviews(Long userId,User activeUser);
+    Paginated<Review> getUserReviews(Page page, Long userId,User activeUser);
 
     Paginated<Review> searchReviews(Page page, ReviewSearchFilter filter, Ordering<ReviewOrderCriteria> ordering, User activeUser);
 
-    List<Review> getReviewsFromGame(Long gameId, User activeUser);
+    Paginated<Review> getReviewsFromGame(Page page, Long gameId, User activeUser);
 
-    List<Review> getReviewsFromFollowingByUser(Long userId, Integer size); //No es necesario Active User porque es el mismo que el que me pasan
+    List<Review> getAllReviewsFromGame(Long gameId, User activeUser);
+
+    List<Review> getReviewsFromFollowingByUser(Long userId, Integer size);
 
     boolean deleteReviewById(Long id);
 

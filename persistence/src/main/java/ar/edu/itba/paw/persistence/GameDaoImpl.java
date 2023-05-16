@@ -16,7 +16,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCallback;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-
 import javax.sql.DataSource;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -64,7 +63,6 @@ public class GameDaoImpl implements GameDao, PaginationDao<GameFilter> {
         Map<String,Object> args = prepareArgumentsForGame(name,description,developer,publisher,imageid, publishDate, suggested);
         final Number id = jdbcInsertGames.executeAndReturnKey(args);
         addGenresToDB(id, genres, jdbcInsertGenreForGames);
-        // esto quizás debería hacerse en el Service, pero quiero que create devuelva Optional
         return Optional.of(new Game(id.longValue(),name,description,developer,publisher, CommonRowMappers.IMAGE_PREFIX + imageid,genres,publishDate,0d));
     }
 
@@ -118,27 +116,25 @@ public class GameDaoImpl implements GameDao, PaginationDao<GameFilter> {
 
     @Override
     public boolean deleteGame(long gameId) {
-        // TODO: Hacer migración con delete cascade en genreforgames
         jdbcTemplate.update("DELETE FROM genreforgames WHERE gameid = ?", gameId);
         return jdbcTemplate.update("DELETE FROM games WHERE id = ?", gameId) == 1;
     }
 
     @Override
-    public void replaceAllFavoriteGames(long userId, Optional<List<Long>> gameIds) {
+    public void replaceAllFavoriteGames(long userId, List<Long> gameIds) {
         jdbcTemplate.update("DELETE FROM favoritegames WHERE userid = ?", userId);
-        if(gameIds.isPresent()) {
-            List<Long> gameIdsList = gameIds.get();
+        if(gameIds != null && !gameIds.isEmpty()) {
             jdbcTemplate.batchUpdate("INSERT INTO favoritegames VALUES (?, ?)", new BatchPreparedStatementSetter() {
                 @Override
                 public void setValues(PreparedStatement ps, int i) throws SQLException {
-                    Long gameId = gameIdsList.get(i);
+                    Long gameId = gameIds.get(i);
                     ps.setLong(1, gameId);
                     ps.setLong(2, userId);
                 }
 
                 @Override
                 public int getBatchSize() {
-                    return gameIdsList.size();
+                    return gameIds.size();
                 }
             });
         }
@@ -184,6 +180,7 @@ public class GameDaoImpl implements GameDao, PaginationDao<GameFilter> {
         }
         return new Paginated<>(page.getPageNumber(), page.getPageSize(), totalPages, games);
     }
+
     private String getTableColumnString(){
         return "distinct g.id, g.name, g.description, g.developer, g.publisher, g.imageid, g.publishdate, g.ratingsum, g.reviewcount";
     }

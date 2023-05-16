@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-
 import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,10 +15,9 @@ import java.util.Map;
 public class ImageDaoImpl implements ImageDao {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
-
     private final static int ID_LENGTH = 16;
-
     private final static int AMOUNT_OF_TRIES = 5;
+    
     @Autowired
     public ImageDaoImpl(final DataSource ds) {
         this.jdbcTemplate = new JdbcTemplate(ds);
@@ -54,6 +52,7 @@ public class ImageDaoImpl implements ImageDao {
             return new Image(id, rs.getString("mediatype"), rs.getBytes("data"));
         }, id);
     }
+    
     private String generateId(Integer length){
         return RandomStringUtils.randomAlphanumeric(length);
     }

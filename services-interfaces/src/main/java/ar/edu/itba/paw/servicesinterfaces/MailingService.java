@@ -5,8 +5,6 @@ import ar.edu.itba.paw.models.Game;
 import ar.edu.itba.paw.models.Review;
 import ar.edu.itba.paw.models.User;
 
-import java.util.Map;
-
 public interface MailingService {
     void sendChangePasswordEmail(ExpirationToken token, User user);
 

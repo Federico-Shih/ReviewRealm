@@ -2,9 +2,9 @@ package ar.edu.itba.paw.dtos.searching;
 
 import ar.edu.itba.paw.enums.Difficulty;
 import ar.edu.itba.paw.enums.Platform;
-
 import java.util.List;
 
+// To be used between Webapp and Services
 public class ReviewSearchFilter {
     private final List<Integer> genres;
     private final List<Integer> preferences;

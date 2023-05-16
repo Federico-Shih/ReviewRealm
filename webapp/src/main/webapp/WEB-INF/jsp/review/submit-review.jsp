@@ -194,8 +194,6 @@
                     <input id="searchInput" name="search" class="z-depth-1-half search-field white-text" value="${searchField}" placeholder="<spring:message code="game.list.placeholder.search"/>">
                     <button id="searchButton" class="btn-flat button-color white-text" type="submit" ><i class="material-icons" >search</i></button>
                     <input name="gameId" value="${selectedGameId}" type="hidden"/>
-                    <%-- TODO: revisar esto --%>
-                    <%--porque seguramente esta rre mal pero no tenia otra forma que se me ocurra--%>
                 </div>
             <c:if test="${empty searchedGames && !empty searchField}">
                 <span><spring:message code="game.list.notfound"/></span>

@@ -3,10 +3,10 @@ package ar.edu.itba.paw.models;
 import java.util.List;
 
 public class Paginated<T> {
-    private int page;
-    private int pageSize;
-    private int totalPages;
-    private List<T> list;
+    private final int page;
+    private final int pageSize;
+    private final int totalPages;
+    private final List<T> list;
 
     public Paginated(int page, int pageSize, int totalPages, List<T> list) {
         this.page = page;

@@ -10,10 +10,8 @@ import ar.edu.itba.paw.dtos.searching.GameSearchFilterBuilder;
 import ar.edu.itba.paw.dtos.searching.ReviewSearchFilter;
 import ar.edu.itba.paw.dtos.searching.ReviewSearchFilterBuilder;
 import ar.edu.itba.paw.enums.*;
-import ar.edu.itba.paw.exceptions.ObjectNotFoundException;
+import ar.edu.itba.paw.webapp.exceptions.ObjectNotFoundException;
 import ar.edu.itba.paw.models.*;
-import ar.edu.itba.paw.exceptions.UserNotFoundException;
-import ar.edu.itba.paw.exceptions.WrongAccessException;
 import ar.edu.itba.paw.webapp.forms.EditReviewForm;
 import ar.edu.itba.paw.models.Paginated;
 import ar.edu.itba.paw.models.Review;
@@ -22,7 +20,6 @@ import ar.edu.itba.paw.servicesinterfaces.GenreService;
 import ar.edu.itba.paw.servicesinterfaces.ReviewService;
 import ar.edu.itba.paw.webapp.forms.SubmitReviewForm;
 import ar.edu.itba.paw.webapp.controller.datacontainers.FilteredList;
-import ar.edu.itba.paw.webapp.exceptions.ResourceNotFoundException;
 import ar.edu.itba.paw.servicesinterfaces.UserService;
 import ar.edu.itba.paw.webapp.auth.AuthenticationHelper;
 import org.slf4j.Logger;
@@ -93,7 +90,7 @@ public class ReviewController extends PaginatedController implements QueryContro
         User loggedUser = AuthenticationHelper.getLoggedUser(userService);
         Optional<Review> review = reviewService.getReviewById(reviewId,loggedUser);
         if (!review.isPresent()) {
-            return new ModelAndView("static-components/not-found");
+            return new ModelAndView("errors/not-found");
         }
         Collection<? extends GrantedAuthority> roles = AuthenticationHelper.getAuthorities();
         ModelAndView mav = new ModelAndView("/review/review-details");
@@ -147,12 +144,16 @@ public class ReviewController extends PaginatedController implements QueryContro
             @RequestParam(value = "f-dif", defaultValue = "") List<Integer> difficultyFilter,
             @RequestParam(value = "f-cpt", defaultValue = "") Boolean completedFilter,
             @RequestParam(value = "page", defaultValue = "1") Integer page,
-            @RequestParam(value = "pageSize", defaultValue = "") Integer pageSize,
+            @RequestParam(value = "pageSize", required = false) Integer pageSize,
             @RequestParam(value = "search", defaultValue = "") String search
     ) {
         final ModelAndView mav = new ModelAndView("review/review-list");
         User loggedUser = AuthenticationHelper.getLoggedUser(userService);
         List<Genre> allGenres = genreService.getAllGenres();
+
+        if(pageSize == null || pageSize < 0) {
+            pageSize = PAGE_SIZE;
+        }
 
         double minTimePlayed = 0;
         try {
@@ -183,7 +184,7 @@ public class ReviewController extends PaginatedController implements QueryContro
         ReviewSearchFilter searchFilter = searchFilterBuilder.build();
 
         Paginated<Review> reviewPaginated = reviewService.searchReviews(
-                Page.with(page != null ? page : INITIAL_PAGE, pageSize != null ? pageSize : PAGE_SIZE),
+                Page.with(page != null ? page : INITIAL_PAGE, pageSize),
                 searchFilter,
                 new Ordering<>(OrderDirection.fromValue(orderDirection), ReviewOrderCriteria.fromValue(orderCriteria)),
                 loggedUser
@@ -213,8 +214,7 @@ public class ReviewController extends PaginatedController implements QueryContro
         List<Pair<String, Object>> queriesToKeepAtPageChange = new ArrayList<>();
         queriesToKeepAtPageChange.add(Pair.of("o-crit", orderCriteria));
         queriesToKeepAtPageChange.add(Pair.of("o-dir", orderDirection));
-        if(pageSize!=null)
-            queriesToKeepAtPageChange.add(Pair.of("pageSize", pageSize));
+        queriesToKeepAtPageChange.add(Pair.of("pageSize", pageSize));
         queriesToKeepAtPageChange.addAll(genresFilter.stream().map((value) -> Pair.of("f-gen", (Object)value)).collect(Collectors.toList()));
         queriesToKeepAtPageChange.addAll(preferencesFilter.stream().map((value) -> Pair.of("f-prf", (Object)value)).collect(Collectors.toList()));
         queriesToKeepAtPageChange.addAll(platformsFilter.stream().map((value) -> Pair.of("f-plt", (Object)value)).collect(Collectors.toList()));
@@ -242,7 +242,7 @@ public class ReviewController extends PaginatedController implements QueryContro
     public ModelAndView deleteReview(@PathVariable(value = "id") Long id) {
         Optional<Review> review = reviewService.getReviewById(id,null);
         if (!review.isPresent()) {
-            throw new ResourceNotFoundException();
+            throw new ObjectNotFoundException();
         }
         boolean deleted = reviewService.deleteReviewById(id);
         if (!deleted) {
@@ -250,6 +250,7 @@ public class ReviewController extends PaginatedController implements QueryContro
         }
         return new ModelAndView("redirect:/game/" + review.get().getReviewedGame().getId());
     }
+
     @RequestMapping(value = "/review/feedback/{id:\\d+}", method = RequestMethod.POST)
     public ModelAndView updateReviewFeedback(@PathVariable(value = "id") Long id,
                                    @RequestParam(value = "feedback") String feedback,
@@ -257,17 +258,16 @@ public class ReviewController extends PaginatedController implements QueryContro
         Optional<Review> review = reviewService.getReviewById(id,null);
         User loggedUser = AuthenticationHelper.getLoggedUser(userService);
         if (!review.isPresent()) {
-            throw new ResourceNotFoundException();
+            throw new ObjectNotFoundException();
         }
         ReviewFeedback fb;
-        try{
+        try {
            fb = ReviewFeedback.valueOf(feedback);
-        }catch (IllegalArgumentException e){ //TODO: chequear si es la excepcion correcta
-            throw new ResourceNotFoundException();
+        } catch (IllegalArgumentException e){
+            throw new ObjectNotFoundException();
         }
 
         boolean response = reviewService.updateOrCreateReviewFeedback(review.get(), loggedUser,fb);
-         //TODO: ver errores
 
         return new ModelAndView("redirect:" + url);
     }
@@ -275,13 +275,7 @@ public class ReviewController extends PaginatedController implements QueryContro
     @RequestMapping(value = "/review/{id:\\d+}/edit", method = RequestMethod.GET)
     public ModelAndView editReviewForm(@PathVariable("id") Long reviewId, @ModelAttribute("reviewForm") EditReviewForm form) {
         User user = AuthenticationHelper.getLoggedUser(userService);
-        if (user == null) {
-            throw new UserNotFoundException("user.notfound");
-        }
         Review review = reviewService.getReviewById(reviewId, user).orElseThrow(() -> new ObjectNotFoundException("review.notfound"));
-        if (!review.getAuthor().equals(user)) {
-            throw new WrongAccessException();
-        }
         form.fromReview(review);
         ModelAndView mav = new ModelAndView("review/review-edit");
         mav.addObject("game", review.getReviewedGame());
@@ -300,9 +294,6 @@ public class ReviewController extends PaginatedController implements QueryContro
             return editReviewForm(reviewId, form);
         }
         Review review = reviewService.getReviewById(reviewId, user).orElseThrow(() -> new ObjectNotFoundException("review.notfound"));
-        if (!review.getAuthor().equals(user)) {
-            throw new WrongAccessException();
-        }
         int update = reviewService.updateReview(review.getId(), form.getReviewTitle(), form.getReviewContent(), form.getReviewRating(), form.getDifficultyEnum(), form.getGameLengthSeconds(), form.getPlatformEnum(),  form.getReplayability(),  form.getReplayability());
         if (update == 0) {
             throw new ObjectNotFoundException("review.notfound");

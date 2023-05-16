@@ -6,31 +6,22 @@ import ar.edu.itba.paw.enums.Platform;
 import java.util.List;
 
 public class GameReviewData {
-    private final List<Review> reviewList;
     private final double averageRating;
     private final Difficulty averageDifficulty;
     private final Platform averagePlatform;
-
     private final double averageGameTime;
-
     private final double replayability;
-
     private final double completability;
 
-    public GameReviewData(List<Review> reviewList, double averageRating, Difficulty averageDifficulty,
+    public GameReviewData(double averageRating, Difficulty averageDifficulty,
                           Platform averagePlatform, double averageGameTime, double replayability,
                           double completability) {
-        this.reviewList = reviewList;
         this.averageRating = averageRating;
         this.averageDifficulty = averageDifficulty;
         this.averagePlatform = averagePlatform;
         this.averageGameTime = averageGameTime;
         this.replayability = replayability;
         this.completability = completability;
-    }
-
-    public List<Review> getReviewList() {
-        return reviewList;
     }
 
     public double getAverageRating() {
@@ -64,9 +55,11 @@ public class GameReviewData {
     public String getAverageGameTimeStringHs() {
         return String.format("%.2f", averageGameTime/3600);
     }
+
     public String getReplayabilityString() {
         return String.format("%.2f", replayability);
     }
+
     public String getCompletabilityString() {
         return String.format("%.2f", completability);
     }

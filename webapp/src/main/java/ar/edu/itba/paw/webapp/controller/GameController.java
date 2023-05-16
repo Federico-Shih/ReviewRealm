@@ -7,6 +7,8 @@ import ar.edu.itba.paw.dtos.ordering.Ordering;
 import ar.edu.itba.paw.dtos.searching.GameSearchFilter;
 import ar.edu.itba.paw.dtos.searching.GameSearchFilterBuilder;
 import ar.edu.itba.paw.enums.Genre;
+import ar.edu.itba.paw.servicesinterfaces.ReviewService;
+import ar.edu.itba.paw.webapp.exceptions.ObjectNotFoundException;
 import ar.edu.itba.paw.webapp.forms.SubmitGameForm;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.servicesinterfaces.GameService;
@@ -37,6 +39,7 @@ public class GameController extends PaginatedController implements QueryControll
     private final GenreService grs;
     private final GameService gs;
     private final UserService us;
+    private final ReviewService rs;
 
     private static final int MAX_PAGES_PAGINATION = 6;
 
@@ -45,27 +48,39 @@ public class GameController extends PaginatedController implements QueryControll
     private static final int INITIAL_PAGE = 1;
 
     @Autowired
-    public GameController(GenreService grs, GameService gs, UserService us) {
+    public GameController(GenreService grs, GameService gs, UserService us, ReviewService rs) {
         super(MAX_PAGES_PAGINATION, INITIAL_PAGE);
         this.grs = grs;
         this.gs = gs;
         this.us = us;
+        this.rs = rs;
     }
 
     @RequestMapping("/game/{id:\\d+}")
-    public ModelAndView game_details(@PathVariable("id") final Long gameId, @RequestParam(value = "created", required = false) Boolean created){
+    public ModelAndView game_details(
+            @PathVariable("id") final Long gameId,
+            @RequestParam(value = "pageSize", required = false) Integer pageSize,
+            @RequestParam(value = "created", required = false) Boolean created
+    ){
         final ModelAndView mav =  new ModelAndView("games/game-details");
         mav.addObject("created", created != null && created);
         Optional<Game> game = gs.getGameById(gameId);
         User loggedUser = AuthenticationHelper.getLoggedUser(us);
+        if(pageSize == null || pageSize < 0) {
+            pageSize = PAGE_SIZE;
+        }
         if(game.isPresent()){
             mav.addObject("game",game.get());
-            GameReviewData reviewData = gs.getReviewsByGameId(gameId,loggedUser);
-            //Si esta el juego entonces si o si estan las reviews aunque sean vacias, no hay que chequear
+            GameReviewData reviewData = gs.getGameReviewDataByGameId(gameId);
+            List<Review> reviews = rs.getReviewsFromGame(Page.with(1, pageSize), gameId, loggedUser).getList();
             mav.addObject("gameReviewData", reviewData);
-
+            mav.addObject("reviews", reviews);
+            mav.addObject("currentPageSize", pageSize);
+            mav.addObject("defaultPageSize", PAGE_SIZE);
+            mav.addObject("discoveryQueue",false);
+            mav.addObject("queryString", "?" );
         }else{
-            return new ModelAndView("static-components/not-found");
+            throw new ObjectNotFoundException();
         }
         return mav;
     }
@@ -73,7 +88,7 @@ public class GameController extends PaginatedController implements QueryControll
     @RequestMapping(value = "/game/list", method = RequestMethod.GET)
     public ModelAndView gameList(
             @RequestParam(value = "page", defaultValue = "1") Integer page,
-            @RequestParam(value = "pageSize", defaultValue = "") Integer pageSize,
+            @RequestParam(value = "pageSize", required = false) Integer pageSize,
             @RequestParam(value = "o-crit", defaultValue = "0") Integer orderCriteria,
             @RequestParam(value = "o-dir", defaultValue = "0") Integer orderDirection,
             @RequestParam(value = "f-gen", defaultValue = "") List<Integer> genresFilter,
@@ -85,6 +100,10 @@ public class GameController extends PaginatedController implements QueryControll
 
         User loggedUser = AuthenticationHelper.getLoggedUser(us);
         List<Genre> allGenres = grs.getAllGenres();
+
+        if(pageSize == null || pageSize < 0) {
+            pageSize = PAGE_SIZE;
+        }
 
         GameSearchFilterBuilder searchFilterBuilder = new GameSearchFilterBuilder()
                 .withSearch(search)
@@ -102,7 +121,7 @@ public class GameController extends PaginatedController implements QueryControll
         GameSearchFilter searchFilter = searchFilterBuilder.build();
 
         Paginated<Game> games = gs.searchGames(
-                Page.with(page != null ? page: INITIAL_PAGE, pageSize != null ? pageSize : PAGE_SIZE),
+                Page.with(page != null ? page: INITIAL_PAGE, pageSize),
                 searchFilter,
                 new Ordering<>(OrderDirection.fromValue(orderDirection), GameOrderCriteria.fromValue(orderCriteria))
         );
@@ -167,7 +186,8 @@ public class GameController extends PaginatedController implements QueryControll
             LOGGER.error("Failed to create image: {}", e.getMessage());
             errors.addError(new ObjectError("image", "game.submit.errors.failedimg"));
         } catch (RuntimeException e) {
-            LOGGER.error("Unknown error: {}", e.getMessage());
+            errors.addError(new ObjectError("image", "game.submit.errors.unknown"));
+            return createGameForm(gameForm);
         }
         return createGameForm(gameForm);
     }
@@ -192,19 +212,15 @@ public class GameController extends PaginatedController implements QueryControll
 
         GameSearchFilterBuilder searchFilterBuilder = new GameSearchFilterBuilder()
                 .withSuggestion(true);
-        GameSearchFilter searchFilterfilter = searchFilterBuilder.build();
+        GameSearchFilter searchFilter = searchFilterBuilder.build();
 
         Paginated<Game> games = gs.searchGames(
                 Page.with(INITIAL_PAGE, PAGE_SIZE),
-                searchFilterfilter,
+                searchFilter,
                 new Ordering<>(OrderDirection.fromValue(0), GameOrderCriteria.fromValue(1))
         );
-
-
         super.paginate(mav,games);
-
         mav.addObject("suggestedgames", games.getList());
-
         return mav;
     }
 }

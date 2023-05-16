@@ -1,6 +1,8 @@
 package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.exceptions.*;
+import ar.edu.itba.paw.exceptions.UserNotFoundException;
+import ar.edu.itba.paw.webapp.exceptions.ObjectNotFoundException;
 import ar.edu.itba.paw.webapp.forms.ChangePasswordForm;
 import ar.edu.itba.paw.webapp.forms.RegisterForm;
 import ar.edu.itba.paw.webapp.forms.ResendEmailForm;
@@ -108,7 +110,7 @@ public class UserController {
         try {
             authWithoutPassword(user.get());
         } catch (UserNotFoundException e) {
-            return new ModelAndView("user/recovery").addObject("unknownToken", true);
+            throw new ObjectNotFoundException();
         }
         return new ModelAndView("user/validated");
     }

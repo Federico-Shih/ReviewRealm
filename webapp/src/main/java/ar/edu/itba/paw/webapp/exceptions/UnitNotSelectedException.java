@@ -1,4 +1,4 @@
-package ar.edu.itba.paw.exceptions;
+package ar.edu.itba.paw.webapp.exceptions;
 
 public class UnitNotSelectedException extends RuntimeException {
     public UnitNotSelectedException() {
