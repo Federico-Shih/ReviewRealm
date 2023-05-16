@@ -10,7 +10,7 @@ public class ReviewFilterBuilder {
     private List<Integer> authorGenres = null;
     private List<Long> authors = null;
     private String reviewContent = null;
-    private Integer gameId = null;
+    private Long gameId = null;
     private Double minTimePlayed = null;
     private List<Platform> platforms = null;
     private List<Difficulty> difficulties = null;
@@ -36,7 +36,7 @@ public class ReviewFilterBuilder {
         return this;
     }
 
-    public ReviewFilterBuilder withGameId(Integer gameId) {
+    public ReviewFilterBuilder withGameId(Long gameId) {
         this.gameId = gameId;
         return this;
     }

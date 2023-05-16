@@ -11,13 +11,13 @@ public class ReviewFilter {
     private final List<Integer> authorPreferences;
     private final List<Long> authors;
     private final String reviewContent;
-    private final Integer gameId;
+    private final Long gameId;
     private final Double minTimePlayed;
     private final List<Platform> platforms;
     private final List<Difficulty> difficulties;
     private final Boolean completed;
 
-    public ReviewFilter(List<Integer> filterGameGenres, List<Integer> authorPreferences, List<Long> authors, String reviewContent, Integer gameId, Double minTimePlayed, List<Platform> platforms, List<Difficulty> difficulties, Boolean completed) {
+    public ReviewFilter(List<Integer> filterGameGenres, List<Integer> authorPreferences, List<Long> authors, String reviewContent, Long gameId, Double minTimePlayed, List<Platform> platforms, List<Difficulty> difficulties, Boolean completed) {
         this.filterGameGenres = filterGameGenres;
         this.authorPreferences = authorPreferences;
         this.authors = authors;
@@ -33,7 +33,7 @@ public class ReviewFilter {
         return filterGameGenres;
     }
 
-    public Integer getGameId() {
+    public Long getGameId() {
         return gameId;
     }
 

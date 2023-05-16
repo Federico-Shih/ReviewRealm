@@ -13,6 +13,7 @@ import ar.edu.itba.paw.models.Paginated;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface GameDao {
 
@@ -31,6 +32,8 @@ public interface GameDao {
     void deleteFavoriteGameForUser(long userId, long gameId);
 
     List<Game> getRecommendationsForUser(Long userId, List<Integer> userPreferences,List<Long> gamesToExclude);
+
+    Set<Game> getGamesReviewdByUser(Long userId);
 
     Double getAverageReviewRatingById(Long id);
 

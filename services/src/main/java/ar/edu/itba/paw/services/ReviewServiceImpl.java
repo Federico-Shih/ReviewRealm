@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,7 @@ import java.util.*;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
+@Lazy
 @Service
 public class ReviewServiceImpl implements ReviewService {
 
@@ -35,18 +37,13 @@ public class ReviewServiceImpl implements ReviewService {
     private final UserService userService;
     private final GameService gameService;
     private final MailingService mailingService;
-    private final Environment env;
 
     @Autowired
-    private MessageSource messageSource;
-
-    @Autowired
-    public ReviewServiceImpl(ReviewDao reviewDao, UserService userService, GameService gameService, MailingService mailingService, Environment env) {
+    public ReviewServiceImpl(ReviewDao reviewDao, UserService userService, GameService gameService, MailingService mailingService) {
         this.reviewDao = reviewDao;
         this.userService = userService;
         this.gameService = gameService;
         this.mailingService = mailingService;
-        this.env = env;
     }
 
     @Transactional
@@ -173,7 +170,7 @@ public class ReviewServiceImpl implements ReviewService {
     // TODO: paginar
     @Transactional(readOnly = true)
     @Override
-    public List<Review> getUserReviews(long userId, User activeUser) {
+    public List<Review> getUserReviews(Long userId, User activeUser) {
         List<Long> authors = new ArrayList<>();
         authors.add(userId);
         return reviewDao.findAll(Page.with(1, 100), new ReviewFilterBuilder().withAuthors(authors).build(), Ordering.defaultOrder(ReviewOrderCriteria.REVIEW_DATE), (activeUser != null)? activeUser.getId() : null ).getList();
@@ -199,5 +196,11 @@ public class ReviewServiceImpl implements ReviewService {
         boolean response = reviewDao.deleteReviewFeedback(review.getId(), user.getId(), oldFeedback);
         userService.modifyUserReputation(review.getAuthor().getId(),(oldFeedback == ReviewFeedback.LIKE)? -1:1);
         return response;
+    }
+
+    @Override
+    public List<Review> getReviewsFromGame(Long gameId, User activeUser) {
+        ReviewFilter filter = new ReviewFilterBuilder().withGameId(gameId).build();
+        return reviewDao.findAll(Page.with(1, 100), filter, Ordering.defaultOrder(ReviewOrderCriteria.REVIEW_DATE), (activeUser != null)? activeUser.getId() : null).getList();
     }
 }

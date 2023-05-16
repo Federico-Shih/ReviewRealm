@@ -5,6 +5,8 @@ import ar.edu.itba.paw.dtos.ordering.GameOrderCriteria;
 import ar.edu.itba.paw.dtos.ordering.OrderDirection;
 import ar.edu.itba.paw.dtos.ordering.Ordering;
 import ar.edu.itba.paw.dtos.ordering.ReviewOrderCriteria;
+import ar.edu.itba.paw.dtos.searching.GameSearchFilter;
+import ar.edu.itba.paw.dtos.searching.GameSearchFilterBuilder;
 import ar.edu.itba.paw.dtos.searching.ReviewSearchFilter;
 import ar.edu.itba.paw.dtos.searching.ReviewSearchFilterBuilder;
 import ar.edu.itba.paw.enums.*;
@@ -72,9 +74,9 @@ public class ReviewController extends PaginatedController implements QueryContro
             }
             mav.addObject("game", reviewedGame.get());
         }
-
+        GameSearchFilter filter = new GameSearchFilterBuilder().withSearch(search).build();
         if(!search.isEmpty()){
-            mav.addObject("searchedGames", gameService.getAllGamesShort(INITIAL_PAGE,MAX_SEARCH_RESULTS, search).getList());
+            mav.addObject("searchedGames", gameService.searchGames(Page.with(1, MAX_SEARCH_RESULTS), filter,new Ordering<>(OrderDirection.ASCENDING, GameOrderCriteria.NAME)).getList());
         }else{
             mav.addObject("searchedGames", new ArrayList<Game>());
         }

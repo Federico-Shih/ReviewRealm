@@ -3,12 +3,9 @@ package ar.edu.itba.paw.services;
 import ar.edu.itba.paw.dtos.*;
 import ar.edu.itba.paw.dtos.filtering.GameFilter;
 import ar.edu.itba.paw.dtos.filtering.GameFilterBuilder;
-import ar.edu.itba.paw.dtos.filtering.ReviewFilter;
-import ar.edu.itba.paw.dtos.filtering.ReviewFilterBuilder;
 import ar.edu.itba.paw.dtos.ordering.GameOrderCriteria;
 import ar.edu.itba.paw.dtos.ordering.OrderDirection;
 import ar.edu.itba.paw.dtos.ordering.Ordering;
-import ar.edu.itba.paw.dtos.ordering.ReviewOrderCriteria;
 import ar.edu.itba.paw.dtos.saving.SubmitGameDTO;
 import ar.edu.itba.paw.dtos.searching.GameSearchFilter;
 import ar.edu.itba.paw.enums.Difficulty;
@@ -18,14 +15,11 @@ import ar.edu.itba.paw.exceptions.NoSuchGameException;
 import ar.edu.itba.paw.exceptions.UserNotFoundException;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.persistenceinterfaces.GameDao;
-import ar.edu.itba.paw.persistenceinterfaces.ReviewDao;
-import ar.edu.itba.paw.servicesinterfaces.GameService;
-import ar.edu.itba.paw.servicesinterfaces.GenreService;
-import ar.edu.itba.paw.servicesinterfaces.ImageService;
-import ar.edu.itba.paw.servicesinterfaces.UserService;
+import ar.edu.itba.paw.servicesinterfaces.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,16 +34,17 @@ public class GameServiceImpl implements GameService {
 
     private static final String IMAGE_PREFIX = "/images";
     private final GameDao gameDao;
-    private final ReviewDao reviewDao;
+    private final ReviewService reviewService;
     private final GenreService genreServ;
     private final ImageService imgService;
 
     private final UserService userService;
 
+    @Lazy
     @Autowired
-    public GameServiceImpl(GameDao gameDao, ReviewDao reviewDao, GenreService genreServ, ImageService imgService, UserService userService) {
+    public GameServiceImpl(GameDao gameDao, ReviewService reviewService, GenreService genreServ, ImageService imgService, UserService userService) {
         this.gameDao = gameDao;
-        this.reviewDao = reviewDao;
+        this.reviewService = reviewService;
         this.genreServ = genreServ;
         this.imgService = imgService;
         this.userService = userService;
@@ -107,13 +102,6 @@ public class GameServiceImpl implements GameService {
 
     @Transactional(readOnly = true)
     @Override
-    public Paginated<Game> getAllGamesShort(Integer page, Integer pageSize, String searchQuery) {
-        GameFilterBuilder gameFilterBuilder = new GameFilterBuilder().withGameContent(searchQuery);
-        return gameDao.findAll(Page.with(page, pageSize), gameFilterBuilder.build(), new Ordering<>(OrderDirection.ASCENDING, GameOrderCriteria.NAME));
-    }
-
-    @Transactional(readOnly = true)
-    @Override
     public Double getAverageGameReviewRatingById(Long id) {
         return gameDao.getAverageReviewRatingById(id);
     }
@@ -122,8 +110,7 @@ public class GameServiceImpl implements GameService {
     @Override
     public GameReviewData getReviewsByGameId(Long id, User activeUser) {
         // TODO: PAGINAR
-        ReviewFilter filter = new ReviewFilterBuilder().withGameId(id.intValue()).build();
-        List<Review> reviews = reviewDao.findAll(Page.with(1, 1000), filter, new Ordering<>(OrderDirection.DESCENDING, ReviewOrderCriteria.REVIEW_DATE),activeUser.getId()).getList();
+        List<Review> reviews = reviewService.getReviewsFromGame(id,activeUser);
         if(reviews.size() > 0) {
             HashMap<Difficulty, Integer> difficultyCount = new HashMap<>();
             HashMap<Platform, Integer> platformCount = new HashMap<>();
@@ -169,29 +156,22 @@ public class GameServiceImpl implements GameService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<Game> getRecommendationsOfGamesForUser(Long userId) {
-        Optional<User> user = userService.getUserById(userId);
-        if(!user.isPresent() || !user.get().hasPreferencesSet()){
+    public List<Game> getRecommendationsOfGamesForUser(User user) {
+        if(!user.hasPreferencesSet()){
             return new ArrayList<>();
         }
-        Set <Genre> userPreferences = user.get().getPreferences();
+        Set <Genre> userPreferences = user.getPreferences();
         List<Integer> preferencesIds = userPreferences.stream().map(Genre::getId).collect(Collectors.toList());
-        Set<Game> userReviewedGames = getGamesReviewedByUser(userId);
+        Set<Game> userReviewedGames = getGamesReviewedByUser(user.getId());
         List<Long> idsToExclude = userReviewedGames.stream().map(Game::getId).collect(Collectors.toList());
 
-        return gameDao.getRecommendationsForUser(userId,preferencesIds,idsToExclude);
+        return gameDao.getRecommendationsForUser(user.getId(),preferencesIds,idsToExclude);
     }
 
     @Transactional(readOnly = true)
     @Override
     public Set<Game> getGamesReviewedByUser(Long userId) {
-        //TODO: revisar uso de DAOs llamadas circulares entre services
-        List<Long> authors = new ArrayList<>();
-        authors.add(userId);
-        List<Review> userReviews = reviewDao.findAll(Page.with(1, 100), new ReviewFilterBuilder().withAuthors(authors).build(), Ordering.defaultOrder(ReviewOrderCriteria.REVIEW_DATE),  null ).getList();
-        Set<Game> reviewedGames = new HashSet<>();
-        userReviews.forEach( review -> reviewedGames.add(review.getReviewedGame()));
-        return reviewedGames;
+        return gameDao.getGamesReviewdByUser(userId);
     }
 
     @Transactional

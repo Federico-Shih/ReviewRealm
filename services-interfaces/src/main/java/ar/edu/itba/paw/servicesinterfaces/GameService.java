@@ -25,7 +25,6 @@ public interface GameService {
 
     Paginated<Game> searchGames(Page page, GameSearchFilter filter, Ordering<GameOrderCriteria> ordering);
 
-    Paginated<Game> getAllGamesShort(Integer page, Integer pageSize,String searchQuery);
 
     GameReviewData getReviewsByGameId(Long id, User activeUser);
 
@@ -49,7 +48,7 @@ public interface GameService {
 
     void rejectGame(long gameId);
 
-    List<Game> getRecommendationsOfGamesForUser(Long userId);
+    List<Game> getRecommendationsOfGamesForUser(User user);
 
     Set<Game> getGamesReviewedByUser(Long userId);
 }

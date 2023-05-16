@@ -41,9 +41,11 @@ public interface ReviewService {
 
     Optional<Review> getReviewById(Long id, User activeUser);
 
-    List<Review> getUserReviews(long userId,User activeUser);
+    List<Review> getUserReviews(Long userId,User activeUser);
 
     Paginated<Review> searchReviews(Page page, ReviewSearchFilter filter, Ordering<ReviewOrderCriteria> ordering, User activeUser);
+
+    List<Review> getReviewsFromGame(Long gameId, User activeUser);
 
     List<Review> getReviewsFromFollowingByUser(Long userId, Integer size); //No es necesario Active User porque es el mismo que el que me pasan
 

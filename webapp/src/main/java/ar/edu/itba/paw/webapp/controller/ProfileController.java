@@ -68,7 +68,7 @@ public class ProfileController extends PaginatedController {
         mav.addObject("games",gameService.getFavoriteGamesFromUser(userId));
         mav.addObject("profile",user.get());
         mav.addObject("userModerator", user.get().getRoles().contains(new Role(MODERATOR)));
-        mav.addObject("reviews",reviewService.getUserReviews(userId,loggedUser));
+        mav.addObject("reviews",reviewService.getUserReviews(user.get().getId(),loggedUser));
         FollowerFollowingCount ffc = userService.getFollowerFollowingCount(userId);
         mav.addObject("followerCount", ffc.getFollowerCount());
         mav.addObject("followingCount", ffc.getFollowingCount());
@@ -285,7 +285,7 @@ public class ProfileController extends PaginatedController {
     public ModelAndView discoveryQueue(@RequestParam(value="position", defaultValue = "0") Integer position){
         final ModelAndView mav = new ModelAndView("profile/discovery");
         User loggedUser = AuthenticationHelper.getLoggedUser(userService);
-        List<Game> recommendedGames = gameService.getRecommendationsOfGamesForUser(loggedUser.getId());
+        List<Game> recommendedGames = gameService.getRecommendationsOfGamesForUser(loggedUser);
 
         if(position<0){
             return new ModelAndView("static-components/not-found");

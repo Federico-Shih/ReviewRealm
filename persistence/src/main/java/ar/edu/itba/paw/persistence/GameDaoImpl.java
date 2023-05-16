@@ -249,4 +249,15 @@ public class GameDaoImpl implements GameDao, PaginationDao<GameFilter> {
                 " " +
                 order.getOrderDirection().getAltName()+ " NULLS LAST ";
     }
+
+    @Override
+    public Set<Game> getGamesReviewdByUser(Long userId) {
+        List<Game> games = jdbcTemplate.query("SELECT " + getTableColumnString() + " FROM reviews r JOIN games g on r.gameid = g.id WHERE r.authorid = ?"
+                , CommonRowMappers.GAME_ROW_MAPPER, userId);
+        Set<Game> set = new HashSet<>(games);
+        for (Game g : set) {
+            g.setGenres(this.getGenresByGame(g.getId()));
+        }
+        return set;
+    }
 }
