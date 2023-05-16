@@ -7,10 +7,7 @@ import ar.edu.itba.paw.dtos.ordering.Ordering;
 import ar.edu.itba.paw.dtos.ordering.ReviewOrderCriteria;
 import ar.edu.itba.paw.dtos.searching.ReviewSearchFilter;
 import ar.edu.itba.paw.enums.*;
-import ar.edu.itba.paw.models.Game;
-import ar.edu.itba.paw.models.Paginated;
-import ar.edu.itba.paw.models.Review;
-import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.persistenceinterfaces.ReviewDao;
 import ar.edu.itba.paw.servicesinterfaces.GameService;
 import ar.edu.itba.paw.servicesinterfaces.MailingService;
@@ -69,19 +66,10 @@ public class ReviewServiceImpl implements ReviewService {
         gameService.addNewReviewToGame(reviewedGame.getId(), rating);
 
         List<User> authorFollowers = userService.getFollowers(author.getId());
-        Map<String, Object> templateVariables = new HashMap<>();
-        templateVariables.put("author", author.getUsername());
-        templateVariables.put("game", reviewedGame.getName());
-        templateVariables.put("reviewId", review.getId());
-        templateVariables.put("webBaseUrl", env.getProperty("mailing.weburl"));
-
-        Object[] stringArgs = {author.getUsername()};
-        String subject = messageSource.getMessage("email.newreview.subject",
-                stringArgs, LocaleContextHolder.getLocale());
 
         for (User follower : authorFollowers) {
             if(userService.isNotificationEnabled(follower.getId(), NotificationType.USER_I_FOLLOW_WRITES_REVIEW)) {
-                mailingService.sendEmail(follower.getEmail(), subject, "newreview", templateVariables);
+                mailingService.sendReviewCreatedEmail(review, author, follower);
             }
         }
 
@@ -171,15 +159,7 @@ public class ReviewServiceImpl implements ReviewService {
             String userEmail = author.getEmail();
 
             if(userService.isNotificationEnabled(author.getId(), NotificationType.MY_REVIEW_IS_DELETED)) {
-                Map<String, Object> templateVariables = new HashMap<>();
-                templateVariables.put("game", game.getName());
-                templateVariables.put("gameId", game.getId());
-                templateVariables.put("webBaseUrl", env.getProperty("mailing.weburl"));
-                Object[] stringArgs = {};
-                String subject = messageSource.getMessage("email.deletedreview.subject",
-                        stringArgs, LocaleContextHolder.getLocale());
-
-                mailingService.sendEmail(userEmail, subject, "deletedreview", templateVariables);
+                mailingService.sendReviewDeletedEmail(game, author);
             }
 
             if(review.get().getRating() > MINFAVORITEGAMERATING)
@@ -187,7 +167,6 @@ public class ReviewServiceImpl implements ReviewService {
 
             return true;
         }
-        //TODO: Loggear error aca o en el controller?
         return false;
     }
 

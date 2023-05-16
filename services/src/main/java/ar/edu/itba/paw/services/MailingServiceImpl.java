@@ -1,6 +1,8 @@
 package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.models.ExpirationToken;
+import ar.edu.itba.paw.models.Game;
+import ar.edu.itba.paw.models.Review;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.servicesinterfaces.MailingService;
 import org.slf4j.Logger;
@@ -36,10 +38,21 @@ public class MailingServiceImpl implements MailingService {
     private Environment env;
     @Autowired
     private MessageSource messageSource;
-
-
     private static final String FROM = "paw-2023a-04@hotmail.com";
 
+    public void sendReviewDeletedEmail(Game game, User user) {
+        Map<String, Object> templateVariables = new HashMap<>();
+        templateVariables.put("game", game.getName());
+        templateVariables.put("gameId", game.getId());
+        templateVariables.put("webBaseUrl", env.getProperty("mailing.weburl"));
+        Object[] stringArgs = {};
+        String subject = messageSource.getMessage("email.deletedreview.subject",
+                stringArgs, LocaleContextHolder.getLocale());
+
+        sendEmail(user.getEmail(), subject, "deletedreview", templateVariables);
+    }
+
+    @Override
     public void sendValidationTokenEmail(ExpirationToken token, User user) {
         Map<String, Object> templateVariables = new HashMap<>();
         templateVariables.put("webBaseUrl", env.getProperty("mailing.weburl"));
@@ -53,6 +66,7 @@ public class MailingServiceImpl implements MailingService {
         sendEmail(user.getEmail(), subject, "validate", templateVariables);
     }
 
+    @Override
     public void sendChangePasswordEmail(ExpirationToken token, User user) {
         Map<String, Object> templateVariables = new HashMap<>();
         templateVariables.put("webBaseUrl", env.getProperty("mailing.weburl"));
@@ -66,7 +80,7 @@ public class MailingServiceImpl implements MailingService {
         sendEmail(user.getEmail(), subject, "changepassword", templateVariables);
     }
 
-    public void sendEmail(String mailTo, String mailSubject, String template, Map<String, Object> templateVariables) {
+    private void sendEmail(String mailTo, String mailSubject, String template, Map<String, Object> templateVariables) {
         taskExecutor.execute(() -> {
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
             try {
@@ -86,5 +100,19 @@ public class MailingServiceImpl implements MailingService {
                 LOGGER.error("Error while sending email to {} with subject {}", mailTo, mailSubject, exception);
             }
         });
+    }
+
+    @Override
+    public void sendReviewCreatedEmail(Review createdReview, User author, User follower) {
+        Map<String, Object> templateVariables = new HashMap<>();
+        templateVariables.put("author", author.getUsername());
+        templateVariables.put("game", createdReview.getReviewedGame().getName());
+        templateVariables.put("reviewId", createdReview.getId());
+        templateVariables.put("webBaseUrl", env.getProperty("mailing.weburl"));
+
+        Object[] stringArgs = {author.getUsername()};
+        String subject = messageSource.getMessage("email.newreview.subject",
+                stringArgs, LocaleContextHolder.getLocale());
+        sendEmail(follower.getEmail(), subject, "newreview", templateVariables);
     }
 }

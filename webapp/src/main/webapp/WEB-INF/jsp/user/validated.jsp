@@ -30,7 +30,7 @@
 -->
 <body>
 <jsp:include page="/WEB-INF/jsp/static-components/navbar.jsp"/>
-<div class="container">
+<div class="container center-align center">
     <h5><spring:message code="validation.validated" /></h5>
 </div>
 </body>

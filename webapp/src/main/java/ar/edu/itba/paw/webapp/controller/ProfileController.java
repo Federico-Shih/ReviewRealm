@@ -49,7 +49,11 @@ public class ProfileController extends PaginatedController {
     }
 
     @RequestMapping(value = "/profile/{id:\\d+}", method = RequestMethod.GET)
-    public ModelAndView profile(@PathVariable(value="id") long userId)
+    public ModelAndView profile(@PathVariable(value="id") long userId,
+                                @RequestParam(value = "preferences-changed", required = false) Boolean preferencesChanged,
+                                @RequestParam(value = "avatar-changed", required = false) Boolean avatarChanged,
+                                @RequestParam(value = "notifications-changed", required = false) Boolean notificationsChanged
+    )
     {
         final ModelAndView mav = new ModelAndView("profile/profile");
         Optional<User> user = userService.getUserById(userId);
@@ -60,6 +64,9 @@ public class ProfileController extends PaginatedController {
 
         User loggedUser = AuthenticationHelper.getLoggedUser(userService);
 
+        mav.addObject("preferencesChanged", preferencesChanged != null && preferencesChanged);
+        mav.addObject("avatarChanged", avatarChanged != null && avatarChanged);
+        mav.addObject("notificationsChanged", notificationsChanged != null && notificationsChanged);
         mav.addObject("games",gameService.getFavoriteGamesFromUser(userId));
         mav.addObject("profile",user.get());
         mav.addObject("userModerator", user.get().getRoles().contains(new Role(MODERATOR)));
@@ -122,7 +129,7 @@ public class ProfileController extends PaginatedController {
             userService.followUserById(loggedUser.getId(), userId);
         } catch (UserNotFoundException err) {
             LOGGER.error("Following unexistant user: {}", userId);
-            return profile(userId);
+            return profile(userId, false, false, false);
         } catch (RuntimeException err) {
             LOGGER.error("Unexpected error: {}", err.getMessage());
         }
@@ -138,7 +145,7 @@ public class ProfileController extends PaginatedController {
             userService.unfollowUserById(loggedUser.getId(), userId);
         } catch (UserNotFoundException err) {
             LOGGER.error("Unfollowing unexistant user: {}", userId);
-            return profile(userId);
+            return profile(userId, false, false, false);
         } catch (RuntimeException err) {
             LOGGER.error("Unexpected error: {}", err.getMessage());
         }
@@ -180,7 +187,7 @@ public class ProfileController extends PaginatedController {
             LOGGER.error("Unexpected error: {}", err.getMessage());
             return editPreferences(form, false);
         }
-        return new ModelAndView(String.format("redirect:/profile/%d", userId));
+        return new ModelAndView(String.format("redirect:/profile/%d?preferences-changed=true", userId));
     }
 
     @RequestMapping(value= "/profile/settings/avatar", method=RequestMethod.GET)
@@ -226,7 +233,7 @@ public class ProfileController extends PaginatedController {
             LOGGER.error("Unexpected error: {}", err.getMessage());
             return favgamesSetting(form);
         }
-        return new ModelAndView(String.format("redirect:/profile/%d", userId));
+        return new ModelAndView(String.format("redirect:/profile/%d?avatar-changed=true", userId));
     }
 
     @RequestMapping(value = "/profile/settings/notifications", method= RequestMethod.GET)
@@ -251,7 +258,7 @@ public class ProfileController extends PaginatedController {
             LOGGER.error("Unexpected error: {}", err.getMessage());
             return notificationSettings(form);
         }
-        return new ModelAndView(String.format("redirect:/profile/%d", userId));
+        return new ModelAndView(String.format("redirect:/profile/%d?notifications-changed=true", userId));
     }
 
     @RequestMapping(value="/for-you", method = RequestMethod.GET)

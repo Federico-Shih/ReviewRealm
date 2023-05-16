@@ -64,8 +64,8 @@
                     <c:forEach items="${users}" var="user">
                         <div>
                             <h6>
-                                <a href="<c:url value="/user/${user.id}" />">
-                                        ${user.username}
+                                <a href="<c:url value="/profile/${user.id}" />">
+                                        <c:out value="${user.username}" />
                                 </a>
                             </h6>
                         </div>

@@ -46,9 +46,8 @@ public interface ReviewService {
     Paginated<Review> searchReviews(Page page, ReviewSearchFilter filter, Ordering<ReviewOrderCriteria> ordering, User activeUser);
 
     List<Review> getReviewsFromFollowingByUser(Long userId, Integer size); //No es necesario Active User porque es el mismo que el que me pasan
+
     boolean deleteReviewById(Long id);
 
     boolean updateOrCreateReviewFeedback(Review review, User user, ReviewFeedback feedback);
-
-
 }

@@ -422,3 +422,8 @@ input::-webkit-inner-spin-button {
 #range-slider .noUi-handle:before, .noUi-handle:after {
     display: none;
 }
+
+.created-toast {
+    background-color: #2E7D32;
+    color: white;
+}

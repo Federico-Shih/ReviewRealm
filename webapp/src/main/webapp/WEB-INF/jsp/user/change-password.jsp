@@ -12,6 +12,13 @@
     <link rel="stylesheet" href="<c:url value="/css/change-password.css"/>" >
     <!-- Compiled and minified JavaScript -->
     <script src="<c:url value="/js/materialize.min.js" />"></script>
+    <script>
+        <c:if test="${emailSent != null && emailSent}">
+            document.addEventListener('DOMContentLoaded', function() {
+                    M.toast({html: '<spring:message code="resend.email.sent" />', classes: 'created-toast'})
+            }, false)
+        </c:if>
+    </script>
     <link rel="shortcut icon" type="image/png" href="<c:url value="/static/review_realm_logo_white_32px.png" />">
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
 </head>
@@ -61,9 +68,6 @@
                 <button class="btn-large" type="submit"><spring:message code="email.sendpasswordrecovery.cta" /></button>
             </div>
         </form:form>
-        <c:if test="${emailSent != null && emailSent}">
-            <p><spring:message code="resend.email.sent" /></p>
-        </c:if>
     </article>
 </div>
 </body>

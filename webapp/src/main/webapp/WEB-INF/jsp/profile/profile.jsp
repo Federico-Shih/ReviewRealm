@@ -20,6 +20,18 @@
         document.addEventListener('DOMContentLoaded', function() {
             var elems = document.querySelectorAll('.tooltipped');
             var instances = M.Tooltip.init(elems, {});
+
+            <c:if test="${preferencesChanged}">
+                M.toast({html: '<spring:message code="profile.preferences-changed" />', classes: 'created-toast'});
+            </c:if>
+
+            <c:if test="${avatarChanged}">
+                M.toast({html: '<spring:message code="profile.avatar-changed" />', classes: 'created-toast'});
+            </c:if>
+
+            <c:if test="${notificationsChanged}">
+                M.toast({html: '<spring:message code="profile.notifications-changed" />', classes: 'created-toast'});
+            </c:if>
         });
     </script>
 </head>

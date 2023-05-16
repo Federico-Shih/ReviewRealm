@@ -16,7 +16,6 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <script>
-        <c:if test="${isModerated}">
         document.addEventListener('DOMContentLoaded', function () {
             var elems = document.querySelectorAll('.dropdown-trigger');
             var instances = M.Dropdown.init(elems, {
@@ -24,6 +23,10 @@
                 coverTrigger: false,
             });
         });
+        <c:if test="${created}">
+            document.addEventListener('DOMContentLoaded', function () {
+                M.toast({html: '<spring:message code="review.created" />', classes: 'created-toast'});
+            });
         </c:if>
     </script>
     <script src="<c:url value="/js/reviewfeedback.js" />"></script>
@@ -71,13 +74,15 @@
                                                     </button>
                                                 </form
                                             </c:if>
-                                            <c:url value="/review/delete/${review.id}" var="moderateUrl" />
-                                            <form action="${moderateUrl}" method="post" >
-                                                <button class="waves-effect btn-flat valign-wrapper red-text f-row f-ai-center highlight" type="submit">
-                                                    <i class="material-icons">delete</i>
-                                                    <span><spring:message code="review.delete"/></span>
-                                                </button>
-                                            </form>
+                                            <c:if test="${isModerated}">
+                                                <c:url value="/review/delete/${review.id}" var="moderateUrl" />
+                                                <form action="${moderateUrl}" method="post" >
+                                                    <button class="waves-effect btn-flat valign-wrapper red-text f-row f-ai-center highlight" type="submit">
+                                                        <i class="material-icons">delete</i>
+                                                        <span><spring:message code="review.delete"/></span>
+                                                    </button>
+                                                </form>
+                                            </c:if>
                                         </li>
                                     </ul>
                                 </span>

@@ -53,8 +53,9 @@ public class GameController extends PaginatedController implements QueryControll
     }
 
     @RequestMapping("/game/{id:\\d+}")
-    public ModelAndView game_details(@PathVariable("id") final Long gameId){
+    public ModelAndView game_details(@PathVariable("id") final Long gameId, @RequestParam(value = "created", required = false) Boolean created){
         final ModelAndView mav =  new ModelAndView("games/game-details");
+        mav.addObject("created", created != null && created);
         Optional<Game> game = gs.getGameById(gameId);
         User loggedUser = AuthenticationHelper.getLoggedUser(us);
         if(game.isPresent()){
@@ -77,8 +78,11 @@ public class GameController extends PaginatedController implements QueryControll
             @RequestParam(value = "o-dir", defaultValue = "0") Integer orderDirection,
             @RequestParam(value = "f-gen", defaultValue = "") List<Integer> genresFilter,
             @RequestParam(value = "f-rat", defaultValue = "") String ratingFilter,
-            @RequestParam(value = "search", defaultValue = "") String search ){
+            @RequestParam(value = "search", defaultValue = "") String search,
+            @RequestParam(value = "created", required = false) Boolean created
+    ){
         final ModelAndView mav = new ModelAndView("games/game-list");
+
         User loggedUser = AuthenticationHelper.getLoggedUser(us);
         List<Genre> allGenres = grs.getAllGenres();
 
@@ -103,9 +107,8 @@ public class GameController extends PaginatedController implements QueryControll
                 new Ordering<>(OrderDirection.fromValue(orderDirection), GameOrderCriteria.fromValue(orderCriteria))
         );
 
-
         super.paginate(mav,games);
-
+        mav.addObject("created", created != null && created);
         mav.addObject("games", games.getList());
         mav.addObject("currentPage", page);
         mav.addObject("orderCriteria", GameOrderCriteria.values());
@@ -159,7 +162,7 @@ public class GameController extends PaginatedController implements QueryControll
         }
         try {
             Optional<Game> game = gs.createGame(gameForm.toSubmitDTO(), AuthenticationHelper.getLoggedUser(us).getId());
-            return game.map(value -> new ModelAndView("redirect:/game/" + value.getId())).orElseGet(() -> new ModelAndView("redirect:/game/list"));
+            return game.map(value -> new ModelAndView("redirect:/game/" + value.getId() + "?created=true")).orElseGet(() -> new ModelAndView("redirect:/game/list" + "?created=true"));
         } catch (IOException e) {
             LOGGER.error("Failed to create image: {}", e.getMessage());
             errors.addError(new ObjectError("image", "game.submit.errors.failedimg"));

@@ -87,7 +87,7 @@ public class ReviewController extends PaginatedController implements QueryContro
     }
 
     @RequestMapping(value = "/review/{id:\\d+}", method = RequestMethod.GET)
-    public ModelAndView reviewDetails(@PathVariable(value = "id") Long reviewId) {
+    public ModelAndView reviewDetails(@PathVariable(value = "id") Long reviewId, @RequestParam(value = "created", required = false) Boolean created) {
         User loggedUser = AuthenticationHelper.getLoggedUser(userService);
         Optional<Review> review = reviewService.getReviewById(reviewId,loggedUser);
         if (!review.isPresent()) {
@@ -96,6 +96,7 @@ public class ReviewController extends PaginatedController implements QueryContro
         Collection<? extends GrantedAuthority> roles = AuthenticationHelper.getAuthorities();
         ModelAndView mav = new ModelAndView("/review/review-details");
         mav.addObject("review", review.get());
+        mav.addObject("created", created != null && created);
         mav.addObject("game", review.get().getReviewedGame());
         mav.addObject("isModerated", roles.contains(new SimpleGrantedAuthority("ROLE_MODERATOR")));
         mav.addObject("isOwner", loggedUser != null && Objects.equals(loggedUser.getId(), review.get().getAuthor().getId()));
@@ -130,7 +131,7 @@ public class ReviewController extends PaginatedController implements QueryContro
                 form.getCompleted(),
                 form.getReplayability()
         );
-        return new ModelAndView("redirect:/review/" + createdReview.getId());
+        return new ModelAndView("redirect:/review/" + createdReview.getId() + "?created=true");
     }
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
@@ -243,7 +244,7 @@ public class ReviewController extends PaginatedController implements QueryContro
         }
         boolean deleted = reviewService.deleteReviewById(id);
         if (!deleted) {
-            return reviewDetails(id);
+            return reviewDetails(id, false);
         }
         return new ModelAndView("redirect:/game/" + review.get().getReviewedGame().getId());
     }

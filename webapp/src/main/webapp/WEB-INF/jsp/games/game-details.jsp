@@ -14,6 +14,13 @@
     <script src="<c:url value="/js/reviewfeedback.js"/>"></script>
     <link rel="shortcut icon" type="image/png" href="<c:url value="/static/review_realm_logo_white_32px.png" />">
     <title><spring:message code="game.details.title" arguments="${game.name}"/></title>
+    <script>
+        <c:if test="${created}">
+            document.addEventListener('DOMContentLoaded', function () {
+                M.toast({html: '<spring:message code="game.created" />', classes: 'created-toast'});
+            });
+        </c:if>
+    </script>
 </head>
 <body>
 <c:url value="/review/submit?gameId=${game.id}" var="sumbitReview"/>
