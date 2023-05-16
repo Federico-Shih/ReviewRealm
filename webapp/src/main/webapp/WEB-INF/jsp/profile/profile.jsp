@@ -77,7 +77,7 @@
                         </span>
                     </a>
                     <div class="divider-v profile-followers-text-divider"></div>
-                    <span class=${profile.reputation > 0 ? "green-text" : (profile.reputation==0)? "white-text" : "red-text"}>
+                    <span class="${profile.reputation > 0 ? 'green-text no-wrap' : (profile.reputation == 0) ? 'white-text' : 'red-text'}">
                         <spring:message code="profile.reputation" arguments="${profile.reputation}"/>
                     </span>
                 </div>
@@ -150,7 +150,9 @@
         </div>
         <c:if test="${fn:length(games) == 0}">
             <div class="margin-bottom-2">
-                <span><spring:message code="profile.nofavorites"/></span>
+                <a href="<c:url value="/profile/settings/favgames"/>">
+                    <span><spring:message code="profile.nofavorites"/></span>
+                </a>
             </div>
         </c:if>
     </div>

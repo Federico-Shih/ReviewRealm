@@ -149,22 +149,5 @@
     </div>
 </div>
 </c:if>
-<c:if test="${emptyQueue}">
-    <div class="f-row center-align">
-        <div class="card lime darken-3">--%>
-            <div class="card-content white-text f-row f-gap-2">
-                <div class="">
-                    <i class="material-icons medium">warning</i>
-                </div>
-                <div class="">
-                    <span class="card-title"><spring:message code="for-you.norecomendedgames" /></span>
-                    <a href="<c:url value="/profile/settings/preferences"/>" class="no-a-decoration btn-flat waves-effect waves-light border-button f-row f-jc-center f-ai-center">
-                        <span><spring:message code="for-you.norecomendedgames.doit"/></span>
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-</c:if>
 </body>
 </html>

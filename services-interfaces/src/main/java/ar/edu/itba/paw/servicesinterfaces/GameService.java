@@ -33,6 +33,12 @@ public interface GameService {
 
     List<Game> getFavoriteGamesFromUser(long userId);
 
+    List<Game> getPossibleFavGamesFromUser(long userId);
+
+    void deleteFavoriteGame(long userId, long gameId);
+
+    void setFavoriteGames(long userId, List<Long> gameIds);
+
     void addNewReviewToGame(Long gameId,Integer rating);
 
     void deleteReviewFromGame(Long gameId,Integer rating);
@@ -42,6 +48,7 @@ public interface GameService {
     void acceptGame(long gameId);
 
     void rejectGame(long gameId);
+
     List<Game> getRecommendationsOfGamesForUser(Long userId);
 
     Set<Game> getGamesReviewedByUser(Long userId);

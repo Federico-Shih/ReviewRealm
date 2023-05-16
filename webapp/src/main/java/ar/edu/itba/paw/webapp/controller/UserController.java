@@ -1,9 +1,9 @@
 package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.exceptions.*;
-import ar.edu.itba.paw.forms.ChangePasswordForm;
-import ar.edu.itba.paw.forms.RegisterForm;
-import ar.edu.itba.paw.forms.ResendEmailForm;
+import ar.edu.itba.paw.webapp.forms.ChangePasswordForm;
+import ar.edu.itba.paw.webapp.forms.RegisterForm;
+import ar.edu.itba.paw.webapp.forms.ResendEmailForm;
 import ar.edu.itba.paw.models.Role;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.servicesinterfaces.UserService;

@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.dtos.*;
+import ar.edu.itba.paw.dtos.ordering.GameOrderCriteria;
 import ar.edu.itba.paw.dtos.ordering.OrderDirection;
 import ar.edu.itba.paw.dtos.ordering.Ordering;
 import ar.edu.itba.paw.dtos.ordering.ReviewOrderCriteria;
@@ -11,13 +12,13 @@ import ar.edu.itba.paw.exceptions.ObjectNotFoundException;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.exceptions.UserNotFoundException;
 import ar.edu.itba.paw.exceptions.WrongAccessException;
-import ar.edu.itba.paw.forms.EditReviewForm;
+import ar.edu.itba.paw.webapp.forms.EditReviewForm;
 import ar.edu.itba.paw.models.Paginated;
 import ar.edu.itba.paw.models.Review;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.servicesinterfaces.GenreService;
 import ar.edu.itba.paw.servicesinterfaces.ReviewService;
-import ar.edu.itba.paw.forms.SubmitReviewForm;
+import ar.edu.itba.paw.webapp.forms.SubmitReviewForm;
 import ar.edu.itba.paw.webapp.controller.datacontainers.FilteredList;
 import ar.edu.itba.paw.webapp.exceptions.ResourceNotFoundException;
 import ar.edu.itba.paw.servicesinterfaces.UserService;
@@ -209,12 +210,14 @@ public class ReviewController extends PaginatedController implements QueryContro
         List<Pair<String, Object>> queriesToKeepAtPageChange = new ArrayList<>();
         queriesToKeepAtPageChange.add(Pair.of("o-crit", orderCriteria));
         queriesToKeepAtPageChange.add(Pair.of("o-dir", orderDirection));
-        queriesToKeepAtPageChange.add(Pair.of("pageSize", pageSize));
+        if(pageSize!=null)
+            queriesToKeepAtPageChange.add(Pair.of("pageSize", pageSize));
         queriesToKeepAtPageChange.addAll(genresFilter.stream().map((value) -> Pair.of("f-gen", (Object)value)).collect(Collectors.toList()));
         queriesToKeepAtPageChange.addAll(preferencesFilter.stream().map((value) -> Pair.of("f-prf", (Object)value)).collect(Collectors.toList()));
         queriesToKeepAtPageChange.addAll(platformsFilter.stream().map((value) -> Pair.of("f-plt", (Object)value)).collect(Collectors.toList()));
         queriesToKeepAtPageChange.addAll(difficultyFilter.stream().map((value) -> Pair.of("f-dif", (Object)value)).collect(Collectors.toList()));
-        queriesToKeepAtPageChange.add(Pair.of("f-cpt", completedFilter));
+        if(completedFilter!=null)
+            queriesToKeepAtPageChange.add(Pair.of("f-cpt", completedFilter));
         queriesToKeepAtPageChange.add(Pair.of("f-tpl", timePlayedFilter));
 
         mav.addObject("queriesToKeepAtPageChange", toQueryString(queriesToKeepAtPageChange));

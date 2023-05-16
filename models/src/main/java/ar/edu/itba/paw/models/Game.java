@@ -3,6 +3,7 @@ package ar.edu.itba.paw.models;
 import ar.edu.itba.paw.enums.Genre;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 
 public class Game {
     private final Long id;
@@ -75,5 +76,18 @@ public class Game {
             // starts out with an empty list once it is retrieved from the db
             this.genres = genres;
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Game game = (Game) o;
+        return Objects.equals(id, game.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

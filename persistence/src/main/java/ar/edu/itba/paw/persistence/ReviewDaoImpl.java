@@ -210,22 +210,6 @@ public class ReviewDaoImpl implements ReviewDao, PaginationDao<ReviewFilter> {
     }
 
     @Override
-    public void updateFavGames(long userId, Long idReviewToAdd, Long idGameToAdd, Optional<Long> optIdToDelete) {
-        optIdToDelete.ifPresent(reviewIdToDelete -> jdbcTemplate.update("DELETE FROM favoritegames WHERE userid = ? AND reviewId = ?", userId, reviewIdToDelete));
-
-        jdbcTemplate.update("INSERT INTO favoritegames(gameid, userid,reviewId)  VALUES (?,?,?)",
-                idGameToAdd, userId, idReviewToAdd);
-
-    }
-
-    @Override
-    public List<Review> getBestReviews(long userId) {
-        return jdbcTemplate.query("SELECT * FROM reviews INNER JOIN favoritegames f on reviews.id = f.reviewid " +
-                "INNER JOIN users u on u.id = f.userid INNER JOIN games g on f.gameid = g.id " +
-                "WHERE authorid = ?", CommonRowMappers.REVIEW_ROW_MAPPER, userId);
-    }
-
-    @Override
     public ReviewFeedback getReviewFeedback(Long reviewId, Long userId) {
         return jdbcTemplate.query("SELECT * FROM reviewfeedback WHERE userid = ? and reviewid = ?",
                         (rs, rowNum) -> ReviewFeedback.valueOf(rs.getString("feedback")),userId, reviewId)

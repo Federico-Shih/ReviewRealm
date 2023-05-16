@@ -1,15 +1,15 @@
 package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.exceptions.UserNotFoundException;
-import ar.edu.itba.paw.forms.NotificationsForm;
+import ar.edu.itba.paw.webapp.forms.FavoriteGamesForm;
+import ar.edu.itba.paw.webapp.forms.NotificationsForm;
 import ar.edu.itba.paw.models.*;
-import ar.edu.itba.paw.forms.EditPreferencesForm;
+import ar.edu.itba.paw.webapp.forms.EditPreferencesForm;
 import ar.edu.itba.paw.servicesinterfaces.GameService;
 import ar.edu.itba.paw.servicesinterfaces.GenreService;
 import ar.edu.itba.paw.servicesinterfaces.ReviewService;
 import ar.edu.itba.paw.servicesinterfaces.UserService;
 import ar.edu.itba.paw.webapp.auth.AuthenticationHelper;
-import org.hibernate.validator.internal.util.logging.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -151,7 +151,7 @@ public class ProfileController extends PaginatedController {
     }
 
     @RequestMapping(value = "/profile/settings/preferences", method= RequestMethod.GET)
-    public ModelAndView editPreferences(@Valid @ModelAttribute("editPreferencesForm") final EditPreferencesForm form){
+    public ModelAndView editPreferences(@Valid @ModelAttribute("editPreferencesForm") final EditPreferencesForm form, @RequestParam(value = "nothingForDiscovery", defaultValue = "false") Boolean nothingForDiscovery){
         long userId = AuthenticationHelper.getLoggedUser(userService).getId();
         final ModelAndView mav = new ModelAndView("profile/edit-preferences");
         Optional<User> user = userService.getUserById(userId);
@@ -162,6 +162,7 @@ public class ProfileController extends PaginatedController {
         mav.addObject("profile",user.get());
         mav.addObject("availableGenres", genreService.getAllGenres().stream()
                 .filter(genre -> !user.get().getPreferences().contains(genre)).collect(Collectors.toList()));
+        mav.addObject("nothingForDiscovery", nothingForDiscovery);
         return mav;
     }
 
@@ -171,13 +172,13 @@ public class ProfileController extends PaginatedController {
     {
         long userId = AuthenticationHelper.getLoggedUser(userService).getId();
         if(errors.hasErrors()) {
-            return editPreferences(form);
+            return editPreferences(form, false);
         }
         try {
             userService.setPreferences(new HashSet<>(form.getGenres()), userId);
         } catch (RuntimeException err) {
             LOGGER.error("Unexpected error: {}", err.getMessage());
-            return editPreferences(form);
+            return editPreferences(form, false);
         }
         return new ModelAndView(String.format("redirect:/profile/%d", userId));
     }
@@ -194,7 +195,36 @@ public class ProfileController extends PaginatedController {
             userService.changeUserAvatar(userId, imageId);
         } catch (Exception err) {
             LOGGER.error("Unexpected error: {}", err.getMessage());
-            return avatarSetting();
+            return new ModelAndView("redirect:/profile/settings/avatar");
+        }
+        return new ModelAndView(String.format("redirect:/profile/%d", userId));
+    }
+
+
+    @RequestMapping(value="/profile/settings/favgames", method = RequestMethod.GET)
+    public ModelAndView favgamesSetting(@Valid @ModelAttribute("favgamesForm") final FavoriteGamesForm Form) {
+        ModelAndView mav = new ModelAndView("profile/choose-favgames");
+        long id = AuthenticationHelper.getLoggedUser(userService).getId();
+        List<Game> favgames = gameService.getFavoriteGamesFromUser(id);
+        List<Game> favgamesCandidate = gameService.getPossibleFavGamesFromUser(id).stream()
+                .filter(game -> !favgames.contains(game)).collect(Collectors.toList());
+        mav.addObject("favgamescandidates", favgamesCandidate);
+        mav.addObject("favgames", favgames);
+        mav.addObject("nothingToShow", favgames.isEmpty() && favgamesCandidate.isEmpty());
+        return mav;
+    }
+
+    @RequestMapping(value="/profile/settings/favgames", method = RequestMethod.POST)
+    public ModelAndView changeFavgames(@Valid @ModelAttribute("favgamesForm") final FavoriteGamesForm form, final BindingResult errors) {
+        if(errors.hasErrors()) {
+            return favgamesSetting(form);
+        }
+        long userId = AuthenticationHelper.getLoggedUser(userService).getId();
+        try {
+            gameService.setFavoriteGames(userId, form.getGameIds());
+        } catch (Exception err) {
+            LOGGER.error("Unexpected error: {}", err.getMessage());
+            return favgamesSetting(form);
         }
         return new ModelAndView(String.format("redirect:/profile/%d", userId));
     }
@@ -252,8 +282,7 @@ public class ProfileController extends PaginatedController {
         List<Game> recommendedGames = gameService.getRecommendationsOfGamesForUser(loggedUser.getId());
 
         if(recommendedGames.isEmpty()){
-            mav.addObject("emptyQueue",true);
-            return mav;
+            return new ModelAndView("redirect:/profile/settings/preferences?nothingForDiscovery=true");
         }
 
         Integer queuePosition = queueData.getQueuePosition();
@@ -284,6 +313,8 @@ public class ProfileController extends PaginatedController {
         queueData.setPosition((previous>0)? previous-1 : previous );
         return new ModelAndView("redirect:/for-you/discovery");
     }
+
+
     private static class DiscoveryQueueData {
 
         private Integer queuePosition = 0;

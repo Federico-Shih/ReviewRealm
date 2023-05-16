@@ -18,6 +18,20 @@
 <c:url value="/profile/settings/preferences" var="applyChanges"/>
 <body>
     <jsp:include page="../static-components/navbar.jsp"/>
+    <c:if test="${nothingForDiscovery}">
+        <div class="f-row center-align f-jc-center">
+            <div class="card lime darken-3">
+                <div class="card-content white-text f-row f-gap-2">
+                    <div class="">
+                        <i class="material-icons medium">warning</i>
+                    </div>
+                    <div class="">
+                        <span class="card-title"><spring:message code="for-you.norecomendedgames" /></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </c:if>
     <form:form modelAttribute="editPreferencesForm" action="${applyChanges}" method="post">
         <div class="row container">
             <div class="col s12 center">
@@ -61,7 +75,6 @@
 
 
         <form:errors path="genres" cssClass="error" element="p"/>
-
 
         <div class="row">
             <div class="col s12 center">

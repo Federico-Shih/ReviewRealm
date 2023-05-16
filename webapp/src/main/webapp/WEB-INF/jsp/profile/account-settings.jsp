@@ -40,6 +40,12 @@
                 <span class=""><spring:message code="account.settings.avatar"/></span>
             </a>
         </li>
+        <li class="full-width settings-option">
+            <a href="<c:url value="/profile/settings/favgames"/>" class="full-width no-a-decoration waves-effect waves-light border-button f-row f-jc-start f-ai-center f-gap-2">
+                <i class="material-icons medium">videogame_asset</i>
+                <span class=""><spring:message code="account.settings.favgames"/></span>
+            </a>
+        </li>
     </ul>
 </div>
 </body>

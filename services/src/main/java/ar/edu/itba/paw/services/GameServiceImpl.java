@@ -76,8 +76,9 @@ public class GameServiceImpl implements GameService {
             g = genreServ.getGenreById(c);
             g.ifPresent(genreList::add);
         }
-        // TODO: Habría que preguntar si acá hay que armar el optional o si está bien como está hecho en el Dao, porque creo los Dao deberían devolver Optional
-        return gameDao.create(gameDTO.getName(), gameDTO.getDescription(), gameDTO.getDeveloper(), gameDTO.getPublisher(), img.getId(), genreList, LocalDate.now(), !isModerator);
+
+        Optional<Game> toReturn = gameDao.create(gameDTO.getName(), gameDTO.getDescription(), gameDTO.getDeveloper(), gameDTO.getPublisher(), img.getId(), genreList, LocalDate.now(), !isModerator);
+        return (isModerator)? toReturn : Optional.empty();
     }
     @Transactional(readOnly = true)
     @Override
@@ -215,4 +216,23 @@ public class GameServiceImpl implements GameService {
     public List<Game> getFavoriteGamesFromUser(long userId) {
         return gameDao.getFavoriteGamesFromUser(userId);
     }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<Game> getPossibleFavGamesFromUser(long userId) {
+        return gameDao.getFavoriteGamesCandidates(userId, 8);
+    }
+
+    @Override
+    public void deleteFavoriteGame(long userId, long gameId) {
+        LOGGER.info("Possibly deleting gameId: {} from favorite games, for user {}", gameId, userId);
+        gameDao.deleteFavoriteGameForUser(userId, gameId);
+    }
+
+    @Transactional
+    @Override
+    public void setFavoriteGames(long userId, List<Long> gameIds) {
+        gameDao.replaceAllFavoriteGames(userId, Optional.ofNullable(gameIds));
+    }
+
 }

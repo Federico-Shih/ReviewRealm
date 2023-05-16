@@ -11,12 +11,15 @@ import ar.edu.itba.paw.persistence.helpers.QueryBuilder;
 import ar.edu.itba.paw.persistenceinterfaces.GameDao;
 import ar.edu.itba.paw.persistenceinterfaces.PaginationDao;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCallback;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.*;
@@ -62,7 +65,7 @@ public class GameDaoImpl implements GameDao, PaginationDao<GameFilter> {
         final Number id = jdbcInsertGames.executeAndReturnKey(args);
         addGenresToDB(id, genres, jdbcInsertGenreForGames);
         // esto quizás debería hacerse en el Service, pero quiero que create devuelva Optional
-        return (suggested)? Optional.empty() : Optional.of(new Game(id.longValue(),name,description,developer,publisher, CommonRowMappers.IMAGE_PREFIX + imageid,genres,publishDate,0d));
+        return Optional.of(new Game(id.longValue(),name,description,developer,publisher, CommonRowMappers.IMAGE_PREFIX + imageid,genres,publishDate,0d));
     }
 
 
@@ -121,6 +124,27 @@ public class GameDaoImpl implements GameDao, PaginationDao<GameFilter> {
     }
 
     @Override
+    public void replaceAllFavoriteGames(long userId, Optional<List<Long>> gameIds) {
+        jdbcTemplate.update("DELETE FROM favoritegames WHERE userid = ?", userId);
+        if(gameIds.isPresent()) {
+            List<Long> gameIdsList = gameIds.get();
+            jdbcTemplate.batchUpdate("INSERT INTO favoritegames VALUES (?, ?)", new BatchPreparedStatementSetter() {
+                @Override
+                public void setValues(PreparedStatement ps, int i) throws SQLException {
+                    Long gameId = gameIdsList.get(i);
+                    ps.setLong(1, gameId);
+                    ps.setLong(2, userId);
+                }
+
+                @Override
+                public int getBatchSize() {
+                    return gameIdsList.size();
+                }
+            });
+        }
+    }
+
+    @Override
     public List<Genre> getGenresByGame(Long id) {
         return jdbcTemplate.query("SELECT * FROM genreforgames g " +
                 "WHERE g.gameid = ?",CommonRowMappers.GENRE_ROW_MAPPER,id);
@@ -168,6 +192,17 @@ public class GameDaoImpl implements GameDao, PaginationDao<GameFilter> {
     public List<Game> getFavoriteGamesFromUser(long userId) {
         return jdbcTemplate.query("SELECT * FROM favoritegames INNER JOIN games g ON favoritegames.gameid = g.id" +
                 " where userid = ?",CommonRowMappers.GAME_ROW_MAPPER, userId);
+    }
+
+    @Override
+    public List<Game> getFavoriteGamesCandidates(long userId, int minRating) {
+        return jdbcTemplate.query("SELECT " + getTableColumnString() + " FROM users u JOIN reviews r on u.id = r.authorid JOIN games g on g.id = r.gameid " +
+                "WHERE u.id = ? AND r.rating >= ?", CommonRowMappers.GAME_ROW_MAPPER, userId, minRating);
+    }
+
+    @Override
+    public void deleteFavoriteGameForUser(long userId, long gameId) {
+        jdbcTemplate.update("DELETE FROM favoritegames WHERE userid = ? AND gameid = ?", userId, gameId);
     }
 
     @Override

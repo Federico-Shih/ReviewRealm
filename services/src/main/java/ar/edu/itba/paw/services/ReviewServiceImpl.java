@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
 @Service
 public class ReviewServiceImpl implements ReviewService {
 
+    private static final int MINFAVORITEGAMERATING = 7;
     private static final Logger LOGGER = LoggerFactory.getLogger(ReviewServiceImpl.class);
     private final ReviewDao reviewDao;
     private final UserService userService;
@@ -84,8 +85,6 @@ public class ReviewServiceImpl implements ReviewService {
             }
         }
 
-        if(review.getRating()>7)
-            updateFavoriteGames(author.getId(), review);
 
         return review;
     }
@@ -114,23 +113,9 @@ public class ReviewServiceImpl implements ReviewService {
                         completed,
                         replayable));
         gameService.updateReviewFromGame(review.get().getReviewedGame().getId(), review.get().getRating(), rating);
+        if(rating <= MINFAVORITEGAMERATING)
+            gameService.deleteFavoriteGame(review.get().getAuthor().getId(), review.get().getReviewedGame().getId());
         return response;
-    }
-
-    private void updateFavoriteGames(long userId, Review review) {
-        Optional<Long> toDelete = Optional.empty();
-        List<Review> bestReviews = reviewDao.getBestReviews(userId);
-        if(bestReviews.stream().anyMatch(r -> r.getReviewedGame().getId().equals(review.getReviewedGame().getId()))){
-            return;
-        }
-        if(bestReviews.size()==3) {
-            bestReviews.sort((o1, o2) -> o2.getRating().compareTo(o1.getRating()));
-            if (bestReviews.get(2).getRating() > review.getRating()) {
-                return;
-            }
-            toDelete = Optional.of(bestReviews.remove(2).getId());
-        }
-        reviewDao.updateFavGames(userId, review.getId(), review.getReviewedGame().getId(), toDelete);
     }
 
     @Transactional
@@ -196,6 +181,10 @@ public class ReviewServiceImpl implements ReviewService {
 
                 mailingService.sendEmail(userEmail, subject, "deletedreview", templateVariables);
             }
+
+            if(review.get().getRating() > MINFAVORITEGAMERATING)
+                gameService.deleteFavoriteGame(review.get().getAuthor().getId(), review.get().getReviewedGame().getId());
+
             return true;
         }
         //TODO: Loggear error aca o en el controller?

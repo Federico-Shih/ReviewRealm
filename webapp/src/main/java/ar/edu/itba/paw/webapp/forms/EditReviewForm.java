@@ -1,9 +1,7 @@
-package ar.edu.itba.paw.forms;
+package ar.edu.itba.paw.webapp.forms;
 
 import ar.edu.itba.paw.enums.GamelengthUnit;
 import ar.edu.itba.paw.models.Review;
-
-import javax.validation.constraints.NotNull;
 
 public class EditReviewForm extends SubmitReviewForm {
     public EditReviewForm fromReview(Review review) {

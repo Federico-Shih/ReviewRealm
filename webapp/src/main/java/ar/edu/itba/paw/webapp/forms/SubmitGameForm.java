@@ -1,4 +1,4 @@
-package ar.edu.itba.paw.forms;
+package ar.edu.itba.paw.webapp.forms;
 
 import ar.edu.itba.paw.annotations.ValidMediaSize;
 import ar.edu.itba.paw.dtos.saving.SubmitGameDTO;

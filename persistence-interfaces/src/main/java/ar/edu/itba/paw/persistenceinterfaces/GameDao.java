@@ -26,6 +26,10 @@ public interface GameDao {
 
     List<Game> getFavoriteGamesFromUser(long userId);
 
+    List<Game> getFavoriteGamesCandidates(long userId, int minRating);
+
+    void deleteFavoriteGameForUser(long userId, long gameId);
+
     List<Game> getRecommendationsForUser(Long userId, List<Integer> userPreferences,List<Long> gamesToExclude);
 
     Double getAverageReviewRatingById(Long id);
@@ -39,4 +43,6 @@ public interface GameDao {
     boolean setSuggestedFalse(long gameId);
 
     boolean deleteGame(long gameId);
+
+    void replaceAllFavoriteGames(long userId, Optional<List<Long>> gameIds);
 }

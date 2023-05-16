@@ -35,10 +35,6 @@ public interface ReviewDao {
 
     boolean deleteReview(Long id);
 
-    void updateFavGames(long userId, Long idReviewToAdd, Long idGameToAdd, Optional<Long> optIdToDelete);
-
-    List<Review> getBestReviews(long userId);
-
     boolean editReviewFeedback(Long reviewId, Long userId, ReviewFeedback oldFeedback, ReviewFeedback feedback);
 
     boolean addReviewFeedback(Long reviewId, Long userId, ReviewFeedback feedback);

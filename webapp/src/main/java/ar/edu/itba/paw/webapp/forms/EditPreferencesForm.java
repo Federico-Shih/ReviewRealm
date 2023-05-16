@@ -1,9 +1,6 @@
-package ar.edu.itba.paw.forms;
+package ar.edu.itba.paw.webapp.forms;
 
-import ar.edu.itba.paw.enums.Genre;
-import ar.edu.itba.paw.models.Game;
 
-import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
 
