@@ -286,9 +286,12 @@ public class ReviewDaoImpl implements ReviewDao, PaginationDao<ReviewFilter> {
     }
 
     private String toOrderString(Ordering<ReviewOrderCriteria> order) {
+        if (order == null || order.getOrderCriteria() == null) {
+            return "";
+        }
         return " ORDER BY " +
-                order.getOrderCriteria().getAltName()+
+                order.getOrderCriteria().getAltName() +
                 " " +
-                order.getOrderDirection().getAltName();
+                ( order.getOrderDirection() == null ? "" : order.getOrderDirection().getAltName());
     }
 }

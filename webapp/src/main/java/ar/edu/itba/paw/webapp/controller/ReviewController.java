@@ -98,7 +98,6 @@ public class ReviewController extends PaginatedController implements QueryContro
         return mav;
     }
 
-    // de no utilizar ModelAttribute, habría que hacer otro mav.addObject("form",form)
     @RequestMapping(value = "/review/submit/{id:\\d+}", method = RequestMethod.POST)
     public ModelAndView submitReview(
             @PathVariable(value = "id") Long gameId,
@@ -147,7 +146,7 @@ public class ReviewController extends PaginatedController implements QueryContro
         User loggedUser = AuthenticationHelper.getLoggedUser(userService);
         List<Genre> allGenres = genreService.getAllGenres();
 
-        if(pageSize == null || pageSize < 0) {
+        if(pageSize == null || pageSize < 1) {
             pageSize = PAGE_SIZE;
         }
 

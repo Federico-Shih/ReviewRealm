@@ -162,9 +162,14 @@
         </div>
         <c:if test="${fn:length(games) == 0}">
             <div class="margin-bottom-2">
-                <a href="<c:url value="/profile/settings/favgames"/>">
+                <c:if test="${isProfileSelf}">
+                    <a href="<c:url value="/profile/settings/favgames"/>">
+                        <span><spring:message code="profile.nofavorites.pick"/></span>
+                    </a>
+                </c:if>
+                <c:if test="${!isProfileSelf}">
                     <span><spring:message code="profile.nofavorites"/></span>
-                </a>
+                </c:if>
             </div>
         </c:if>
     </div>

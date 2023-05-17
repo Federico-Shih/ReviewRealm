@@ -65,7 +65,7 @@ public class GameController extends PaginatedController implements QueryControll
         mav.addObject("created", created != null && created);
         Optional<Game> game = gs.getGameById(gameId);
         User loggedUser = AuthenticationHelper.getLoggedUser(us);
-        if(pageSize == null || pageSize < 0) {
+        if(pageSize == null || pageSize < 1) {
             pageSize = PAGE_SIZE;
         }
         if(game.isPresent()){
@@ -100,7 +100,7 @@ public class GameController extends PaginatedController implements QueryControll
         User loggedUser = AuthenticationHelper.getLoggedUser(us);
         List<Genre> allGenres = grs.getAllGenres();
 
-        if(pageSize == null || pageSize < 0) {
+        if(pageSize == null || pageSize < 1) {
             pageSize = PAGE_SIZE;
         }
 

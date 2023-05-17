@@ -182,6 +182,9 @@
                 <c:if test="${empty games}">
                     <div class="col s12">
                         <span><spring:message code="game.list.notfound"/></span>
+                        <a href="${queriesToKeepAtRemoveFilters}">
+                            <span><spring:message code="remove.filters"/></span>
+                        </a>
                     </div>
                 </c:if>
                 <c:forEach items="${games}" var="game">

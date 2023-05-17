@@ -236,10 +236,14 @@ public class GameDaoImpl implements GameDao, PaginationDao<GameFilter> {
     }
 
     private String toOrderString(Ordering<GameOrderCriteria> order) {
+        if (order == null || order.getOrderCriteria() == null) {
+            return "";
+        }
         return " ORDER BY " +
-                order.getOrderCriteria().getAltName()+
+                order.getOrderCriteria().getAltName() +
                 " " +
-                order.getOrderDirection().getAltName()+ " NULLS LAST ";
+                ( order.getOrderDirection() == null ? "" : order.getOrderDirection().getAltName()) +
+                " NULLS LAST ";
     }
 
     @Override

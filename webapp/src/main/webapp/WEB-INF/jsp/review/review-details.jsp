@@ -72,7 +72,7 @@
                                                         <i class="material-icons">edit</i>
                                                         <span><spring:message code="review.edit"/></span>
                                                     </button>
-                                                </form
+                                                </form>
                                             </c:if>
                                             <c:if test="${isModerated}">
                                                 <c:url value="/review/delete/${review.id}" var="moderateUrl" />

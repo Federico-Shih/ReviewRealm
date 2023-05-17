@@ -35,7 +35,7 @@ public class ProfileController extends PaginatedController {
     private final GenreService genreService;
 
     private final static int DEFAULT_PAGE_SIZE = 8;
-    private final static int INITIAL_REVIEWS_LOADED = 6;
+
     @Autowired
     public ProfileController(UserService userService, ReviewService reviewService,
                              GameService gameService, GenreService genreService){
@@ -60,7 +60,7 @@ public class ProfileController extends PaginatedController {
             throw new ObjectNotFoundException();
         }
 
-        if(pageSize==null || pageSize < 0) {
+        if(pageSize==null || pageSize < 1) {
             pageSize = DEFAULT_PAGE_SIZE;
         }
 
@@ -265,7 +265,7 @@ public class ProfileController extends PaginatedController {
         final ModelAndView mav = new ModelAndView("profile/for-you");
         User loggedUser = AuthenticationHelper.getLoggedUser(userService);
 
-        if(size == null || size < 0) {
+        if(size == null || size < 1) {
             size = DEFAULT_PAGE_SIZE;
         }
 
@@ -295,7 +295,7 @@ public class ProfileController extends PaginatedController {
             position = 0;
         }
 
-        if(pageSize == null || pageSize<0){
+        if(pageSize == null || pageSize<1){
             pageSize = DEFAULT_PAGE_SIZE;
         }
 

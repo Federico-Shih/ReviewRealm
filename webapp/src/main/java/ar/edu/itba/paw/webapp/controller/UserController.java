@@ -193,12 +193,4 @@ public class UserController {
         return new ModelAndView("user/password-changed");
     }
 
-    /* Para reconocer el usuario actual en cualquier página se puede usar:
-    *
-    * final PawAuthUserDetails userDetails = (PawAuthUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    * final User user = us.getUserByEmail(userDetails.getUsername()).orElseThrow(UserNotFoundException::new);
-    * mav.addObject("user", user); o como querramos usarlo
-    *
-    * */
-
 }
