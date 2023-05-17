@@ -2,20 +2,19 @@ package ar.edu.itba.paw.webapp.config;
 
 import org.flywaydb.core.Flyway;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.core.env.Environment;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
-import org.springframework.core.io.Resource;
+import org.springframework.core.env.Environment;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 import org.springframework.jdbc.datasource.init.DataSourceInitializer;
 import org.springframework.jdbc.datasource.init.DatabasePopulator;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
@@ -30,6 +29,7 @@ import javax.sql.DataSource;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
 
+@EnableAsync
 @EnableWebMvc
 @EnableTransactionManagement
 @ComponentScan({"ar.edu.itba.paw.webapp.controller","ar.edu.itba.paw.services","ar.edu.itba.paw.persistence"})
@@ -39,8 +39,6 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     @Autowired
     private Environment env;
 
-    @Value("classpath:sql/users-schema.sql")
-    private Resource usersSchema;
     @Bean
     public ViewResolver viewResolver() {
         final InternalResourceViewResolver viewResolver = new
@@ -50,6 +48,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         viewResolver.setSuffix(".jsp");
         return viewResolver;
     }
+
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         super.addResourceHandlers(registry);
@@ -88,8 +87,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     }
 
     @Bean
-    public MessageSource messageSource()
-    {
+    public MessageSource messageSource() {
         final ReloadableResourceBundleMessageSource ms = new ReloadableResourceBundleMessageSource();
 
         ms.setCacheSeconds((int) TimeUnit.MINUTES.toSeconds(1)); //cacheados por 1 minuto
@@ -111,7 +109,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     @Bean(name = "multipartResolver")
     public CommonsMultipartResolver multipartResolver() {
         CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver();
-        multipartResolver.setMaxUploadSize(64 * 1024 * 1024); //64MB
+        multipartResolver.setMaxUploadSize(64 * 1024 * 1024);
         return multipartResolver;
     }
 }

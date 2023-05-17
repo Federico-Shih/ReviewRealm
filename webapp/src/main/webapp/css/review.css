@@ -1,10 +1,11 @@
 
 .left-panel {
-    width: 30%;
+    width: 25%;
+    background-color: #070A18 !important;
 }
 
 .right-panel {
-    width: 70%;
+    width: 75%;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -213,6 +214,7 @@
 
 .review-filters-collapsible-button {
     margin-right: 24px;
+    width: 100%;
 }
 
 #filter-panel-divider {
@@ -230,6 +232,13 @@
 .filters-header {
     color: white !important;
     background-color: #D84315;
+    width: 100%;
+    position: relative;
+}
+
+.dropdown-arrow {
+    position: absolute;
+    right: 10px;
 }
 
 .review-game-length {

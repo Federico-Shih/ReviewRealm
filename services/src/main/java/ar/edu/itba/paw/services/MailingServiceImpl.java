@@ -11,11 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.env.Environment;
-import org.springframework.core.task.TaskExecutor;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring4.SpringTemplateEngine;
 
@@ -33,13 +32,12 @@ public class MailingServiceImpl implements MailingService {
     @Autowired
     private SpringTemplateEngine templateEngine;
     @Autowired
-    private TaskExecutor taskExecutor;
-    @Autowired
     private Environment env;
     @Autowired
     private MessageSource messageSource;
     private static final String FROM = "paw-2023a-04@hotmail.com";
 
+    @Async
     public void sendReviewDeletedEmail(Game game, User user) {
         Map<String, Object> templateVariables = new HashMap<>();
         templateVariables.put("game", game.getName());
@@ -48,10 +46,11 @@ public class MailingServiceImpl implements MailingService {
         Object[] stringArgs = {};
         String subject = messageSource.getMessage("email.deletedreview.subject",
                 stringArgs, LocaleContextHolder.getLocale());
-
+        LOGGER.info("Sending review deleted to {}", user.getEmail());
         sendEmail(user.getEmail(), subject, "deletedreview", templateVariables);
     }
 
+    @Async
     @Override
     public void sendValidationTokenEmail(ExpirationToken token, User user) {
         Map<String, Object> templateVariables = new HashMap<>();
@@ -62,10 +61,11 @@ public class MailingServiceImpl implements MailingService {
         Object[] stringArgs = {};
         String subject = messageSource.getMessage("email.validation.subject",
                 stringArgs, LocaleContextHolder.getLocale());
-
+        LOGGER.info("Sending validation token to {}", user.getEmail());
         sendEmail(user.getEmail(), subject, "validate", templateVariables);
     }
 
+    @Async
     @Override
     public void sendChangePasswordEmail(ExpirationToken token, User user) {
         Map<String, Object> templateVariables = new HashMap<>();
@@ -76,32 +76,11 @@ public class MailingServiceImpl implements MailingService {
         Object[] stringArgs = {};
         String subject = messageSource.getMessage("email.changepassword.subject",
                 stringArgs, LocaleContextHolder.getLocale());
-
+        LOGGER.info("Sending change password token to {}", user.getEmail());
         sendEmail(user.getEmail(), subject, "changepassword", templateVariables);
     }
 
-    private void sendEmail(String mailTo, String mailSubject, String template, Map<String, Object> templateVariables) {
-        taskExecutor.execute(() -> {
-            MimeMessage mimeMessage = javaMailSender.createMimeMessage();
-            try {
-                MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
-                mimeMessageHelper.setTo(mailTo);
-                mimeMessageHelper.setFrom(FROM);
-                mimeMessageHelper.setSubject(mailSubject);
-
-                Context thymeleafContext = new Context();
-                thymeleafContext.setVariables(templateVariables);
-                String htmlBody = templateEngine.process(template, thymeleafContext);
-                mimeMessageHelper.setText(htmlBody, true);
-
-                javaMailSender.send(mimeMessage);
-                LOGGER.info("Email sent to {} with subject {}", mailTo, mailSubject);
-            } catch(MessagingException | RuntimeException exception) {
-                LOGGER.error("Error while sending email to {} with subject {}", mailTo, mailSubject, exception);
-            }
-        });
-    }
-
+    @Async
     @Override
     public void sendReviewCreatedEmail(Review createdReview, User author, User follower) {
         Map<String, Object> templateVariables = new HashMap<>();
@@ -113,6 +92,27 @@ public class MailingServiceImpl implements MailingService {
         Object[] stringArgs = {author.getUsername()};
         String subject = messageSource.getMessage("email.newreview.subject",
                 stringArgs, LocaleContextHolder.getLocale());
+        LOGGER.info("Sending new review created to {} for review id {}", follower.getEmail(), createdReview.getId());
         sendEmail(follower.getEmail(), subject, "newreview", templateVariables);
+    }
+
+    private void sendEmail(String mailTo, String mailSubject, String template, Map<String, Object> templateVariables) {
+        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+        try {
+            MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+            mimeMessageHelper.setTo(mailTo);
+            mimeMessageHelper.setFrom(FROM);
+            mimeMessageHelper.setSubject(mailSubject);
+
+            Context thymeleafContext = new Context();
+            thymeleafContext.setVariables(templateVariables);
+            String htmlBody = templateEngine.process(template, thymeleafContext);
+            mimeMessageHelper.setText(htmlBody, true);
+
+            javaMailSender.send(mimeMessage);
+            LOGGER.info("Email sent to {} with subject {}", mailTo, mailSubject);
+        } catch (MessagingException | RuntimeException exception) {
+            LOGGER.error("Error while sending email to {} with subject {}", mailTo, mailSubject, exception);
+        }
     }
 }

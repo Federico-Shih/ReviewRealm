@@ -1,14 +1,20 @@
 package ar.edu.itba.paw.services;
 
-import ar.edu.itba.paw.dtos.*;
+import ar.edu.itba.paw.dtos.Page;
+import ar.edu.itba.paw.dtos.SaveReviewDTO;
 import ar.edu.itba.paw.dtos.filtering.ReviewFilter;
 import ar.edu.itba.paw.dtos.filtering.ReviewFilterBuilder;
 import ar.edu.itba.paw.dtos.ordering.Ordering;
 import ar.edu.itba.paw.dtos.ordering.ReviewOrderCriteria;
 import ar.edu.itba.paw.dtos.searching.ReviewSearchFilter;
-import ar.edu.itba.paw.enums.*;
-import ar.edu.itba.paw.models.*;
-import ar.edu.itba.paw.persistenceinterfaces.PaginationDao;
+import ar.edu.itba.paw.enums.Difficulty;
+import ar.edu.itba.paw.enums.NotificationType;
+import ar.edu.itba.paw.enums.Platform;
+import ar.edu.itba.paw.enums.ReviewFeedback;
+import ar.edu.itba.paw.models.Game;
+import ar.edu.itba.paw.models.Paginated;
+import ar.edu.itba.paw.models.Review;
+import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.persistenceinterfaces.ReviewDao;
 import ar.edu.itba.paw.servicesinterfaces.GameService;
 import ar.edu.itba.paw.servicesinterfaces.MailingService;
@@ -17,14 +23,13 @@ import ar.edu.itba.paw.servicesinterfaces.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.util.*;
+
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Lazy
@@ -69,8 +74,6 @@ public class ReviewServiceImpl implements ReviewService {
                 mailingService.sendReviewCreatedEmail(review, author, follower);
             }
         }
-
-
         return review;
     }
 
@@ -153,7 +156,6 @@ public class ReviewServiceImpl implements ReviewService {
 
             Game game = review.get().getReviewedGame();
             User author = review.get().getAuthor();
-            String userEmail = author.getEmail();
 
             if(userService.isNotificationEnabled(author.getId(), NotificationType.MY_REVIEW_IS_DELETED)) {
                 mailingService.sendReviewDeletedEmail(game, author);
@@ -182,8 +184,8 @@ public class ReviewServiceImpl implements ReviewService {
         if(oldFeedback == feedback){
             return deleteReviewFeedback(review, user,oldFeedback);
         }
-        boolean response = (oldFeedback==null)? reviewDao.addReviewFeedback(review.getId(), user.getId(), feedback):
-                reviewDao.editReviewFeedback(review.getId(), user.getId(),oldFeedback,feedback);
+        boolean response = (oldFeedback == null) ? reviewDao.addReviewFeedback(review.getId(), user.getId(), feedback) :
+                reviewDao.editReviewFeedback(review.getId(), user.getId(), oldFeedback, feedback);
         userService.modifyUserReputation(review.getAuthor().getId(),(feedback == ReviewFeedback.LIKE)? 1:-1);
         return response;
     }

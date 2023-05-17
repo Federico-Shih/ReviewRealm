@@ -160,7 +160,7 @@
                         <li>
                             <div class="collapsible-header filters-header f-row f-ai-center">
                                 <span class="review-filters-panel-subtitle"><spring:message code="review.genres"/></span>
-                                <i class="material-icons right">arrow_drop_down</i>
+                                <i class="material-icons right dropdown-arrow">arrow_drop_down</i>
                             </div>
                             <div class="collapsible-body row filters-container">
                                 <c:if test="${showFavoritesShortcut}">
@@ -195,9 +195,9 @@
                     <ul id="preferences-collapsible" class="collapsible review-filters-collapsible-button">
                         <li>
                             <div class="collapsible-header filters-header f-row f-ai-center">
-                            <span class="review-filters-panel-subtitle"><spring:message
-                                    code="review.user.preferences"/></span>
-                                <i class="material-icons right">arrow_drop_down</i>
+                                <span class="review-filters-panel-subtitle"><spring:message
+                                        code="review.user.preferences"/></span>
+                                <i class="material-icons right dropdown-arrow">arrow_drop_down</i>
                             </div>
                             <div class="collapsible-body row filters-container">
                                 <c:if test="${showFavoritesShortcut}">
@@ -233,7 +233,7 @@
                         <li>
                             <div class="collapsible-header filters-header f-row f-ai-center">
                                 <span class="review-filters-panel-subtitle"><spring:message code="review.platform"/></span>
-                                <i class="material-icons right">arrow_drop_down</i>
+                                <i class="material-icons right dropdown-arrow">arrow_drop_down</i>
                             </div>
                             <div class="collapsible-body row filters-container">
                                 <c:forEach var="platform" items="${platformsFilter.selected}">
@@ -261,7 +261,7 @@
                             <div class="collapsible-header filters-header f-row f-ai-center">
                             <span class="review-filters-panel-subtitle"><spring:message
                                     code="review.difficulty"/></span>
-                                <i class="material-icons right">arrow_drop_down</i>
+                                <i class="material-icons right dropdown-arrow">arrow_drop_down</i>
                             </div>
                             <div class="collapsible-body row filters-container">
                                 <c:forEach var="difficulty" items="${difficultiesFilter.selected}">

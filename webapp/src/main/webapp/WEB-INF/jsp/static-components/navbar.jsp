@@ -21,7 +21,7 @@
         <i class="large material-icons">create</i>
     </a>
 </div>
-<div>
+<div class="nav-bar-top">
     <c:url value="/search" var="search_url"/>
     <form action="${search_url}" method="get">
     <nav>

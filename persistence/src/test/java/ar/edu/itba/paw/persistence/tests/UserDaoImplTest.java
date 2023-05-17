@@ -1,8 +1,8 @@
 package ar.edu.itba.paw.persistence.tests;
 
 import ar.edu.itba.paw.dtos.Page;
-import ar.edu.itba.paw.dtos.saving.SaveUserBuilder;
 import ar.edu.itba.paw.dtos.filtering.UserFilterBuilder;
+import ar.edu.itba.paw.dtos.saving.SaveUserBuilder;
 import ar.edu.itba.paw.models.Paginated;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.persistence.UserDaoImpl;

@@ -1,8 +1,8 @@
 package ar.edu.itba.paw.webapp.forms;
 
 import ar.edu.itba.paw.annotations.ValidMediaSize;
-import ar.edu.itba.paw.dtos.saving.SubmitGameDTO;
 import ar.edu.itba.paw.annotations.ValidMediaType;
+import ar.edu.itba.paw.dtos.saving.SubmitGameDTO;
 import org.springframework.http.MediaType;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,7 +22,7 @@ public class SubmitGameForm {
     private List<Integer> genres;
 
     @ValidMediaType(value = {MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE, MediaType.IMAGE_GIF_VALUE}, message = "invalid.mediatype")
-    @ValidMediaSize(value = 64 * 1024 * 1024)
+    @ValidMediaSize(value = 20 * 1024 * 1024)
     private MultipartFile image;
 
     public String getName() {

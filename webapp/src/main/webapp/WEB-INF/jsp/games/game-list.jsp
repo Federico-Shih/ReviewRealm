@@ -129,12 +129,12 @@
                         <input class="white-text" type="text" id="f-rat" name="f-rat" readonly>
                     </div>
 
-                    <ul class="collapsible">
+                    <ul class="collapsible full-width">
                         <li class="full-width">
                             <div class="collapsible-header filters-header">
                                 <i class="material-icons">videogame_asset</i>
                                 <span class="review-filters-panel-subtitle"><spring:message code="review.genres"/></span>
-                                <i class="material-icons right">arrow_drop_down</i>
+                                <i class="material-icons right dropdown-arrow">arrow_drop_down</i>
                             </div>
                             <div class="collapsible-body row filters-container">
                                 <c:if test="${showFavoritesShortcut}">
