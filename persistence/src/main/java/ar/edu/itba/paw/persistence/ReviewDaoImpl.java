@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.persistence;
 
-import ar.edu.itba.paw.dtos.*;
+import ar.edu.itba.paw.dtos.Page;
+import ar.edu.itba.paw.dtos.SaveReviewDTO;
 import ar.edu.itba.paw.dtos.filtering.ReviewFilter;
 import ar.edu.itba.paw.dtos.ordering.Ordering;
 import ar.edu.itba.paw.dtos.ordering.ReviewOrderCriteria;
@@ -8,7 +9,10 @@ import ar.edu.itba.paw.enums.Difficulty;
 import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.enums.Platform;
 import ar.edu.itba.paw.enums.ReviewFeedback;
-import ar.edu.itba.paw.models.*;
+import ar.edu.itba.paw.models.Game;
+import ar.edu.itba.paw.models.Paginated;
+import ar.edu.itba.paw.models.Review;
+import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.persistence.helpers.CommonRowMappers;
 import ar.edu.itba.paw.persistence.helpers.QueryBuilder;
 import ar.edu.itba.paw.persistence.helpers.UpdateBuilder;
@@ -21,6 +25,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+
 import javax.sql.DataSource;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -130,9 +135,11 @@ public class ReviewDaoImpl implements ReviewDao, PaginationDao<ReviewFilter> {
         QueryBuilder queryBuilder = new QueryBuilder()
                 .withList("gg.genreid", filter.getFilterGameGenres())
                 .withList("ap.genreid", filter.getAuthorPreferences())
+                .PARENTHESIS_OPEN()
                 .withSimilar("r.content", filter.getReviewContent())
                 .OR()
                 .withSimilar("r.title", filter.getReviewContent())
+                .PARENTHESIS_CLOSE()
                 .AND()
                 .withList("r.authorid", filter.getAuthors())
                 .withExact("r.gameid", filter.getGameId())

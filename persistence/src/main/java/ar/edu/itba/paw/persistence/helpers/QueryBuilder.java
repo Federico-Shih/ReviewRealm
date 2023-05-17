@@ -7,21 +7,21 @@ import java.util.List;
 public class QueryBuilder {
     private final StringBuilder str = new StringBuilder();
     private final List<Object> params = new LinkedList<>();
-    private String operator = "";
+    private QueryOperator operator = QueryOperator.EMPTY;
 
     private Boolean not = false;
 
     public <T>QueryBuilder withList(String queryField, List<T> querylist) {
         if (querylist != null && querylist.size() > 0) {
             str.append(" ");
-            str.append(operator);
+            str.append(operator.getOperator());
             str.append(" ");
             String gamesAmount = String.join(",", Collections.nCopies(querylist.size(), "?"));
             params.addAll(querylist);
-            str.append(String.format(" %s %s IN (", queryField,(not)? "NOT":""));
+            str.append(String.format(" %s %s IN (", queryField, (not) ? QueryOperator.NOT.getOperator() : QueryOperator.EMPTY.getOperator()));
             str.append(gamesAmount);
             str.append(") ");
-            operator = "AND";
+            operator = QueryOperator.AND;
         }
         if(not){
             this.not = false;
@@ -33,11 +33,11 @@ public class QueryBuilder {
         if (queryString != null) {
             queryString = queryString.replace("%", "\\%").replace("_", "\\_");
             str.append(" ");
-            str.append(operator);
-            str.append(String.format(" lower( %s ) %s LIKE lower( ? ) ", queryField,(not)? "NOT":""));
+            str.append(operator.getOperator());
+            str.append(String.format(" lower( %s ) %s LIKE lower( ? ) ", queryField, (not) ? QueryOperator.NOT.getOperator() : QueryOperator.EMPTY.getOperator()));
 
             params.add("%" + queryString + "%");
-            operator = "AND";
+            operator = QueryOperator.AND;
         }
         if(not){
             this.not = false;
@@ -48,10 +48,10 @@ public class QueryBuilder {
     public <T>QueryBuilder withExact(String queryField, T queryContent) {
         if (queryContent != null) {
             str.append(" ");
-            str.append(operator);
-            str.append(String.format(" %s %s ? ", queryField,(not)? "<>":"="));
+            str.append(operator.getOperator());
+            str.append(String.format(" %s %s ? ", queryField, (not) ? "<>" : "="));
             params.add(queryContent);
-            operator = "AND";
+            operator = QueryOperator.AND;
         }
         if(not){
             this.not = false;
@@ -62,10 +62,10 @@ public class QueryBuilder {
     public <T>QueryBuilder withGreaterOrEqual(String queryField, T queryContent) {
         if (queryContent != null) {
             str.append(" ");
-            str.append(operator);
+            str.append(operator.getOperator());
             str.append(String.format(" %s >= ? ", queryField));
             params.add(queryContent);
-            operator = "AND";
+            operator = QueryOperator.AND;
         }
         return this;
     }
@@ -73,10 +73,10 @@ public class QueryBuilder {
     public <T>QueryBuilder withLessOrEqual(String queryField, T queryContent) {
         if (queryContent != null) {
             str.append(" ");
-            str.append(operator);
+            str.append(operator.getOperator());
             str.append(String.format(" %s <= ? ", queryField));
             params.add(queryContent);
-            operator = "AND";
+            operator = QueryOperator.AND;
         }
         return this;
     }
@@ -84,10 +84,10 @@ public class QueryBuilder {
     public <T>QueryBuilder withGreater(String queryField, T queryContent) {
         if (queryContent != null) {
             str.append(" ");
-            str.append(operator);
+            str.append(operator.getOperator());
             str.append(String.format(" %s > ? ", queryField));
             params.add(queryContent);
-            operator = "AND";
+            operator = QueryOperator.AND;
         }
         return this;
     }
@@ -95,17 +95,17 @@ public class QueryBuilder {
     public <T>QueryBuilder withLess(String queryField, T queryContent) {
         if (queryContent != null) {
             str.append(" ");
-            str.append(operator);
+            str.append(operator.getOperator());
             str.append(String.format(" %s < ? ", queryField));
             params.add(queryContent);
-            operator = "AND";
+            operator = QueryOperator.AND;
         }
         return this;
     }
 
     public QueryBuilder OR() {
-        if (!this.operator.equals("")) {
-            this.operator = "OR";
+        if (!this.operator.equals(QueryOperator.EMPTY)) {
+            this.operator = QueryOperator.OR;
         }
         return this;
     }
@@ -115,9 +115,24 @@ public class QueryBuilder {
     }
 
     public QueryBuilder AND() {
-        if (!this.operator.equals("")) {
-            this.operator = "AND";
+        if (!this.operator.equals(QueryOperator.EMPTY)) {
+            this.operator = QueryOperator.AND;
         }
+        return this;
+    }
+
+    public QueryBuilder PARENTHESIS_OPEN() {
+        str.append(" ");
+        str.append(operator.getOperator());
+        str.append(" ( ");
+        str.append("true");
+        operator = QueryOperator.AND;
+        return this;
+    }
+
+    public QueryBuilder PARENTHESIS_CLOSE() {
+        str.append(" ) ");
+        operator = QueryOperator.AND;
         return this;
     }
 

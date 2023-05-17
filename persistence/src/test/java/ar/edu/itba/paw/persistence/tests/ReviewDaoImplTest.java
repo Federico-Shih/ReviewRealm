@@ -28,6 +28,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.jdbc.JdbcTestUtils;
+
 import javax.sql.DataSource;
 import java.sql.Timestamp;
 import java.time.LocalDate;
@@ -498,6 +499,7 @@ public class ReviewDaoImplTest {
         addReviewRow(firstUser.longValue(), firstGame.longValue(), TITLE, CONTENT, TIMESTAMP, RATING, DIFFICULTY.toString(), PLATFORM.toString(), GAME_LENGTH, REPLAYABILITY, COMPLETED, LIKES, DISLIKES);
         addReviewRow(firstUser.longValue(), secondGame.longValue(), TITLE, CONTENT, TIMESTAMP, RATING, DIFFICULTY.toString(), PLATFORM.toString(), GAME_LENGTH, REPLAYABILITY, COMPLETED, LIKES, DISLIKES);
         addReviewRow(secondUser.longValue(), firstGame.longValue(), TITLE, CONTENT, TIMESTAMP, RATING, DIFFICULTY.toString(), PLATFORM.toString(), GAME_LENGTH, REPLAYABILITY, COMPLETED, LIKES, DISLIKES);
+
         Page pagination = Page.with(1,10);
         ReviewFilter filter = new ReviewFilterBuilder().withGameGenres(Arrays.asList(GENRE_ID1.intValue())).build();
         Ordering<ReviewOrderCriteria> ordering = new Ordering<>(OrderDirection.DESCENDING, ReviewOrderCriteria.REVIEW_SCORE);
@@ -548,7 +550,9 @@ public class ReviewDaoImplTest {
         addReviewRow(firstUser.longValue(), firstGame.longValue(), TITLE, CONTENT, TIMESTAMP, RATING, DIFFICULTY.toString(), PLATFORM.toString(), GAME_LENGTH, REPLAYABILITY, COMPLETED, LIKES, DISLIKES);
         addReviewRow(firstUser.longValue(), secondGame.longValue(), TITLE, CONTENT, TIMESTAMP, RATING, Difficulty.EASY.toString(), PLATFORM.toString(), GAME_LENGTH, REPLAYABILITY, COMPLETED, LIKES, DISLIKES);
         addReviewRow(secondUser.longValue(), firstGame.longValue(), TITLE, CONTENT, TIMESTAMP, RATING, DIFFICULTY.toString(), PLATFORM.toString(), GAME_LENGTH, REPLAYABILITY, COMPLETED, LIKES, DISLIKES);
-        Page pagination = Page.with(1,10);
+        addReviewRow(secondUser.longValue(), firstGame.longValue(), TITLE, CONTENT, TIMESTAMP, RATING, null, PLATFORM.toString(), GAME_LENGTH, REPLAYABILITY, COMPLETED, LIKES, DISLIKES);
+
+        Page pagination = Page.with(1, 10);
         ReviewFilter filter = new ReviewFilterBuilder().withDifficulties(Arrays.asList(Difficulty.MEDIUM, Difficulty.HARD)).build();
         Ordering<ReviewOrderCriteria> ordering = new Ordering<>(OrderDirection.DESCENDING, ReviewOrderCriteria.REVIEW_SCORE);
         Long activeUserId = null;
@@ -563,6 +567,7 @@ public class ReviewDaoImplTest {
         Assert.assertEquals(result.getList().size(), 2);
 
         Assert.assertTrue(result.getList().stream().anyMatch(review -> review.getDifficulty() == Difficulty.MEDIUM || review.getDifficulty() == Difficulty.HARD));
+        Assert.assertEquals(result.getList().size(), 2);
     }
 
     @Test

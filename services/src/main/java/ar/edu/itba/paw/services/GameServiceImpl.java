@@ -1,6 +1,6 @@
 package ar.edu.itba.paw.services;
 
-import ar.edu.itba.paw.dtos.*;
+import ar.edu.itba.paw.dtos.Page;
 import ar.edu.itba.paw.dtos.filtering.GameFilter;
 import ar.edu.itba.paw.dtos.filtering.GameFilterBuilder;
 import ar.edu.itba.paw.dtos.ordering.GameOrderCriteria;
@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.time.LocalDate;
 import java.util.*;
 import java.util.function.Function;
@@ -29,8 +30,6 @@ import java.util.stream.Collectors;
 @Service
 public class GameServiceImpl implements GameService {
     private static final Logger LOGGER = LoggerFactory.getLogger(GameServiceImpl.class);
-
-    private static final String IMAGE_PREFIX = "/images";
     private final GameDao gameDao;
     private final ReviewService reviewService;
     private final GenreService genreServ;
