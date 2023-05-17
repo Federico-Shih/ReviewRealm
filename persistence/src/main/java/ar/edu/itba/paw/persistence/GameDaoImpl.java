@@ -75,11 +75,6 @@ public class GameDaoImpl implements GameDao, PaginationDao<GameFilter> {
         return game;
     }
 
-    @Override
-    public Double getAverageReviewRatingById(Long id) {
-        return jdbcTemplate.query("SELECT cast(g.ratingsum as real) / NULLIF(g.reviewcount,0) as average FROM games g WHERE id = ?",
-                (resultSet, i) -> resultSet.getDouble("average"), id).stream().findFirst().orElse(0.0);
-    }
 
     @Override
     public void addNewReview(Long gameId, Integer rating) {
@@ -203,7 +198,7 @@ public class GameDaoImpl implements GameDao, PaginationDao<GameFilter> {
     }
 
     @Override
-    public List<Game> getRecommendationsForUser(Long userId, List<Integer> userPreferences,List<Long> gamesToExclude) {
+    public List<Game> getRecommendationsForUser(List<Integer> userPreferences,List<Long> gamesToExclude) {
         QueryBuilder queryBuilder = new QueryBuilder()
                 .withList("gg.genreid", userPreferences)
                 .withExact("g.suggestion",false)

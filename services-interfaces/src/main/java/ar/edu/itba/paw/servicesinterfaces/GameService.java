@@ -24,7 +24,6 @@ public interface GameService {
 
     GameReviewData getGameReviewDataByGameId(Long id);
 
-    Double getAverageGameReviewRatingById(Long id);
 
     List<Game> getFavoriteGamesFromUser(long userId);
 

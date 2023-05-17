@@ -98,11 +98,6 @@ public class GameServiceImpl implements GameService {
         return gameDao.findAll(page, filter, ordering);
     }
 
-    @Transactional(readOnly = true)
-    @Override
-    public Double getAverageGameReviewRatingById(Long id) {
-        return gameDao.getAverageReviewRatingById(id);
-    }
 
     @Transactional(readOnly = true)
     @Override
@@ -162,7 +157,7 @@ public class GameServiceImpl implements GameService {
         Set<Game> userReviewedGames = getGamesReviewedByUser(user.getId());
         List<Long> idsToExclude = userReviewedGames.stream().map(Game::getId).collect(Collectors.toList());
 
-        return gameDao.getRecommendationsForUser(user.getId(),preferencesIds,idsToExclude);
+        return gameDao.getRecommendationsForUser(preferencesIds,idsToExclude);
     }
 
     @Transactional(readOnly = true)

@@ -34,7 +34,7 @@ public class QueryBuilder {
             queryString = queryString.replace("%", "\\%").replace("_", "\\_");
             str.append(" ");
             str.append(operator);
-            str.append(String.format(" %s %s ILIKE ? ", queryField,(not)? "NOT":""));
+            str.append(String.format(" lower( %s ) %s LIKE lower( ? ) ", queryField,(not)? "NOT":""));
 
             params.add("%" + queryString + "%");
             operator = "AND";

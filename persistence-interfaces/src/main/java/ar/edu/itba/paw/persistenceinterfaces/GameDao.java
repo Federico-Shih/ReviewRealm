@@ -28,11 +28,9 @@ public interface GameDao {
 
     void deleteFavoriteGameForUser(long userId, long gameId);
 
-    List<Game> getRecommendationsForUser(Long userId, List<Integer> userPreferences,List<Long> gamesToExclude);
+    List<Game> getRecommendationsForUser(List<Integer> userPreferences,List<Long> gamesToExclude);
 
     Set<Game> getGamesReviewdByUser(Long userId);
-
-    Double getAverageReviewRatingById(Long id);
 
     void addNewReview(Long gameId,Integer rating);
 

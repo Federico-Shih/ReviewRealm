@@ -105,11 +105,9 @@ ALTER TABLE games
 CREATE TABLE IF NOT EXISTS favoritegames (
      gameId integer,
      userId integer,
-     reviewId integer,
-     PRIMARY KEY (reviewId),
      FOREIGN KEY (gameId) REFERENCES games(id) ON DELETE CASCADE,
      FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE,
-     FOREIGN KEY (reviewId) REFERENCES reviews(id) ON DELETE CASCADE
+     PRIMARY KEY (gameId, userId)
 );
 
 CREATE TABLE IF NOT EXISTS tokens
@@ -155,3 +153,10 @@ CREATE TABLE IF NOT EXISTS user_disabled_notifications
 
 INSERT INTO notifications (notificationType) VALUES ('userIFollowWritesReview');
 INSERT INTO notifications (notificationType) VALUES ('myReviewIsDeleted');
+
+ALTER TABLE games ADD COLUMN suggestion boolean;
+UPDATE games SET suggestion=false;
+ALTER TABLE games ALTER COLUMN suggestion SET NOT NULL;
+
+ALTER TABLE users ADD COLUMN avatar int;
+UPDATE users SET avatar=0 WHERE users.avatar is null;
