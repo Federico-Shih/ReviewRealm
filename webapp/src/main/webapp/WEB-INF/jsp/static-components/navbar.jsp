@@ -55,13 +55,7 @@
                     </c:if>
                     <li class="navbar-option"><a href="<c:url value="/game/list"/>" class="${param.selected == "game-list" ? "chosen-tab" : "" }"><span><spring:message code="navbar.games"/></span></a></li>
                     <li class="navbar-option"><a href="<c:url value="/"/>" class="${param.selected == "review-list" ? "chosen-tab" : "" }"><span><spring:message code="navbar.reviews"/></span></a></li>
-                    <c:if test="${roles.moderator}">
-                        <li class="navbar-option">
-                            <a href="<c:url value="/game/submissions" />" class="${param.selected == "gameSubmission" ? "chosen-tab": ""}">
-                                <spring:message code="navbar.gamesubmissions"/>
-                            </a>
-                        </li>
-                    </c:if>
+
                     <c:if test="${loggedUser != null}">
                         <li class="navbar-dropdown-container">
                             <a class="dropdown-trigger btn navbar-dropdown" href="#" data-target="dropdownProfile">
@@ -95,19 +89,35 @@
                                         </div>
                                     </a>
                                 </li>
-                                    <li>
-                                        <a href="<c:url value="/game/submit"/>">
-                                            <div class="valign-wrapper profile-dropdown-link">
-                                                <span class="material-icons">
-                                                    add
-                                                </span>
-                                                <span class="overflow-ellipsis">
-                                                    <c:if test="${!roles.moderator}"><spring:message code="navbar.suggest"/></c:if>
-                                                    <c:if test="${roles.moderator}"><spring:message code="navbar.submitgame"/></c:if>
-                                                </span>
-                                            </div>
-                                        </a>
-                                    </li>
+                                <li>
+                                    <a href="<c:url value="/game/submit"/>">
+                                        <div class="valign-wrapper profile-dropdown-link">
+                                            <span class="material-icons">
+                                                add
+                                            </span>
+                                            <span class="overflow-ellipsis">
+                                                <c:if test="${!roles.moderator}"><spring:message code="navbar.suggest"/></c:if>
+                                                <c:if test="${roles.moderator}"><spring:message code="navbar.submitgame"/></c:if>
+                                            </span>
+                                        </div>
+                                    </a>
+                                </li>
+
+                        <c:if test="${roles.moderator}">
+                                <li>
+                                    <a href="<c:url value="/game/submissions" />">
+                                        <div class="valign-wrapper profile-dropdown-link">
+                                            <span class="material-icons">
+                                                playlist_add_check
+                                            </span>
+                                            <span class="overflow-ellipsis">
+                                                <spring:message code="navbar.gamesubmissions"/>
+                                            </span>
+                                        </div>
+                                    </a>
+                                </li>
+                        </c:if>
+
                                 <li>
                                     <a href="<c:url value="/profile/settings/"/>">
                                         <div class="valign-wrapper profile-dropdown-link">

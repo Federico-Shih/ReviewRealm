@@ -6,6 +6,8 @@ import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.enums.Platform;
 import ar.edu.itba.paw.exceptions.NoSuchGameException;
 import ar.edu.itba.paw.models.*;
+import ar.edu.itba.paw.exceptions.NoSuchGameException;
+import ar.edu.itba.paw.models.Game;
 import ar.edu.itba.paw.persistenceinterfaces.GameDao;
 import ar.edu.itba.paw.servicesinterfaces.GenreService;
 import ar.edu.itba.paw.servicesinterfaces.ImageService;
@@ -80,6 +82,7 @@ public class GameServiceImplTest {
         Assert.assertFalse(opt.isPresent());
 
     }
+
     @Test
     public void testGameReviewDataByGameId(){
         Review review1 = new Review(1L,USER,"","", LocalDateTime.now(),8, GAME1,

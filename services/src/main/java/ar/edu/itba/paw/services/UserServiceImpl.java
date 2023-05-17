@@ -34,6 +34,8 @@ public class UserServiceImpl implements UserService {
     private final MailingService mailingService;
     private static final int EXPIRATION_TIME = 60 * 60 * 24; // 24hs
 
+    private static final int AVATAR_AMOUNT = 6;
+
     @Autowired
     public UserServiceImpl(UserDao userDao,
                            PasswordEncoder passwordEncoder,
@@ -279,7 +281,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public void changeUserAvatar(long userId, long imageId) throws InvalidAvatarException {
-        if(imageId>6 || imageId<1)
+        if(imageId>AVATAR_AMOUNT || imageId<1)
             throw new InvalidAvatarException(imageId);
         SaveUserBuilder builder = new SaveUserBuilder().withAvatar(imageId);
         userDao.update(userId, builder.build());

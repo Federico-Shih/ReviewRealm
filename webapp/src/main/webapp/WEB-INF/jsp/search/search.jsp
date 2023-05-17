@@ -12,6 +12,7 @@
     <link rel="stylesheet" type="text/css" href="<c:url value="/css/materialize.min.css" />" media="screen,projection"/>
     <link rel="stylesheet" href="<c:url value="/css/main.css" />">
     <link rel="stylesheet" href="<c:url value="/css/search.css" />">
+    <link rel="stylesheet" href="<c:url value="/css/profile.css" />"/>
     <!-- Compiled and minified JavaScript -->
     <script src="<c:url value="/js/materialize.min.js" />"></script>
     <link rel="shortcut icon" type="image/png" href="<c:url value="/static/review_realm_logo_white_32px.png" />">
@@ -62,12 +63,13 @@
                         <spring:message code="search.users.title" />
                     </h5>
                     <c:forEach items="${users}" var="user">
-                        <div>
-                            <h6>
-                                <a href="<c:url value="/profile/${user.id}" />">
-                                        <c:out value="${user.username}" />
-                                </a>
-                            </h6>
+                        <div class="margin-top-3">
+                            <a href="<c:url value="/profile/${user.id}"/>" class="f-row f-ai-center">
+                                <img class="profile-info-panel-image" src="<c:url value="/static/avatars/${user.avatarId}.png"/>" alt="avatarnumber${user.avatarId}.png"/>
+                                <h4>
+                                    <c:out value="${user.username}" />
+                                </h4>
+                            </a>
                         </div>
                     </c:forEach>
                 </div>

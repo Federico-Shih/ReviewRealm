@@ -231,7 +231,7 @@ public class ProfileController extends PaginatedController {
             LOGGER.error("Unexpected error: {}", err.getMessage());
             return favgamesSetting(form);
         }
-        return new ModelAndView(String.format("redirect:/profile/%d?avatar-changed=true", userId));
+        return new ModelAndView(String.format("redirect:/profile/%d?preferences-changed=true", userId));
     }
 
     @RequestMapping(value = "/profile/settings/notifications", method= RequestMethod.GET)

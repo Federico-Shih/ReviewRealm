@@ -24,7 +24,7 @@
     <div class="row">
       <c:if test="${empty suggestedgames}">
         <div class="f-row f-jc-center">
-          <h2 class="white-text"><spring:message code="game.submission.empty"/></h2>
+          <h4 class="white-text"><spring:message code="game.submission.empty"/></h4>
         </div>
       </c:if>
       <c:forEach var="game" items="${suggestedgames}">

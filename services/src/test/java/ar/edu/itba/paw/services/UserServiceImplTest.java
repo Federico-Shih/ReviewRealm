@@ -38,8 +38,7 @@ public class UserServiceImplTest {
 
     @Mock
     private PasswordEncoder passwordEncoder;
-    @Mock
-    private GenreService genreService;
+
     @Mock
     private UserDao userDao;
     @Mock
@@ -54,9 +53,8 @@ public class UserServiceImplTest {
     @Test
     public void testCreate() throws UsernameAlreadyExistsException, EmailAlreadyExistsException {
         //1.prepare
-        // TODO: Preguntar si está bien lo de any(), el problema es que el password pasa por el passwordencoder,
-        // siento que al test no le debería importar eso, pero no sé cómo considerarlo
-        Mockito.when(userDao.create(eq(USERNAME), eq(EMAIL), ArgumentMatchers.any()))
+        Mockito.when(passwordEncoder.encode(PASSWORD)).thenReturn(PASSWORD);
+        Mockito.when(userDao.create(eq(USERNAME), eq(EMAIL), eq("")))
                 .thenReturn(new User(ID, USERNAME, EMAIL, PASSWORD));
         //2.execute
         User newUser = us.createUser(USERNAME, EMAIL, PASSWORD);
@@ -71,8 +69,6 @@ public class UserServiceImplTest {
     @Test(expected = UsernameAlreadyExistsException.class)
     public void testCreateAlreadyExists() throws UsernameAlreadyExistsException, EmailAlreadyExistsException {
         //1.prepare
-        // Esto lo siento raro, tengo que conocer la implementación para hacer lo de Mockito.when..., pero sino no
-        // sé cómo hacerlo
         Mockito.when(userDao.getByUsername(USERNAME))
                 .thenReturn(Optional.of(new User(ID,USERNAME,EMAIL,PASSWORD)));
         Mockito.when(userDao.getByEmail(EMAIL))
@@ -83,9 +79,7 @@ public class UserServiceImplTest {
 
     @Test(expected = EmailAlreadyExistsException.class)
     public void testCreateAlreadyExistsEmail() throws UsernameAlreadyExistsException, EmailAlreadyExistsException {
-        //1.prepare
-        // Esto lo siento raro, tengo que conocer la implementación para hacer lo de Mockito.when..., pero sino no
-        // sé cómo hacerlo
+
         Mockito.when(userDao.getByEmail(EMAIL))
                 .thenReturn(Optional.of(new User(ID,USERNAME,EMAIL,PASSWORD)));
         //2.execute
@@ -160,6 +154,13 @@ public class UserServiceImplTest {
         us.followUserById(1L, 2L);
     }
 
+    @Test(expected = UserNotFoundException.class)
+    public void followUserWhoDoesNotExist() {
+        Mockito.when(userDao.exists(1L)).thenReturn(true);
+        Mockito.when(userDao.exists(2L)).thenReturn(false);
+        us.followUserById(1L, 2L);
+    }
+
     @Test
     public void followUserTest() {
         Mockito.when(userDao.exists(1L)).thenReturn(true);
@@ -183,7 +184,7 @@ public class UserServiceImplTest {
     @Test
     public void validateExistentToken() throws TokenExpiredException {
         Mockito.when(tokenDao.getByToken("aaa")).thenReturn(Optional.of(new ExpirationToken(1L, "aaa", 1L, "aaa", LocalDateTime.MAX)));
-        Mockito.when(userDao.update(1L, new SaveUserDTO(USERNAME, EMAIL, PASSWORD, false, 10L, 1L))).thenReturn(1);
+        Mockito.when(userDao.findById(1L)).thenReturn(Optional.of(new User(1L, USERNAME, EMAIL, PASSWORD)));
 
         Assert.assertTrue(us.validateToken("aaa").isPresent());
     }
@@ -211,17 +212,5 @@ public class UserServiceImplTest {
         us.resendToken(EMAIL);
     }
 
-    /*
-    List<User> getFollowers(Long id);
-    List<User> getFollowing(Long id);
-    FollowerFollowingCount getFollowerFollowingCount(Long id);
 
-    Optional<Follow> followUserById(Long userId, Long otherId);
-
-    boolean unfollowUserById(Long userId, Long otherId);
-
-    boolean userFollowsId(Long userId, Long otherId);
-
-    List<Role> getUserRoles(Long userId);
-    */
 }

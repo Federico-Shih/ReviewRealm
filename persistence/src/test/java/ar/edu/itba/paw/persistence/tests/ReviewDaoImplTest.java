@@ -141,7 +141,7 @@ public class ReviewDaoImplTest {
         args.put("developer",DEVELOPER);
         args.put("publisher",PUBLISHER);
         args.put("publishdate",TIMESTAMP);
-        args.put("suggested",SUGGESTED);
+        args.put("suggestion",SUGGESTED);
         args.put("image",IMAGE_ID);
         firstGame = jdbcInsertForGames.executeAndReturnKey(args);
         secondGame = jdbcInsertForGames.executeAndReturnKey(args);

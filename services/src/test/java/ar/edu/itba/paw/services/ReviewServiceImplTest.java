@@ -34,6 +34,11 @@ public class ReviewServiceImplTest {
 
     private static final long REVIEWID = 23;
 
+    private static final long CURRENTUSERID = 1;
+    private static final String USERNAME = "username";
+    private static final String EMAIL = "email@email.com";
+    private static final String PASSWORD = "password";
+
     private static final User USER = new User(1L, "InflusearchGames", "email", "password");
     private static final User USER2 = new User(2L, "InflusearchGames", "email", "password");
     private static final User USER3 = new User(3L, "InflusearchGames", "email", "password");
@@ -76,6 +81,13 @@ public class ReviewServiceImplTest {
         Assert.assertTrue(optReview.isPresent());
         long id = optReview.get().getId();
         Assert.assertEquals(REVIEWID, id);
+    }
+
+    @Test
+    public void testGetUnexistentReview() {
+        Mockito.when(reviewDao.findById(REVIEWID,CURRENTUSERID)).thenReturn(Optional.empty());
+        Optional<Review> optReview = rs.getReviewById(REVIEWID,new User(CURRENTUSERID, USERNAME,EMAIL,PASSWORD));
+        Assert.assertFalse(optReview.isPresent());
     }
     @Test
     public void testGetReviewByIdNotFound() {

@@ -37,7 +37,7 @@ public class TokenDaoImplTest {
     private ValidationTokenDao tokenDao;
 
     private final String TOKEN = "token";
-    private final long USER_ID = 1L;
+    private long userId;
     private final String PASSWORD = "password";
     private final LocalDateTime EXPIRATION = LocalDateTime.now();
 
@@ -52,17 +52,16 @@ public class TokenDaoImplTest {
         Map<String, Object> userParams = new HashMap<>();
         userParams.put("username", "username");
         userParams.put("password", PASSWORD);
-        userParams.put("id", USER_ID);
         userParams.put("email", "email");
-        userTemplate.execute(userParams);
+        this.userId = userTemplate.executeAndReturnKey(userParams).longValue();
     }
 
     @Test
     public void createExpirationTokenTest() {
-        ExpirationToken token = tokenDao.create(TOKEN, USER_ID, PASSWORD, EXPIRATION);
+        ExpirationToken token = tokenDao.create(TOKEN, userId, PASSWORD, EXPIRATION);
         Assert.assertNotNull(token);
         Assert.assertEquals(TOKEN, token.getToken());
-        Assert.assertEquals(USER_ID, token.getUserId());
+        Assert.assertEquals(userId, token.getUserId());
         Assert.assertEquals(PASSWORD, token.getPassword());
         Assert.assertEquals(EXPIRATION, token.getExpiration());
     }
@@ -71,22 +70,22 @@ public class TokenDaoImplTest {
     public void findLastPasswordTokenTest() {
         tokenTemplate.execute(new HashMap<String, Object>() {{
             put("token", TOKEN);
-            put("userid", USER_ID);
+            put("userid", userId);
             put("password", PASSWORD);
             put("expiration", EXPIRATION);
         }});
 
-        ExpirationToken token = tokenDao.findLastPasswordToken(USER_ID).orElse(null);
+        ExpirationToken token = tokenDao.findLastPasswordToken(userId).orElse(null);
         Assert.assertNotNull(token);
         Assert.assertEquals(TOKEN, token.getToken());
-        Assert.assertEquals(USER_ID, token.getUserId());
+        Assert.assertEquals(userId, token.getUserId());
         Assert.assertEquals(PASSWORD, token.getPassword());
         Assert.assertEquals(EXPIRATION, token.getExpiration());
     }
 
     @Test
     public void noLastTokenFoundTest() {
-        ExpirationToken token = tokenDao.findLastPasswordToken(USER_ID).orElse(null);
+        ExpirationToken token = tokenDao.findLastPasswordToken(userId).orElse(null);
         Assert.assertNull(token);
     }
 
@@ -95,12 +94,12 @@ public class TokenDaoImplTest {
     public void noValidateUserTokenTest() {
         tokenTemplate.execute(new HashMap<String, Object>() {{
             put("token", TOKEN);
-            put("userid", USER_ID);
+            put("userid", userId);
             put("password", "");
             put("expiration", EXPIRATION);
         }});
 
-        ExpirationToken token = tokenDao.findLastPasswordToken(USER_ID).orElse(null);
+        ExpirationToken token = tokenDao.findLastPasswordToken(userId).orElse(null);
         Assert.assertNull(token);
     }
 
@@ -108,7 +107,7 @@ public class TokenDaoImplTest {
     public void deleteTokenByIdTest() {
         long id = tokenTemplate.executeAndReturnKey(new HashMap<String, Object>() {{
             put("token", TOKEN);
-            put("userid", USER_ID);
+            put("userid", userId);
             put("password", PASSWORD);
             put("expiration", EXPIRATION);
         }}).longValue();
@@ -121,7 +120,7 @@ public class TokenDaoImplTest {
     public void getExpirationTokenByTokenString() {
         tokenTemplate.execute(new HashMap<String, Object>() {{
             put("token", TOKEN);
-            put("userid", USER_ID);
+            put("userid", userId);
             put("password", PASSWORD);
             put("expiration", EXPIRATION);
         }});
@@ -129,7 +128,7 @@ public class TokenDaoImplTest {
         Optional<ExpirationToken> token = tokenDao.getByToken(TOKEN);
         Assert.assertTrue(token.isPresent());
         Assert.assertEquals(TOKEN, token.get().getToken());
-        Assert.assertEquals(USER_ID, token.get().getUserId());
+        Assert.assertEquals(userId, token.get().getUserId());
         Assert.assertEquals(PASSWORD, token.get().getPassword());
         Assert.assertEquals(EXPIRATION, token.get().getExpiration());
     }
@@ -140,10 +139,3 @@ public class TokenDaoImplTest {
         Assert.assertFalse(token.isPresent());
     }
 }
-
-/*
-    ExpirationToken create(String token, long userId, String password, LocalDateTime expiration);
-    Optional<ExpirationToken> findLastPasswordToken(long userId);
-    boolean delete(Long id);
-    Optional<ExpirationToken> getByToken(String token);
- */

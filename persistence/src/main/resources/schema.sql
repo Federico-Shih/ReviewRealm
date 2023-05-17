@@ -2,9 +2,8 @@ CREATE TABLE IF NOT EXISTS users (
                                      id serial PRIMARY KEY ,
                                      email varchar(100) NOT NULL UNIQUE ,
                                      password varchar(100) NOT NULL
-    -- todo: username
 );
---TODO: ACORDARSE DE ELIMINAR LA FOREIGN KEY DE GENREFORGAMES Y GENREFORUSER, Y PONER BINARY EN DATA IMAGES
+
 CREATE TABLE IF NOT EXISTS genres (
                                       id serial PRIMARY KEY ,
                                       name varchar(100) NOT NULL
@@ -105,9 +104,9 @@ ALTER TABLE games
 CREATE TABLE IF NOT EXISTS favoritegames (
      gameId integer,
      userId integer,
+     PRIMARY KEY (gameId, userId),
      FOREIGN KEY (gameId) REFERENCES games(id) ON DELETE CASCADE,
-     FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE,
-     PRIMARY KEY (gameId, userId)
+     FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS tokens
