@@ -20,7 +20,7 @@
             <pattern>${defaultPattern:-}</pattern>
         </encoder>
     </appender>
-    <logger name="ar.edu.itba.paw" level="DEBUG" additivity="false">
+    <logger name="ar.edu.itba.paw" level="INFO" additivity="false">
         <appender-ref ref="paw-appender"/>
     </logger>
 
