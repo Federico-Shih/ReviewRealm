@@ -247,7 +247,7 @@ public class ReviewDaoImpl implements ReviewDao, PaginationDao<ReviewFilter> {
         args.put("userId",userId);
         args.put("feedback",feedback.name());
         jdbcInsertFeedback.execute(args);
-         return jdbcTemplate.update("UPDATE reviews SET likes = coalesce(likes,0) + ?, dislikes = coalesce(dislikes,0) + ? WHERE id = ?",
+        return jdbcTemplate.update("UPDATE reviews SET likes = coalesce(likes,0) + ?, dislikes = coalesce(dislikes,0) + ? WHERE id = ?",
                     (feedback == ReviewFeedback.LIKE ? 1: 0),
                     (feedback == ReviewFeedback.DISLIKE ? 1 : 0),
                     reviewId) == 1;

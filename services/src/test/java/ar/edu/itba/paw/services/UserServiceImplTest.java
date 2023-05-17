@@ -157,7 +157,6 @@ public class UserServiceImplTest {
     @Test(expected = UserNotFoundException.class)
     public void followUserDoesNotExist() {
         Mockito.when(userDao.exists(1L)).thenReturn(false);
-        Mockito.when(userDao.exists(2L)).thenReturn(false);
         us.followUserById(1L, 2L);
     }
 
@@ -185,7 +184,7 @@ public class UserServiceImplTest {
     public void validateExistentToken() throws TokenExpiredException {
         Mockito.when(tokenDao.getByToken("aaa")).thenReturn(Optional.of(new ExpirationToken(1L, "aaa", 1L, "aaa", LocalDateTime.MAX)));
         Mockito.when(userDao.update(1L, new SaveUserDTO(USERNAME, EMAIL, PASSWORD, false, 10L, 1L))).thenReturn(1);
-        Mockito.when(userDao.findById(1L)).thenReturn(Optional.of(new User(1L, USERNAME, EMAIL, PASSWORD)));
+
         Assert.assertTrue(us.validateToken("aaa").isPresent());
     }
 
