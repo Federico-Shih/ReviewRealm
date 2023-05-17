@@ -1,7 +1,6 @@
 package ar.edu.itba.paw.webapp.forms;
 
 import ar.edu.itba.paw.enums.NotificationType;
-
 import java.util.*;
 
 public class NotificationsForm {

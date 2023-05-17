@@ -206,6 +206,11 @@
                                                 </span>
                                                 </a>
                                             </c:forEach>
+                                            <c:if test="${fn:length(game.genres) > 2}">
+                                                <span class="chip-small">
+                                                    <c:out value="+${fn:length(game.genres) - 2}"/>
+                                                </span>
+                                            </c:if>
                                         </div>
                                         <span class="game-card-text"><spring:message code="publishing.date"
                                                                                      arguments="${game.publishDate}"/></span>

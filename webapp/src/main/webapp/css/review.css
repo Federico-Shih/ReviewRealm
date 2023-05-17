@@ -33,9 +33,12 @@
     height: fit-content;
 }
 
+.review-card-container {
+    min-height: 300px;
+}
+
 .review-card {
     height: fit-content;
-    min-height: 260px;
 }
 
 .review-card-header {
@@ -66,13 +69,16 @@
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+    justify-content: space-between;
     padding: 1% 4%;
+    min-height: 100px;
 }
 
 .review-card-footer {
     display: flex;
     flex-direction: column;
     padding: 2% 4%;
+    min-height: 80px;
 }
 
 .review-card-feedback-footer{
@@ -151,9 +157,6 @@
 #review-card-content {
     font-size: 14px;
     font-weight: 400;
-    height: 3em;
-    overflow: hidden;
-    text-overflow: ellipsis;
 }
 
 #review-time-played {
@@ -249,3 +252,43 @@
     margin-top: 5px;
 }
 
+.block-with-text {
+    /* hide text if it more than N lines  */
+    overflow: hidden;
+    /* for set '...' in absolute position */
+    position: relative;
+    /* use this value to count block height */
+    line-height: 1.2em;
+    /* max-height = line-height (1.2) * lines max number (3) */
+    max-height: 2.4em;
+    /* fix problem when last visible word doesn't adjoin right side  */
+    text-align: justify;
+    /* place for '...' */
+    margin-right: -1em;
+    padding-right: 1em;
+}
+/* create the ... */
+.block-with-text:before {
+    /* points in the end */
+    content: '...';
+    /* absolute position */
+    position: absolute;
+    /* set position to right bottom corner of block */
+    right: 0;
+    bottom: 0;
+}
+/* hide ... if we have text, which is less than or equal to max lines */
+.block-with-text:after {
+    /* points in the end */
+    content: '';
+    /* absolute position */
+    position: absolute;
+    /* set position to right bottom corner of text */
+    right: 0;
+    /* set width and height */
+    width: 1em;
+    height: 1em;
+    margin-top: 0.2em;
+    /* bg color = bg color under block */
+    background: #13112D;
+}

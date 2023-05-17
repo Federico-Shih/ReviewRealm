@@ -4,7 +4,6 @@ import ar.edu.itba.paw.enums.Difficulty;
 import ar.edu.itba.paw.enums.GamelengthUnit;
 import ar.edu.itba.paw.enums.Platform;
 import ar.edu.itba.paw.webapp.exceptions.UnitNotSelectedException;
-
 import javax.validation.constraints.*;
 
 public class SubmitReviewForm {

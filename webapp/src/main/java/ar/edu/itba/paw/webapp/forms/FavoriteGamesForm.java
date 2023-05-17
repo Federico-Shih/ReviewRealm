@@ -1,7 +1,5 @@
 package ar.edu.itba.paw.webapp.forms;
 
-import ar.edu.itba.paw.models.Game;
-
 import javax.validation.constraints.Size;
 import java.util.List;
 

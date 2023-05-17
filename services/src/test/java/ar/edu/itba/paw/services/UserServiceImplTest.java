@@ -1,24 +1,20 @@
 package ar.edu.itba.paw.services;
 
-import ar.edu.itba.paw.dtos.saving.SaveUserDTO;
 import ar.edu.itba.paw.exceptions.*;
 import ar.edu.itba.paw.models.ExpirationToken;
 import ar.edu.itba.paw.models.Follow;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.persistenceinterfaces.UserDao;
 import ar.edu.itba.paw.persistenceinterfaces.ValidationTokenDao;
-import ar.edu.itba.paw.servicesinterfaces.GenreService;
 import ar.edu.itba.paw.servicesinterfaces.MailingService;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
-
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Optional;

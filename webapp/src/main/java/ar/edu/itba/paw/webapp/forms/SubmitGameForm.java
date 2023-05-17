@@ -5,7 +5,6 @@ import ar.edu.itba.paw.annotations.ValidMediaType;
 import ar.edu.itba.paw.dtos.saving.SubmitGameDTO;
 import org.springframework.http.MediaType;
 import org.springframework.web.multipart.MultipartFile;
-
 import javax.validation.constraints.Size;
 import java.io.IOException;
 import java.util.List;

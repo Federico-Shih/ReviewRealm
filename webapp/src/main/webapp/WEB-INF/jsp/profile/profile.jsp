@@ -89,7 +89,7 @@
                         </span>
                     </a>
                     <div class="divider-v profile-followers-text-divider"></div>
-                    <span class="${profile.reputation > 0 ? 'green-text no-wrap' : (profile.reputation == 0) ? 'white-text' : 'red-text'}">
+                    <span class="${profile.reputation > 0 ? 'green-text no-wrap' : (profile.reputation == 0) ? 'white-text no-wrap' : 'red-text no-wrap'}">
                         <spring:message code="profile.reputation" arguments="${profile.reputation}"/>
                     </span>
                 </div>
