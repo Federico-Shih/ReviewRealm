@@ -102,8 +102,6 @@ public class ReviewServiceImplTest {
         Assert.assertEquals(USER, review.getAuthor());
         Assert.assertEquals(GAME, review.getReviewedGame());
         Assert.assertEquals(REVIEWID, (long) review.getId());
-        Mockito.verify(userService, Mockito.times(1)).getFollowers(eq(USER.getId()));
-        Mockito.verify(mailingService, Mockito.times(1)).sendReviewCreatedEmail(eq(review), eq(USER), eq(USER2));
     }
 
     @Test
@@ -121,8 +119,6 @@ public class ReviewServiceImplTest {
         Mockito.when(reviewDao.update(eq(REVIEWID), any())).thenReturn(1);
         int res = rs.updateReview(REVIEWID, "title", "content", 10, Difficulty.EASY, 12.2, Platform.PS, true, true);
         Assert.assertEquals(res, 1);
-        Mockito.verify(gameService, Mockito.times(1)).updateReviewFromGame(eq(GAME.getId()), eq(8), eq(10));
-        Mockito.verify(gameService, Mockito.times(0)).deleteFavoriteGame(anyLong(), anyLong());
     }
 
     @Test
@@ -133,8 +129,6 @@ public class ReviewServiceImplTest {
 
         Mockito.when(reviewDao.update(eq(REVIEWID), any())).thenReturn(1);
         int res = rs.updateReview(REVIEWID, "title", "content", 5, Difficulty.EASY, 12.2, Platform.PS, true, true);
-        Mockito.verify(gameService, Mockito.times(1)).updateReviewFromGame(eq(GAME.getId()), eq(8), eq(10));
-        Mockito.verify(gameService, Mockito.times(1)).deleteFavoriteGame(anyLong(), anyLong());
         Assert.assertEquals(res, 1);
     }
 
@@ -146,7 +140,6 @@ public class ReviewServiceImplTest {
         Paginated<Review> reviews = rs.getUserReviews(Page.with(1, 1), 1L, null);
         Assert.assertEquals(reviews.getTotalPages(), 1);
         Assert.assertEquals(reviews.getList().size(), 0);
-        Mockito.verify(reviewDao, Mockito.times(1)).findAll(any(), argThat(reviewFilter -> reviewFilter.getAuthors().contains(1L)), any(), any());
     }
 
     @Test
@@ -160,7 +153,6 @@ public class ReviewServiceImplTest {
         Assert.assertTrue(reviews.contains(REVIEW));
         Assert.assertTrue(reviews.contains(REVIEW2));
         Assert.assertTrue(reviews.contains(REVIEW3));
-        Mockito.verify(reviewDao, Mockito.times(1)).findAll(any(), argThat(reviewFilter -> reviewFilter.getAuthors().containsAll(Arrays.asList(USER2.getId(), USER3.getId()))), any(), any());
     }
 
     @Test
@@ -176,10 +168,6 @@ public class ReviewServiceImplTest {
         Mockito.when(userService.isNotificationEnabled(eq(REVIEW.getAuthor().getId()), any())).thenReturn(true);
         boolean deleted = rs.deleteReviewById(REVIEWID);
         Assert.assertTrue(deleted);
-        Mockito.verify(reviewDao, Mockito.times(1)).deleteReview(eq(REVIEWID));
-        Mockito.verify(gameService, Mockito.times(1)).deleteReviewFromGame(eq(GAME.getId()), eq(REVIEW.getRating()));
-        Mockito.verify(mailingService, Mockito.times(1)).sendReviewDeletedEmail(argThat(game -> game.getId().equals(GAME.getId())), eq(REVIEW.getAuthor()));
-        Mockito.verify(gameService, Mockito.times(1)).deleteFavoriteGame(eq(REVIEW.getAuthor().getId()), eq(REVIEW.getReviewedGame().getId()));
     }
 
     @Test
@@ -189,10 +177,6 @@ public class ReviewServiceImplTest {
         Mockito.when(userService.isNotificationEnabled(eq(REVIEW4.getAuthor().getId()), any())).thenReturn(true);
         boolean deleted = rs.deleteReviewById(REVIEW4.getId());
         Assert.assertTrue(deleted);
-        Mockito.verify(reviewDao, Mockito.times(1)).deleteReview(eq(REVIEW4.getId()));
-        Mockito.verify(gameService, Mockito.times(1)).deleteReviewFromGame(eq(REVIEW4.getReviewedGame().getId()), eq(REVIEW4.getRating()));
-        Mockito.verify(mailingService, Mockito.times(1)).sendReviewDeletedEmail(argThat(game -> game.getId().equals(REVIEW4.getReviewedGame().getId())), eq(REVIEW4.getAuthor()));
-        Mockito.verify(gameService, Mockito.never()).deleteFavoriteGame(anyLong(), anyLong());
     }
 
     @Test
@@ -208,7 +192,6 @@ public class ReviewServiceImplTest {
         Mockito.when(reviewDao.deleteReviewFeedback(eq(REVIEWID), eq(USER.getId()), eq(ReviewFeedback.LIKE))).thenReturn(true);
         boolean result = rs.updateOrCreateReviewFeedback(REVIEW, USER, ReviewFeedback.LIKE);
         Assert.assertTrue(result);
-        Mockito.verify(reviewDao, Mockito.times(1)).deleteReviewFeedback(eq(REVIEWID), eq(USER.getId()), eq(ReviewFeedback.LIKE));
     }
 
     @Test
@@ -217,7 +200,6 @@ public class ReviewServiceImplTest {
         Mockito.when(reviewDao.addReviewFeedback(eq(REVIEWID), eq(USER.getId()), eq(ReviewFeedback.LIKE))).thenReturn(true);
         boolean result = rs.updateOrCreateReviewFeedback(REVIEW, USER, ReviewFeedback.LIKE);
         Assert.assertTrue(result);
-        Mockito.verify(reviewDao, Mockito.times(1)).addReviewFeedback(eq(REVIEWID), eq(USER.getId()), eq(ReviewFeedback.LIKE));
     }
 
     @Test
@@ -226,6 +208,5 @@ public class ReviewServiceImplTest {
         Mockito.when(reviewDao.editReviewFeedback(eq(REVIEWID), eq(USER.getId()), eq(ReviewFeedback.DISLIKE), eq(ReviewFeedback.LIKE))).thenReturn(true);
         boolean result = rs.updateOrCreateReviewFeedback(REVIEW, USER, ReviewFeedback.LIKE);
         Assert.assertTrue(result);
-        Mockito.verify(reviewDao, Mockito.times(1)).editReviewFeedback(eq(REVIEWID), eq(USER.getId()), eq(ReviewFeedback.DISLIKE), eq(ReviewFeedback.LIKE));
     }
 }

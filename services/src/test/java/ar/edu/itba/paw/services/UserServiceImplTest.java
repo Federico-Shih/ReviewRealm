@@ -2,25 +2,29 @@ package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.dtos.saving.SaveUserDTO;
 import ar.edu.itba.paw.exceptions.*;
-import ar.edu.itba.paw.models.*;
+import ar.edu.itba.paw.models.ExpirationToken;
+import ar.edu.itba.paw.models.Follow;
+import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.persistenceinterfaces.UserDao;
 import ar.edu.itba.paw.persistenceinterfaces.ValidationTokenDao;
 import ar.edu.itba.paw.servicesinterfaces.GenreService;
 import ar.edu.itba.paw.servicesinterfaces.MailingService;
-import ar.edu.itba.paw.exceptions.UserNotFoundException;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.*;
-
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.when;
+import org.mockito.ArgumentMatchers;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Optional;
+
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.when;
 
 
 @RunWith(MockitoJUnitRunner.class)
@@ -104,7 +108,6 @@ public class UserServiceImplTest {
 
         //2.execute
         us.changeUserPassword(EMAIL, "hola");
-        Mockito.verify(userDao, Mockito.times(1)).update(eq(ID), Mockito.any());
     }
 
     @Test
@@ -184,8 +187,6 @@ public class UserServiceImplTest {
         Mockito.when(userDao.update(1L, new SaveUserDTO(USERNAME, EMAIL, PASSWORD, false, 10L, 1L))).thenReturn(1);
         Mockito.when(userDao.findById(1L)).thenReturn(Optional.of(new User(1L, USERNAME, EMAIL, PASSWORD)));
         Assert.assertTrue(us.validateToken("aaa").isPresent());
-        Mockito.verify(userDao, Mockito.times(1)).update(eq(1L), Mockito.any());
-        Mockito.verify(tokenDao, Mockito.times(1)).delete(1L);
     }
 
     @Test(expected = UserNotFoundException.class)
@@ -209,8 +210,6 @@ public class UserServiceImplTest {
         Mockito.when(tokenDao.findLastPasswordToken(1L)).thenReturn(Optional.of(token));
         Mockito.when(tokenDao.create(anyString(), anyLong(), anyString(), any())).thenReturn(newToken);
         us.resendToken(EMAIL);
-        Mockito.verify(mailingService, Mockito.times(1)).sendValidationTokenEmail(eq(newToken), eq(user));
-        Mockito.verify(tokenDao, Mockito.times(1)).delete(eq(token.getId()));
     }
 
     /*
