@@ -1,12 +1,13 @@
 package ar.edu.itba.paw.persistenceinterfaces;
 
-import ar.edu.itba.paw.dtos.*;
+import ar.edu.itba.paw.dtos.Page;
 import ar.edu.itba.paw.dtos.filtering.GameFilter;
 import ar.edu.itba.paw.dtos.ordering.GameOrderCriteria;
 import ar.edu.itba.paw.dtos.ordering.Ordering;
 import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.models.Game;
 import ar.edu.itba.paw.models.Paginated;
+
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -30,7 +31,7 @@ public interface GameDao {
 
     List<Game> getRecommendationsForUser(List<Integer> userPreferences,List<Long> gamesToExclude);
 
-    Set<Game> getGamesReviewdByUser(Long userId);
+    Set<Game> getGamesReviewedByUser(Long userId);
 
     void addNewReview(Long gameId,Integer rating);
 

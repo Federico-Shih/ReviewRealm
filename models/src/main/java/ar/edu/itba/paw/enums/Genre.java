@@ -59,4 +59,8 @@ public enum Genre {
         }
         return Optional.empty();
     }
+
+    public static Genre valueFrom(int id) {
+        return getById(id).orElseThrow(IllegalStateException::new);
+    }
 }

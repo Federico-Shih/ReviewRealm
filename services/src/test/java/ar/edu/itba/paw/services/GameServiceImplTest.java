@@ -6,9 +6,7 @@ import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.enums.Platform;
 import ar.edu.itba.paw.exceptions.NoSuchGameException;
 import ar.edu.itba.paw.models.*;
-import ar.edu.itba.paw.models.Game;
 import ar.edu.itba.paw.persistenceinterfaces.GameDao;
-import ar.edu.itba.paw.servicesinterfaces.GenreService;
 import ar.edu.itba.paw.servicesinterfaces.ImageService;
 import ar.edu.itba.paw.servicesinterfaces.ReviewService;
 import ar.edu.itba.paw.servicesinterfaces.UserService;
@@ -19,6 +17,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -38,9 +37,6 @@ public class GameServiceImplTest {
     private ReviewService reviewService;
 
     @Mock
-    private GenreService genreServ;
-
-    @Mock
     private UserService userService;
 
     @Mock
@@ -53,11 +49,12 @@ public class GameServiceImplTest {
     @Mock
     private SubmitGameDTO dto;
 
-    private static final User USER = new User(1L,"","","");
-    private static final Game GAME1 = new Game(3L,"Martians Attack"
-            ,"","","","",Arrays.asList(Genre.ACTION, Genre.ADVENTURE), LocalDate.now(),7.66);
-    private static final Game GAME2 = new Game(4L,"Martians Attack"
-            ,"","","","",Arrays.asList(Genre.ACTION, Genre.ADVENTURE), LocalDate.now(),7.66);
+    private static final User USER = new User(1L, "", "", "");
+    private static final Game GAME1 = new Game(3L, "Martians Attack"
+            , "", "", "", LocalDate.now(), 30, 3);
+    private static final Game GAME2 = new Game(4L, "Martians Attack"
+            , "", "", "", LocalDate.now(), 30, 3);
+
     @Test
     public void testGetGameById() {
         Mockito.when(gameDao.getById(GAMEID))
@@ -112,16 +109,16 @@ public class GameServiceImplTest {
     }
 
     @Test
-    public void testGetRecommendationsOfGamesForUser(){
+    public void testGetRecommendationsOfGamesForUser() {
         Mockito.when(user.getPreferences()).thenReturn(new HashSet<>(Arrays.asList(Genre.ACTION, Genre.ADVENTURE)));
         Mockito.when(user.hasPreferencesSet()).thenReturn(true);
-        Mockito.when(gameDao.getGamesReviewdByUser(any())).thenReturn(new HashSet<>(Arrays.asList(GAME1)));
-        Mockito.when(gameDao.getRecommendationsForUser(any(),any())).thenReturn(Arrays.asList(GAME2));
+        Mockito.when(gameDao.getGamesReviewedByUser(any())).thenReturn(new HashSet<>(Arrays.asList(GAME1)));
+        Mockito.when(gameDao.getRecommendationsForUser(any(), any())).thenReturn(Arrays.asList(GAME2));
 
         List<Game> games = gs.getRecommendationsOfGamesForUser(user);
 
-        Assert.assertEquals(1,games.size());
-        Assert.assertEquals(GAME2.getId(),games.get(0).getId());
+        Assert.assertEquals(1, games.size());
+        Assert.assertEquals(GAME2.getId(), games.get(0).getId());
     }
     @Test
     public void testCreateGame(){
@@ -129,8 +126,6 @@ public class GameServiceImplTest {
         Mockito.when(userService.getUserById(any())).thenReturn(Optional.of(user));
         Mockito.when(user.getRoles()).thenReturn(new HashSet<>(Arrays.asList(new Role("MODERATOR"))));
         Mockito.when(dto.getGenres()).thenReturn(Arrays.asList(Genre.ACTION.getId(), Genre.ADVENTURE.getId()));
-        Mockito.when(genreServ.getGenreById(Genre.ACTION.getId())).thenReturn(Optional.of(Genre.ACTION));
-        Mockito.when(genreServ.getGenreById(Genre.ADVENTURE.getId())).thenReturn(Optional.of(Genre.ADVENTURE));
 
         Mockito.when(gameDao.create(any(),any(),any(),any(),any(),any(),any(),eq(false))).thenReturn(Optional.of(GAME1));
 
@@ -145,8 +140,6 @@ public class GameServiceImplTest {
         Mockito.when(userService.getUserById(any())).thenReturn(Optional.of(user));
         Mockito.when(user.getRoles()).thenReturn(new HashSet<>(new ArrayList<>()));
         Mockito.when(dto.getGenres()).thenReturn(Arrays.asList(Genre.ACTION.getId(), Genre.ADVENTURE.getId()));
-        Mockito.when(genreServ.getGenreById(Genre.ACTION.getId())).thenReturn(Optional.of(Genre.ACTION));
-        Mockito.when(genreServ.getGenreById(Genre.ADVENTURE.getId())).thenReturn(Optional.of(Genre.ADVENTURE));
 
         Mockito.when(gameDao.create(any(),any(),any(),any(),any(),any(),any(),eq(true))).thenReturn(Optional.of(GAME1));
 

@@ -30,4 +30,8 @@ public enum NotificationType {
         }
         return Optional.empty();
     }
+
+    public static NotificationType valueFrom(String typeName) {
+        return getByTypeName(typeName).orElseThrow(IllegalStateException::new);
+    }
 }

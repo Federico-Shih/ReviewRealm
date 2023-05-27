@@ -1,15 +1,14 @@
 package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.exceptions.*;
-import ar.edu.itba.paw.exceptions.UserNotFoundException;
-import ar.edu.itba.paw.webapp.exceptions.ObjectNotFoundException;
-import ar.edu.itba.paw.webapp.forms.ChangePasswordForm;
-import ar.edu.itba.paw.webapp.forms.RegisterForm;
-import ar.edu.itba.paw.webapp.forms.ResendEmailForm;
 import ar.edu.itba.paw.models.Role;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.servicesinterfaces.UserService;
 import ar.edu.itba.paw.webapp.auth.PawAuthUserDetails;
+import ar.edu.itba.paw.webapp.exceptions.ObjectNotFoundException;
+import ar.edu.itba.paw.webapp.forms.ChangePasswordForm;
+import ar.edu.itba.paw.webapp.forms.RegisterForm;
+import ar.edu.itba.paw.webapp.forms.ResendEmailForm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +21,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
@@ -115,8 +115,8 @@ public class UserController {
     }
 
     private void authWithoutPassword(User user) {
-         Set<Role> roles = user.getRoles();
-         List<GrantedAuthority> authorities = roles.stream().map(p -> new SimpleGrantedAuthority("ROLE_" + p.getRoleName())).collect(Collectors.toList());
+         Set<Role> roles = us.getUserRoles(user.getId());
+        List<GrantedAuthority> authorities = roles.stream().map(p -> new SimpleGrantedAuthority("ROLE_" + p.getRoleName())).collect(Collectors.toList());
          Authentication result = new UsernamePasswordAuthenticationToken(new PawAuthUserDetails(user.getEmail(), user.getPassword(), authorities), null, authorities);
          SecurityContextHolder.getContext().setAuthentication(result);
     }

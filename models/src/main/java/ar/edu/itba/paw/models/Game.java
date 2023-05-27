@@ -1,31 +1,95 @@
 package ar.edu.itba.paw.models;
 
+import ar.edu.itba.paw.converters.GenreAttributeConverter;
+import ar.edu.itba.paw.converters.LocalDateConverter;
 import ar.edu.itba.paw.enums.Genre;
+import org.hibernate.annotations.Formula;
+
+import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
+@Entity
+@Table(name = "games")
 public class Game {
-    private final Long id;
-    private final String name;
-    private final String description;
-    private final String developer;
-    private final String publisher;
-    private final String imageUrl;
-    private List<Genre> genres;
-    private final LocalDate publishDate;
-    private final Double averageRating;
+    @Transient
+    private static final String IMAGE_PATH = "/images/";
 
-    public Game(Long id, String name, String description, String developer, String publisher, String imageUrl, List<Genre> genres, LocalDate publishDate, Double averageRating ) {
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "games_id_seq")
+    @SequenceGenerator(sequenceName = "games_id_seq", name = "games_id_seq", allocationSize = 1)
+    @Column(name = "id")
+    private Long id;
+
+    @Column(name = "name", length = 100, nullable = false)
+    private String name;
+
+    @Column(name = "description", nullable = false)
+    private String description;
+
+    @Column(name = "developer", length = 100, nullable = false)
+    private String developer;
+
+    @Column(name = "publisher", length = 100, nullable = false)
+    private String publisher;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "imageid", referencedColumnName = "id")
+    private Image image;
+
+    @ElementCollection(targetClass = Genre.class, fetch = FetchType.LAZY)
+    @CollectionTable(name = "genreforgames", joinColumns = @JoinColumn(name = "gameid", referencedColumnName = "id"))
+    @Column(name = "genreid")
+    @Convert(converter = GenreAttributeConverter.class)
+    private List<Genre> genres;
+
+    @Column(name = "publishdate", nullable = false)
+    @Convert(converter = LocalDateConverter.class)
+    private LocalDate publishDate;
+
+    @Column(name = "reviewcount")
+    private Integer reviewCount = 0;
+
+    @Column(name = "ratingsum")
+    private Integer ratingSum = 0;
+
+    @Column(name = "suggestion")
+    private Boolean suggestion = false;
+
+    @OneToMany(mappedBy = "reviewedGame", fetch = FetchType.LAZY)
+    private List<Review> reviews;
+
+    @Formula(value = "case when reviewCount = 0 then 0 else ratingSum/reviewCount end")
+    private Double averageRating;
+
+    public Game(String name, String description, String developer, String publisher, Image image, List<Genre> genres, LocalDate publishDate, Boolean suggestion) {
+        this.name = name;
+        this.description = description;
+        this.developer = developer;
+        this.publisher = publisher;
+        this.image = image;
+        this.genres = genres;
+        this.publishDate = publishDate;
+        this.suggestion = suggestion;
+        this.reviewCount = 0;
+        this.ratingSum = 0;
+    }
+
+    public Game() {
+        // for hibernate
+    }
+
+    public Game(long id, String name, String description, String developer, String publisher, LocalDate publishDate, int ratingsum, int reviewcount) {
+        // for testing
         this.id = id;
         this.name = name;
         this.description = description;
         this.developer = developer;
         this.publisher = publisher;
-        this.imageUrl = imageUrl;
-        this.genres = genres;
         this.publishDate = publishDate;
-        this.averageRating = averageRating;
+        this.ratingSum = ratingsum;
+        this.reviewCount = reviewcount;
     }
 
     public String getDescription() {
@@ -49,7 +113,7 @@ public class Game {
     }
 
     public String getImageUrl() {
-        return imageUrl;
+        return IMAGE_PATH + image.getId();
     }
 
     public List<Genre> getGenres() {
@@ -61,11 +125,28 @@ public class Game {
     }
 
     public Double getAverageRating() {
-        return averageRating;
+        return reviewCount != 0 ? (double) ratingSum / reviewCount : 0;
     }
 
     public String getAverageRatingString() {
-        return String.format("%.2f", averageRating);
+        return String.format("%.2f", getAverageRating());
+    }
+
+    public Image getImage() {
+        return image;
+    }
+
+    public Integer getReviewCount() {
+        return reviewCount;
+    }
+
+    public boolean getSuggestion() {
+        return suggestion;
+    }
+
+
+    public void setReviewCount(Integer reviewCount) {
+        this.reviewCount = reviewCount;
     }
 
     public void setGenres(List<Genre> genres) {
@@ -83,5 +164,21 @@ public class Game {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    public Integer getRatingSum() {
+        return ratingSum;
+    }
+
+    public void setRatingSum(Integer ratingSum) {
+        this.ratingSum = ratingSum;
+    }
+
+    public List<Review> getReviews() {
+        return reviews;
+    }
+
+    public void setSuggestion(boolean suggestion) {
+        this.suggestion = suggestion;
     }
 }

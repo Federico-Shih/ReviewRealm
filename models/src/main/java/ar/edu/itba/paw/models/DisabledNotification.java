@@ -1,12 +1,29 @@
 package ar.edu.itba.paw.models;
 
+import ar.edu.itba.paw.converters.NotificationTypeAttributeConverter;
 import ar.edu.itba.paw.enums.NotificationType;
 
+import javax.persistence.*;
+
+@Entity
+@Table(name = "notifications")
 public class DisabledNotification {
-    private final NotificationType notificationType;
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "notifications_notificationid_seq")
+    @SequenceGenerator(sequenceName = "notifications_notificationid_seq", name = "notifications_notificationid_seq", allocationSize = 1)
+    @Column(name = "notificationid")
+    private Long notificationid;
+
+    @Column(name = "notificationtype", nullable = false)
+    @Convert(converter = NotificationTypeAttributeConverter.class)
+    private NotificationType notificationType;
 
     public DisabledNotification(String notificationType) {
         this.notificationType = NotificationType.getByTypeName(notificationType).orElseThrow(IllegalArgumentException::new);
+    }
+
+    protected DisabledNotification() {
+        // Just for Hibernate
     }
 
     public NotificationType getNotificationType() {
@@ -25,5 +42,9 @@ public class DisabledNotification {
             return false;
         DisabledNotification disabledNotification = (DisabledNotification) obj;
         return disabledNotification.notificationType.equals(this.notificationType);
+    }
+
+    public Long getNotificationid() {
+        return notificationid;
     }
 }

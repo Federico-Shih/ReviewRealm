@@ -2,8 +2,8 @@ package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.dtos.Page;
 import ar.edu.itba.paw.enums.Difficulty;
+import ar.edu.itba.paw.enums.FeedbackType;
 import ar.edu.itba.paw.enums.Platform;
-import ar.edu.itba.paw.enums.ReviewFeedback;
 import ar.edu.itba.paw.models.Game;
 import ar.edu.itba.paw.models.Paginated;
 import ar.edu.itba.paw.models.Review;
@@ -19,6 +19,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -42,7 +43,7 @@ public class ReviewServiceImplTest {
     private static final User USER2 = new User(2L, "InflusearchGames", "email", "password");
     private static final User USER3 = new User(3L, "InflusearchGames", "email", "password");
     private static final Game GAME = new Game(3L, "Martians Attack"
-            , "", "", "", "", new ArrayList<>(), LocalDate.now(), 8.8);
+            , "", "", "", LocalDate.now(), 30, 3);
     private static final Review REVIEW = new Review(23L, USER,
             "", "", LocalDateTime.now(), 8, GAME, Difficulty.EASY,
             12.2, Platform.PS, true, true, null, 0L);
@@ -70,12 +71,11 @@ public class ReviewServiceImplTest {
 
     @Test
     public void testGetReviewById() {
-        Mockito.when(reviewDao.findById(REVIEWID,null))
-                .thenReturn(Optional.of(new Review(23L, USER,
-                        "","", LocalDateTime.now(),8,GAME, Difficulty.EASY,
-                        12.2, Platform.PS,true,true,null,0L)));
+        Mockito.when(reviewDao.findById(REVIEWID, null))
+                .thenReturn(Optional.of(new Review(REVIEWID, "", "", 10, GAME, USER,
+                        Difficulty.EASY, 30.2, Platform.PS, true, true)));
 
-        Optional<Review> optReview = rs.getReviewById(REVIEWID,null);
+        Optional<Review> optReview = rs.getReviewById(REVIEWID, null);
 
         Assert.assertTrue(optReview.isPresent());
         long id = optReview.get().getId();
@@ -199,25 +199,25 @@ public class ReviewServiceImplTest {
 
     @Test
     public void feedbackUpdateRemoveFeedbackTest() {
-        Mockito.when(reviewDao.getReviewFeedback(eq(REVIEWID), eq(USER.getId()))).thenReturn(ReviewFeedback.LIKE);
-        Mockito.when(reviewDao.deleteReviewFeedback(eq(REVIEWID), eq(USER.getId()), eq(ReviewFeedback.LIKE))).thenReturn(true);
-        boolean result = rs.updateOrCreateReviewFeedback(REVIEW, USER, ReviewFeedback.LIKE);
+        Mockito.when(reviewDao.getReviewFeedback(eq(REVIEWID), eq(USER.getId()))).thenReturn(FeedbackType.LIKE);
+        Mockito.when(reviewDao.deleteReviewFeedback(eq(REVIEWID), eq(USER.getId()), eq(FeedbackType.LIKE))).thenReturn(true);
+        boolean result = rs.updateOrCreateReviewFeedback(REVIEW, USER, FeedbackType.LIKE);
         Assert.assertTrue(result);
     }
 
     @Test
     public void feedbackUpdateNoPreviousFeedback() {
         Mockito.when(reviewDao.getReviewFeedback(eq(REVIEWID), eq(USER.getId()))).thenReturn(null);
-        Mockito.when(reviewDao.addReviewFeedback(eq(REVIEWID), eq(USER.getId()), eq(ReviewFeedback.LIKE))).thenReturn(true);
-        boolean result = rs.updateOrCreateReviewFeedback(REVIEW, USER, ReviewFeedback.LIKE);
+        Mockito.when(reviewDao.addReviewFeedback(eq(REVIEWID), eq(USER.getId()), eq(FeedbackType.LIKE))).thenReturn(true);
+        boolean result = rs.updateOrCreateReviewFeedback(REVIEW, USER, FeedbackType.LIKE);
         Assert.assertTrue(result);
     }
 
     @Test
     public void feedbackUpdateChangeFeedbackTest() {
-        Mockito.when(reviewDao.getReviewFeedback(eq(REVIEWID), eq(USER.getId()))).thenReturn(ReviewFeedback.DISLIKE);
-        Mockito.when(reviewDao.editReviewFeedback(eq(REVIEWID), eq(USER.getId()), eq(ReviewFeedback.DISLIKE), eq(ReviewFeedback.LIKE))).thenReturn(true);
-        boolean result = rs.updateOrCreateReviewFeedback(REVIEW, USER, ReviewFeedback.LIKE);
+        Mockito.when(reviewDao.getReviewFeedback(eq(REVIEWID), eq(USER.getId()))).thenReturn(FeedbackType.DISLIKE);
+        Mockito.when(reviewDao.editReviewFeedback(eq(REVIEWID), eq(USER.getId()), eq(FeedbackType.DISLIKE), eq(FeedbackType.LIKE))).thenReturn(true);
+        boolean result = rs.updateOrCreateReviewFeedback(REVIEW, USER, FeedbackType.LIKE);
         Assert.assertTrue(result);
     }
 }

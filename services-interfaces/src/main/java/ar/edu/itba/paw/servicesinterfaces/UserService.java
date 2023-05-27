@@ -2,7 +2,11 @@ package ar.edu.itba.paw.servicesinterfaces;
 
 import ar.edu.itba.paw.enums.NotificationType;
 import ar.edu.itba.paw.exceptions.*;
-import ar.edu.itba.paw.models.*;
+import ar.edu.itba.paw.models.FollowerFollowingCount;
+import ar.edu.itba.paw.models.Paginated;
+import ar.edu.itba.paw.models.Role;
+import ar.edu.itba.paw.models.User;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -13,6 +17,7 @@ public interface UserService {
     Optional<User> getUserByEmail(String email);
     Optional<User> getUserByUsername(String username);
     Optional<User> getUserById(Long id);
+
     Optional<User> getUserByToken(String token);
 
     void changeUserPassword(String email, String password);
@@ -20,10 +25,14 @@ public interface UserService {
     void setPreferences(Set<Integer> genres, long userId);
 
     List<User> getFollowers(Long id);
+
     List<User> getFollowing(Long id);
+
     FollowerFollowingCount getFollowerFollowingCount(Long id);
 
-    Optional<Follow> followUserById(Long userId, Long otherId);
+    Set<Role> getUserRoles(Long id);
+
+    boolean followUserById(Long userId, Long otherId);
 
     boolean unfollowUserById(Long userId, Long otherId);
 

@@ -14,7 +14,10 @@ import ar.edu.itba.paw.exceptions.NoSuchGameException;
 import ar.edu.itba.paw.exceptions.UserNotFoundException;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.persistenceinterfaces.GameDao;
-import ar.edu.itba.paw.servicesinterfaces.*;
+import ar.edu.itba.paw.servicesinterfaces.GameService;
+import ar.edu.itba.paw.servicesinterfaces.ImageService;
+import ar.edu.itba.paw.servicesinterfaces.ReviewService;
+import ar.edu.itba.paw.servicesinterfaces.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,16 +35,14 @@ public class GameServiceImpl implements GameService {
     private static final Logger LOGGER = LoggerFactory.getLogger(GameServiceImpl.class);
     private final GameDao gameDao;
     private final ReviewService reviewService;
-    private final GenreService genreServ;
     private final ImageService imgService;
     private final UserService userService;
 
     @Lazy
     @Autowired
-    public GameServiceImpl(GameDao gameDao, ReviewService reviewService, GenreService genreServ, ImageService imgService, UserService userService) {
+    public GameServiceImpl(GameDao gameDao, ReviewService reviewService, ImageService imgService, UserService userService) {
         this.gameDao = gameDao;
         this.reviewService = reviewService;
-        this.genreServ = genreServ;
         this.imgService = imgService;
         this.userService = userService;
     }
@@ -60,16 +61,18 @@ public class GameServiceImpl implements GameService {
                 .getRoles()
                 .stream().anyMatch(role -> role.getRoleName().equals("MODERATOR"));
 
-        LOGGER.info("{} game - name: {}, developer: {}", isModerator? "Creating":"Suggesting",gameDTO.getName(), gameDTO.getName());
+        LOGGER.info("{} game - name: {}, developer: {}", isModerator ? "Creating" : "Suggesting", gameDTO.getName(), gameDTO.getName());
         List<Genre> genreList = new ArrayList<>();
         Optional<Genre> g;
-        for (Integer c : gameDTO.getGenres()) {
-            g = genreServ.getGenreById(c);
-            g.ifPresent(genreList::add);
+        if (gameDTO.getGenres() != null) {
+            for (Integer c : gameDTO.getGenres()) {
+                g = Genre.getById(c);
+                g.ifPresent(genreList::add);
+            }
         }
 
         Optional<Game> toReturn = gameDao.create(gameDTO.getName(), gameDTO.getDescription(), gameDTO.getDeveloper(), gameDTO.getPublisher(), img.getId(), genreList, LocalDate.now(), !isModerator);
-        return (isModerator)? toReturn : Optional.empty();
+        return (isModerator) ? toReturn : Optional.empty();
     }
     @Transactional(readOnly = true)
     @Override
@@ -112,16 +115,16 @@ public class GameServiceImpl implements GameService {
                 difficultyCount.put(r.getDifficulty(), difficultyCount.getOrDefault(r.getDifficulty(), 0) + 1);
                 platformCount.put(r.getPlatform(), platformCount.getOrDefault(r.getPlatform(), 0) + 1);
 
-                sumHours += (r.getGameLength() != null)? r.getGameLength():0;
-                sumReplayability += (r.getReplayability()!= null)? ((r.getReplayability())? 1:0):0;
-                sumCompletability += (r.getCompleted() != null)? ((r.getCompleted())? 1:0):0;
+                sumHours += (r.getGameLength() != null) ? r.getGameLength() : 0;
+                sumReplayability += (r.getReplayability() != null) ? ((r.getReplayability()) ? 1 : 0) : 0;
+                sumCompletability += (r.getCompleted() != null) ? ((r.getCompleted()) ? 1 : 0) : 0;
             }
             difficultyCount.remove(null); //We remove all the ones that didn't have difficulty set
             Optional<Map.Entry<Difficulty, Integer>> averageDiff = difficultyCount.entrySet().stream().max(Comparator.comparingInt(Map.Entry::getValue));
             platformCount.remove(null);
             Optional<Map.Entry<Platform, Integer>> averagePlatform = platformCount.entrySet().stream().max(Comparator.comparingInt(Map.Entry::getValue));
-            return new GameReviewData(reviews.get(0).getReviewedGame().getAverageRating(),(averageDiff.isPresent())? averageDiff.get().getKey() : null,(averagePlatform.isPresent())? averagePlatform.get().getKey() : null,
-                    sumHours / reviews.size(), ((double)  sumReplayability/ reviews.size() )* 100,  ((double)sumCompletability /reviews.size())*100);
+            return new GameReviewData(reviews.get(0).getReviewedGame().getAverageRating(), averageDiff.map(Map.Entry::getKey).orElse(null), averagePlatform.map(Map.Entry::getKey).orElse(null),
+                    sumHours / reviews.size(), ((double) sumReplayability / reviews.size()) * 100, ((double) sumCompletability / reviews.size()) * 100);
         }
         return new GameReviewData(-1, null, null,-1,-1,-1);
     }
@@ -161,7 +164,7 @@ public class GameServiceImpl implements GameService {
     @Transactional(readOnly = true)
     @Override
     public Set<Game> getGamesReviewedByUser(Long userId) {
-        return gameDao.getGamesReviewdByUser(userId);
+        return gameDao.getGamesReviewedByUser(userId);
     }
 
     @Transactional

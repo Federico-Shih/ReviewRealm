@@ -52,7 +52,6 @@ ALTER TABLE users
 ALTER TABLE users
     ADD CONSTRAINT users_username_unique UNIQUE (username);
 CREATE TABLE IF NOT EXISTS followers (
-                                id SERIAL PRIMARY KEY,
                                 userId int,
                                 following int,
                                 FOREIGN KEY(userId) REFERENCES users(id) ON DELETE CASCADE,

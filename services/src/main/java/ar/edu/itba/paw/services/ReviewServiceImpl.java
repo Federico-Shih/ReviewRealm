@@ -8,9 +8,9 @@ import ar.edu.itba.paw.dtos.ordering.Ordering;
 import ar.edu.itba.paw.dtos.ordering.ReviewOrderCriteria;
 import ar.edu.itba.paw.dtos.searching.ReviewSearchFilter;
 import ar.edu.itba.paw.enums.Difficulty;
+import ar.edu.itba.paw.enums.FeedbackType;
 import ar.edu.itba.paw.enums.NotificationType;
 import ar.edu.itba.paw.enums.Platform;
-import ar.edu.itba.paw.enums.ReviewFeedback;
 import ar.edu.itba.paw.models.Game;
 import ar.edu.itba.paw.models.Paginated;
 import ar.edu.itba.paw.models.Review;
@@ -26,6 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -178,23 +179,24 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Transactional
     @Override
-    public boolean updateOrCreateReviewFeedback(Review review, User user, ReviewFeedback feedback) {
-        ReviewFeedback oldFeedback = reviewDao.getReviewFeedback(review.getId(), user.getId());
-        if(oldFeedback == feedback){
-            return deleteReviewFeedback(review, user,oldFeedback);
+    public boolean updateOrCreateReviewFeedback(Review review, User user, FeedbackType feedback) {
+        FeedbackType oldFeedback = reviewDao.getReviewFeedback(review.getId(), user.getId());
+        if (oldFeedback == feedback) {
+            return deleteReviewFeedback(review, user, oldFeedback);
         }
         boolean response = (oldFeedback == null) ? reviewDao.addReviewFeedback(review.getId(), user.getId(), feedback) :
                 reviewDao.editReviewFeedback(review.getId(), user.getId(), oldFeedback, feedback);
-        userService.modifyUserReputation(review.getAuthor().getId(),(feedback == ReviewFeedback.LIKE)? 1:-1);
+        int userReputationOffset = (oldFeedback == null) ? ((feedback == FeedbackType.LIKE) ? 1 : -1) : ((feedback == FeedbackType.LIKE) ? 2 : -2);
+        userService.modifyUserReputation(review.getAuthor().getId(), userReputationOffset);
         return response;
     }
 
-    private boolean deleteReviewFeedback(Review review, User user, ReviewFeedback oldFeedback) {
-        if(oldFeedback == null){
+    private boolean deleteReviewFeedback(Review review, User user, FeedbackType oldFeedback) {
+        if (oldFeedback == null) {
             return false;
         }
         boolean response = reviewDao.deleteReviewFeedback(review.getId(), user.getId(), oldFeedback);
-        userService.modifyUserReputation(review.getAuthor().getId(),(oldFeedback == ReviewFeedback.LIKE)? -1:1);
+        userService.modifyUserReputation(review.getAuthor().getId(), (oldFeedback == FeedbackType.LIKE) ? -1 : 1);
         return response;
     }
 

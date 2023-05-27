@@ -3,9 +3,9 @@ package ar.edu.itba.paw.dtos.ordering;
 import java.util.Objects;
 
 public enum ReviewOrderCriteria implements OrderCriteria {
-    REVIEW_DATE(0, "order.criteria.review.date", "createddate"),
+    REVIEW_DATE(0, "order.criteria.review.date", "created"),
     REVIEW_SCORE(1, "order.criteria.review.score", "rating"),
-    REVIEW_POPULAR(2, "order.criteria.review.popular", "net_likes"),
+    REVIEW_POPULAR(2, "order.criteria.review.popular", "popularity"),
     REVIEW_CONTROVERSIAL(3, "order.criteria.review.controversial", "controversial");
 
     final Integer value;

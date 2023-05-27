@@ -7,7 +7,7 @@ public class SaveUserDTO {
     private final String email;
     private final String password;
     private final Long reputation;
-    private Long avatar;
+    private final Long avatar;
     private final Boolean enabled;
 
     public SaveUserDTO(String username, String email, String password, Boolean enabled, Long reputation, Long avatar) {

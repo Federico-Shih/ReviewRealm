@@ -1,44 +1,147 @@
 package ar.edu.itba.paw.models;
 
+import ar.edu.itba.paw.converters.LocalDateTimeConverter;
 import ar.edu.itba.paw.enums.Difficulty;
+import ar.edu.itba.paw.enums.FeedbackType;
 import ar.edu.itba.paw.enums.GamelengthUnit;
 import ar.edu.itba.paw.enums.Platform;
-import ar.edu.itba.paw.enums.ReviewFeedback;
+import org.hibernate.annotations.Formula;
+
+import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashSet;
+import java.util.Set;
 
+
+@Entity
+@Table(name = "reviews")
 public class Review {
-    private final Long id;
-    private final User author;
-    private final String title;
-    private final String content;
-    private final LocalDateTime created;
-    private final Integer rating;
-    private final Game reviewedGame;
-    private final Difficulty difficulty;
-    private final Double gameLength;
-    private final Platform platform;
-    private final Boolean completed;
-    private final Boolean replayability;
-    private ReviewFeedback feedback;
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "reviews_id_seq")
+    @SequenceGenerator(sequenceName = "reviews_id_seq", name = "reviews_id_seq", allocationSize = 1)
+    @Column(name = "id")
+    private Long id;
 
-    private final Long likeCounter;
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @JoinColumn(name = "authorid", referencedColumnName = "id")
+    private User author;
 
-    public Review(Long id, User author, String title, String content, LocalDateTime created, Integer rating, Game reviewedGame, Difficulty difficulty, Double gameLength, Platform platform, Boolean completed, Boolean replayability, ReviewFeedback feedback, Long likeCounter) {
-        this.id = id;
-        this.author = author;
+    @Column(name = "title", length = 100, nullable = false)
+    private String title;
+
+    @Column(name = "content", nullable = false)
+    private String content;
+
+    @Column(name = "createddate", nullable = false)
+    @Convert(converter = LocalDateTimeConverter.class)
+    private LocalDateTime created;
+
+    @Column(name = "rating", nullable = false)
+    private Integer rating;
+
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @JoinColumn(name = "gameid", referencedColumnName = "id", nullable = false)
+    private Game reviewedGame;
+
+    @Column(name = "difficulty", nullable = true)
+    @Enumerated(EnumType.STRING)
+    private Difficulty difficulty;
+
+    @Column(name = "gamelength", nullable = true)
+    private Double gameLength;
+
+    @Column(name = "platform", nullable = true)
+    @Enumerated(EnumType.STRING)
+    private Platform platform;
+
+    @Column(name = "completed", nullable = true)
+    private Boolean completed;
+
+    @Column(name = "replayability", nullable = true)
+    private Boolean replayability;
+
+    @Column(name = "likes", nullable = false)
+    private Long likes = 0L;
+
+    @Column(name = "dislikes", nullable = false)
+    private Long dislikes = 0L;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "review")
+    private Set<ReviewFeedback> feedbacks = new HashSet<>();
+
+    @Formula("likes - dislikes")
+    private Integer popularity = 0;
+
+    @Formula("likes + dislikes")
+    private Integer controversial = 0;
+
+    @Transient
+    private FeedbackType feedbackType = null;
+
+    protected Review() {
+        // For hibernate
+    }
+
+    public Review(String title,
+                  String content,
+                  Integer rating,
+                  Game reviewedGame,
+                  User author,
+                  Difficulty difficulty,
+                  Double gameLength,
+                  Platform platform,
+                  Boolean completed,
+                  Boolean replayability) {
         this.title = title;
         this.content = content;
-        this.created = created;
         this.rating = rating;
         this.reviewedGame = reviewedGame;
+        this.author = author;
+        this.created = LocalDateTime.now();
         this.difficulty = difficulty;
         this.gameLength = gameLength;
         this.platform = platform;
         this.completed = completed;
         this.replayability = replayability;
-        this.feedback = feedback;
-        this.likeCounter = likeCounter;
+    }
+
+    public Review(long id, String title, String content, LocalDateTime createddate, int rating, Difficulty difficulty, Double aDouble, Platform platform, boolean completed, boolean replayability, long likes, long dislikes) {
+        this.id = id;
+        this.title = title;
+        this.content = content;
+        this.created = createddate;
+        this.rating = rating;
+        this.difficulty = difficulty;
+        this.gameLength = aDouble;
+        this.platform = platform;
+        this.completed = completed;
+        this.replayability = replayability;
+        this.likes = likes;
+        this.dislikes = dislikes;
+    }
+
+    // For testing
+    public Review(long l, User user, String s, String s1, LocalDateTime now, int i, Game game, Difficulty difficulty, double v, Platform platform, boolean b, boolean b1, Object o, long l1) {
+        this.id = l;
+        this.author = user;
+        this.title = s;
+        this.content = s1;
+        this.created = now;
+        this.rating = i;
+        this.reviewedGame = game;
+        this.difficulty = difficulty;
+        this.gameLength = v;
+        this.platform = platform;
+        this.completed = b;
+        this.replayability = b1;
+        this.likes = l;
+        this.dislikes = l1;
+    }
+
+    public Review(long l, String s, String s1, int i, Game game, User user, Difficulty difficulty, double v, Platform platform, boolean b, boolean b1) {
+        this(s, s1, i, game, user, difficulty, v, platform, b, b1);
+        this.id = l;
     }
 
     public Long getId() {
@@ -59,12 +162,6 @@ public class Review {
 
     public LocalDateTime getCreated() {
         return created;
-    }
-
-    public void setFeedback(ReviewFeedback feedback) {
-        if(this.feedback == null) {
-            this.feedback = feedback;
-        }
     }
 
     public String getCreatedFormatted() {
@@ -115,11 +212,71 @@ public class Review {
         return replayability;
     }
 
-    public ReviewFeedback getFeedback() {
-        return feedback;
+    public FeedbackType getFeedback() {
+        return feedbackType;
+    }
+
+    public Long getLikes() {
+        return likes;
+    }
+
+    public Long getDislikes() {
+        return dislikes;
+    }
+
+    public void setFeedback(FeedbackType feedbackType) {
+        this.feedbackType = feedbackType;
     }
 
     public Long getLikeCounter() {
-        return likeCounter;
+        return (long) (likes - dislikes);
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public void setRating(Integer rating) {
+        this.rating = rating;
+    }
+
+    public void setDifficulty(Difficulty difficulty) {
+        this.difficulty = difficulty;
+    }
+
+    public void setGameLength(Double gameLength) {
+        this.gameLength = gameLength;
+    }
+
+    public void setPlatform(Platform platform) {
+        this.platform = platform;
+    }
+
+    public void setCompleted(Boolean completed) {
+        this.completed = completed;
+    }
+
+    public void setReplayability(Boolean replayability) {
+        this.replayability = replayability;
+    }
+
+    public void setLikes(Long likes) {
+        this.likes = likes;
+    }
+
+    public void setDislikes(Long dislikes) {
+        this.dislikes = dislikes;
+    }
+
+    public Integer getPopularity() {
+        return popularity;
+    }
+
+    public Integer getControversial() {
+        return controversial;
     }
 }

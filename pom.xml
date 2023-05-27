@@ -1,25 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-
-
     <modelVersion>4.0.0</modelVersion>
-
-
     <groupId>ar.edu.itba.paw</groupId>
-
-
     <artifactId>rootapp</artifactId>
-
-
     <version>1.0-SNAPSHOT</version>
-
-
     <packaging>pom</packaging>
-
-
     <name>rootapp</name>
-
     <properties>
         <org.postgresql.version>42.2.5</org.postgresql.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -42,26 +29,18 @@
         <commonsio.version>2.11.0</commonsio.version>
         <javax.mail.version>1.6.2</javax.mail.version>
         <thymeleaf.version>3.0.11.RELEASE</thymeleaf.version>
+        <org.hibernate.version>5.1.0.Final</org.hibernate.version>
+        <org.hibernate.jpa.version>1.0.0.Final</org.hibernate.jpa.version>
     </properties>
-
     <modules>
-
         <module>webapp</module>
-
         <module>models</module>
-
         <module>persistence-interfaces</module>
-
         <module>persistence</module>
-
         <module>services</module>
-
         <module>services-interfaces</module>
-
     </modules>
-
     <dependencyManagement>
-
         <dependencies>
             <dependency>
                 <groupId>org.springframework</groupId>
@@ -73,25 +52,15 @@
                 <artifactId>postgresql</artifactId>
                 <version>${org.postgresql.version}</version>
             </dependency>
-
             <dependency>
-
                 <groupId>org.springframework</groupId>
-
                 <artifactId>spring-webmvc</artifactId>
-
                 <version>${org.springframework.version}</version>
-
             </dependency>
-
             <dependency>
-
                 <groupId>org.springframework</groupId>
-
                 <artifactId>spring-context</artifactId>
-
                 <version>${org.springframework.version}</version>
-
             </dependency>
             <dependency>
                 <groupId>org.springframework</groupId>
@@ -99,20 +68,17 @@
                 <version>${org.springframework.version}</version>
                 <scope>test</scope>
             </dependency>
-
             <dependency>
                 <groupId>javax.servlet</groupId>
                 <artifactId>servlet-api</artifactId>
                 <version>${servlet-api.version}</version>
                 <scope>provided</scope>
             </dependency>
-
             <dependency>
                 <groupId>javax.servlet</groupId>
                 <artifactId>jstl</artifactId>
                 <version>${jstl.version}</version>
             </dependency>
-
             <dependency>
                 <groupId>javax.servlet</groupId>
                 <artifactId>javax.servlet-api</artifactId>
@@ -238,8 +204,27 @@
                 <artifactId>spring-tx</artifactId>
                 <version>${org.springframework.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-orm</artifactId>
+                <version>${org.springframework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.hibernate</groupId>
+                <artifactId>hibernate-core</artifactId>
+                <version>${org.hibernate.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.hibernate</groupId>
+                <artifactId>hibernate-entitymanager</artifactId>
+                <version>${org.hibernate.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.hibernate.javax.persistence</groupId>
+                <artifactId>hibernate-jpa-2.1-api</artifactId>
+                <version>${org.hibernate.jpa.version}</version>
+            </dependency>
         </dependencies>
-
     </dependencyManagement>
     <build>
         <plugins>

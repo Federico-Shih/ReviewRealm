@@ -1,12 +1,15 @@
 package ar.edu.itba.paw.persistence.helpers;
 
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class QueryBuilder {
     private final StringBuilder str = new StringBuilder();
+
     private final List<Object> params = new LinkedList<>();
+
     private QueryOperator operator = QueryOperator.EMPTY;
 
     private Boolean not = false;
@@ -16,7 +19,7 @@ public class QueryBuilder {
             str.append(" ");
             str.append(operator.getOperator());
             str.append(" ");
-            String gamesAmount = String.join(",", Collections.nCopies(querylist.size(), "?"));
+            String gamesAmount = IntStream.range(0, querylist.size()).mapToObj((i) -> "?" + (i + 1 + params.size())).collect(Collectors.joining(","));
             params.addAll(querylist);
             str.append(String.format(" %s %s IN (", queryField, (not) ? QueryOperator.NOT.getOperator() : QueryOperator.EMPTY.getOperator()));
             str.append(gamesAmount);
@@ -34,7 +37,7 @@ public class QueryBuilder {
             queryString = queryString.replace("%", "\\%").replace("_", "\\_");
             str.append(" ");
             str.append(operator.getOperator());
-            str.append(String.format(" lower( %s ) %s LIKE lower( ? ) ", queryField, (not) ? QueryOperator.NOT.getOperator() : QueryOperator.EMPTY.getOperator()));
+            str.append(String.format(" lower( %s ) %s LIKE lower( ?%d ) ", queryField, (not) ? QueryOperator.NOT.getOperator() : QueryOperator.EMPTY.getOperator(), params.size() + 1));
 
             params.add("%" + queryString + "%");
             operator = QueryOperator.AND;
@@ -49,7 +52,7 @@ public class QueryBuilder {
         if (queryContent != null) {
             str.append(" ");
             str.append(operator.getOperator());
-            str.append(String.format(" %s %s ? ", queryField, (not) ? "<>" : "="));
+            str.append(String.format(" %s %s ?%d ", queryField, (not) ? "<>" : "=", params.size() + 1));
             params.add(queryContent);
             operator = QueryOperator.AND;
         }
@@ -63,7 +66,7 @@ public class QueryBuilder {
         if (queryContent != null) {
             str.append(" ");
             str.append(operator.getOperator());
-            str.append(String.format(" %s >= ? ", queryField));
+            str.append(String.format(" %s >= ?%d ", queryField, params.size() + 1));
             params.add(queryContent);
             operator = QueryOperator.AND;
         }
@@ -74,7 +77,7 @@ public class QueryBuilder {
         if (queryContent != null) {
             str.append(" ");
             str.append(operator.getOperator());
-            str.append(String.format(" %s <= ? ", queryField));
+            str.append(String.format(" %s <= ?%d ", queryField, params.size() + 1));
             params.add(queryContent);
             operator = QueryOperator.AND;
         }
@@ -85,7 +88,7 @@ public class QueryBuilder {
         if (queryContent != null) {
             str.append(" ");
             str.append(operator.getOperator());
-            str.append(String.format(" %s > ? ", queryField));
+            str.append(String.format(" %s > ?%d", queryField, params.size() + 1));
             params.add(queryContent);
             operator = QueryOperator.AND;
         }
@@ -96,7 +99,7 @@ public class QueryBuilder {
         if (queryContent != null) {
             str.append(" ");
             str.append(operator.getOperator());
-            str.append(String.format(" %s < ? ", queryField));
+            str.append(String.format(" %s < ?%d ", queryField, params.size() + 1));
             params.add(queryContent);
             operator = QueryOperator.AND;
         }

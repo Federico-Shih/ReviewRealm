@@ -1,12 +1,13 @@
 package ar.edu.itba.paw.persistenceinterfaces;
 
-import ar.edu.itba.paw.dtos.*;
+import ar.edu.itba.paw.dtos.Page;
+import ar.edu.itba.paw.dtos.SaveReviewDTO;
 import ar.edu.itba.paw.dtos.filtering.ReviewFilter;
 import ar.edu.itba.paw.dtos.ordering.Ordering;
 import ar.edu.itba.paw.dtos.ordering.ReviewOrderCriteria;
 import ar.edu.itba.paw.enums.Difficulty;
+import ar.edu.itba.paw.enums.FeedbackType;
 import ar.edu.itba.paw.enums.Platform;
-import ar.edu.itba.paw.enums.ReviewFeedback;
 import ar.edu.itba.paw.models.Game;
 import ar.edu.itba.paw.models.Paginated;
 import ar.edu.itba.paw.models.Review;
@@ -37,12 +38,12 @@ public interface ReviewDao {
 
     boolean deleteReview(Long id);
 
-    boolean editReviewFeedback(Long reviewId, Long userId, ReviewFeedback oldFeedback, ReviewFeedback feedback);
+    boolean editReviewFeedback(Long reviewId, Long userId, FeedbackType oldFeedback, FeedbackType feedback);
 
-    boolean addReviewFeedback(Long reviewId, Long userId, ReviewFeedback feedback);
+    boolean addReviewFeedback(Long reviewId, Long userId, FeedbackType feedback);
 
-    boolean deleteReviewFeedback(Long reviewId, Long userId,ReviewFeedback oldfeedback);
+    boolean deleteReviewFeedback(Long reviewId, Long userId, FeedbackType oldfeedback);
 
-    ReviewFeedback getReviewFeedback(Long reviewId, Long userId);
+    FeedbackType getReviewFeedback(Long reviewId, Long userId);
 
 }

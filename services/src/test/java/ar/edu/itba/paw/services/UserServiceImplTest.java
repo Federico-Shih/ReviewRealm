@@ -2,7 +2,6 @@ package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.exceptions.*;
 import ar.edu.itba.paw.models.ExpirationToken;
-import ar.edu.itba.paw.models.Follow;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.persistenceinterfaces.UserDao;
 import ar.edu.itba.paw.persistenceinterfaces.ValidationTokenDao;
@@ -15,6 +14,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Optional;
@@ -161,13 +161,13 @@ public class UserServiceImplTest {
     public void followUserTest() {
         Mockito.when(userDao.exists(1L)).thenReturn(true);
         Mockito.when(userDao.exists(2L)).thenReturn(true);
-        Mockito.when(userDao.createFollow(1L, 2L)).thenReturn(Optional.of(new Follow(1L, 2L)));
-        Assert.assertTrue(us.followUserById(1L, 2L).isPresent());
+        Mockito.when(userDao.createFollow(1L, 2L)).thenReturn(true);
+        Assert.assertTrue(us.followUserById(1L, 2L));
     }
 
     @Test(expected = TokenExpiredException.class)
     public void validateTokenExpired() throws TokenExpiredException {
-        Mockito.when(tokenDao.getByToken("aaa")).thenReturn(Optional.of(new ExpirationToken(1L, "aaa", 1L, "aaa", LocalDateTime.MIN)));
+        Mockito.when(tokenDao.getByToken("aaa")).thenReturn(Optional.of(new ExpirationToken("aaa", new User(1L, "", "", ""), "aaa", LocalDateTime.MIN)));
         us.validateToken("aaa");
     }
 
@@ -179,7 +179,7 @@ public class UserServiceImplTest {
 
     @Test
     public void validateExistentToken() throws TokenExpiredException {
-        Mockito.when(tokenDao.getByToken("aaa")).thenReturn(Optional.of(new ExpirationToken(1L, "aaa", 1L, "aaa", LocalDateTime.MAX)));
+        Mockito.when(tokenDao.getByToken("aaa")).thenReturn(Optional.of(new ExpirationToken("aaa", new User(1L, "", "", ""), "aaa", LocalDateTime.MAX)));
         Mockito.when(userDao.findById(1L)).thenReturn(Optional.of(new User(1L, USERNAME, EMAIL, PASSWORD)));
 
         Assert.assertTrue(us.validateToken("aaa").isPresent());
@@ -193,18 +193,19 @@ public class UserServiceImplTest {
 
     @Test(expected = UserAlreadyEnabled.class)
     public void resendTokenUserEnabled() throws UserAlreadyEnabled {
-        Mockito.when(userDao.getByEmail(EMAIL)).thenReturn(Optional.of(new User(1L, USERNAME, EMAIL, PASSWORD, new HashSet<>(), true, 10L, new HashSet<>(), new HashSet<>(), 0L)));
+        Mockito.when(userDao.getByEmail(EMAIL)).thenReturn(Optional.of(
+                new User(1L, USERNAME, EMAIL, PASSWORD, new HashSet<>(), true, 10L, new HashSet<>(), new HashSet<>(), 0L, new HashSet<>(), new HashSet<>())));
         us.resendToken(EMAIL);
     }
 
     @Test
     public void resendTokenSuccessTest() throws UserAlreadyEnabled {
-        ExpirationToken token = new ExpirationToken(1L, "aaa", 1L, "aaa", LocalDateTime.MAX);
-        ExpirationToken newToken = new ExpirationToken(2L, "aaas", 1L, "aaa", LocalDateTime.MAX);
-        User user = new User(1L, USERNAME, EMAIL, PASSWORD, new HashSet<>(), false, 10L, new HashSet<>(), new HashSet<>(), 0L);
+        ExpirationToken token = new ExpirationToken("aaa", new User("", "", ""), "aaa", LocalDateTime.MAX);
+        ExpirationToken newToken = new ExpirationToken("aaas", new User("", "", ""), "aaa", LocalDateTime.MAX);
+        User user = new User(1L, USERNAME, EMAIL, PASSWORD, new HashSet<>(), false, 10L, new HashSet<>(), new HashSet<>(), 0L, new HashSet<>(), new HashSet<>());
         Mockito.when(userDao.getByEmail(eq(EMAIL))).thenReturn(Optional.of(user));
         Mockito.when(tokenDao.findLastPasswordToken(1L)).thenReturn(Optional.of(token));
-        Mockito.when(tokenDao.create(anyString(), anyLong(), anyString(), any())).thenReturn(newToken);
+        Mockito.when(tokenDao.create(anyLong(), anyString(), any())).thenReturn(newToken);
         us.resendToken(EMAIL);
     }
 

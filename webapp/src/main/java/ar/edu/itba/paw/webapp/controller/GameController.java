@@ -1,21 +1,20 @@
 package ar.edu.itba.paw.webapp.controller;
 
-import ar.edu.itba.paw.dtos.*;
+import ar.edu.itba.paw.dtos.Page;
 import ar.edu.itba.paw.dtos.ordering.GameOrderCriteria;
 import ar.edu.itba.paw.dtos.ordering.OrderDirection;
 import ar.edu.itba.paw.dtos.ordering.Ordering;
 import ar.edu.itba.paw.dtos.searching.GameSearchFilter;
 import ar.edu.itba.paw.dtos.searching.GameSearchFilterBuilder;
 import ar.edu.itba.paw.enums.Genre;
-import ar.edu.itba.paw.servicesinterfaces.ReviewService;
-import ar.edu.itba.paw.webapp.exceptions.ObjectNotFoundException;
-import ar.edu.itba.paw.webapp.forms.SubmitGameForm;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.servicesinterfaces.GameService;
-import ar.edu.itba.paw.servicesinterfaces.GenreService;
+import ar.edu.itba.paw.servicesinterfaces.ReviewService;
 import ar.edu.itba.paw.servicesinterfaces.UserService;
 import ar.edu.itba.paw.webapp.auth.AuthenticationHelper;
 import ar.edu.itba.paw.webapp.controller.datacontainers.FilteredList;
+import ar.edu.itba.paw.webapp.exceptions.ObjectNotFoundException;
+import ar.edu.itba.paw.webapp.forms.SubmitGameForm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,9 +23,11 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+
 import javax.validation.Valid;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -35,7 +36,6 @@ import java.util.stream.Collectors;
 public class GameController extends PaginatedController implements QueryController {
     private static final Logger LOGGER = LoggerFactory.getLogger(GameController.class);
 
-    private final GenreService grs;
     private final GameService gs;
     private final UserService us;
     private final ReviewService rs;
@@ -47,9 +47,8 @@ public class GameController extends PaginatedController implements QueryControll
     private static final int INITIAL_PAGE = 1;
 
     @Autowired
-    public GameController(GenreService grs, GameService gs, UserService us, ReviewService rs) {
+    public GameController(GameService gs, UserService us, ReviewService rs) {
         super(MAX_PAGES_PAGINATION, INITIAL_PAGE);
-        this.grs = grs;
         this.gs = gs;
         this.us = us;
         this.rs = rs;
@@ -98,7 +97,7 @@ public class GameController extends PaginatedController implements QueryControll
         final ModelAndView mav = new ModelAndView("games/game-list");
 
         User loggedUser = AuthenticationHelper.getLoggedUser(us);
-        List<Genre> allGenres = grs.getAllGenres();
+        List<Genre> allGenres = Arrays.asList(Genre.values());
 
         if(pageSize == null || pageSize < 1) {
             pageSize = PAGE_SIZE;

@@ -2,18 +2,14 @@ package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.dtos.Page;
 import ar.edu.itba.paw.dtos.filtering.UserFilterBuilder;
+import ar.edu.itba.paw.dtos.saving.SaveUserBuilder;
 import ar.edu.itba.paw.enums.NotificationType;
 import ar.edu.itba.paw.exceptions.*;
-import ar.edu.itba.paw.dtos.saving.SaveUserBuilder;
-import ar.edu.itba.paw.exceptions.EmailAlreadyExistsException;
-import ar.edu.itba.paw.exceptions.UserAlreadyEnabled;
-import ar.edu.itba.paw.exceptions.UserNotFoundException;
-import ar.edu.itba.paw.exceptions.UsernameAlreadyExistsException;
 import ar.edu.itba.paw.models.*;
+import ar.edu.itba.paw.persistenceinterfaces.UserDao;
 import ar.edu.itba.paw.persistenceinterfaces.ValidationTokenDao;
 import ar.edu.itba.paw.servicesinterfaces.MailingService;
 import ar.edu.itba.paw.servicesinterfaces.UserService;
-import ar.edu.itba.paw.persistenceinterfaces.UserDao;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -32,7 +29,6 @@ public class UserServiceImpl implements UserService {
     private final ValidationTokenDao tokenDao;
     private final MailingService mailingService;
     private static final int EXPIRATION_TIME = 60 * 60 * 24; // 24hs
-
     private static final int AVATAR_AMOUNT = 6;
 
     @Autowired
@@ -61,7 +57,6 @@ public class UserServiceImpl implements UserService {
         createdUser = userDao.create(username, email, "");
 
         ExpirationToken token = this.tokenDao.create(
-                generateToken(),
                 createdUser.getId(),
                 passwordEncoder.encode(password),
                 LocalDateTime.now().plusSeconds(EXPIRATION_TIME));
@@ -91,7 +86,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public Optional<User> getUserByToken(String token) {
         ExpirationToken expirationToken = tokenDao.getByToken(token).orElseThrow(() -> new UserNotFoundException("user.notfound"));
-        return getUserById(expirationToken.getUserId());
+        return getUserById(expirationToken.getUser().getId());
     }
 
     @Transactional(readOnly = true)
@@ -121,9 +116,14 @@ public class UserServiceImpl implements UserService {
         return userDao.getFollowerFollowingCount(id);
     }
 
+    @Override
+    public Set<Role> getUserRoles(Long id) {
+        return userDao.findById(id).orElseThrow(UserNotFoundException::new).getRoles();
+    }
+
     @Transactional
     @Override
-    public Optional<Follow> followUserById(Long userId, Long otherId) {
+    public boolean followUserById(Long userId, Long otherId) {
         if (!userDao.exists(userId)) {
             throw new UserNotFoundException("notfound.currentuser");
         }
@@ -153,17 +153,17 @@ public class UserServiceImpl implements UserService {
     public Optional<User> validateToken(String token) throws TokenExpiredException {
         Optional<ExpirationToken> expToken = tokenDao.getByToken(token);
         if (expToken.isPresent() && expToken.get().getExpiration().isBefore(LocalDateTime.now())) {
-            LOGGER.error("Token for User {} expired", expToken.get().getUserId());
+            LOGGER.error("Token for User {} expired", expToken.get().getUser().getId());
             throw new TokenExpiredException("token.expired");
         }
         if (!expToken.isPresent()) {
             return Optional.empty();
         }
         ExpirationToken expirationToken = expToken.get();
-        User user = userDao.findById(expirationToken.getUserId()).orElseThrow(() -> new UserNotFoundException("illegal.state"));
+        User user = userDao.findById(expirationToken.getUser().getId()).orElseThrow(() -> new UserNotFoundException("illegal.state"));
         SaveUserBuilder userBuilder = new SaveUserBuilder().withEnabled(true).withPassword(expirationToken.getPassword());
         userDao.update(user.getId(), userBuilder.build());
-        tokenDao.delete(expirationToken.getId());
+        tokenDao.delete(expirationToken.getToken());
         LOGGER.info("User {} validated token", user.getId());
         return Optional.of(user);
     }
@@ -177,8 +177,8 @@ public class UserServiceImpl implements UserService {
             throw new UserAlreadyEnabled();
         }
         ExpirationToken token = tokenDao.findLastPasswordToken(user.getId()).orElseThrow(() -> new UserNotFoundException("user.notfound"));
-        ExpirationToken newToken = tokenDao.create(generateToken(), user.getId(), token.getPassword(), LocalDateTime.now().plusHours(EXPIRATION_TIME));
-        tokenDao.delete(token.getId());
+        ExpirationToken newToken = tokenDao.create(user.getId(), token.getPassword(), LocalDateTime.now().plusHours(EXPIRATION_TIME));
+        tokenDao.delete(token.getToken());
         mailingService.sendValidationTokenEmail(newToken, user);
         LOGGER.info("User {} resent token", user.getId());
     }
@@ -187,13 +187,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public void refreshToken(String token) {
         ExpirationToken expirationToken = tokenDao.getByToken(token).orElseThrow(() -> new UserNotFoundException("user.notfound"));
-        User user = getUserById(expirationToken.getUserId()).orElseThrow(() -> new UserNotFoundException("user.notfound"));
-        ExpirationToken newToken = tokenDao.create(generateToken(), user.getId(), expirationToken.getPassword(), LocalDateTime.now().plusHours(EXPIRATION_TIME));
+        User user = getUserById(expirationToken.getUser().getId()).orElseThrow(() -> new UserNotFoundException("user.notfound"));
+        ExpirationToken newToken = tokenDao.create(user.getId(), expirationToken.getPassword(), LocalDateTime.now().plusHours(EXPIRATION_TIME));
         if (newToken == null) {
             LOGGER.error("User {} not found when refreshing token", user.getId());
             throw new UserNotFoundException("user.not.found");
         }
-        tokenDao.delete(expirationToken.getId());
+        tokenDao.delete(expirationToken.getToken());
         mailingService.sendValidationTokenEmail(newToken, user);
     }
 
@@ -207,7 +207,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void sendPasswordResetToken(String email) throws UserNotFoundException {
         User user = getUserByEmail(email).orElseThrow(() -> new UserNotFoundException("user.notfound"));
-        ExpirationToken newToken = tokenDao.create(generateToken(), user.getId(), "", LocalDateTime.now().plusHours(EXPIRATION_TIME));
+        ExpirationToken newToken = tokenDao.create(user.getId(), "", LocalDateTime.now().plusHours(EXPIRATION_TIME));
         mailingService.sendChangePasswordEmail(newToken, user);
         LOGGER.info("Sending User {} a password reset token", user.getId());
     }
@@ -217,11 +217,11 @@ public class UserServiceImpl implements UserService {
     public boolean resetPassword(String token, String password) throws TokenExpiredException, TokenNotFoundException {
         ExpirationToken existentToken = tokenDao.getByToken(token).orElseThrow(() -> new TokenNotFoundException("token.notfound"));
         if (existentToken.getExpiration().isBefore(LocalDateTime.now())) {
-            LOGGER.error("Token for User {} password reset expired", existentToken.getUserId());
+            LOGGER.error("Token for User {} password reset expired", existentToken.getUser().getId());
             throw new TokenExpiredException("token.expired");
         }
-        boolean op = userDao.update(existentToken.getUserId(), new SaveUserBuilder().withPassword(passwordEncoder.encode(password)).withEnabled(true).build()) == 1;
-        LOGGER.info("User {} reset password", existentToken.getUserId());
+        boolean op = userDao.update(existentToken.getUser().getId(), new SaveUserBuilder().withPassword(passwordEncoder.encode(password)).withEnabled(true).build()) == 1;
+        LOGGER.info("User {} reset password", existentToken.getUser().getId());
         return op;
     }
 

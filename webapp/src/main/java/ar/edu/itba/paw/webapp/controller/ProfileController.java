@@ -1,18 +1,18 @@
 package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.dtos.Page;
+import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.enums.RoleType;
 import ar.edu.itba.paw.exceptions.UserNotFoundException;
-import ar.edu.itba.paw.webapp.exceptions.ObjectNotFoundException;
-import ar.edu.itba.paw.webapp.forms.FavoriteGamesForm;
-import ar.edu.itba.paw.webapp.forms.NotificationsForm;
 import ar.edu.itba.paw.models.*;
-import ar.edu.itba.paw.webapp.forms.EditPreferencesForm;
 import ar.edu.itba.paw.servicesinterfaces.GameService;
-import ar.edu.itba.paw.servicesinterfaces.GenreService;
 import ar.edu.itba.paw.servicesinterfaces.ReviewService;
 import ar.edu.itba.paw.servicesinterfaces.UserService;
 import ar.edu.itba.paw.webapp.auth.AuthenticationHelper;
+import ar.edu.itba.paw.webapp.exceptions.ObjectNotFoundException;
+import ar.edu.itba.paw.webapp.forms.EditPreferencesForm;
+import ar.edu.itba.paw.webapp.forms.FavoriteGamesForm;
+import ar.edu.itba.paw.webapp.forms.NotificationsForm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +20,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+
 import javax.validation.Valid;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -32,18 +34,15 @@ public class ProfileController extends PaginatedController {
     private final UserService userService;
     private final ReviewService reviewService;
     private final GameService gameService;
-    private final GenreService genreService;
-
     private final static int DEFAULT_PAGE_SIZE = 8;
 
     @Autowired
     public ProfileController(UserService userService, ReviewService reviewService,
-                             GameService gameService, GenreService genreService){
+                             GameService gameService) {
         super();
         this.userService = userService;
         this.reviewService = reviewService;
         this.gameService = gameService;
-        this.genreService = genreService;
     }
 
     @RequestMapping(value = "/profile/{id:\\d+}", method = RequestMethod.GET)
@@ -164,7 +163,7 @@ public class ProfileController extends PaginatedController {
             throw new ObjectNotFoundException();
         }
         mav.addObject("profile",user.get());
-        mav.addObject("availableGenres", genreService.getAllGenres().stream()
+        mav.addObject("availableGenres", Arrays.stream(Genre.values())
                 .filter(genre -> !user.get().getPreferences().contains(genre)).collect(Collectors.toList()));
         mav.addObject("nothingForDiscovery", nothingForDiscovery);
         return mav;

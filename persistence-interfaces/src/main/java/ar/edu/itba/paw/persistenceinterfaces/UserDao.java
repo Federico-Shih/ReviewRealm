@@ -1,10 +1,13 @@
 package ar.edu.itba.paw.persistenceinterfaces;
 
 import ar.edu.itba.paw.dtos.Page;
-import ar.edu.itba.paw.dtos.saving.SaveUserDTO;
 import ar.edu.itba.paw.dtos.filtering.UserFilter;
+import ar.edu.itba.paw.dtos.saving.SaveUserDTO;
 import ar.edu.itba.paw.enums.Genre;
-import ar.edu.itba.paw.models.*;
+import ar.edu.itba.paw.models.FollowerFollowingCount;
+import ar.edu.itba.paw.models.Paginated;
+import ar.edu.itba.paw.models.User;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -23,7 +26,7 @@ public interface UserDao {
     List<User> getFollowing(final long id);
     FollowerFollowingCount getFollowerFollowingCount(final long id);
 
-    Optional<Follow> createFollow(final long userId, final long id);
+    boolean createFollow(final long userId, final long id);
 
     boolean deleteFollow(final long userId, final long id);
 

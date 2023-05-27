@@ -12,7 +12,6 @@ import ar.edu.itba.paw.dtos.searching.ReviewSearchFilterBuilder;
 import ar.edu.itba.paw.enums.*;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.servicesinterfaces.GameService;
-import ar.edu.itba.paw.servicesinterfaces.GenreService;
 import ar.edu.itba.paw.servicesinterfaces.ReviewService;
 import ar.edu.itba.paw.servicesinterfaces.UserService;
 import ar.edu.itba.paw.webapp.auth.AuthenticationHelper;
@@ -29,6 +28,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+
 import javax.validation.Valid;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -38,7 +38,6 @@ public class ReviewController extends PaginatedController implements QueryContro
     private static final Logger LOGGER = LoggerFactory.getLogger(ReviewController.class);
     private final GameService gameService;
     private final ReviewService reviewService;
-    private final GenreService genreService;
     private final UserService userService;
 
     private static final int MAX_PAGES_PAGINATION = 6;
@@ -47,11 +46,10 @@ public class ReviewController extends PaginatedController implements QueryContro
     private static final int MAX_SEARCH_RESULTS = 5;
 
     @Autowired
-    public ReviewController(GameService gameService, ReviewService reviewService, GenreService genreService, UserService userService) {
+    public ReviewController(GameService gameService, ReviewService reviewService, UserService userService) {
         super(MAX_PAGES_PAGINATION, INITIAL_PAGE);
         this.gameService = gameService;
         this.reviewService = reviewService;
-        this.genreService = genreService;
         this.userService = userService;
     }
 
@@ -144,7 +142,7 @@ public class ReviewController extends PaginatedController implements QueryContro
     ) {
         final ModelAndView mav = new ModelAndView("review/review-list");
         User loggedUser = AuthenticationHelper.getLoggedUser(userService);
-        List<Genre> allGenres = genreService.getAllGenres();
+        List<Genre> allGenres = Arrays.asList(Genre.values());
 
         if(pageSize == null || pageSize < 1) {
             pageSize = PAGE_SIZE;
@@ -255,9 +253,9 @@ public class ReviewController extends PaginatedController implements QueryContro
         if (!review.isPresent()) {
             throw new ObjectNotFoundException();
         }
-        ReviewFeedback fb;
+        FeedbackType fb;
         try {
-           fb = ReviewFeedback.valueOf(feedback);
+            fb = FeedbackType.valueOf(feedback);
         } catch (IllegalArgumentException e){
             throw new ObjectNotFoundException();
         }

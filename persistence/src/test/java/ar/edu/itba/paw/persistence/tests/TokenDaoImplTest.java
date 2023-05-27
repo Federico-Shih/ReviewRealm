@@ -13,6 +13,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.jdbc.JdbcTestUtils;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
 import java.time.LocalDateTime;
@@ -20,6 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+@Transactional
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = TestConfig.class)
 public class TokenDaoImplTest {
@@ -42,26 +44,27 @@ public class TokenDaoImplTest {
     private final LocalDateTime EXPIRATION = LocalDateTime.now();
 
     @Before
-    public void setUp(){
+    public void setUp() {
         jdbcTemplate = new JdbcTemplate(ds);
-        tokenTemplate = new SimpleJdbcInsert(ds).withTableName("tokens").usingGeneratedKeyColumns("id");
-        userTemplate = new SimpleJdbcInsert(ds).withTableName("users").usingGeneratedKeyColumns("id");
-        JdbcTestUtils.deleteFromTables(jdbcTemplate,"tokens");
-        JdbcTestUtils.deleteFromTables(jdbcTemplate,"users");
+        tokenTemplate = new SimpleJdbcInsert(ds).withTableName("tokens");
+        userTemplate = new SimpleJdbcInsert(ds).withTableName("users");
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, "tokens");
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, "users");
 
         Map<String, Object> userParams = new HashMap<>();
         userParams.put("username", "username");
         userParams.put("password", PASSWORD);
         userParams.put("email", "email");
-        this.userId = userTemplate.executeAndReturnKey(userParams).longValue();
+        userParams.put("id", 1L);
+        userTemplate.execute(userParams);
+        this.userId = 1L;
     }
 
     @Test
     public void createExpirationTokenTest() {
-        ExpirationToken token = tokenDao.create(TOKEN, userId, PASSWORD, EXPIRATION);
+        ExpirationToken token = tokenDao.create(userId, PASSWORD, EXPIRATION);
         Assert.assertNotNull(token);
-        Assert.assertEquals(TOKEN, token.getToken());
-        Assert.assertEquals(userId, token.getUserId());
+        Assert.assertEquals(userId, (long) token.getUser().getId());
         Assert.assertEquals(PASSWORD, token.getPassword());
         Assert.assertEquals(EXPIRATION, token.getExpiration());
     }
@@ -78,7 +81,7 @@ public class TokenDaoImplTest {
         ExpirationToken token = tokenDao.findLastPasswordToken(userId).orElse(null);
         Assert.assertNotNull(token);
         Assert.assertEquals(TOKEN, token.getToken());
-        Assert.assertEquals(userId, token.getUserId());
+        Assert.assertEquals(userId, (long) token.getUser().getId());
         Assert.assertEquals(PASSWORD, token.getPassword());
         Assert.assertEquals(EXPIRATION, token.getExpiration());
     }
@@ -105,15 +108,15 @@ public class TokenDaoImplTest {
 
     @Test
     public void deleteTokenByIdTest() {
-        long id = tokenTemplate.executeAndReturnKey(new HashMap<String, Object>() {{
+        tokenTemplate.execute(new HashMap<String, Object>() {{
             put("token", TOKEN);
             put("userid", userId);
             put("password", PASSWORD);
             put("expiration", EXPIRATION);
-        }}).longValue();
+        }});
 
-        Assert.assertTrue(tokenDao.delete(id));
-        Assert.assertFalse(tokenDao.delete(id));
+        Assert.assertTrue(tokenDao.delete(TOKEN));
+        Assert.assertFalse(tokenDao.delete(TOKEN));
     }
 
     @Test
@@ -128,7 +131,7 @@ public class TokenDaoImplTest {
         Optional<ExpirationToken> token = tokenDao.getByToken(TOKEN);
         Assert.assertTrue(token.isPresent());
         Assert.assertEquals(TOKEN, token.get().getToken());
-        Assert.assertEquals(userId, token.get().getUserId());
+        Assert.assertEquals(userId, (long) token.get().getUser().getId());
         Assert.assertEquals(PASSWORD, token.get().getPassword());
         Assert.assertEquals(EXPIRATION, token.get().getExpiration());
     }

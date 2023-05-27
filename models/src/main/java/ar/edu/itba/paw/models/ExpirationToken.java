@@ -1,24 +1,38 @@
 package ar.edu.itba.paw.models;
 
+import ar.edu.itba.paw.converters.LocalDateTimeConverter;
+
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
+@Entity
+@Table(name = "tokens")
 public class ExpirationToken {
-    private final long id;
-    private final String token;
-    private final long userId;
-    private final String password;
-    private final LocalDateTime expiration;
 
-    public ExpirationToken(long id, String token, long userid, String password, LocalDateTime expiration) {
-        this.id = id;
+    @Id
+    @Column(name = "token")
+    private String token;
+
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @JoinColumn(name = "userid", referencedColumnName = "id")
+    private User user;
+
+    @Column(name = "password", nullable = true)
+    private String password = "";
+
+    @Column(name = "expiration", nullable = false)
+    @Convert(converter = LocalDateTimeConverter.class)
+    private LocalDateTime expiration;
+
+    public ExpirationToken(String token, User user, String password, LocalDateTime expiration) {
         this.token = token;
-        this.userId = userid;
+        this.user = user;
         this.password = password;
         this.expiration = expiration;
     }
 
-    public long getId() {
-        return id;
+    protected ExpirationToken() {
+        // Just for Hibernate
     }
 
     public String getToken() {
@@ -29,8 +43,8 @@ public class ExpirationToken {
         return expiration;
     }
 
-    public long getUserId() {
-        return userId;
+    public User getUser() {
+        return user;
     }
 
     public String getPassword() {
