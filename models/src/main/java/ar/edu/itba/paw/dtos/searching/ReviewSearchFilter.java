@@ -12,15 +12,17 @@ public class ReviewSearchFilter {
     private final List<Platform> platforms;
     private final List<Difficulty> difficulties;
     private final Boolean completed;
+    private final Boolean replayable;
     private final String search;
 
-    public ReviewSearchFilter(List<Integer> genres, List<Integer> preferences, Double minTimePlayed, List<Platform> platforms, List<Difficulty> difficulties, Boolean completed, String search) {
+    public ReviewSearchFilter(List<Integer> genres, List<Integer> preferences, Double minTimePlayed, List<Platform> platforms, List<Difficulty> difficulties, Boolean completed, Boolean replayable, String search) {
         this.genres = genres;
         this.preferences = preferences;
         this.minTimePlayed = minTimePlayed;
         this.platforms = platforms;
         this.difficulties = difficulties;
         this.completed = completed;
+        this.replayable = replayable;
         this.search = search;
     }
 
@@ -46,6 +48,10 @@ public class ReviewSearchFilter {
 
     public Boolean getCompleted() {
         return completed;
+    }
+
+    public Boolean getReplayable() {
+        return replayable;
     }
 
     public String getSearch() {

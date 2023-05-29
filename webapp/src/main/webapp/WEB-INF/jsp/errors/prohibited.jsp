@@ -8,7 +8,7 @@
     <script src="<c:url value="/js/materialize.min.js" />"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <link rel="stylesheet" href="<c:url value="/css/main.css" />">
-    <title><spring:message code="error404.title"/></title>
+    <title><spring:message code="error403.title"/></title>
 </head>
 <body>
 <jsp:include page="../static-components/navbar.jsp"/>

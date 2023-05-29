@@ -24,7 +24,7 @@
     </script>
 </head>
 <body>
-<c:url value="/review/submit?gameId=${game.id}" var="sumbitReview"/>
+<c:url value="/review/submit/${game.id}" var="sumbitReview"/>
 <c:url value="/game/list/" var="gameList"/>
 <jsp:include page="../static-components/navbar.jsp"/>
 <div class="row margin-2">
@@ -63,39 +63,51 @@
 <c:if test="${!empty reviews}">
     <div class="statistics-section">
         <span class="game-review-section-header"> <spring:message code="game.details.review.statistics"/></span>
-        <div class="statistics-list">
-            <div class="game-statistics">
-                <span class="game-statistics-header"><spring:message code="game.details.review.statistics.rating"/></span>
-                <span class=game-statistics-number>${gameReviewData.averageRatingString}<span class="game-statistics-number-minor">/10</span></span>
+        <div class="statistics-list f-gap-1">
+            <div class="card indigo darken-4 game-statistics-width">
+                <div class="card-content white-text f-column f-gap-1 f-jc-start f-ai-center">
+                    <span class="game-statistics-header"><spring:message code="game.details.review.statistics.rating"/></span>
+                    <span class=game-statistics-number>${gameReviewData.averageRatingString}<span class="game-statistics-number-minor">/10</span></span>
+                </div>
             </div>
             <c:if test="${gameReviewData.averagePlatform != null}">
-                <div class="game-statistics">
-                    <span class="game-statistics-header"><spring:message code="game.details.review.statistics.platform" /></span>
-                    <span class="game-statistics-text"><spring:message code="${gameReviewData.averagePlatform.code}"/> </span>
+                <div class="card indigo darken-4 game-statistics-width">
+                    <div class="card-content white-text f-column f-gap-1 f-jc-start f-ai-center">
+                        <span class="game-statistics-header"><spring:message code="game.details.review.statistics.platform" /></span>
+                        <span class="game-statistics-text"><spring:message code="${gameReviewData.averagePlatform.code}"/> </span>
+                    </div>
                 </div>
             </c:if>
             <c:if test="${gameReviewData.averageDifficulty != null}">
-                <div class="game-statistics">
-                    <span class="game-statistics-header"><spring:message code="game.details.review.statistics.difficulty" /></span>
-                    <span class="game-statistics-text"><spring:message code="${gameReviewData.averageDifficulty.code}"/> </span>
+                <div class="card indigo darken-4 game-statistics-width">
+                    <div class="card-content white-text f-column f-gap-1 f-jc-start f-ai-center">
+                        <span class="game-statistics-header"><spring:message code="game.details.review.statistics.difficulty" /></span>
+                        <span class="game-statistics-text"><spring:message code="${gameReviewData.averageDifficulty.code}"/> </span>
+                    </div>
                 </div>
             </c:if>
             <c:if test="${gameReviewData.averageGameTime != 0}">
-                <div class="game-statistics">
-                    <span class="game-statistics-header"><spring:message code="game.details.review.statistics.gametime" /></span>
-                    <span class=game-statistics-number>${gameReviewData.averageGameTimeStringHs}hs</span>
+                <div class="card indigo darken-4 game-statistics-width">
+                    <div class="card-content white-text f-column f-gap-1 f-jc-start f-ai-center">
+                        <span class="game-statistics-header"><spring:message code="game.details.review.statistics.gametime" /></span>
+                        <span class=game-statistics-number>${gameReviewData.averageGameTimeStringHs}hs</span>
+                    </div>
                 </div>
             </c:if>
             <c:if test="${gameReviewData.replayability != 0}">
-                <div class="game-statistics">
-                    <span class="game-statistics-header"><spring:message code="game.details.review.statistics.replayability" /></span>
-                    <span class=game-statistics-number>${gameReviewData.replayabilityString}<span class="game-statistics-number-minor">%</span></span>
+                <div class="card indigo darken-4 game-statistics-width">
+                    <div class="card-content white-text f-column f-gap-1 f-jc-start f-ai-center">
+                        <span class="game-statistics-header"><spring:message code="game.details.review.statistics.replayability" /></span>
+                        <span class=game-statistics-number>${gameReviewData.replayabilityString}<span class="game-statistics-number-minor">%</span></span>
+                    </div>
                 </div>
             </c:if>
             <c:if test="${gameReviewData.completability != 0}">
-                <div class="game-statistics">
-                    <span class="game-statistics-header"><spring:message code="game.details.review.statistics.completability" /></span>
-                    <span class=game-statistics-number>${gameReviewData.completabilityString}<span class="game-statistics-number-minor">%</span></span>
+                <div class="card indigo darken-4 game-statistics-width">
+                    <div class="card-content white-text f-column f-gap-1 f-jc-start f-ai-center">
+                        <span class="game-statistics-header"><spring:message code="game.details.review.statistics.completability" /></span>
+                        <span class=game-statistics-number>${gameReviewData.completabilityString}<span class="game-statistics-number-minor">%</span></span>
+                    </div>
                 </div>
             </c:if>
         </div>
@@ -148,11 +160,26 @@
         <c:if test="${fn:length(reviews) % 2 == 1}">
             <div class="col m6"></div>
         </c:if>
-        <div class="col s12 center-align">
-            <c:if test="${fn:length(reviews) == currentPageSize}">
-                <button class="btn-flat btn-floating-color no-a-decoration"> <a href="${queryString}pageSize=${fn:length(reviews) + defaultPageSize}"> <spring:message code="for-you.more"/> </a></button>
+    </div>
+    <div class="row">
+        <ul class="center-align pagination">
+            <c:if test="${currentPage > 1}">
+                <li class="waves-effect"><a href="${queriesToKeepAtPageChange}page=${currentPage-1}"><i
+                        class="material-icons">chevron_left</i></a></li>
             </c:if>
-        </div>
+            <c:forEach var="i" begin="${initialPage}" end="${maxPages}">
+                <c:if test="${i == currentPage}">
+                    <li class="pagination-active"><a href="${queriesToKeepAtPageChange}page=${i}">${i}</a></li>
+                </c:if>
+                <c:if test="${i != currentPage}">
+                    <li class="waves-effect"><a href="${queriesToKeepAtPageChange}page=${i}">${i}</a></li>
+                </c:if>
+            </c:forEach>
+            <c:if test="${currentPage < maxPages}">
+                <li class="waves-effect"><a href="${queriesToKeepAtPageChange}page=${currentPage+1}"><i
+                        class="material-icons">chevron_right</i></a></li>
+            </c:if>
+        </ul>
     </div>
 </div>
 </body>

@@ -160,10 +160,10 @@ public class ReviewServiceImplTest {
         Mockito.when(userService.getFollowing(anyLong())).thenReturn(Arrays.asList(USER2, USER3));
         Mockito.when(reviewDao.findAll(any(), any(), any(), any()))
                 .thenReturn(new Paginated<>(1, 1, 1, Arrays.asList(REVIEW, REVIEW2, REVIEW3)));
-        List<Review> reviews = rs.getReviewsFromFollowingByUser(1L, 10);
-        Assert.assertTrue(reviews.contains(REVIEW));
-        Assert.assertTrue(reviews.contains(REVIEW2));
-        Assert.assertTrue(reviews.contains(REVIEW3));
+        Paginated<Review> reviews = rs.getReviewsFromFollowingByUser(1L, Page.with(1, 10));
+        Assert.assertTrue(reviews.getList().contains(REVIEW));
+        Assert.assertTrue(reviews.getList().contains(REVIEW2));
+        Assert.assertTrue(reviews.getList().contains(REVIEW3));
     }
 
     @Test

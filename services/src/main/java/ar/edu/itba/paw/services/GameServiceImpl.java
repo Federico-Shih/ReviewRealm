@@ -93,7 +93,7 @@ public class GameServiceImpl implements GameService {
         GameFilter filter = new GameFilterBuilder()
                 .withGameContent(searchFilter.getSearch())
                 .withGameGenres(searchFilter.getGenres())
-                .withRatingRange(searchFilter.getMinRating(), searchFilter.getMaxRating())
+                .withRatingRange(searchFilter.getMinRating(), searchFilter.getMaxRating(), searchFilter.getIncludeNoRating())
                 .withSuggestion(searchFilter.getSuggestion())
                 .build();
         return gameDao.findAll(page, filter, ordering);

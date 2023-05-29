@@ -241,6 +241,18 @@ nav {
     top: -4px !important;
 }
 
+.modal {
+    background: #13112D !important;
+    border: 1px solid #444155 !important;
+    border-radius: 10px !important;
+    height: fit-content !important;
+    overflow-y: clip !important;
+}
+
+.modal-footer {
+    background-color: #13112D !important;
+}
+
 .card {
     background: #13112D;
     border: 1px solid #444155;
@@ -295,7 +307,19 @@ nav {
 }
 
 .rr-blue-text {
-    color: #13112D;
+    color: #13112D !important;
+}
+
+.light-gray-text {
+    color: #939398 !important;
+}
+
+.dark-disabled {
+    pointer-events: none;
+    box-shadow: none;
+    background-color: transparent !important;
+    color: #464648 !important;
+    cursor: default;
 }
 
 .btn-floating-color{

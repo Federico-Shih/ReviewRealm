@@ -29,7 +29,7 @@
 </jsp:include>
 <c:url var="setPreferences" value="/profile/settings/preferences"/>
 <c:url var="searchUsers" value="/"/>
-<c:url value="/for-you" var="sendSearch"/>
+<c:url value="/for-you/" var="sendSearch"/>
 <c:url value="/for-you/discovery" var="discovery"/>
 <div class="for-you-page">
     <div class="for-you-section">
@@ -75,6 +75,8 @@
                            placeholder="<spring:message code="for-you.search-placeholder"/>">
                     <button class="btn-flat button-color white-text" type="submit"><i class="material-icons">search</i>
                     </button>
+                    <input type="hidden" name="page" value="${currentPage}">
+                    <input type="hidden" name="pagesize" value="${pagesize}">
                 </div>
             </div>
         </form>
@@ -110,10 +112,25 @@
                 <c:import url="/WEB-INF/jsp/review/review-card.jsp" />
             </c:forEach>
         </div>
-        <div class="f-row f-jc-center full-width">
-            <c:if test="${fn:length(reviewsFollowing) == size}">
-                <button class="btn-flat btn-floating-color no-a-decoration"> <a href="?size=${fn:length(reviewsFollowing) + 6}"> <spring:message code="for-you.more"/> </a></button>
-            </c:if>
+        <div class="row">
+            <ul class="center-align pagination">
+                <c:if test="${currentPage > 1}">
+                    <li class="waves-effect"><a href="${queriesToKeepAtPageChange}page=${currentPage-1}"><i
+                            class="material-icons">chevron_left</i></a></li>
+                </c:if>
+                <c:forEach var="i" begin="${initialPage}" end="${maxPages}">
+                    <c:if test="${i == currentPage}">
+                        <li class="pagination-active"><a href="${queriesToKeepAtPageChange}page=${i}">${i}</a></li>
+                    </c:if>
+                    <c:if test="${i != currentPage}">
+                        <li class="waves-effect"><a href="${queriesToKeepAtPageChange}page=${i}">${i}</a></li>
+                    </c:if>
+                </c:forEach>
+                <c:if test="${currentPage < maxPages}">
+                    <li class="waves-effect"><a href="${queriesToKeepAtPageChange}page=${currentPage+1}"><i
+                            class="material-icons">chevron_right</i></a></li>
+                </c:if>
+            </ul>
         </div>
     </div>
 </div>

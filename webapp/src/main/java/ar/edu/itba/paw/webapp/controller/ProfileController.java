@@ -22,14 +22,11 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Controller
-public class ProfileController extends PaginatedController {
+public class ProfileController extends PaginatedController implements QueryController {
     private static final Logger LOGGER = LoggerFactory.getLogger(ProfileController.class);
     private final UserService userService;
     private final ReviewService reviewService;
@@ -50,7 +47,8 @@ public class ProfileController extends PaginatedController {
                                 @RequestParam(value = "preferences-changed", required = false) Boolean preferencesChanged,
                                 @RequestParam(value = "avatar-changed", required = false) Boolean avatarChanged,
                                 @RequestParam(value = "notifications-changed", required = false) Boolean notificationsChanged,
-                                @RequestParam(value = "pageSize", required = false) Integer pageSize
+                                @RequestParam(value = "page", defaultValue = "1") Integer page,
+                                @RequestParam(value = "pagesize", defaultValue ="8" ) Integer pageSize
     )
     {
         final ModelAndView mav = new ModelAndView("profile/profile");
@@ -71,9 +69,14 @@ public class ProfileController extends PaginatedController {
         mav.addObject("games",gameService.getFavoriteGamesFromUser(userId));
         mav.addObject("profile",user.get());
         mav.addObject("userModerator", user.get().getRoles().contains(new Role(RoleType.MODERATOR.getRole())));
-        mav.addObject("reviews",reviewService.getUserReviews(Page.with(1, pageSize),user.get().getId(),loggedUser).getList());
-        mav.addObject("currentPageSize", pageSize);
-        mav.addObject("defaultPageSize", DEFAULT_PAGE_SIZE);
+
+        Paginated<Review> userReviews =reviewService.getUserReviews(Page.with(page, pageSize),user.get().getId(),loggedUser);
+        super.paginate(mav,userReviews);
+        mav.addObject("reviews",userReviews.getList());
+        List<Pair<String, Object>> queriesToKeepAtPageChange = new ArrayList<>();
+        queriesToKeepAtPageChange.add(new Pair<>("pagesize", pageSize));
+        mav.addObject("queriesToKeepAtPageChange", toQueryString(queriesToKeepAtPageChange));
+
         FollowerFollowingCount ffc = userService.getFollowerFollowingCount(userId);
         mav.addObject("followerCount", ffc.getFollowerCount());
         mav.addObject("followingCount", ffc.getFollowingCount());
@@ -258,34 +261,43 @@ public class ProfileController extends PaginatedController {
     }
 
     @RequestMapping(value="/for-you", method = RequestMethod.GET)
-    public ModelAndView forYouPage(@RequestParam(value = "size", required = false) Integer size,
+    public ModelAndView forYouPage(@RequestParam(value = "page", defaultValue = "1") Integer page,
+                                   @RequestParam(value = "pagesize", defaultValue = "8") Integer pageSize,
                                    @RequestParam(value= "search", defaultValue = "") String search,
                                    @RequestParam(value= "endofqueue", defaultValue = "false") Boolean endOfQueue){
         final ModelAndView mav = new ModelAndView("profile/for-you");
         User loggedUser = AuthenticationHelper.getLoggedUser(userService);
 
-        if(size == null || size < 1) {
-            size = DEFAULT_PAGE_SIZE;
+        if(pageSize == null || pageSize < 1) {
+            pageSize = DEFAULT_PAGE_SIZE;
         }
 
         if(!search.isEmpty()) {
             Paginated<User> searchedUsers = userService.getSearchedUsers(1, DEFAULT_PAGE_SIZE, search);
-            super.paginate(mav, searchedUsers);
             mav.addObject("users", searchedUsers.getList());
         }
+        Paginated<Review> reviewsFollowing =reviewService.getReviewsFromFollowingByUser(loggedUser.getId(), Page.with(page, DEFAULT_PAGE_SIZE));
+        super.paginate(mav, reviewsFollowing );
         mav.addObject("search", search);
-        mav.addObject("reviewsFollowing", reviewService.getReviewsFromFollowingByUser(loggedUser.getId(), size));
+        mav.addObject("reviewsFollowing",reviewsFollowing.getList() );
+
         mav.addObject("user", loggedUser);
         mav.addObject("userSetPreferences", loggedUser.hasPreferencesSet());
-        mav.addObject("size", size);
+        mav.addObject("pagesize", pageSize);
         mav.addObject("endOfQueue", endOfQueue);
+        List<Pair<String, Object>> queriesToKeepAtPageChange = new ArrayList<>();
 
+        queriesToKeepAtPageChange.add(new Pair<>("search", search));
+        queriesToKeepAtPageChange.add(new Pair<>("pagesize", pageSize));
+
+        mav.addObject("queriesToKeepAtPageChange", toQueryString(queriesToKeepAtPageChange));
         return mav;
     }
 
     @RequestMapping(value="/for-you/discovery", method = RequestMethod.GET)
     public ModelAndView discoveryQueue(@RequestParam(value="position", defaultValue = "0") Integer position,
-                                       @RequestParam(value = "pageSize", required = false) Integer pageSize){
+                                       @RequestParam(value = "page", defaultValue = "1") Integer page,
+                                       @RequestParam(value = "pagesize", defaultValue = "8") Integer pageSize){
         final ModelAndView mav = new ModelAndView("games/game-details");
         User loggedUser = AuthenticationHelper.getLoggedUser(userService);
         List<Game> recommendedGames = gameService.getRecommendationsOfGamesForUser(loggedUser);
@@ -308,11 +320,10 @@ public class ProfileController extends PaginatedController {
         Game game = recommendedGames.get(position);
         mav.addObject("game",game);
         GameReviewData reviewData = gameService.getGameReviewDataByGameId(game.getId());
-        List<Review> reviews = reviewService.getReviewsFromGame(Page.with(1, pageSize), game.getId(), loggedUser).getList();
+        Paginated<Review> reviews = reviewService.getReviewsFromGame(Page.with(page, pageSize), game.getId(), loggedUser);
+        super.paginate(mav,reviews);
         mav.addObject("gameReviewData", reviewData);
-        mav.addObject("reviews", reviews);
-        mav.addObject("currentPageSize", pageSize);
-        mav.addObject("defaultPageSize", DEFAULT_PAGE_SIZE);
+        mav.addObject("reviews", reviews.getList());
         mav.addObject("discoveryQueue",true);
         mav.addObject("positionInQueue", position);
         mav.addObject("queryString", "?position=" + position+"&");

@@ -16,18 +16,17 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            var elems = document.querySelectorAll('.dropdown-trigger');
-            var instances = M.Dropdown.init(elems, {
-                alignment: 'right',
-                coverTrigger: false,
-            });
+        document.addEventListener('DOMContentLoaded', function() {
+            var elems = document.querySelectorAll('.modal');
+            var instances = M.Modal.init(elems);
         });
         <c:if test="${created}">
             document.addEventListener('DOMContentLoaded', function () {
                 M.toast({html: '<spring:message code="review.created" />', classes: 'created-toast'});
             });
         </c:if>
+        var elemsTooltip = document.querySelectorAll('.tooltipped');
+        var instancesTooltip = M.Tooltip.init(elemsTooltip, {});
     </script>
     <script src="<c:url value="/js/reviewfeedback.js" />"></script>
 
@@ -53,67 +52,36 @@
             <div class="card card-background">
                 <div class="card-content">
                     <div class="card-title row">
-                        <div class="col s8">
+                        <div class="col s6">
                             <c:out value="${review.title}"/>
                         </div>
-                        <div class="col s4 right-align">
-                            <span id="review-card-score"><c:out value="${review.rating}" /></span>/10
-                            <c:if test="${isModerated || isOwner}">
-                                <span>
-                                    <a class="dropdown-trigger btn valign-wrapper" href="#" data-target="dropdown-mod">
-                                        <i class="material-icons" aria-hidden="true">settings</i>
-                                    </a>
-                                    <ul id="dropdown-mod" class="dropdown-content dropdown-container">
-                                        <li class="actions-container">
-                                            <c:if test="${isOwner}">
-                                                <c:url value="/review/${review.id}/edit" var="reviewEditUrl"/>
-                                                <form action="${reviewEditUrl}" method="get" >
-                                                    <button class="waves-effect btn-flat valign-wrapper white-text f-row f-ai-center highlight" type="submit">
-                                                        <i class="material-icons">edit</i>
-                                                        <span><spring:message code="review.edit"/></span>
-                                                    </button>
-                                                </form>
-                                            </c:if>
-                                            <c:if test="${isModerated}">
-                                                <c:url value="/review/delete/${review.id}" var="moderateUrl" />
-                                                <form action="${moderateUrl}" method="post" >
-                                                    <button class="waves-effect btn-flat valign-wrapper red-text f-row f-ai-center highlight" type="submit">
-                                                        <i class="material-icons">delete</i>
-                                                        <span><spring:message code="review.delete"/></span>
-                                                    </button>
-                                                </form>
-                                            </c:if>
-                                        </li>
-                                    </ul>
-                                </span>
-                            </c:if>
+                        <div class="col s6 right-align f-row f-jc-end">
+                            <div class="f-row f-ai-baseline">
+                                <span id="review-card-score"><c:out value="${review.rating}" /></span>/10
+                            </div>
+                            <div>
+                                <c:if test="${isOwner}">
+                                    <c:url value="/review/${review.id}/edit" var="reviewEditUrl"/>
+                                    <form action="${reviewEditUrl}" method="get" >
+                                        <button data-position="bottom" data-tooltip="<spring:message code="review.edit" />" class="tooltipped waves-effect btn-flat valign-wrapper highlight light-gray-text" type="submit">
+                                            <i class="material-icons">edit</i>
+                                        </button>
+                                    </form>
+                                </c:if>
+                            </div>
+                            <div>
+                                <c:if test="${isModerated}">
+                                    <c:url value="/review/delete/${review.id}" var="moderateUrl" />
+                                    <button data-position="bottom" data-tooltip="<spring:message code="review.delete" />" class="tooltipped waves-effect btn-flat valign-wrapper highlight light-gray-text modal-trigger" data-target="delete-confirmation-modal">
+                                        <i class="material-icons">delete</i>
+                                    </button>
+                                </c:if>
+                            </div>
                         </div>
-
                     </div>
                     <div class="divider-h"></div>
                     <div class="card-content-container-detail">
                         <c:out value="${review.content}"/>
-                    </div>
-                    <div class="divider-h"></div>
-                    <div class="review-card-feedback-footer-big">
-                        <span><c:out value="${review.likeCounter}"/></span>
-                        <c:url value="/review/feedback/${review.id}" var="updateFeedback"/>
-                        <form name="likeFeedbackForm" class="feedback-form" method="post" action="${updateFeedback}">
-                            <button name="feedback"
-                                    class="btn-flat waves-effect waves-light ${(review.feedback == "LIKE")? "white-text":""}"
-                                    value="LIKE">
-                                <i class="material-icons like-dislike-buttons">thumb_up</i>
-                            </button>
-                            <input type="hidden" name="url" value="${baseUrl}"/>
-                        </form>
-                        <form name="dislikeFeedbackForm" class="feedback-form" method="post" action="${updateFeedback}">
-                            <button name="feedback"
-                                    class="btn-flat waves-effect waves-light ${(review.feedback == "DISLIKE")? "white-text":""}"
-                                    value="DISLIKE">
-                                <i class="material-icons like-dislike-buttons">thumb_down</i>
-                            </button>
-                            <input type="hidden" name="url" value="${baseUrl}"/>
-                        </form>
                     </div>
                     <c:if test="${review.gameLength != null}">
                         <div class="divider-h"></div>
@@ -133,24 +101,32 @@
                         <div class="col s12">
                             <spring:message code="review.tags"/>
                             <c:if test="${review.platform != null}">
-                                <div class="chip chip-color">
-                                    <spring:message code="${review.platform.code}"/>
-                                </div>
+                                <a href="<c:url value="/?f-plt=${review.platform.id}"/>">
+                                    <div class="chip chip-color">
+                                        <spring:message code="${review.platform.code}"/>
+                                    </div>
+                                </a>
                             </c:if>
                             <c:if test="${review.difficulty != null}">
-                                <div class="chip chip-color">
-                                    <spring:message code="${review.difficulty.code}"/>
-                                </div>
+                                <a href="<c:url value="/?f-dif=${review.difficulty.id}"/>">
+                                    <div class="chip chip-color">
+                                        <spring:message code="${review.difficulty.code}"/>
+                                    </div>
+                                </a>
                             </c:if>
                             <c:if test="${review.completed != null && review.completed}">
-                                <div class="chip chip-color">
-                                    <spring:message code="reviewForm.completed"/>
-                                </div>
+                                <a href="<c:url value="/?f-cpt=on"/>">
+                                    <div class="chip chip-color">
+                                        <spring:message code="reviewForm.completed"/>
+                                    </div>
+                                </a>
                             </c:if>
                             <c:if test="${review.replayability != null && review.replayability}">
-                                <div class="chip chip-color">
-                                    <spring:message code="review.replayable"/>
-                                </div>
+                                <a href="<c:url value="/?f-rpl=on"/>">
+                                    <div class="chip chip-color">
+                                        <spring:message code="review.replayable"/>
+                                    </div>
+                                </a>
                             </c:if>
                         </div>
                         <div class="col s12 right right-align">
@@ -175,11 +151,54 @@
                     </div>
                 </div>
             </div>
+            <div class="card card-background">
+                <div class="review-card-feedback-footer-big">
+                    <div class="f-row f-ai-baseline">
+                        <span id="review-popularity-tag" class="no-wrap"><spring:message code="review.popularity"/>:</span>
+                        <span id="review-popularity-value" class="no-wrap"><c:out value="${review.likeCounter}"/></span>
+                    </div>
+                    <div class="f-row f-jc-end f-ai-baseline">
+                        <span><spring:message code="review.didyoulikereview"/></span>
+                        <c:url value="/review/feedback/${review.id}" var="updateFeedback"/>
+                        <form name="likeFeedbackForm" class="feedback-form" method="post" action="${updateFeedback}">
+                            <button name="feedback"
+                                    class="btn-flat waves-effect waves-light ${(loggedUser == null || isOwner)? "dark-disabled": ((review.feedback == "LIKE")? "white-text":"light-gray-text")}"
+                                    value="LIKE">
+                                <i class="material-icons like-dislike-buttons">thumb_up</i>
+                            </button>
+                            <input type="hidden" name="url" value="${baseUrl}"/>
+                        </form>
+                        <form name="dislikeFeedbackForm" class="feedback-form" method="post" action="${updateFeedback}">
+                            <button name="feedback"
+                                    class="btn-flat waves-effect waves-light ${(loggedUser == null || isOwner)? "dark-disabled": ((review.feedback == "DISLIKE")? "white-text":"light-gray-text")}"
+                                    value="DISLIKE">
+                                <i class="material-icons like-dislike-buttons">thumb_down</i>
+                            </button>
+                            <input type="hidden" name="url" value="${baseUrl}"/>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
         <div class="col s12 l4">
             <c:set var="game" value="${game}" scope="request"/>
             <c:set var="gameUrl" value="${gameUrl}" scope="request"/>
             <c:import url="/WEB-INF/jsp/games/short-game-details.jsp"/>
+        </div>
+    </div>
+</div>
+<div id="delete-confirmation-modal" class="modal">
+    <div class="modal-content">
+        <h5><spring:message code="review.delete.confirmation"/></h5>
+    </div>
+    <div class="modal-footer f-row f-jc-end f-gap-2">
+        <a href="#" class="modal-close waves-effect btn-flat white-text"><spring:message code="cancel.button"/></a>
+        <div>
+            <form action="${moderateUrl}" method="post">
+                <button class="waves-effect btn" type="submit">
+                    <spring:message code="review.delete"/>
+                </button>
+            </form>
         </div>
     </div>
 </div>

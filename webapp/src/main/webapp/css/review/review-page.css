@@ -22,26 +22,32 @@
     width: 100%;
     height: 100%;
 }
+.search-game-review-header{
+    font-size: 28px;
+    font-weight: 600;
+}
 
 .line {
     border: 1px solid #FFFFFF;
     width: 100%;
 }
 
+.title-input {
+    width: 70%;
+}
+
 .rating-input {
+
     display: flex;
     flex-direction: row;
-    position: absolute;
-    top: 20px;
-    right: 15px;
     height: 40px;
-    width: 4.5em;
+    width: auto;
 }
 
 .total-rating {
     position: absolute;
     right: 0;
-    bottom: 7px;
+    bottom: 0;
 }
 
 input::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */

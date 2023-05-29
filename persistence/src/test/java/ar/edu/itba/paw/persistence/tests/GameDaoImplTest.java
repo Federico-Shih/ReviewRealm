@@ -606,7 +606,7 @@ public class GameDaoImplTest {
         Long gameId1 = insertGame(1L, SUGGESTED, 10, 1);
         Long gameId2 = insertGame(2L, SUGGESTED, 16, 2);
         Long gameId3 = insertGame(3L, SUGGESTED, 3, 3);
-        GameFilterBuilder filterBuilder = new GameFilterBuilder().withRatingRange(8.0f, 10.0f);
+        GameFilterBuilder filterBuilder = new GameFilterBuilder().withRatingRange(8.0f, 10.0f, false);
         List<Game> games = gameDao.findAll(Page.with(1, 10), filterBuilder.build(), new Ordering<>(OrderDirection.DESCENDING, GameOrderCriteria.AVERAGE_RATING)).getList();
 
         Assert.assertEquals(2, games.size());
@@ -619,7 +619,7 @@ public class GameDaoImplTest {
         Long gameId1 = insertGame(1L, SUGGESTED, 17, 2);
         Long gameId2 = insertGame(2L, SUGGESTED, 16, 2);
         Long gameId3 = insertGame(3L, SUGGESTED, 3, 3);
-        GameFilterBuilder filterBuilder = new GameFilterBuilder().withRatingRange(9.5f, 9.9f);
+        GameFilterBuilder filterBuilder = new GameFilterBuilder().withRatingRange(9.5f, 9.9f, false);
         List<Game> games = gameDao.findAll(Page.with(1, 10), filterBuilder.build(), new Ordering<>(OrderDirection.DESCENDING, GameOrderCriteria.AVERAGE_RATING)).getList();
 
         Assert.assertTrue(games.isEmpty());

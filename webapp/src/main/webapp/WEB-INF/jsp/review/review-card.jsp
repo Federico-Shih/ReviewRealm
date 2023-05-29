@@ -77,13 +77,13 @@
                         <span><c:out value="${review.likeCounter}"/></span>
                         <c:url value="/review/feedback/${review.id}" var="updateFeedback" />
                         <form name="likeFeedbackForm" class="feedback-form no-margin" method="post" action="${updateFeedback}">
-                            <button name="feedback" class="no-padding btn-flat waves-effect waves-light ${ (review.feedback == "LIKE")? "white-text":""}" value="LIKE">
+                            <button name="feedback" class="no-padding btn-flat waves-effect waves-light ${(loggedUser == null || loggedUser.id == review.author.id)? "dark-disabled": ((review.feedback == "LIKE")? "white-text":"light-gray-text")}" value="LIKE">
                                 <i class="material-icons like-dislike-buttons">thumb_up</i>
                             </button>
                             <input type="hidden" name="url" value="${baseUrl}"/>
                         </form>
                         <form name="dislikeFeedbackForm" class="feedback-form no-margin" method="post" action="${updateFeedback}" >
-                            <button name="feedback" class="no-padding btn-flat waves-effect waves-light ${ (review.feedback == "DISLIKE")? "white-text":""}" value="DISLIKE">
+                            <button name="feedback" class="no-padding btn-flat waves-effect waves-light ${(loggedUser == null || loggedUser.id == review.author.id)? "dark-disabled": ((review.feedback == "DISLIKE")? "white-text":"light-gray-text")}" value="DISLIKE">
                                 <i class="material-icons like-dislike-buttons">thumb_down</i>
                             </button>
                             <input type="hidden" name="url" value="${baseUrl}"/>

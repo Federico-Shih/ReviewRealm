@@ -43,7 +43,7 @@ public class ReviewController extends PaginatedController implements QueryContro
     private static final int MAX_PAGES_PAGINATION = 6;
     private static final int PAGE_SIZE = 8;
     private static final int INITIAL_PAGE = 1;
-    private static final int MAX_SEARCH_RESULTS = 5;
+    private static final int MAX_SEARCH_RESULTS = 6;
 
     @Autowired
     public ReviewController(GameService gameService, ReviewService reviewService, UserService userService) {
@@ -52,31 +52,52 @@ public class ReviewController extends PaginatedController implements QueryContro
         this.reviewService = reviewService;
         this.userService = userService;
     }
+    @RequestMapping(value = "/review/submit/search")
+    public ModelAndView searchGames(@RequestParam(value = "searchquery", defaultValue = "") String searchquery,
+                                    @RequestParam(value = "page", defaultValue = "1") Integer page,
+                                    @RequestParam(value = "pagesize", defaultValue = "6") Integer pageSize) {
 
-    @RequestMapping(value = "/review/submit", method = {RequestMethod.GET, RequestMethod.POST})
-    public ModelAndView createReviewForm(@RequestParam(value = "gameId", defaultValue = "0", required = false) Long gameId,
-                                         @RequestParam(value = "search", defaultValue = "") String search,
+        ModelAndView mav = new ModelAndView("/review/submit-review-search");
+
+        if(pageSize == null || pageSize < 1) {
+            pageSize = MAX_SEARCH_RESULTS;
+        }
+
+        GameSearchFilter filter = new GameSearchFilterBuilder().withSearch(searchquery).build();
+        Paginated<Game> games = gameService.searchGames(Page.with(page, pageSize), filter,new Ordering<>(OrderDirection.ASCENDING, GameOrderCriteria.NAME));
+        super.paginate(mav,games);
+        mav.addObject("games", games.getList());
+        mav.addObject("searchField", searchquery);
+
+        List<Pair<String, Object>> queriesToKeepAtPageChange = new ArrayList<>();
+        queriesToKeepAtPageChange.add(new Pair<>("searchquery", searchquery));
+        queriesToKeepAtPageChange.add(new Pair<>("pagesize", pageSize));
+        mav.addObject("queriesToKeepAtPageChange", toQueryString(queriesToKeepAtPageChange));
+
+        return mav;
+    }
+    @RequestMapping(value = "/review/submit/{gameId:\\d+}", method = RequestMethod.GET)
+    public ModelAndView createReviewForm(@PathVariable(value = "gameId") Long gameId,
                                          @ModelAttribute("reviewForm") final SubmitReviewForm form) {
         ModelAndView mav = new ModelAndView("/review/submit-review");
-        if(gameId != null && gameId != 0) {
-            Optional<Game> reviewedGame = gameService.getGameById(gameId);
-            if (!reviewedGame.isPresent()) {
-                throw new ObjectNotFoundException("game.notfound");
-            }
-            mav.addObject("game", reviewedGame.get());
+        if(gameId == 0){
+            return new ModelAndView("redirect:/review/submit/search");
         }
-        GameSearchFilter filter = new GameSearchFilterBuilder().withSearch(search).build();
-        if(!search.isEmpty()){
-            mav.addObject("searchedGames", gameService.searchGames(Page.with(1, MAX_SEARCH_RESULTS), filter,new Ordering<>(OrderDirection.ASCENDING, GameOrderCriteria.NAME)).getList());
-        }else{
-            mav.addObject("searchedGames", new ArrayList<Game>());
+        Optional<Game> reviewedGame = gameService.getGameById(gameId);
+        if (!reviewedGame.isPresent()) {
+            throw new ObjectNotFoundException("game.notfound");
         }
+        mav.addObject("edit", false);
+        mav.addObject("game", reviewedGame.get());
         mav.addObject("selectedGameId", gameId);
-        mav.addObject("searchField", search);
         mav.addObject("platforms", Platform.values());
         mav.addObject("difficulties", Difficulty.values());
         mav.addObject("units", GamelengthUnit.values());
         return mav;
+    }
+    @RequestMapping(value = "/review/submit/", method = RequestMethod.GET)
+    public ModelAndView createReviewForm() {
+        return new ModelAndView("redirect:/review/submit/search");
     }
 
     @RequestMapping(value = "/review/{id:\\d+}", method = RequestMethod.GET)
@@ -103,7 +124,7 @@ public class ReviewController extends PaginatedController implements QueryContro
             final BindingResult errors
     ) {
         if (errors.hasErrors()) {
-            return createReviewForm(gameId, "",form);
+            return createReviewForm(gameId, form);
         }
         Review createdReview;
         User author = AuthenticationHelper.getLoggedUser(userService);
@@ -126,6 +147,7 @@ public class ReviewController extends PaginatedController implements QueryContro
         return new ModelAndView("redirect:/review/" + createdReview.getId() + "?created=true");
     }
 
+
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public ModelAndView reviewList(
             @RequestParam(value = "o-crit", defaultValue = "0") Integer orderCriteria,
@@ -136,6 +158,7 @@ public class ReviewController extends PaginatedController implements QueryContro
             @RequestParam(value = "f-plt", defaultValue = "") List<Integer> platformsFilter,
             @RequestParam(value = "f-dif", defaultValue = "") List<Integer> difficultyFilter,
             @RequestParam(value = "f-cpt", defaultValue = "") Boolean completedFilter,
+            @RequestParam(value = "f-rpl", defaultValue = "") Boolean replayableFilter,
             @RequestParam(value = "page", defaultValue = "1") Integer page,
             @RequestParam(value = "pageSize", required = false) Integer pageSize,
             @RequestParam(value = "search", defaultValue = "") String search
@@ -170,6 +193,7 @@ public class ReviewController extends PaginatedController implements QueryContro
                         .collect(Collectors.toList())
                 )
                 .withCompleted((completedFilter!=null && completedFilter)? true : null)
+                .withReplayable((replayableFilter!=null && replayableFilter)? true : null)
                 .withPreferences(preferencesFilter)
                 .withSearch(search)
                 .withMinTimePlayed(minTimePlayed);
@@ -195,10 +219,11 @@ public class ReviewController extends PaginatedController implements QueryContro
         mav.addObject("platformsFilter", new FilteredList<Platform>(Arrays.asList(Platform.values()), (platform) -> platformsFilter.contains(platform.getId())));
         mav.addObject("difficultiesFilter", new FilteredList<Difficulty>(Arrays.asList(Difficulty.values()), (difficulty) -> difficultyFilter.contains(difficulty.getId())));
         mav.addObject("completedFilter", completedFilter);
+        mav.addObject("replayableFilter", replayableFilter);
         mav.addObject("selectedOrderDirection", OrderDirection.fromValue(orderDirection));
         mav.addObject("selectedOrderCriteria", ReviewOrderCriteria.fromValue(orderCriteria));
         mav.addObject("minTimePlayed", minTimePlayed);
-        if(orderCriteria== 0 && orderDirection == 0 && genresFilter.isEmpty() && timePlayedFilter.isEmpty() && preferencesFilter.isEmpty() && platformsFilter.isEmpty() && difficultyFilter.isEmpty() && completedFilter == null) {
+        if(orderCriteria== 0 && orderDirection == 0 && genresFilter.isEmpty() && timePlayedFilter.isEmpty() && preferencesFilter.isEmpty() && platformsFilter.isEmpty() && difficultyFilter.isEmpty() && completedFilter == null && replayableFilter == null) {
             mav.addObject("showResetFiltersButton", false);
         } else {
             mav.addObject("showResetFiltersButton", true);
@@ -214,6 +239,8 @@ public class ReviewController extends PaginatedController implements QueryContro
         queriesToKeepAtPageChange.addAll(difficultyFilter.stream().map((value) -> Pair.of("f-dif", (Object)value)).collect(Collectors.toList()));
         if(completedFilter!=null)
             queriesToKeepAtPageChange.add(Pair.of("f-cpt", completedFilter));
+        if(replayableFilter!=null)
+            queriesToKeepAtPageChange.add(Pair.of("f-rpl", replayableFilter));
         queriesToKeepAtPageChange.add(Pair.of("f-tpl", timePlayedFilter));
 
         mav.addObject("queriesToKeepAtPageChange", toQueryString(queriesToKeepAtPageChange));
@@ -270,7 +297,8 @@ public class ReviewController extends PaginatedController implements QueryContro
         User user = AuthenticationHelper.getLoggedUser(userService);
         Review review = reviewService.getReviewById(reviewId, user).orElseThrow(() -> new ObjectNotFoundException("review.notfound"));
         form.fromReview(review);
-        ModelAndView mav = new ModelAndView("review/review-edit");
+        ModelAndView mav = new ModelAndView("review/submit-review");
+        mav.addObject("edit", true);
         mav.addObject("game", review.getReviewedGame());
         mav.addObject("id", reviewId);
         mav.addObject("platforms", Platform.values());

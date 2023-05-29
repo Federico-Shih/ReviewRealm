@@ -106,7 +106,8 @@ public class ReviewHibernateDao implements ReviewDao, PaginationDao<ReviewFilter
                 .AND()
                 .withList("r.authorid", filter.getAuthors())
                 .withExact("r.gameid", filter.getGameId())
-                .withExact("r.completed", filter.getCompleted());
+                .withExact("r.completed", filter.getCompleted())
+                .withExact("r.replayability", filter.getReplayable());
         if (filter.getMinTimePlayed() != null) {
             queryBuilder = queryBuilder.withGreaterOrEqual("COALESCE(r.gamelength, 0)", 3600 * filter.getMinTimePlayed());
         }

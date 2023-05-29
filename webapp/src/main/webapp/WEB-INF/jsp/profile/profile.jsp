@@ -93,7 +93,7 @@
                         <spring:message code="profile.reputation" arguments="${profile.reputation}"/>
                     </span>
                 </div>
-                <div class="">
+                <div>
                     <c:if test="${!isProfileSelf}">
                         <c:if test="${following == null || !following}">
                             <c:url value="/profile/follow/${profile.id}" var="follow"/>
@@ -177,7 +177,6 @@
     <div class="profile-reviews-panel">
         <h5>
             <spring:message code="profile.reviews" arguments="${profile.username}"/>
-            <span class="profile-reviews-count">(${fn:length(reviews)})</span>
         </h5>
         <div class="row">
             <c:forEach var="review" items="${reviews}">
@@ -186,13 +185,35 @@
             </c:forEach>
             <c:if test="${fn:length(reviews) == 0}">
                 <div>
-                    <span><spring:message code="profile.noreviews"/></span>
+                    <c:if test="${isProfileSelf}">
+                        <a href="<c:url value="/review/submit/search"/>">
+                            <span><spring:message code="profile.noreviews.ownprofile"/></span>
+                        </a>
+                    </c:if>
+                    <c:if test="${!isProfileSelf}">
+                        <span><spring:message code="profile.noreviews"/></span>
+                    </c:if>
                 </div>
             </c:if>
-            <div class="col s12 center-align">
-                <c:if test="${fn:length(reviews) == currentPageSize}">
-                    <button class="btn-flat btn-floating-color no-a-decoration"> <a href="?pageSize=${fn:length(reviews) + defaultPageSize}"> <spring:message code="for-you.more"/> </a></button>
-                </c:if>
+            <div class="row">
+                <ul class="center-align pagination">
+                    <c:if test="${currentPage > 1}">
+                        <li class="waves-effect"><a href="${queriesToKeepAtPageChange}page=${currentPage-1}"><i
+                                class="material-icons">chevron_left</i></a></li>
+                    </c:if>
+                    <c:forEach var="i" begin="${initialPage}" end="${maxPages}">
+                        <c:if test="${i == currentPage}">
+                            <li class="pagination-active"><a href="${queriesToKeepAtPageChange}page=${i}">${i}</a></li>
+                        </c:if>
+                        <c:if test="${i != currentPage}">
+                            <li class="waves-effect"><a href="${queriesToKeepAtPageChange}page=${i}">${i}</a></li>
+                        </c:if>
+                    </c:forEach>
+                    <c:if test="${currentPage < maxPages}">
+                        <li class="waves-effect"><a href="${queriesToKeepAtPageChange}page=${currentPage+1}"><i
+                                class="material-icons">chevron_right</i></a></li>
+                    </c:if>
+                </ul>
             </div>
         </div>
     </div>

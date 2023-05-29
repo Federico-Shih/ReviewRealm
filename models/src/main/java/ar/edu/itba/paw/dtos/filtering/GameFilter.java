@@ -10,15 +10,17 @@ public class GameFilter {
     private final String publisher;
     private final Float minRating;
     private final Float maxRating;
+    private final boolean includeNoRating;
     private final Boolean isSuggested;
 
-    public GameFilter(List<Integer> gameGenres, String gameContent, String developer, String publisher, Float minRating, Float maxRating, Boolean isSuggested) {
+    public GameFilter(List<Integer> gameGenres, String gameContent, String developer, String publisher, Float minRating, Float maxRating, boolean includeNoRating, Boolean isSuggested) {
         this.gameGenres = gameGenres;
         this.gameContent = gameContent;
         this.developer = developer;
         this.publisher = publisher;
         this.minRating = minRating;
         this.maxRating = maxRating;
+        this.includeNoRating = includeNoRating;
         this.isSuggested = isSuggested;
     }
 
@@ -45,6 +47,8 @@ public class GameFilter {
     public Float getMaxRating() {
         return maxRating;
     }
+
+    public boolean getIncludeNoRating() { return includeNoRating; }
 
     public Boolean getSuggested() { return isSuggested; }
 }

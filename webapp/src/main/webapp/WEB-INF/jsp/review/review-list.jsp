@@ -91,6 +91,16 @@
                 }
             });
         });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            var elems = document.querySelectorAll('.pushpin');
+            var instances = M.Pushpin.init(elems, {
+                top: 112,
+                offset: 8,
+            });
+        });
+
+
     </script>
 </head>
 <c:url value="/" var="applyFilters"/>
@@ -105,15 +115,23 @@
         <form action="${applyFilters}">
             <div class="review-filters-panel">
                 <div class="review-filters-panel-section">
-                    <button type="submit" class="btn"><spring:message code="apply.filters"/></button>
-                    <c:if test="${showResetFiltersButton}">
-                        <a href="${queriesToKeepAtRemoveFilters}">
-                            <button type="button" class="remove-filter-button btn-small blue-grey darken-3 height-fit-content">
-                                <i class="material-icons">clear</i>
-                                <span><spring:message code="remove.filters"/></span>
-                            </button>
-                        </a>
-                    </c:if>
+                    <div class="apply-filters-panel f-row pushpin">
+                        <div>
+                            <div class="full-width">
+                                <button type="submit" class="btn full-width"><spring:message code="apply.filters"/></button>
+                            </div>
+                            <div class="full-width">
+                                <c:if test="${showResetFiltersButton}">
+                                    <a href="${queriesToKeepAtRemoveFilters}">
+                                        <button type="button" class="full-width f-row f-ai-center remove-filter-button btn-small blue-grey darken-3 height-fit-content">
+                                            <i class="material-icons">clear</i>
+                                            <span><spring:message code="remove.filters"/></span>
+                                        </button>
+                                    </a>
+                                </c:if>
+                            </div>
+                        </div>
+                    </div>
                     <span class="review-filters-panel-title"><spring:message code="order.by"/></span>
                     <div>
                         <c:forEach var="criteria" items="${orderCriteria}">
@@ -155,6 +173,11 @@
                         <input name="f-cpt" type="checkbox" class="filled-in" <c:if
                                 test="${completedFilter == true}"> checked </c:if> />
                         <span><spring:message code="review.completed.game"/></span>
+                    </label>
+                    <label class="margin-top-2">
+                        <input name="f-rpl" type="checkbox" class="filled-in" <c:if
+                                test="${replayableFilter == true}"> checked </c:if> />
+                        <span><spring:message code="review.replayable"/></span>
                     </label>
                     <ul id="genres-collapsible" class="collapsible review-filters-collapsible-button">
                         <li>

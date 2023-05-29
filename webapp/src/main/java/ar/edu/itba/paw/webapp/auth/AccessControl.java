@@ -22,7 +22,16 @@ public class AccessControl {
 
     public boolean checkReviewAuthorOwner(Long reviewId) {
         User activeUser = AuthenticationHelper.getLoggedUser(userService);
+        if(activeUser == null)
+            return false;
         Optional<Review> review = reviewService.getReviewById(reviewId, activeUser);
-        return review.filter(value -> Objects.equals(value.getAuthor().getId(), activeUser.getId())).isPresent();
+        return review.isPresent() && Objects.equals(review.get().getAuthor().getId(), activeUser.getId());
+    }
+    public boolean checkReviewAuthorforFeedback(Long reviewId){
+        User activeUser = AuthenticationHelper.getLoggedUser(userService);
+        if(activeUser == null)
+            return false;
+        Optional<Review> review = reviewService.getReviewById(reviewId, activeUser);
+        return review.isPresent() && !Objects.equals(review.get().getAuthor().getId(), activeUser.getId());
     }
 }

@@ -124,6 +124,7 @@ public class ReviewServiceImpl implements ReviewService {
                 .withPlatforms(searchFilter.getPlatforms())
                 .withDifficulties(searchFilter.getDifficulties())
                 .withCompleted(searchFilter.getCompleted())
+                .withReplayable(searchFilter.getReplayable())
                 .withReviewContent(searchFilter.getSearch())
                 .build();
         return reviewDao.findAll(page, filter, ordering, (activeUser != null) ? activeUser.getId() : null);
@@ -131,18 +132,15 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<Review> getReviewsFromFollowingByUser(Long userId, Integer size) {
-        if(size<=0){
-            return null;
-        }
+    public Paginated<Review> getReviewsFromFollowingByUser(Long userId, Page page) {
         List<User> followingUsers = userService.getFollowing(userId);
         if(followingUsers.isEmpty()){
-            return new ArrayList<>();
+            return new Paginated<>(page.getPageNumber(),page.getPageSize(),0, new ArrayList<>());
         }
         List<Long> followingIds = followingUsers.stream().map((User::getId)).collect(Collectors.toList());
         ReviewFilterBuilder filterBuilder = new ReviewFilterBuilder()
                 .withAuthors(followingIds);
-        return reviewDao.findAll(Page.with(1, size), filterBuilder.build(), Ordering.defaultOrder(ReviewOrderCriteria.REVIEW_DATE), userId).getList();
+        return reviewDao.findAll(page, filterBuilder.build(), Ordering.defaultOrder(ReviewOrderCriteria.REVIEW_DATE), userId);
     }
 
     @Transactional

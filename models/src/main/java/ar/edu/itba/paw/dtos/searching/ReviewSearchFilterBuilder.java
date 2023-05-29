@@ -12,6 +12,7 @@ public class ReviewSearchFilterBuilder {
     private List<Platform> platforms = null;
     private List<Difficulty> difficulties = null;
     private Boolean completed = null;
+    private Boolean replayable = null;
     private String search = null;
 
     public ReviewSearchFilterBuilder withGenres(List<Integer> genres) {
@@ -44,13 +45,18 @@ public class ReviewSearchFilterBuilder {
         return this;
     }
 
+    public ReviewSearchFilterBuilder withReplayable(Boolean replayable) {
+        this.replayable = replayable;
+        return this;
+    }
+
     public ReviewSearchFilterBuilder withSearch(String search) {
         this.search = search;
         return this;
     }
 
     public ReviewSearchFilter build() {
-        return new ReviewSearchFilter(genres, preferences, minTimePlayed, platforms, difficulties, completed, search);
+        return new ReviewSearchFilter(genres, preferences, minTimePlayed, platforms, difficulties, completed, replayable, search);
     }
 
 }

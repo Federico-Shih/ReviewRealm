@@ -47,7 +47,7 @@ public interface ReviewService {
 
     List<Review> getAllReviewsFromGame(Long gameId, User activeUser);
 
-    List<Review> getReviewsFromFollowingByUser(Long userId, Integer size);
+    Paginated<Review> getReviewsFromFollowingByUser(Long userId, Page page);
 
     boolean deleteReviewById(Long id);
 

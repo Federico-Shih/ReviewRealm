@@ -110,14 +110,26 @@
 .review-card-feedback-footer-big{
     display: flex;
     flex-direction: row;
-    justify-content: flex-end;
+    justify-content: space-between;
     align-items: baseline;
     font-size: 14px;
     gap: 2%;
+    padding: 1em 1em 0 1em;
+}
+
+#review-popularity-tag {
+    font-size: 14px;
+    font-weight: 500;
+    margin-right: 4px;
+}
+
+#review-popularity-value {
+    font-size: 16px;
+    font-weight: 700;
 }
 
 .like-dislike-buttons {
-    font-size: 16px !important;
+    font-size: 20px !important;
 }
 
 #review-card-game-title {
@@ -198,6 +210,13 @@
     width: 100%;
 }
 
+.apply-filters-panel {
+    background: #13112D;
+    border: 1px solid #444155;
+    padding: 8px;
+    z-index: 10;
+}
+
 .review-filters-panel-title {
     font-size: 20px;
     font-weight: 700;
@@ -212,7 +231,7 @@
 .remove-filter-button {
     display: flex;
     gap: 4px;
-    margin: 6px 0;
+    margin: 6px 0 0 0;
 }
 
 .review-filters-collapsible-button {

@@ -12,12 +12,14 @@
             alignment: 'right',
             coverTrigger: false,
         });
+        var elemsTooltip = document.querySelectorAll('.tooltipped');
+        var instancesTooltip = M.Tooltip.init(elemsTooltip, {});
     });
 </script>
 
-<c:url value="/review/submit" var="submit_review"/>
+<c:url value="/review/submit/search" var="submit_review"/>
 <div class="fixed-action-btn">
-    <a class="btn-floating btn-large" href="${submit_review}">
+    <a data-position="left" data-tooltip="<spring:message code="review.create" />" class="tooltipped btn-floating btn-large" href="${submit_review}">
         <i class="large material-icons">create</i>
     </a>
 </div>

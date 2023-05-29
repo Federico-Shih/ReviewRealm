@@ -5,7 +5,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <html>
 <c:url value="/review/submit/${game.id}" var="submitEndpoint"/>
-<c:url value="/review/submit" var="searchEndpoint"/>
+<c:url value="/review/${id}/edit" var="reviewEditEndpoint" />
 <head>
     <title><spring:message code="review.page.title"/></title>
     <link rel="stylesheet" type="text/css" href="<c:url value="/css/materialize.min.css" />" media="screen,projection"/>
@@ -27,28 +27,10 @@
             <c:if test="${reviewForm.replayability}">
                 document.querySelector("#replayable").setAttribute("checked", "checked");
             </c:if>
-
-            const elems = document.querySelectorAll('select');
-            var instances = M.FormSelect.init(elems, {});
-            document.querySelector("#searchInput").addEventListener("keypress", function (e) {
-                if (e.keyCode === 13) {
-                    document.querySelector("#searchButton").click();
-                    e.preventDefault();
-                }
-            });
-            document.querySelector("#submitForm").addEventListener("submit", function (e) {
-                var form = document.querySelector("#submitForm");
-                if (e.submitter.id === "searchButton" || e.submitter.id === "searchInput") {
-                    form.action = "${searchEndpoint}";
-                    form.method = "get";
-                } else if (e.submitter.id === "createButton") {
-                    form.action = "${submitEndpoint}";
-                } else {
-                    form.method = "post";
-                    form.action = "${searchEndpoint}?gameId=" + e.submitter.id;
-                    form.querySelector("#gameId").value = e.submitter.id;
-                }
-            });
+        });
+        document.addEventListener('DOMContentLoaded', function() {
+            var elems = document.querySelectorAll('.modal');
+            var instances = M.Modal.init(elems);
         });
     </script>
     <link rel="shortcut icon" type="image/png" href="<c:url value="/static/review_realm_logo_white_32px.png" />">
@@ -65,43 +47,42 @@
 <jsp:include page="/WEB-INF/jsp/static-components/navbar.jsp"/>
 <div class="container">
     <div class="row">
-        <form:form modelAttribute="reviewForm" action="${submitEndpoint}" method="post" id="submitForm">
+        <form:form modelAttribute="reviewForm" action="${edit? reviewEditEndpoint : submitEndpoint}" method="post" id="submitForm">
         <div class="col s12 m8">
             <div class="card card-background">
-                    <div class="rating-input inline valign-wrapper">
-                        <form:input
-                                path="reviewRating"
-                                id="review-rating"
-                                type="number"
-                                cssClass="white-text number-input"
-                                placeholder="10"
-                        />
-                        <div class="total-rating number-input">/10</div>
-                    </div>
                     <div class="card-content card-content-container">
                         <div class="card-title review-card-title row valign-wrapper">
                             <div class="col s12 flow-text">
-                                <c:if test="${selectedGameId != 0}">
-                                    <spring:message code="review.title" arguments="${game.name}"/>
-                                </c:if>
-                                <c:if test="${selectedGameId == 0}">
-                                    <spring:message code="review.new"/>
-                                </c:if>
+                                <spring:message code="review.title" arguments="${game.name}"/>
                             </div>
                         </div>
-                        <form:errors path="reviewRating" cssClass="error" element="p"/>
                         <div class="divider"></div>
-                        <div class="input-field">
-                            <form:label path="reviewTitle"><spring:message code="review.titleInput"/></form:label>
-                            <form:input
-                                    path="reviewTitle"
-                                    id="review-title"
-                                    placeholder='${titlePlaceholder}'
-                                    type="text"
-                                    class="input-general"
-                            />
-                            <form:errors path="reviewTitle" cssClass="error" element="p"/>
+                        <div class="f-row f-gap-2">
+                            <div class="input-field title-input">
+                                <form:label path="reviewTitle"><spring:message code="review.titleInput"/></form:label>
+                                <form:input
+                                        path="reviewTitle"
+                                        id="review-title"
+                                        placeholder='${titlePlaceholder}'
+                                        type="text"
+                                        class="input-general"
+                                />
+                                <form:errors path="reviewTitle" cssClass="error" element="p"/>
+                            </div>
+                            <div class="input-field rating-input inline valign-wrapper">
+                                <form:label path="reviewRating"><spring:message code="review.ratingInput"/></form:label>
+                                <form:input
+                                        path="reviewRating"
+                                        id="review-rating"
+                                        type="number"
+                                        cssClass="white-text number-input"
+                                        placeholder="10"
+                                />
+                                <div class="total-rating number-input">/10</div>
+                                <form:errors path="reviewRating" cssClass="error" element="p"/>
+                            </div>
                         </div>
+
 
                         <div class="input-field">
                             <form:label path="reviewContent"><spring:message code="review.ContentInput"/></form:label>
@@ -177,51 +158,40 @@
                             </label>
                         </div>
                         <div class="f-row f-jc-end">
-                            <button id="createButton" class="${(selectedGameId==0)? " disabled ":" "}waves-effect waves-light btn submit-btn" type="submit">
-                                <spring:message code="reviewForm.create"/>
+                            <button class="${(selectedGameId==0)? " disabled ":" "}waves-effect btn modal-trigger" data-target="submit-confirmation-modal" type="button">
+                                <c:if test="${edit}">
+                                    <spring:message code="edit.form.save"/>
+                                </c:if>
+                                <c:if test="${!edit}">
+                                    <spring:message code="reviewForm.create"/>
+                                </c:if>
                             </button>
+                            <div id="submit-confirmation-modal" class="modal">
+                                <div class="modal-content">
+                                    <h5><spring:message code="review.submit.confirmation"/></h5>
+                                </div>
+                                <div class="modal-footer f-row f-jc-end f-gap-2">
+                                    <a href="#" class="modal-close waves-effect btn-flat white-text"><spring:message code="cancel.button"/></a>
+                                    <div>
+                                        <button class="waves-effect btn submit-btn" type="submit">
+                                            <c:if test="${edit}">
+                                                <spring:message code="edit.form.save"/>
+                                            </c:if>
+                                            <c:if test="${!edit}">
+                                                <spring:message code="reviewForm.create"/>
+                                            </c:if>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
             </div>
         </div>
-        <div class="col s12 m4">
-            <c:if test="${selectedGameId!=0}">
-                <c:set var="game" value="${game}" scope="request" />
-                <c:set var="gameUrl" value="${gameUrl}" scope="request" />
-                <c:import url="/WEB-INF/jsp/games/short-game-details.jsp" />
-            </c:if>
-                <div class="search-game-list">
-                    <input id="searchInput" name="search" class="z-depth-1-half search-field white-text" value="${searchField}" placeholder="<spring:message code="game.list.placeholder.search"/>">
-                    <button id="searchButton" class="btn-flat button-color white-text" type="submit" ><i class="material-icons" >search</i></button>
-                    <input name="gameId" value="${selectedGameId}" type="hidden"/>
-                </div>
-            <c:if test="${empty searchedGames && !empty searchField}">
-                <span><spring:message code="game.list.notfound"/></span>
-            </c:if>
-            <c:if test="${!(empty searchedGames)}">
-                <div class="search-results-list">
-                    <c:forEach items="${searchedGames}" var="gameIterator">
-                        <div class="card-background">
-                            <button type="submit" id="${gameIterator.id}" class="no-a-decoration search-result btn-flat">
-                                <div class="search-game-container">
-                                    <div>
-                                        <c:url value="${gameIterator.imageUrl}" var="imgUrl" />
-                                        <img src="${imgUrl}" alt="game-image" class="search-result-image"/>
-                                    </div>
-                                    <div class="short-game-container-text">
-                                        <h6><c:out value="${gameIterator.name}"/></h6>
-                                        <div class="genres-container">
-                                            <c:forEach var="genre" items="${gameIterator.genres}" end="1">
-                                                <span class="chip-small"><spring:message code="${genre.name}"/> </span>
-                                            </c:forEach>
-                                        </div>
-                                    </div>
-                                </div>
-                            </button>
-                        </div>
-                    </c:forEach>
-                </div>
-            </c:if>
+        <div class="col s12 m4 ">
+            <c:set var="game" value="${game}" scope="request" />
+            <c:set var="gameUrl" value="${gameUrl}" scope="request" />
+            <c:import url="/WEB-INF/jsp/games/short-game-details.jsp" />
         </div>
         </form:form>
     </div>

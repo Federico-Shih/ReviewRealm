@@ -11,6 +11,7 @@
     <!-- Compiled and minified JavaScript -->
     <script src="<c:url value="/js/materialize.min.js" />"></script>
     <link rel="stylesheet" type="text/css" href="<c:url value="/css/game-submit.css" />" />
+    <link href="<c:url value="/css/game.css" />" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="shortcut icon" type="image/png" href="<c:url value="/static/review_realm_logo_white_32px.png" />">
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
@@ -23,6 +24,8 @@
                 document.querySelector('#${genre}').setAttribute("checked", "checked");
             </c:forEach>
         });
+
+
     </script>
 </head>
 <!-- general variables
@@ -88,6 +91,7 @@
                                 <span><spring:message code="game.submit.form.image" /></span>
                                 <form:input type="file" alt="image" id="image" accept="image/gif, image/png, image/jpeg"  path="image"/>
                             </div>
+
                             <div class="file-path-wrapper">
                                 <spring:message code="game.submit.placeholder.image" var="placeholderImage" />
                                 <input
@@ -97,6 +101,11 @@
                                 />
                             </div>
                         <form:errors path="image" cssClass="error" element="p" />
+                    </div>
+                    <div class="col s6 center hide" id="preview-div">
+                        <div class="card-for-preview z-depth-2">
+                            <img class="preview-image" id="imageShow" src="" alt="Preview"/>
+                        </div>
                     </div>
                     <div class="input-field col s12">
                         <ul class="collapsible white-text">
@@ -138,5 +147,13 @@
         </div>
     </form:form>
 </div>
+
+<script>
+    document.getElementById('image').onchange = function () {
+        document.getElementById('imageShow').src = URL.createObjectURL(this.files[0]);
+        document.getElementById('preview-div').classList.remove('hide');
+    }
+</script>
+
 </body>
 </html>

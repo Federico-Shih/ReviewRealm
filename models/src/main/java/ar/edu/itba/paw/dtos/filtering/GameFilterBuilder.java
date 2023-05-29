@@ -10,6 +10,7 @@ public class GameFilterBuilder {
     private String publisher = null;
     private Float minRating = null;
     private Float maxRating = null;
+    private boolean includeNoRating = true;
     private Boolean isSuggested = null;
 
     public GameFilterBuilder withGameGenres(List<Integer> genres) {
@@ -32,9 +33,10 @@ public class GameFilterBuilder {
         return this;
     }
 
-    public GameFilterBuilder withRatingRange(Float minRating, Float maxRating) {
+    public GameFilterBuilder withRatingRange(Float minRating, Float maxRating, boolean includeNoRating) {
         this.minRating = minRating;
         this.maxRating = maxRating;
+        this.includeNoRating = includeNoRating;
         return this;
     }
 
@@ -44,6 +46,6 @@ public class GameFilterBuilder {
     }
 
     public GameFilter build() {
-        return new GameFilter(gameGenres, gameContent, developer, publisher, minRating, maxRating, isSuggested);
+        return new GameFilter(gameGenres, gameContent, developer, publisher, minRating, maxRating, includeNoRating, isSuggested);
     }
 }

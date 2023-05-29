@@ -204,34 +204,30 @@
     display: flex;
     flex-direction: row;
     justify-content: space-evenly;
-    align-items: center;
+    align-items: baseline;
     flex-wrap: wrap;
     width: 100%;
 }
-.game-statistics{
-    display:flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items:center;
-    flex-wrap: wrap;
-
+.game-statistics-width{
+    width: 350px;
+    height: 115px;
 }
 .game-statistics-header{
     color: white;
-    font-size: 22px;
+    font-size: 18px;
     font-weight: 600; /* semibold */
     margin-bottom: 2px;
 }
 .game-statistics-number{
-    font-size: 20px;
+    font-size: 24px;
     font-weight: 700; /* bold */
 }
 .game-statistics-number-minor {
-    font-size: 14px;
+    font-size: 18px;
     font-weight: 400; /* regular */
 }
 .game-statistics-text{
-    font-size: 18px;
+    font-size: 24px;
     font-weight: 700; /* bold */
 }
 .game-review-header{

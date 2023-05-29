@@ -42,6 +42,8 @@ public class GameController extends PaginatedController implements QueryControll
 
     private static final int MAX_PAGES_PAGINATION = 6;
 
+    private static final int DEFAULT_REVIEW_PAGE_SIZE = 10;
+
     private static final int PAGE_SIZE = 10;
 
     private static final int INITIAL_PAGE = 1;
@@ -57,7 +59,8 @@ public class GameController extends PaginatedController implements QueryControll
     @RequestMapping("/game/{id:\\d+}")
     public ModelAndView game_details(
             @PathVariable("id") final Long gameId,
-            @RequestParam(value = "pageSize", required = false) Integer pageSize,
+            @RequestParam(value = "page", defaultValue = "1") Integer page,
+            @RequestParam(value = "pagesize", defaultValue = "8") Integer pageSize,
             @RequestParam(value = "created", required = false) Boolean created
     ){
         final ModelAndView mav =  new ModelAndView("games/game-details");
@@ -65,16 +68,20 @@ public class GameController extends PaginatedController implements QueryControll
         Optional<Game> game = gs.getGameById(gameId);
         User loggedUser = AuthenticationHelper.getLoggedUser(us);
         if(pageSize == null || pageSize < 1) {
-            pageSize = PAGE_SIZE;
+            pageSize = DEFAULT_REVIEW_PAGE_SIZE;
         }
         if(game.isPresent()){
             mav.addObject("game",game.get());
             GameReviewData reviewData = gs.getGameReviewDataByGameId(gameId);
-            List<Review> reviews = rs.getReviewsFromGame(Page.with(1, pageSize), gameId, loggedUser).getList();
+
+            Paginated<Review> reviews = rs.getReviewsFromGame(Page.with(page, pageSize), gameId, loggedUser);
+            super.paginate(mav,reviews);
+            List<Pair<String, Object>> queriesToKeepAtPageChange = new ArrayList<>();
+            queriesToKeepAtPageChange.add(new Pair<>("pagesize", pageSize));
+            mav.addObject("queriesToKeepAtPageChange", toQueryString(queriesToKeepAtPageChange));
+
             mav.addObject("gameReviewData", reviewData);
-            mav.addObject("reviews", reviews);
-            mav.addObject("currentPageSize", pageSize);
-            mav.addObject("defaultPageSize", PAGE_SIZE);
+            mav.addObject("reviews", reviews.getList());
             mav.addObject("discoveryQueue",false);
             mav.addObject("queryString", "?" );
         }else{
@@ -91,6 +98,7 @@ public class GameController extends PaginatedController implements QueryControll
             @RequestParam(value = "o-dir", defaultValue = "0") Integer orderDirection,
             @RequestParam(value = "f-gen", defaultValue = "") List<Integer> genresFilter,
             @RequestParam(value = "f-rat", defaultValue = "") String ratingFilter,
+            @RequestParam(value = "f-enr", defaultValue = "") Boolean excludeNoRatingFilter,
             @RequestParam(value = "search", defaultValue = "") String search,
             @RequestParam(value = "created", required = false) Boolean created
     ){
@@ -103,18 +111,20 @@ public class GameController extends PaginatedController implements QueryControll
             pageSize = PAGE_SIZE;
         }
 
-        GameSearchFilterBuilder searchFilterBuilder = new GameSearchFilterBuilder()
-                .withSearch(search)
-                .withSuggestion(false)
-                .withGenres(genresFilter);
         float minRating = 1f;
         float maxRating = 10f;
         try {
             String [] ratingFilterArray = ratingFilter.split("t");
             minRating = Float.parseFloat(ratingFilterArray[0]);
             maxRating = Float.parseFloat(ratingFilterArray[1]);
-            searchFilterBuilder = searchFilterBuilder.withRatingRange(minRating,maxRating);
         } catch (Exception ignored) {}
+
+        GameSearchFilterBuilder searchFilterBuilder = new GameSearchFilterBuilder()
+                .withSearch(search)
+                .withSuggestion(false)
+                .withGenres(genresFilter)
+                .withRatingRange(minRating,maxRating, excludeNoRatingFilter == null || !excludeNoRatingFilter);
+
 
         GameSearchFilter searchFilter = searchFilterBuilder.build();
 
@@ -136,7 +146,8 @@ public class GameController extends PaginatedController implements QueryControll
         mav.addObject("selectedOrderCriteria", GameOrderCriteria.fromValue(orderCriteria));
         mav.addObject("minRating", minRating);
         mav.addObject("maxRating", maxRating);
-        if(orderCriteria == 0 && orderDirection == 0 && genresFilter.isEmpty() && search.isEmpty() && ratingFilter.isEmpty()){
+        mav.addObject("excludeNoRating", excludeNoRatingFilter);
+        if(orderCriteria == 0 && orderDirection == 0 && genresFilter.isEmpty() && search.isEmpty() && ratingFilter.isEmpty() && excludeNoRatingFilter == null){
             mav.addObject("showResetFiltersButton", false);
         } else {
             mav.addObject("showResetFiltersButton", true);
@@ -147,6 +158,7 @@ public class GameController extends PaginatedController implements QueryControll
         queriesToKeepAtPageChange.add(Pair.of("o-dir", orderDirection));
         queriesToKeepAtPageChange.add(Pair.of("search", search));
         queriesToKeepAtPageChange.add(Pair.of("f-rat", ratingFilter));
+        queriesToKeepAtPageChange.add(Pair.of("f-enr", excludeNoRatingFilter));
         queriesToKeepAtPageChange.addAll(genresFilter.stream().map((value) -> Pair.of("f-gen", (Object)value)).collect(Collectors.toList()));
 
         mav.addObject("queriesToKeepAtPageChange", toQueryString(queriesToKeepAtPageChange));

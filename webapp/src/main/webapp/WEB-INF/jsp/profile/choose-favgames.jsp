@@ -25,7 +25,9 @@
             <div class="row">
                 <c:if test="${nothingToShow}">
                     <div class="f-row f-jc-center">
-                        <h2 class="white-text"><spring:message code="profile.favgames.empty"/></h2>
+                        <a href="<c:url value="/review/submit"/>">
+                            <h2 class="white-text center"><spring:message code="profile.favgames.empty"/></h2>
+                        </a>
                     </div>
                 </c:if>
                 <c:if test="${!(nothingToShow)}">
@@ -88,10 +90,19 @@
                     </div>
                 </c:forEach>
             </div>
-            <div class="f-row f-jc-center">
-                <button class="btn-large" type="submit"><spring:message code="favgames.button"/></button>
-            </div>
+            <c:if test="${!nothingToShow}">
+                <div class="f-row f-jc-center">
+                    <button class="btn-large" type="submit"><spring:message code="favgames.button"/></button>
+                </div>
+            </c:if>
         </form:form>
+        <c:if test="${nothingToShow}">
+            <div class="f-row f-jc-center">
+                <a href="<c:url value="/review/submit"/>">
+                    <button class="btn-large"><spring:message code="reviewForm.create"/></button>
+                </a>
+            </div>
+        </c:if>
     </div>
 </body>
 </html>

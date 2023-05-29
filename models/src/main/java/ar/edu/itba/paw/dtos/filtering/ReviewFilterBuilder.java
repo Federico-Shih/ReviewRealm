@@ -16,6 +16,8 @@ public class ReviewFilterBuilder {
     private List<Difficulty> difficulties = null;
     private Boolean completed = null;
 
+    private Boolean replayable = null;
+
     public ReviewFilterBuilder withGameGenres(List<Integer> genres) {
         this.gameGenres = genres;
         return this;
@@ -61,7 +63,12 @@ public class ReviewFilterBuilder {
         return this;
     }
 
+    public ReviewFilterBuilder withReplayable(Boolean replayable) {
+        this.replayable = replayable;
+        return this;
+    }
+
     public ReviewFilter build() {
-        return new ReviewFilter(gameGenres, authorGenres, authors, reviewContent, gameId, minTimePlayed, platforms, difficulties, completed);
+        return new ReviewFilter(gameGenres, authorGenres, authors, reviewContent, gameId, minTimePlayed, platforms, difficulties, completed, replayable);
     }
 }

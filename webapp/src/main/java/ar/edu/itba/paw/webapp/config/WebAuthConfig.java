@@ -9,6 +9,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.access.AccessDecisionManager;
 import org.springframework.security.access.AccessDecisionVoter;
 import org.springframework.security.access.vote.AuthenticatedVoter;
@@ -48,6 +49,8 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
     private AccessControl accessControl;
 
     private static final String ACCESS_CONTROL_CHECK_REVIEW_OWNER = "@accessControl.checkReviewAuthorOwner(#id)";
+
+    private static final String ACCESS_CONTROL_CHECK_REVIEW_FEEDBACK = "@accessControl.checkReviewAuthorforFeedback(#id)";
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -93,17 +96,16 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                 //.antMatchers("/admin/**").hasRole("ADMIN")  lo que requiera un rol especial
                 //.antMatchers("/review/edit/").access("@AccessHelper.canEdit") cuando se requiera un acceso especial segun el usuario (Spring Expression Language)
                 .antMatchers("/review/{id:\\d+}/edit").access(ACCESS_CONTROL_CHECK_REVIEW_OWNER)
+                .antMatchers(HttpMethod.POST,"/review/feedback/{id:\\d+}").access(ACCESS_CONTROL_CHECK_REVIEW_FEEDBACK)
                 /* ACÁ PONEMOS TODOS LOS PATHS QUE REQUIERAN INICIAR SESIÓN Y TENER UN ROL */
                 .antMatchers("/review/delete/{\\d+}", "/game/submissions", "/game/submissions/**").hasRole(RoleType.MODERATOR.getRole())
                 /* ACÁ PONEMOS TODOS LOS PATHS QUE REQUIERAN INICIAR SESIÓN, PERO NO ROLES */
-                .antMatchers("/review/submit",
-                        "/review/submit/{\\d+}",
+                .antMatchers("/review/submit/**",
                         "/profile/following",
                         "/profile/followers",
                         "/profile/follow/{\\d+}",
                         "/profile/unfollow/{\\d+}",
                         "/for-you/**",
-                        "/review/feedback/{id:\\d+}",
                         "/profile/settings/**",
                         "/profile/settings/**",
                         "/game/submit"

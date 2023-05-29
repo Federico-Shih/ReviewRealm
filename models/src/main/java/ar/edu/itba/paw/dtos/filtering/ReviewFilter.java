@@ -16,7 +16,9 @@ public class ReviewFilter {
     private final List<Difficulty> difficulties;
     private final Boolean completed;
 
-    public ReviewFilter(List<Integer> filterGameGenres, List<Integer> authorPreferences, List<Long> authors, String reviewContent, Long gameId, Double minTimePlayed, List<Platform> platforms, List<Difficulty> difficulties, Boolean completed) {
+    private final Boolean replayable;
+
+    public ReviewFilter(List<Integer> filterGameGenres, List<Integer> authorPreferences, List<Long> authors, String reviewContent, Long gameId, Double minTimePlayed, List<Platform> platforms, List<Difficulty> difficulties, Boolean completed, Boolean replayable) {
         this.filterGameGenres = filterGameGenres;
         this.authorPreferences = authorPreferences;
         this.authors = authors;
@@ -26,6 +28,7 @@ public class ReviewFilter {
         this.platforms = platforms;
         this.difficulties = difficulties;
         this.completed = completed;
+        this.replayable = replayable;
     }
 
     public List<Integer> getFilterGameGenres() {
@@ -62,5 +65,9 @@ public class ReviewFilter {
 
     public Boolean getCompleted() {
         return completed;
+    }
+
+    public Boolean getReplayable() {
+        return replayable;
     }
 }
