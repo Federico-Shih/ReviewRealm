@@ -79,22 +79,29 @@ public class UserController {
 
     @RequestMapping(value = "/recover", method = RequestMethod.GET)
     public ModelAndView validateForm(
-            @ModelAttribute("resendEmailForm") ResendEmailForm form,
-            @RequestParam(value = "email", required = false) String email,
             @RequestParam(value = "registered", required = false) boolean registered,
             @RequestParam(value = "resent", required = false) boolean resent
-            ) {
-        if (email != null && !email.equals("")) {
-            form.setEmail(email);
-        }
+    ) {
+
         ModelAndView mav = new ModelAndView("user/recovery");
         mav.addObject("registered", registered);
         mav.addObject("resent", resent);
         return mav;
     }
 
+    @RequestMapping(value = "/resend-email", method = RequestMethod.GET)
+    public ModelAndView resendEmailForm(
+            @ModelAttribute("resendEmailForm") ResendEmailForm form,
+            @RequestParam(value = "email", required = false) String email
+    ) {
+        if (email != null && !email.equals("")) {
+            form.setEmail(email);
+        }
+        return new ModelAndView("user/resend-email");
+    }
+
     @RequestMapping(value = "/validate", method = RequestMethod.POST)
-    public ModelAndView validateToken(@RequestParam("validationCode") String code, @ModelAttribute("resendEmailForm") ResendEmailForm form) {
+    public ModelAndView validateToken(@RequestParam("validationCode") String code) {
         Optional<User> user;
         try {
             user = us.validateToken(code);
@@ -122,73 +129,75 @@ public class UserController {
     }
 
     @RequestMapping(value = "/validate/{token}", method = RequestMethod.GET)
-    public ModelAndView validateByPath(@PathVariable("token") String token, @ModelAttribute("resendEmailForm") ResendEmailForm form) {
-        return validateToken(token, form);
+    public ModelAndView validateByPath(@PathVariable("token") String token) {
+        return validateToken(token);
     }
 
     @RequestMapping(value = "/resend-email", method = RequestMethod.POST)
     public ModelAndView resendEmail(@Valid @ModelAttribute("resendEmailForm") ResendEmailForm form, final BindingResult errors) {
         if (errors.hasErrors()) {
-            return validateForm(form, form.getEmail(), false, false);
+            return resendEmailForm(form, form.getEmail());
         }
         try {
             us.resendToken(form.getEmail());
         } catch (UserAlreadyEnabled e) {
             errors.rejectValue("email", "user.already.exists");
-            return validateForm(form, form.getEmail(), false, false);
+            return resendEmailForm(form, form.getEmail());
         } catch (UserNotFoundException e) {
             errors.rejectValue("email", "user.not.exists");
-            return validateForm(form, form.getEmail(), false, false);
+            return resendEmailForm(form, form.getEmail());
         }
-        return validateForm(form, form.getEmail(),false, true);
+        return new ModelAndView("redirect:/recover?resent=true");
     }
 
     @RequestMapping(value = "/changepassword", method = RequestMethod.GET)
-    public ModelAndView changePasswordForm(@RequestParam(value = "token", required = false) String token,
-                                           @ModelAttribute("passwordForm") ChangePasswordForm passwordForm,
-                                           @ModelAttribute("emailForm") ResendEmailForm emailForm) {
+    public ModelAndView changePasswordForm(@RequestParam(value = "token", required = true) String token,
+                                           @ModelAttribute("passwordForm") ChangePasswordForm passwordForm) {
         ModelAndView mav = new ModelAndView("user/change-password");
         mav.addObject("token", token);
         return mav;
     }
 
-    @RequestMapping(value = "/changepassword", method = RequestMethod.POST)
-    public ModelAndView sendChangePasswordRequest(@ModelAttribute("passwordForm") ChangePasswordForm passwordForm,
-                                                  @Valid @ModelAttribute("emailForm") ResendEmailForm emailForm,
+    @RequestMapping(value = "/recover-password", method = RequestMethod.GET)
+    public ModelAndView recoverPasswordForm(@ModelAttribute("emailForm") ResendEmailForm emailForm) {
+        return new ModelAndView("user/resend-recover");
+    }
+
+    @RequestMapping(value = "/resend-password", method = RequestMethod.POST)
+    public ModelAndView sendChangePasswordRequest(@Valid @ModelAttribute("emailForm") ResendEmailForm emailForm,
                                                   final BindingResult errors) {
         if (errors.hasErrors()) {
-            return changePasswordForm(null, new ChangePasswordForm(), emailForm);
+            return recoverPasswordForm(emailForm);
         }
         try {
             us.sendPasswordResetToken(emailForm.getEmail());
         } catch (UserNotFoundException e) {
             errors.rejectValue("email", "user.not.exists");
-            return changePasswordForm(null, new ChangePasswordForm(), emailForm);
+            return recoverPasswordForm(emailForm);
         }
-        return changePasswordForm(null, new ChangePasswordForm(), emailForm).addObject("emailSent", true);
+        return new ModelAndView("user/resend-recover").addObject("resent", true);
     }
 
     @RequestMapping(value = "/changepassword/{token}", method = RequestMethod.POST)
     public ModelAndView changePassword(@PathVariable("token") String token,
-                                       @ModelAttribute("emailForm") ResendEmailForm emailForm,
                                        @Valid @ModelAttribute("passwordForm") ChangePasswordForm passwordForm,
                                        final BindingResult errors) {
         if (errors.hasErrors()) {
-            return changePasswordForm(token, passwordForm, emailForm);
+            return changePasswordForm(token, passwordForm);
         }
         if (!passwordForm.passwordsMatch()) {
             errors.rejectValue("repeatPassword", "error.passwords.dont.match");
-            return changePasswordForm(token, passwordForm, emailForm);
+            return changePasswordForm(token, passwordForm);
         }
         try {
             us.resetPassword(token, passwordForm.getPassword());
         } catch (TokenExpiredException e) {
             LOGGER.error("Token expired " + token);
             errors.rejectValue("repeatPassword", "error.token.expired");
-            return changePasswordForm(token, passwordForm, emailForm);
+            return changePasswordForm(token, passwordForm);
         } catch (TokenNotFoundException e) {
             errors.rejectValue("repeatPassword", "error.token.not.found");
-            return changePasswordForm(token, passwordForm, emailForm);
+            return changePasswordForm(token, passwordForm);
         }
         return new ModelAndView("user/password-changed");
     }

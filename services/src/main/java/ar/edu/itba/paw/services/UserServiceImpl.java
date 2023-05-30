@@ -10,7 +10,6 @@ import ar.edu.itba.paw.persistenceinterfaces.UserDao;
 import ar.edu.itba.paw.persistenceinterfaces.ValidationTokenDao;
 import ar.edu.itba.paw.servicesinterfaces.MailingService;
 import ar.edu.itba.paw.servicesinterfaces.UserService;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -263,6 +262,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    @Transactional
     @Override
     public void setPreferences(Set<Integer> genres, long userId){
         LOGGER.info("User {} set genre preferences", userId);
@@ -285,9 +285,5 @@ public class UserServiceImpl implements UserService {
         SaveUserBuilder builder = new SaveUserBuilder().withAvatar(imageId);
         userDao.update(userId, builder.build());
         LOGGER.info("User {} changed avatar to {}", userId, imageId);
-    }
-
-    private String generateToken() {
-        return RandomStringUtils.randomAlphanumeric(16);
     }
 }

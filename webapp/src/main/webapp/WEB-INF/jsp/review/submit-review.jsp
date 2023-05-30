@@ -19,16 +19,19 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             <c:if test="${reviewForm.platform != null}">
-                document.querySelector("#platform").value = "${reviewForm.platform}";
+            document.querySelector("#platform").value = "${reviewForm.platform}";
             </c:if>
             <c:if test="${reviewForm.completed}">
-                document.querySelector("#completed").setAttribute("checked", "checked");
+            document.querySelector("#completed").setAttribute("checked", "checked");
             </c:if>
             <c:if test="${reviewForm.replayability}">
-                document.querySelector("#replayable").setAttribute("checked", "checked");
+            document.querySelector("#replayable").setAttribute("checked", "checked");
+            </c:if>
+            <c:if test="${reviewForm.unit != null}">
+            document.querySelector("#unit").value = "${reviewForm.unit}";
             </c:if>
         });
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             var elems = document.querySelectorAll('.modal');
             var instances = M.Modal.init(elems);
         });
@@ -148,17 +151,22 @@
                         <div>
                             <label for="completed">
                                 <input type="checkbox" name="completed" id="completed" />
-                                <span> <spring:message code="reviewForm.completed" /></span>
+                                <span> <spring:message code="reviewForm.completed"/></span>
                             </label>
                         </div>
                         <div>
                             <label for="replayable">
                                 <input type="checkbox" name="replayability" id="replayable"/>
-                                <span><spring:message code="reviewForm.replayability" /></span>
+                                <span><spring:message code="reviewForm.replayability"/></span>
                             </label>
                         </div>
                         <div class="f-row f-jc-end">
-                            <button class="${(selectedGameId==0)? " disabled ":" "}waves-effect btn modal-trigger" data-target="submit-confirmation-modal" type="button">
+                            <a href="<c:url value="/review/${id}" />"
+                               class="waves-effect btn-flat cancel-button white-text">
+                                <spring:message code="cancel.button"/>
+                            </a>
+                            <button class="${(selectedGameId==0)? " disabled ":" "}waves-effect btn modal-trigger"
+                                    data-target="submit-confirmation-modal" type="button">
                                 <c:if test="${edit}">
                                     <spring:message code="edit.form.save"/>
                                 </c:if>

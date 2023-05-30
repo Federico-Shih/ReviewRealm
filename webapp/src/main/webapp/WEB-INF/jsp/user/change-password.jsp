@@ -32,42 +32,34 @@
 <jsp:include page="/WEB-INF/jsp/static-components/navbar.jsp"/>
 <div class="container form-container">
     <article class="card card-container">
-        <c:if test="${token != null}">
-            <h5 class="card-title title-container"><spring:message code="email.changepassword.cta" /> </h5>
-            <div class="card-content">
-                <c:url value="/changepassword/${token}" var="changePasswordUrl" />
-                <form:form modelAttribute="passwordForm" action="${changePasswordUrl}" method="post">
-                    <div class="input-field">
-                        <i class="material-icons prefix">lock</i>
-                        <form:label for="password" path="password"><spring:message code="changepassword.password.label"/></form:label>
-                        <form:input type="password" name="password" id="password" path="password" class="white-text"/>
-                        <form:errors path="password" cssClass="error" element="span"/>
-                    </div>
-                    <div class="input-field">
-                        <i class="material-icons prefix">lock</i>
-                        <form:label for="confirm" path="repeatPassword"><spring:message code="changepassword.confirm.label"/></form:label>
-                        <form:input type="password" name="repeatPassword" id="confirm" path="repeatPassword" class="white-text"/>
-                        <form:errors path="repeatPassword" cssClass="error" element="span"/>
-                    </div>
-                    <button class="btn-large" type="submit"><spring:message code="email.changepassword.cta" /></button>
-                </form:form>
-            </div>
-            <div class="divider"></div>
-        </c:if>
-        <c:url value="/changepassword" var="changePasswordRequestUrl" />
-        <form:form modelAttribute="emailForm" action="${changePasswordRequestUrl}" method="post">
-            <h5 class="card-title title-container"><spring:message code="changepassword.request.title" /> </h5>
-
-            <div class="card-content ">
+        <h5 class="card-title title-container"><spring:message code="email.changepassword.cta"/></h5>
+        <div class="card-content">
+            <c:url value="/changepassword/${token}" var="changePasswordUrl"/>
+            <form:form modelAttribute="passwordForm" action="${changePasswordUrl}" method="post">
                 <div class="input-field">
-                    <i class="material-icons prefix">email</i>
-                    <form:label for="email" path="email"><spring:message code="changepassword.email.label"/></form:label>
-                    <form:input type="email" name="email" id="email" path="email" class="white-text"/>
-                    <form:errors path="email" cssClass="error" element="span"/>
+                    <i class="material-icons prefix">lock</i>
+                    <form:label for="password" path="password"><spring:message
+                            code="changepassword.password.label"/></form:label>
+                    <form:input type="password" name="password" id="password" path="password" class="white-text"/>
+                    <form:errors path="password" cssClass="error" element="span"/>
                 </div>
-                <button class="btn-large" type="submit"><spring:message code="email.sendpasswordrecovery.cta" /></button>
-            </div>
-        </form:form>
+                <div class="input-field">
+                    <i class="material-icons prefix">lock</i>
+                    <form:label for="confirm" path="repeatPassword"><spring:message
+                            code="changepassword.confirm.label"/></form:label>
+                    <form:input type="password" name="repeatPassword" id="confirm" path="repeatPassword"
+                                class="white-text"/>
+                    <form:errors path="repeatPassword" cssClass="error" element="span"/>
+                </div>
+                <div>
+                    <spring:message code="changepassword.request.description"/>
+                    <a href="<c:url value="/recover-password" />">
+                        <spring:message code="changepassword.request.cta"/>
+                    </a>
+                </div>
+                <button class="btn-large" type="submit"><spring:message code="email.changepassword.cta"/></button>
+            </form:form>
+        </div>
     </article>
 </div>
 </body>

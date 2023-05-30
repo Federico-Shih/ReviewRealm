@@ -52,7 +52,6 @@
                     </div>
                 </div>
             </c:if>
-
             <h5><spring:message code="validation.title" /></h5>
             <c:url var="validateUrl" value="/validate" />
             <form action="${validateUrl}" method="post">
@@ -61,34 +60,25 @@
                     <label for="code"><spring:message code="validate.token.title" /></label>
                     <c:if test="${unknownToken != null && unknownToken}">
                         <p class="error">
-                            <spring:message code="validation.content.unknown-token" />
+                            <spring:message code="validation.content.unknown-token"/>
                         </p>
                     </c:if>
                     <c:if test="${expiredToken != null && expiredToken}">
                         <p class="error">
-                            <spring:message code="validation.content.expired-token" />
+                            <spring:message code="validation.content.expired-token"/>
                         </p>
                     </c:if>
                 </div>
-                <button type="submit" class="btn-large">
-                    <spring:message code="email.validation.cta" />
-                </button>
-            </form>
-            <div class="divider"></div>
-            <h5><spring:message code="resend.email" /></h5>
-            <c:url var="resendUrl" value="/resend-email" />
-            <form:form modelAttribute="resendEmailForm" action="${resendUrl}" method="post">
-                <div class="input-field">
-                    <form:input path="email" class="validate white-text" id="email" />
-                    <form:label for="email" path="email">
-                        <spring:message code="login.email.field" />
-                    </form:label>
-                    <form:errors cssClass="error" path="email" />
+                <div>
+                    <span><spring:message code="no-token.text"/></span>
+                    <a href="<c:url value="/resend-email" />">
+                        <spring:message code="no-token.cta"/>
+                    </a>
                 </div>
                 <button type="submit" class="btn-large">
-                    <spring:message code="register.submit" />
+                    <spring:message code="email.validation.cta"/>
                 </button>
-            </form:form>
+            </form>
         </div>
     </article>
 </div>

@@ -95,7 +95,7 @@ public class ReviewController extends PaginatedController implements QueryContro
         mav.addObject("units", GamelengthUnit.values());
         return mav;
     }
-    @RequestMapping(value = "/review/submit/", method = RequestMethod.GET)
+    @RequestMapping(value = "/review/submit", method = RequestMethod.GET)
     public ModelAndView createReviewForm() {
         return new ModelAndView("redirect:/review/submit/search");
     }

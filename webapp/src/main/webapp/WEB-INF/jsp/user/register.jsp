@@ -47,33 +47,34 @@
                 <form:input type="password" name="repeatPassword" id="repeatPassword" path="repeatPassword" class="white-text"/>
                 <form:errors path="repeatPassword" cssClass="error" element="span"/>
             </div>
-            <div>
-                <spring:message code="register.to.login.link"/>
-                <span>
+        <div>
+            <spring:message code="register.to.login.link"/>
+            <span>
                     <a href="<c:url value="/login" />">
                         <spring:message code="register.to.login.cta"/>
                     </a>
                 </span>
-            </div>
-            <div>
-                <spring:message code="login.to.validate.link"/>
-                <a href="<c:url value="/recover" />">
-                    <spring:message code="login.to.validate.cta"/>
-                </a>
-            </div>
-            <div>
-                <spring:message code="login.to.changepass.link" />
-                <span>
-                        <a href="<c:url value="/changepassword" />"><spring:message code="login.to.changepass.cta" /></a>
+        </div>
+        <div>
+            <spring:message code="login.to.validate.link"/>
+            <a href="<c:url value="/resend-email" />">
+                <spring:message code="login.to.validate.cta"/>
+            </a>
+        </div>
+        <div>
+            <spring:message code="login.to.changepass.link"/>
+            <span>
+                        <a href="<c:url value="/recover-password" />"><spring:message
+                                code="login.to.changepass.cta"/></a>
                     </span>
-            </div>
-            <div class="form-submit-button">
-                <button class="btn waves-effect waves-light" type="submit" name="action">
-                    <spring:message code="register.submit"/>
-                    <i class="material-icons right">send</i>
-                </button>
-            </div>
-        </form:form>
+        </div>
+        <div class="form-submit-button">
+            <button class="btn waves-effect waves-light" type="submit" name="action">
+                <spring:message code="register.submit"/>
+                <i class="material-icons right">send</i>
+            </button>
+        </div>
+    </form:form>
 
 
 </div>

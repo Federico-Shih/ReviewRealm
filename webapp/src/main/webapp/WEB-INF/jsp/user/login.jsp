@@ -29,6 +29,7 @@
                 <label for="password"><spring:message code="login.password.field"/></label>
                 <input type="password" name="password" id="password" class="white-text" required>
             </div>
+
             <div>
                 <label for="remember-me">
                     <input type="checkbox" name="remember-me" id="remember-me" />
@@ -49,19 +50,20 @@
                 </span>
             </div>
             <div>
+                <spring:message code="login.to.changepass.link"/>
+                <span>
+                    <a href="<c:url value="/recover-password" />"><spring:message code="login.to.changepass.cta"/></a>
+                </span>
+            </div>
+            <div>
                 <spring:message code="login.to.validate.link"/>
-                <a href="<c:url value="/recover" />">
+                <a href="<c:url value="/resend-email" />">
                     <spring:message code="login.to.validate.cta"/>
                 </a>
             </div>
-            <div>
-                <spring:message code="login.to.changepass.link" />
-                <span>
-                    <a href="<c:url value="/changepassword" />"><spring:message code="login.to.changepass.cta" /></a>
-                </span>
-            </div>
             <div class="form-submit-button">
-                <button class="btn waves-effect waves-light" type="submit" name="action"><spring:message code="login.submit"/>
+                <button class="btn waves-effect waves-light" type="submit" name="action"><spring:message
+                        code="login.submit"/>
                     <i class="material-icons right">send</i>
                 </button>
             </div>
