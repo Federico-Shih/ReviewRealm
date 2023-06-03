@@ -54,8 +54,10 @@
                 <c:forEach items="${availableGenres}" var="genre">
                     <label>
                         <span class="col s4 m3 center margin-for-genres">
-                            <input type="checkbox" id="${genre.id}" value="${genre.id}" name="genres"/>
-                            <span class="chip-small"><spring:message code="${genre.name}"/></span>
+                            <div class="chip-small width-fit-content">
+                                <input type="checkbox" id="${genre.id}" value="${genre.id}" name="genres"/>
+                                <span class=""><spring:message code="${genre.name}"/></span>
+                            </div>
                         </span>
                     </label>
                 </c:forEach>
@@ -65,8 +67,10 @@
                 <c:forEach items="${profile.preferences}" var="genre">
                     <label>
                         <span class="col s4 m3 center margin-for-genres">
-                            <input type="checkbox" checked id="${genre.id}" value="${genre.id}" name="genres"/>
-                            <span class="chip-small"><spring:message code="${genre.name}"/></span>
+                            <div class="chip-small width-fit-content">
+                                <input type="checkbox" checked id="${genre.id}" value="${genre.id}" name="genres"/>
+                                <span class=""><spring:message code="${genre.name}"/></span>
+                            </div>
                         </span>
                     </label>
                 </c:forEach>

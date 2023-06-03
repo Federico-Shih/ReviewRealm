@@ -153,6 +153,7 @@
                 <p id="no-reviews-text"><spring:message code="game.details.first.review"/></p>
             </div>
         </c:if>
+        <c:set var="hideFooter" value="true" scope="request" />
         <c:forEach var="review" items="${reviews}">
             <c:set var="review" value="${review}" scope="request" />
             <c:import url="/WEB-INF/jsp/review/review-card.jsp" />

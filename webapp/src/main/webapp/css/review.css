@@ -34,34 +34,38 @@
 }
 
 .review-card-container {
-    min-height: 300px;
+    min-height: 320px;
+}
+
+.review-card-container-small {
+    min-height: 240px;
 }
 
 .review-card {
     height: fit-content;
 }
 
+.review-card-header-title {
+    padding: 2% 4% 0 4%;
+}
+
 .review-card-header {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    align-items: center;
-    padding: 1% 4%;
+    align-items: start;
+    padding: 2% 4%;
 }
 
 .review-card-header-start {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    padding: 10px 0;
     width: 65%;
+
 }
 
 .review-card-header-end {
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-end;
-    align-items: baseline;
     width: 35%;
 }
 
@@ -70,27 +74,41 @@
     flex-direction: column;
     align-items: flex-start;
     justify-content: space-between;
-    padding: 1% 4%;
-    min-height: 100px;
+    padding: 2% 4%;
+    min-height: 50px;
 }
 
 .review-card-footer {
     display: flex;
+    flex-direction: row;
+    padding: 3% 4%;
+    min-height: 60px;
+}
+
+.review-card-footer-info {
+    display: flex;
     flex-direction: column;
-    padding: 2% 4%;
-    min-height: 80px;
+    margin-top: -4px;
+    width: 65%;
 }
 
 .review-card-feedback-footer{
     display: flex;
     flex-direction: row;
     justify-content: flex-end;
-    align-items: baseline;
-    font-size: 12px;
-    gap: 12%;
+    align-items: center;
+    align-self: flex-end;
+    font-size: 14px;
+    gap: 6%;
     width: 40%;
+    padding-top: 2%;
 }
-.review-card-author-footer{
+
+#popularity-icon {
+    font-size: 14px;
+}
+
+.review-card-author-header{
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
@@ -98,13 +116,14 @@
     font-size: 12px;
     width: 55%;
 }
-.review-card-preferences-footer{
+.review-card-preferences-header{
     display: flex;
     flex-direction: row;
     justify-content: flex-start;
-    align-items: baseline;
+    align-items: center;
     gap: 2%;
     flex-wrap: wrap;
+    width: 100%;
 }
 
 .review-card-feedback-footer-big{
@@ -134,7 +153,7 @@
 
 #review-card-game-title {
     color: white;
-    font-size: 24px;
+    font-size: 18px;
     font-weight: 600; /* semibold */
     white-space: nowrap;
     margin-bottom: 2px;
@@ -161,7 +180,8 @@
 }
 
 #review-card-title {
-    font-size: 18px;
+    color: white;
+    font-size: 24px;
     font-weight: 600;
     margin: 4px 0;
 }
@@ -184,15 +204,33 @@
 #review-card-bottom-text {
     font-size: 12px;
     font-weight: 300;
+    padding-bottom: 3%;
 }
 
 #review-card-author {
+    color: darkgray;
     font-size: 14px;
     font-weight: 500; /*medium*/
 }
+
+#author-profile-image {
+    width: 25px;
+    height: 25px;
+    object-fit: cover;
+    border-radius: 50%;
+    margin: 0 5%;
+}
+
+#game-image {
+    width: 96px;
+    height: 48px;
+    object-fit: cover;
+    margin-right: 4%;
+}
+
 #review-card-preferences{
-    font-size: 14px;
-    font-weight: 500; /*medium*/
+    font-size: 15px;
+    color: #dbd5fd;
 }
 
 .review-filters-panel {
