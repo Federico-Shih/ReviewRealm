@@ -36,6 +36,11 @@ http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
       org.springframework.web.context.ContextLoaderListener
     </listener-class>
   </listener>
+    <listener>
+        <listener-class>
+            org.springframework.web.context.request.RequestContextListener
+        </listener-class>
+    </listener>
     <servlet-mapping>
         <servlet-name>dispatcher</servlet-name>
         <url-pattern>/</url-pattern>

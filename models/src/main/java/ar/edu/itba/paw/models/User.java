@@ -6,6 +6,7 @@ import ar.edu.itba.paw.enums.Genre;
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 @Entity
@@ -68,6 +69,9 @@ public class User {
 
     @Column(name = "avatar")
     private Long avatarId;
+
+    @Column(name = "language")
+    private Locale language;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
     private List<ReviewFeedback> reviewFeedbackList;
@@ -238,6 +242,17 @@ public class User {
 
     public List<Review> getReviews() {
         return reviews;
+    }
+
+    public Locale getLanguage() {
+        if (language == null) {
+            return new Locale("es");
+        }
+        return language;
+    }
+
+    public void setLanguage(Locale language) {
+        this.language = language;
     }
 }
 

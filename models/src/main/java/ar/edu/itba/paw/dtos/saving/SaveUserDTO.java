@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.dtos.saving;
 
+import java.util.Locale;
 import java.util.Objects;
 
 public class SaveUserDTO {
@@ -10,13 +11,16 @@ public class SaveUserDTO {
     private final Long avatar;
     private final Boolean enabled;
 
-    public SaveUserDTO(String username, String email, String password, Boolean enabled, Long reputation, Long avatar) {
+    private final Locale language;
+
+    public SaveUserDTO(String username, String email, String password, Boolean enabled, Long reputation, Long avatar, Locale language) {
         this.username = username;
         this.email = email;
         this.password = password;
         this.enabled = enabled;
         this.reputation = reputation;
         this.avatar = avatar;
+        this.language = language;
     }
 
     public String getUsername() {
@@ -52,5 +56,9 @@ public class SaveUserDTO {
     @Override
     public int hashCode() {
         return Objects.hash(username, email, password, reputation, enabled);
+    }
+
+    public Locale getLanguage() {
+        return language;
     }
 }
