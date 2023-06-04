@@ -20,6 +20,7 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.web.context.request.RequestContextListener;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
@@ -137,4 +138,10 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         multipartResolver.setMaxUploadSize(64 * 1024 * 1024);
         return multipartResolver;
     }
+
+    @Bean
+    public RequestContextListener requestContextListener(){
+        return new RequestContextListener();
+    }
+
 }

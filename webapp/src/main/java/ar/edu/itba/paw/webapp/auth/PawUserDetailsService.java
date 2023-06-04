@@ -6,6 +6,8 @@ import ar.edu.itba.paw.servicesinterfaces.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContext;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,9 +15,14 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -32,8 +39,18 @@ public class PawUserDetailsService implements UserDetailsService {
             .compile("\\A\\$2a?\\$\\d\\d\\$[./0-9A-Za-z]{53}");
 
     @Autowired
+    private HttpServletRequest httpServletRequest;
+
+    @Autowired
     public PawUserDetailsService(final UserService us) {
         this.us = us;
+    }
+
+    private Locale getCurrentSessionLocale() {
+        if (httpServletRequest != null) {
+            return httpServletRequest.getLocale();
+        }
+        return null;
     }
 
     @Transactional
@@ -51,6 +68,10 @@ public class PawUserDetailsService implements UserDetailsService {
         roleList.forEach((role -> authorities.add(new SimpleGrantedAuthority(String.format("ROLE_%s", role.getRoleName())))));
 
         LOGGER.debug("User {} logged in - email: {}", user.getId(), user.getEmail());
+        Locale current = getCurrentSessionLocale();
+        if (current != user.getLanguage()) {
+            us.changeUserLanguage(user.getId(), current);
+        }
         return new PawAuthUserDetails(user.getEmail(), user.getPassword(), user.isEnabled(), NON_EXPIRED, NON_CREDENTIALS_LOCKED, NON_LOCKED,  authorities);
     }
 }

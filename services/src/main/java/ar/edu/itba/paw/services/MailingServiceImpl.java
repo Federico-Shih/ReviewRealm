@@ -20,6 +20,7 @@ import org.thymeleaf.spring4.SpringTemplateEngine;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 @Service
@@ -44,9 +45,9 @@ public class MailingServiceImpl implements MailingService {
         templateVariables.put("webBaseUrl", env.getProperty("mailing.weburl"));
         Object[] stringArgs = {};
         String subject = messageSource.getMessage("email.deletedreview.subject",
-                stringArgs, LocaleContextHolder.getLocale());
+                stringArgs, user.getLanguage());
         LOGGER.info("Sending review deleted to {}", user.getEmail());
-        sendEmail(user.getEmail(), subject, "deletedreview", templateVariables);
+        sendEmail(user.getEmail(), subject, "deletedreview", templateVariables, user.getLanguage());
     }
 
     @Async
@@ -59,9 +60,9 @@ public class MailingServiceImpl implements MailingService {
 
         Object[] stringArgs = {};
         String subject = messageSource.getMessage("email.validation.subject",
-                stringArgs, LocaleContextHolder.getLocale());
+                stringArgs, user.getLanguage());
         LOGGER.info("Sending validation token to {}", user.getEmail());
-        sendEmail(user.getEmail(), subject, "validate", templateVariables);
+        sendEmail(user.getEmail(), subject, "validate", templateVariables, user.getLanguage());
     }
 
     @Async
@@ -74,9 +75,9 @@ public class MailingServiceImpl implements MailingService {
 
         Object[] stringArgs = {};
         String subject = messageSource.getMessage("email.changepassword.subject",
-                stringArgs, LocaleContextHolder.getLocale());
+                stringArgs, user.getLanguage());
         LOGGER.info("Sending change password token to {}", user.getEmail());
-        sendEmail(user.getEmail(), subject, "changepassword", templateVariables);
+        sendEmail(user.getEmail(), subject, "changepassword", templateVariables, user.getLanguage());
     }
 
     @Async
@@ -90,12 +91,12 @@ public class MailingServiceImpl implements MailingService {
 
         Object[] stringArgs = {author.getUsername()};
         String subject = messageSource.getMessage("email.newreview.subject",
-                stringArgs, LocaleContextHolder.getLocale());
+                stringArgs, follower.getLanguage());
         LOGGER.info("Sending new review created to {} for review id {}", follower.getEmail(), createdReview.getId());
-        sendEmail(follower.getEmail(), subject, "newreview", templateVariables);
+        sendEmail(follower.getEmail(), subject, "newreview", templateVariables, follower.getLanguage());
     }
 
-    private void sendEmail(String mailTo, String mailSubject, String template, Map<String, Object> templateVariables) {
+    private void sendEmail(String mailTo, String mailSubject, String template, Map<String, Object> templateVariables, Locale userLocale) {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         try {
             MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true, "UTF-8");

@@ -60,6 +60,9 @@ public class UserHibernateDao implements UserDao, PaginationDao<UserFilter> {
         if (saveUserDTO.getPassword() != null) {
             user.setPassword(saveUserDTO.getPassword());
         }
+        if (saveUserDTO.getLanguage() != null) {
+            user.setLanguage(saveUserDTO.getLanguage());
+        }
         return 1;
     }
 

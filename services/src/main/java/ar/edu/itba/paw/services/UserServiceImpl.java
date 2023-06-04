@@ -286,4 +286,12 @@ public class UserServiceImpl implements UserService {
         userDao.update(userId, builder.build());
         LOGGER.info("User {} changed avatar to {}", userId, imageId);
     }
+
+    @Transactional
+    @Override
+    public void changeUserLanguage(long userId, Locale language) {
+        SaveUserBuilder builder = new SaveUserBuilder().withLanguage(language);
+        userDao.update(userId, builder.build());
+        LOGGER.info("User {} changed language to {}", userId, language);
+    }
 }
