@@ -291,7 +291,7 @@
 
 .filters-header {
     color: white !important;
-    background-color: #D84315;
+    background-color: #D84315 !important;
     width: 100%;
     position: relative;
 }

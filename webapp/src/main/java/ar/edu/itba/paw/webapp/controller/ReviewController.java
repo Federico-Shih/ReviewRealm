@@ -63,10 +63,18 @@ public class ReviewController extends PaginatedController implements QueryContro
             pageSize = MAX_SEARCH_RESULTS;
         }
 
-        GameSearchFilter filter = new GameSearchFilterBuilder().withSearch(searchquery).build();
-        Paginated<Game> games = gameService.searchGames(Page.with(page, pageSize), filter,new Ordering<>(OrderDirection.ASCENDING, GameOrderCriteria.NAME));
-        super.paginate(mav,games);
-        mav.addObject("games", games.getList());
+        //Se supone que solo podes llegar aca si estas loggeado
+        User loggedUser = AuthenticationHelper.getLoggedUser(userService);
+
+        if(searchquery.isEmpty()){
+            List<Game> list = gameService.getRecommendationsOfGamesForUser(loggedUser);
+            mav.addObject("games", list.subList(0, Math.min(list.size(), MAX_SEARCH_RESULTS)));
+        }else {
+            GameSearchFilter filter = new GameSearchFilterBuilder().withSearch(searchquery).build();
+            Paginated<Game> games = gameService.searchGames(Page.with(page, pageSize), filter, new Ordering<>(OrderDirection.ASCENDING, GameOrderCriteria.NAME));
+            super.paginate(mav, games);
+            mav.addObject("games", games.getList());
+        }
         mav.addObject("searchField", searchquery);
 
         List<Pair<String, Object>> queriesToKeepAtPageChange = new ArrayList<>();

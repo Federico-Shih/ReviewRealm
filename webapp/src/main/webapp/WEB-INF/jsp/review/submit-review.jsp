@@ -11,6 +11,7 @@
     <link rel="stylesheet" type="text/css" href="<c:url value="/css/materialize.min.css" />" media="screen,projection"/>
     <link rel="stylesheet" href="<c:url value="/css/main.css" />">
     <link rel="stylesheet" href="<c:url value="/css/review/review-page.css" />">
+    <link rel="stylesheet" href="<c:url value="/css/review.css" />">
     <link rel="stylesheet" href="<c:url value="/css/game.css" />">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
@@ -18,6 +19,11 @@
     <script src="<c:url value="/js/materialize.min.js" />"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            var elems = document.querySelectorAll('.collapsible');
+            var instances = M.Collapsible.init(elems, {accordion: false});
+
+            let newLength = document.getElementById('review-content').value.length;
+            document.getElementById('review-content-length').innerHTML = newLength;
             <c:if test="${reviewForm.platform != null}">
             document.querySelector("#platform").value = "${reviewForm.platform}";
             </c:if>
@@ -30,11 +36,16 @@
             <c:if test="${reviewForm.unit != null}">
             document.querySelector("#unit").value = "${reviewForm.unit}";
             </c:if>
+            document.getElementById('review-content').onkeyup = function (){
+                newLength = document.getElementById('review-content').value.length;
+                document.getElementById('review-content-length').innerHTML = newLength;
+            };
         });
         document.addEventListener('DOMContentLoaded', function () {
             var elems = document.querySelectorAll('.modal');
             var instances = M.Modal.init(elems);
         });
+
     </script>
     <link rel="shortcut icon" type="image/png" href="<c:url value="/static/review_realm_logo_white_32px.png" />">
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
@@ -93,8 +104,13 @@
                                     placeholder='${contentPlaceholder}'
                                     path="reviewContent"
                                     id="review-content"
-                                    class="materialize-textarea review-content-input input-general"/>
+                                    class="materialize-textarea review-content-input input-general"
+                            />
                             <form:errors path="reviewContent" cssClass="error" element="p"/>
+                            <div class="right-align">
+                                <span id="review-content-length">0</span>
+                                <span><spring:message code="review.characters"/></span>
+                            </div>
                         </div>
                         <div>
                             <form:label path="platform"><spring:message code="review.platform" /></form:label>
@@ -160,11 +176,13 @@
                                 <span><spring:message code="reviewForm.replayability"/></span>
                             </label>
                         </div>
-                        <div class="f-row f-jc-end">
-                            <a href="<c:url value="/review/${id}" />"
-                               class="waves-effect btn-flat cancel-button white-text">
-                                <spring:message code="cancel.button"/>
-                            </a>
+                        <div class="f-row f-jc-end f-gap-2">
+                            <c:if test="${edit}">
+                                <a href="<c:url value="/review/${id}" />"
+                                   class="waves-effect btn-flat cancel-button white-text">
+                                    <spring:message code="cancel.button"/>
+                                </a>
+                            </c:if>
                             <button class="${(selectedGameId==0)? " disabled ":" "}waves-effect btn modal-trigger"
                                     data-target="submit-confirmation-modal" type="button">
                                 <c:if test="${edit}">
@@ -196,12 +214,29 @@
                     </div>
             </div>
         </div>
+        </form:form>
         <div class="col s12 m4 ">
             <c:set var="game" value="${game}" scope="request" />
             <c:set var="gameUrl" value="${gameUrl}" scope="request" />
             <c:import url="/WEB-INF/jsp/games/short-game-details.jsp" />
+            <ul class="collapsible" id="guidelines-collapsible">
+                <li>
+                    <div class="collapsible-header filters-header center">
+                        <i class="material-icons left">gavel</i>
+                        <span class="review-filters-panel-subtitle"><spring:message code="community.rules.title"/></span>
+                        <i class="material-icons right dropdown-arrow">arrow_drop_down</i>
+                    </div>
+                    <ol class="collapsible-body">
+                        <li><span class="community-guideline"><spring:message code="community.rules.respect"/></span></li>
+                        <li><span class="community-guideline"><spring:message code="community.rules.spam"/></span></li>
+                        <li><span class="community-guideline"><spring:message code="community.rules.relevancy"/></span></li>
+                        <li><span class="community-guideline"><spring:message code="community.rules.spoilers"/></span></li>
+                        <li><span class="community-guideline"><spring:message code="community.rules.piracy"/></span></li>
+                        <li><span class="community-guideline"><spring:message code="community.rules.privacy"/></span></li>
+                    </ol>
+                </li>
+            </ul>
         </div>
-        </form:form>
     </div>
 </div>
 </body>

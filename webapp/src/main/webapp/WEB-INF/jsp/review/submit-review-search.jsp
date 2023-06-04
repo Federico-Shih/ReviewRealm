@@ -38,9 +38,14 @@
         </div>
     </div>
     <div class="review-card-list row">
-        <c:if test="${empty games}">
+        <c:if test="${empty(games) && fn:length(searchField) != 0}">
             <div class="col s12">
                 <span><spring:message code="game.list.notfound"/></span>
+            </div>
+        </c:if>
+        <c:if test="${ not (empty(games)) && fn:length(searchField) == 0}">
+            <div class="col s12">
+                <span class="search-game-review-recommend"><spring:message code="review.recommend"/></span>
             </div>
         </c:if>
         <c:forEach items="${games}" var="game">
@@ -83,26 +88,28 @@
             </div>
         </c:forEach>
     </div>
-    <div class="row">
-        <ul class="center-align pagination">
-            <c:if test="${currentPage > 1}">
-                <li class="waves-effect"><a href="${queriesToKeepAtPageChange}page=${currentPage-1}"><i
-                        class="material-icons">chevron_left</i></a></li>
-            </c:if>
-            <c:forEach var="i" begin="${initialPage}" end="${maxPages}">
-                <c:if test="${i == currentPage}">
-                    <li class="pagination-active"><a href="${queriesToKeepAtPageChange}page=${i}">${i}</a></li>
+    <c:if test="${fn:length(searchField)!=0}">
+        <div class="row">
+            <ul class="center-align pagination">
+                <c:if test="${currentPage > 1}">
+                    <li class="waves-effect"><a href="${queriesToKeepAtPageChange}page=${currentPage-1}"><i
+                            class="material-icons">chevron_left</i></a></li>
                 </c:if>
-                <c:if test="${i != currentPage}">
-                    <li class="waves-effect"><a href="${queriesToKeepAtPageChange}page=${i}">${i}</a></li>
+                <c:forEach var="i" begin="${initialPage}" end="${maxPages}">
+                    <c:if test="${i == currentPage}">
+                        <li class="pagination-active"><a href="${queriesToKeepAtPageChange}page=${i}">${i}</a></li>
+                    </c:if>
+                    <c:if test="${i != currentPage}">
+                        <li class="waves-effect"><a href="${queriesToKeepAtPageChange}page=${i}">${i}</a></li>
+                    </c:if>
+                </c:forEach>
+                <c:if test="${currentPage < maxPages}">
+                    <li class="waves-effect"><a href="${queriesToKeepAtPageChange}page=${currentPage+1}"><i
+                            class="material-icons">chevron_right</i></a></li>
                 </c:if>
-            </c:forEach>
-            <c:if test="${currentPage < maxPages}">
-                <li class="waves-effect"><a href="${queriesToKeepAtPageChange}page=${currentPage+1}"><i
-                        class="material-icons">chevron_right</i></a></li>
-            </c:if>
-        </ul>
-    </div>
+            </ul>
+        </div>
+    </c:if>
 </div>
 </body>
 </html>

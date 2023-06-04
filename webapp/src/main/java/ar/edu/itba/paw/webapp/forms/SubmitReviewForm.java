@@ -25,7 +25,7 @@ public class SubmitReviewForm {
     @Size(min=8, max=100)
     private String reviewTitle;
 
-    @Size(min=8, max=420)
+    @Size(min=8)
     private String reviewContent;
 
     @NotNull

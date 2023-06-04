@@ -26,6 +26,10 @@
     font-size: 28px;
     font-weight: 600;
 }
+.search-game-review-recommend {
+    font-size: 20px;
+    font-weight: 500;
+}
 
 .line {
     border: 1px solid #FFFFFF;
@@ -73,7 +77,6 @@ textarea:-ms-input-placeholder { /* Internet Explorer 10-11 */
 textarea::-ms-input-placeholder { /* Microsoft Edge */
     opacity: 0.3; /* Firefox */
 }
-
 .number-input {
     font-size: 24px !important;
 }
@@ -90,6 +93,11 @@ input[type=number] {
 
 .pt-4 {
     padding-top: 4px;
+}
+
+.community-guideline{
+    font-size: 14px;
+    font-weight: 500;
 }
 
 .card-content-container {
