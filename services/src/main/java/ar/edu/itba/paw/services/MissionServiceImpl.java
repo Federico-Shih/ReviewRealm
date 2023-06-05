@@ -41,10 +41,6 @@ public class MissionServiceImpl implements MissionService {
                 .findById(user, mission)
                 .orElseGet(() -> this.missionDao.create(user, mission, 0f, LocalDate.now()));
         if (!missionProgress.isCompleted()) {
-            // No negative mission progress
-            if (missionProgress.getProgress() + progress < 0) {
-                return;
-            }
             missionProgress = missionDao.updateProgress(user, mission, missionProgress.getProgress() + progress);
             if (missionProgress.isCompleted()) {
                 LOGGER.info("Completed mission {} for user {}, gained {} xp", mission.getTitle(), user.getId(), mission.getXp());
