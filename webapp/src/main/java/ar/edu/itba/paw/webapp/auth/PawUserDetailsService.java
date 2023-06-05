@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.webapp.auth;
 
+import ar.edu.itba.paw.enums.RoleType;
 import ar.edu.itba.paw.models.Role;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.servicesinterfaces.UserService;
@@ -66,7 +67,6 @@ public class PawUserDetailsService implements UserDetailsService {
         final Set<Role> roleList = user.getRoles();
         final Collection<GrantedAuthority> authorities = new HashSet<>();
         roleList.forEach((role -> authorities.add(new SimpleGrantedAuthority(String.format("ROLE_%s", role.getRoleName())))));
-
         LOGGER.debug("User {} logged in - email: {}", user.getId(), user.getEmail());
         Locale current = getCurrentSessionLocale();
         if (current != user.getLanguage()) {

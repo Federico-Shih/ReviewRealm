@@ -9,8 +9,8 @@ public class SaveUserBuilder {
     private Boolean enabled = null;
     private Long avatar = null;
     private Long reputation = null;
-
     private Locale language = null;
+    private Float xp = null;
 
     public SaveUserBuilder withUsername(String username) {
         this.username = username;
@@ -47,7 +47,12 @@ public class SaveUserBuilder {
         return this;
     }
 
+    public SaveUserBuilder withXp(Float xp) {
+        this.xp = xp;
+        return this;
+    }
+
     public SaveUserDTO build() {
-        return new SaveUserDTO(username, email, password, enabled, reputation, avatar, language);
+        return new SaveUserDTO(username, email, password, enabled, reputation, avatar, language, xp);
     }
 }

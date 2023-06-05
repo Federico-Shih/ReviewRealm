@@ -63,6 +63,9 @@ public class UserHibernateDao implements UserDao, PaginationDao<UserFilter> {
         if (saveUserDTO.getLanguage() != null) {
             user.setLanguage(saveUserDTO.getLanguage());
         }
+        if (saveUserDTO.getXp() != null) {
+            user.setXp(saveUserDTO.getXp());
+        }
         return 1;
     }
 
@@ -186,7 +189,7 @@ public class UserHibernateDao implements UserDao, PaginationDao<UserFilter> {
     @Override
     public boolean deleteFollow(long userId, long id) {
         User user = em.find(User.class, userId);
-        User followedUser = em.find(User.class, id);
+        User followedUser = em.getReference(User.class, id);
         if (user == null || followedUser == null) return false;
         if (!user.getFollowing().contains(followedUser)) {
             return false;
@@ -198,7 +201,7 @@ public class UserHibernateDao implements UserDao, PaginationDao<UserFilter> {
     @Override
     public boolean follows(long userId, long id) {
         User user = em.find(User.class, userId);
-        User followedUser = em.find(User.class, id);
+        User followedUser = em.getReference(User.class, id);
         if (user == null || followedUser == null) return false;
         return user.getFollowing().contains(followedUser);
     }

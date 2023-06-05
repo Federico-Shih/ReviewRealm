@@ -99,8 +99,6 @@ public class GameDaoImplTest {
 
     private static final String MEDIA_TYPE = "image/jpeg";
 
-    @Autowired
-    private DataSource ds;
 
     private JdbcTemplate jdbcTemplate;
 
@@ -109,6 +107,8 @@ public class GameDaoImplTest {
 
     private SimpleJdbcInsert insertForFavGames;
 
+    @Autowired
+    private DataSource ds;
 
     @Autowired
     private GameDao gameDao;
