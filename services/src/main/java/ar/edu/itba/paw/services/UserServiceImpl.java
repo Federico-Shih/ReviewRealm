@@ -3,12 +3,14 @@ package ar.edu.itba.paw.services;
 import ar.edu.itba.paw.dtos.Page;
 import ar.edu.itba.paw.dtos.filtering.UserFilterBuilder;
 import ar.edu.itba.paw.dtos.saving.SaveUserBuilder;
+import ar.edu.itba.paw.enums.Mission;
 import ar.edu.itba.paw.enums.NotificationType;
 import ar.edu.itba.paw.exceptions.*;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.persistenceinterfaces.UserDao;
 import ar.edu.itba.paw.persistenceinterfaces.ValidationTokenDao;
 import ar.edu.itba.paw.servicesinterfaces.MailingService;
+import ar.edu.itba.paw.servicesinterfaces.MissionService;
 import ar.edu.itba.paw.servicesinterfaces.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +29,8 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final ValidationTokenDao tokenDao;
     private final MailingService mailingService;
+
+    private final MissionService missionService;
     private static final int EXPIRATION_TIME = 60 * 60 * 24; // 24hs
     private static final int AVATAR_AMOUNT = 6;
 
@@ -34,12 +38,13 @@ public class UserServiceImpl implements UserService {
     public UserServiceImpl(UserDao userDao,
                            PasswordEncoder passwordEncoder,
                            ValidationTokenDao tokenDao,
-                           MailingService mailingService
-    ) {
+                           MailingService mailingService,
+                           MissionService missionService) {
         this.userDao = userDao;
         this.passwordEncoder = passwordEncoder;
         this.tokenDao = tokenDao;
         this.mailingService = mailingService;
+        this.missionService = missionService;
     }
 
     @Transactional
@@ -267,6 +272,10 @@ public class UserServiceImpl implements UserService {
     public void setPreferences(Set<Integer> genres, long userId){
         LOGGER.info("User {} set genre preferences", userId);
         userDao.setPreferences(genres, userId);
+        User user = getUserById(userId).orElseThrow(UserNotFoundException::new);
+        if (!genres.isEmpty()) {
+            missionService.addMissionProgress(user, Mission.SETUP_PREFERENCES, 1f);
+        }
     }
 
     @Transactional
@@ -282,8 +291,10 @@ public class UserServiceImpl implements UserService {
     public void changeUserAvatar(long userId, long imageId) throws InvalidAvatarException {
         if(imageId>AVATAR_AMOUNT || imageId<1)
             throw new InvalidAvatarException(imageId);
+        User user = getUserById(userId).orElseThrow(UserNotFoundException::new);
         SaveUserBuilder builder = new SaveUserBuilder().withAvatar(imageId);
         userDao.update(userId, builder.build());
+        missionService.addMissionProgress(user, Mission.CHANGE_AVATAR, 1f);
         LOGGER.info("User {} changed avatar to {}", userId, imageId);
     }
 

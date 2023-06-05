@@ -45,7 +45,7 @@ public class GameHibernateDao implements GameDao, PaginationDao<GameFilter> {
             return new Paginated<>(page.getPageNumber(), page.getPageSize(), totalPages, new ArrayList<>());
         }
         QueryBuilder queryBuilder = getQueryBuilderFromFilter(filter);
-        Query nativeQuery = em.createNativeQuery("SELECT distinct g.id FROM " + toTableString(filter) + queryBuilder.toQuery());
+        Query nativeQuery = em.createNativeQuery("SELECT distinct g.id FROM " + toTableString(filter) + queryBuilder.toQuery() + toOrderString(ordering));
         prepareParametersForNativeQuery(queryBuilder, nativeQuery);
         nativeQuery.setMaxResults(page.getPageSize());
         nativeQuery.setFirstResult(page.getOffset().intValue());

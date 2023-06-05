@@ -9,7 +9,9 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -43,6 +45,7 @@ public class MissionHibernateDao implements MissionDao {
         MissionProgress missionProgress = em.find(MissionProgress.class, new MissionProgressId(user, mission));
         if (missionProgress == null) return null;
         missionProgress.setProgress(0f);
+        missionProgress.setStartDate(LocalDate.now());
         return missionProgress;
     }
 
@@ -52,6 +55,12 @@ public class MissionHibernateDao implements MissionDao {
         if (missionProgress == null) return null;
         missionProgress.setTimes(missionProgress.getTimes() + 1);
         return missionProgress;
+    }
+
+    @Override
+    public List<MissionProgress> findAll() {
+        TypedQuery<MissionProgress> query = em.createQuery("from MissionProgress", MissionProgress.class);
+        return query.getResultList();
     }
 
 }

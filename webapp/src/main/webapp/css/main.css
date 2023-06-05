@@ -304,6 +304,9 @@ nav {
     font-weight: 700;
     padding: 2px 6px;
     white-space: nowrap;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
 }
 
 .rr-blue-text {

@@ -5,13 +5,13 @@ public enum Mission {
     REVIEWS_GOAL("missions.reviewsgoal.title", "missions.reviewsgoal.description", 20f, 5f, true, MissionFrequency.NONE, null),
     CHANGE_AVATAR("missions.avatarchange.title", "missions.avatarchange.description", 20f, 1f, true, MissionFrequency.MONTHLY, null),
     SETUP_PREFERENCES("missions.preferences.title", "missions.preferences.description", 50f, 1f, false, MissionFrequency.NONE, null),
-
-    ACCEPT_GAMES("missions.accept.title", "missions.accept.description", 5f, 1f, true, MissionFrequency.NONE, RoleType.MODERATOR),
+    MANAGE_GAME_SUBMISSIONS("missions.accept.title", "missions.accept.description", 5f, 1f, true, MissionFrequency.NONE, RoleType.MODERATOR),
     // NOT IMPLEMENTED
     RECOMMEND_GAMES("missions.recommend.title", "missions.recommend.description", 20f, 5f, true, MissionFrequency.WEEKLY, RoleType.USER),
     ACCEPTED_GAMES("missions.acceptedgame.title", "missions.acceptedgame.description", 20f, 1f, true, MissionFrequency.NONE, RoleType.USER);
 
 
+    // cannot be repeatable and have a frequency
     private final boolean repeatable;
     private final MissionFrequency frequency;
     private final float xp;
@@ -59,6 +59,16 @@ public enum Mission {
     }
 
     public enum MissionFrequency {
-        NONE, DAILY, MONTHLY, YEARLY, WEEKLY
+        NONE("missions.none"), DAILY("missions.daily"), MONTHLY("missions.monthly"), YEARLY("missions.yearly"), WEEKLY("missions.weekly");
+
+        private final String name;
+
+        MissionFrequency(String name) {
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
     }
 }

@@ -5,6 +5,7 @@ import ar.edu.itba.paw.models.MissionProgress;
 import ar.edu.itba.paw.models.User;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 public interface MissionDao {
@@ -17,4 +18,6 @@ public interface MissionDao {
     MissionProgress resetProgress(User user, Mission mission);
 
     MissionProgress completeMission(User user, Mission mission);
+
+    List<MissionProgress> findAll();
 }

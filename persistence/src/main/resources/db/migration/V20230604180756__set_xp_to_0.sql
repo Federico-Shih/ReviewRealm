@@ -1,0 +1,1 @@
+UPDATE users SET xp = 0 WHERE xp IS NULL;

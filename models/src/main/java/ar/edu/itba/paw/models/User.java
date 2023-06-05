@@ -270,5 +270,9 @@ public class User {
     public void setXp(Float xp) {
         this.xp = xp;
     }
+
+    public int getLevel() {
+        return (int) (xp / 100);
+    }
 }
 

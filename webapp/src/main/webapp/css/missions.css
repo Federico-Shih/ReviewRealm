@@ -1,0 +1,33 @@
+.progress-fontsize {
+    font-size: 20px;
+}
+
+.mission-card {
+    position: relative;
+}
+
+.mission-data {
+    position: absolute;
+    top: 24px;
+    right: 24px;
+    display: flex;
+    flex-direction: row;
+}
+
+.mission-chip {
+    background: #DDD7FF;
+    color: #13112D;
+    border: 1px solid #444155;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 700;
+    padding: 2px 6px;
+    white-space: nowrap;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.custom-progress {
+    height: 25px !important;
+}
