@@ -271,6 +271,10 @@ public class User {
         this.xp = xp;
     }
 
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
+    }
+
     public int getLevel() {
         return (int) (xp / 100);
     }

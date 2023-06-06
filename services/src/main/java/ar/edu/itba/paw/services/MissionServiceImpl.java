@@ -33,9 +33,9 @@ public class MissionServiceImpl implements MissionService {
 
     @Transactional
     @Override
-    public void addMissionProgress(User user, Mission mission, Float progress) {
+    public MissionProgress addMissionProgress(User user, Mission mission, Float progress) {
         if (mission.getRoleType() != null && !user.getRoles().contains(new Role(mission.getRoleType().getRole()))) {
-            return;
+            return null;
         }
         MissionProgress missionProgress = this.missionDao
                 .findById(user, mission)
@@ -44,14 +44,15 @@ public class MissionServiceImpl implements MissionService {
             missionProgress = missionDao.updateProgress(user, mission, missionProgress.getProgress() + progress);
             if (missionProgress.isCompleted()) {
                 LOGGER.info("Completed mission {} for user {}, gained {} xp", mission.getTitle(), user.getId(), mission.getXp());
-                missionDao.completeMission(user, mission);
+                missionProgress = missionDao.completeMission(user, mission);
                 userDao.update(user.getId(), new SaveUserBuilder().withXp(user.getXp() + mission.getXp()).build());
                 // Automatically reset repeatable and none time frequency missions
                 if (mission.isRepeatable() && mission.getFrequency() == Mission.MissionFrequency.NONE) {
-                    missionDao.resetProgress(user, mission);
+                    missionProgress = missionDao.resetProgress(user, mission);
                 }
             }
         }
+        return missionProgress;
     }
 
     @Scheduled(cron = "0 0 0 * * 0")

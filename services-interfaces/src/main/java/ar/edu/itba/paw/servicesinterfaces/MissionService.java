@@ -8,7 +8,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import java.util.List;
 
 public interface MissionService {
-    void addMissionProgress(User user, Mission mission, Float progress);
+    MissionProgress addMissionProgress(User user, Mission mission, Float progress);
     void resetMissionsWeekly();
     void resetMissionsDaily();
     void resetMissionsMonthly();
