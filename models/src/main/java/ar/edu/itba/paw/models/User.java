@@ -49,7 +49,7 @@ public class User {
     @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "userid", referencedColumnName = "id"))
     @Column(name = "role")
     @Enumerated(EnumType.STRING)
-    private Set<RoleType> roles;
+    private Set<RoleType> roles = new HashSet<>();
 
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(
@@ -219,6 +219,9 @@ public class User {
     }
 
     public Set<RoleType> getRoles() {
+        if (roles.size() == 0) {
+            return new HashSet<>(Collections.singletonList(RoleType.USER));
+        }
         return roles;
     }
 
@@ -269,12 +272,12 @@ public class User {
         this.xp = xp;
     }
 
-    public void setRoles(Set<Role> roles) {
-        this.roles = roles;
-    }
-
     public int getLevel() {
         return (int) (xp / 100);
+    }
+
+    public void setRoles(Set<RoleType> objects) {
+        this.roles = objects;
     }
 }
 

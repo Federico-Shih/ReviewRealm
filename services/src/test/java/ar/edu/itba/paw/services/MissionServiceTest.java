@@ -3,7 +3,6 @@ package ar.edu.itba.paw.services;
 import ar.edu.itba.paw.enums.Mission;
 import ar.edu.itba.paw.enums.RoleType;
 import ar.edu.itba.paw.models.MissionProgress;
-import ar.edu.itba.paw.models.Role;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.persistenceinterfaces.MissionDao;
 import ar.edu.itba.paw.persistenceinterfaces.UserDao;
@@ -45,10 +44,9 @@ public class MissionServiceTest {
 
     @Test
     public void testIncompatibleRoleMissionProgress() {
-        Mockito.when(missionDao.findById(any(), any())).thenReturn(Optional.empty());
         User user = new User("", "", "");
-        HashSet<Role> roles = new HashSet<>();
-        roles.add(new Role(RoleType.MODERATOR.getRole()));
+        HashSet<RoleType> roles = new HashSet<>();
+        roles.add(RoleType.MODERATOR);
         user.setRoles(roles);
         MissionProgress missionProgress = missionService.addMissionProgress(user, Mission.RECOMMEND_GAMES, 1f);
         Assert.assertNull(missionProgress);
@@ -61,7 +59,6 @@ public class MissionServiceTest {
         Mockito.when(missionDao.findById(any(), any())).thenReturn(Optional.of(new MissionProgress(user, Mission.SETUP_PREFERENCES, 0f, null, 0)));
         Mockito.when(missionDao.updateProgress(any(), any(), any())).thenReturn(new MissionProgress(user, Mission.SETUP_PREFERENCES, 1f, null, 0));
         Mockito.when(missionDao.completeMission(any(), any())).thenReturn(new MissionProgress(user, Mission.SETUP_PREFERENCES, 1f, null, 1));
-        Mockito.when(missionDao.resetProgress(any(), any())).thenReturn(new MissionProgress(user, Mission.SETUP_PREFERENCES, 0f, null, 1));
         MissionProgress missionProgress = missionService.addMissionProgress(user, Mission.SETUP_PREFERENCES, 1f);
         Assert.assertEquals(Mission.SETUP_PREFERENCES, missionProgress.getMission());
         Assert.assertEquals(1f, missionProgress.getProgress(), 0.001);

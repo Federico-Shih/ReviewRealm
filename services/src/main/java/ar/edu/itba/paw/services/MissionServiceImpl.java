@@ -1,10 +1,8 @@
 package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.dtos.saving.SaveUserBuilder;
-import ar.edu.itba.paw.dtos.saving.SaveUserDTO;
 import ar.edu.itba.paw.enums.Mission;
 import ar.edu.itba.paw.models.MissionProgress;
-import ar.edu.itba.paw.models.Role;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.persistenceinterfaces.MissionDao;
 import ar.edu.itba.paw.persistenceinterfaces.UserDao;
@@ -34,7 +32,7 @@ public class MissionServiceImpl implements MissionService {
     @Transactional
     @Override
     public MissionProgress addMissionProgress(User user, Mission mission, Float progress) {
-        if (mission.getRoleType() != null && !user.getRoles().contains(new Role(mission.getRoleType().getRole()))) {
+        if (mission.getRoleType() != null && !user.getRoles().contains(mission.getRoleType())) {
             return null;
         }
         MissionProgress missionProgress = this.missionDao
