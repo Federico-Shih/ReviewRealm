@@ -2,12 +2,10 @@ package ar.edu.itba.paw.models;
 
 import ar.edu.itba.paw.converters.GenreAttributeConverter;
 import ar.edu.itba.paw.enums.Genre;
+import ar.edu.itba.paw.enums.RoleType;
 
 import javax.persistence.*;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Table(name = "users")
@@ -89,6 +87,12 @@ public class User {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
     private List<ExpirationToken> expirationTokenList;
+
+    @Column(name = "xp")
+    private Float xp = 0f;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    private List<MissionProgress> missions;
 
     public User(String username,
                 String email,
@@ -217,7 +221,7 @@ public class User {
     }
 
     public Set<Role> getRoles() {
-        return roles;
+        return roles.size() != 0 ? roles : new HashSet<>(Collections.singletonList(new Role(RoleType.USER.getRole())));
     }
 
     public Set<DisabledNotification> getDisabledNotifications() {
@@ -253,6 +257,26 @@ public class User {
 
     public void setLanguage(Locale language) {
         this.language = language;
+    }
+
+    public List<MissionProgress> getMissions() {
+        return missions;
+    }
+
+    public Float getXp() {
+        return xp;
+    }
+
+    public void setXp(Float xp) {
+        this.xp = xp;
+    }
+
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
+    }
+
+    public int getLevel() {
+        return (int) (xp / 100);
     }
 }
 

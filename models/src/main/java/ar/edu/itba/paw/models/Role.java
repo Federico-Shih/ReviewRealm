@@ -20,7 +20,7 @@ public class Role {
         this.roleName = roleName;
     }
 
-    /* package */ Role() {
+    protected Role() {
     }
 
     public String getRoleName() {

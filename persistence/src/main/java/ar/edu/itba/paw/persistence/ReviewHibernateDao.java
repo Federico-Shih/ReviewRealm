@@ -135,7 +135,7 @@ public class ReviewHibernateDao implements ReviewDao, PaginationDao<ReviewFilter
         @SuppressWarnings("unchecked")
         final List<Long> idlist = (List<Long>) nativeQuery.getResultList().stream().map(n -> (Long)((Number) n).longValue()).collect(Collectors.toList());
 
-        final TypedQuery<Review> query = em.createQuery("from Review WHERE id IN :ids " + toOrderString(ordering), Review.class);
+        final TypedQuery<Review> query = em.createQuery("from Review WHERE id IN :ids " + toOrderString(ordering, false), Review.class);
         query.setParameter("ids", idlist);
         User currentUser = em.find(User.class, activeUserId != null ? activeUserId : -1);
         List<Review> reviewList = query.getResultList();
@@ -249,12 +249,12 @@ public class ReviewHibernateDao implements ReviewDao, PaginationDao<ReviewFilter
         return str.toString();
     }
 
-    private String toOrderString(Ordering<ReviewOrderCriteria> order) {
+    private String toOrderString(Ordering<ReviewOrderCriteria> order, boolean isTable) {
         if (order == null || order.getOrderCriteria() == null) {
             return "";
         }
         return " ORDER BY " +
-                order.getOrderCriteria().getAltName() +
+                (isTable ? order.getOrderCriteria().getTableName() : order.getOrderCriteria().getAltName()) +
                 " " +
                 (order.getOrderDirection() == null ? "" : order.getOrderDirection().getAltName());
     }

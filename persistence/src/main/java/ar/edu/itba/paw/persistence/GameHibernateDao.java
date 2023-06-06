@@ -26,7 +26,7 @@ public class GameHibernateDao implements GameDao, PaginationDao<GameFilter> {
 
     @Override
     public Optional<Game> create(String name, String description, String developer, String publisher, String imageid, List<Genre> genres, LocalDate publishDate, boolean suggested) {
-        final Image image = em.find(Image.class, imageid);
+        final Image image = em.getReference(Image.class, imageid);
         final Game game = new Game(name, description, developer, publisher, image, genres, publishDate, suggested);
         em.persist(game);
         return Optional.of(game);
@@ -45,7 +45,7 @@ public class GameHibernateDao implements GameDao, PaginationDao<GameFilter> {
             return new Paginated<>(page.getPageNumber(), page.getPageSize(), totalPages, new ArrayList<>());
         }
         QueryBuilder queryBuilder = getQueryBuilderFromFilter(filter);
-        Query nativeQuery = em.createNativeQuery("SELECT distinct g.id FROM " + toTableString(filter) + queryBuilder.toQuery());
+        Query nativeQuery = em.createNativeQuery("SELECT distinct g.id FROM " + toTableString(filter) + queryBuilder.toQuery() + toOrderString(ordering));
         prepareParametersForNativeQuery(queryBuilder, nativeQuery);
         nativeQuery.setMaxResults(page.getPageSize());
         nativeQuery.setFirstResult(page.getOffset().intValue());

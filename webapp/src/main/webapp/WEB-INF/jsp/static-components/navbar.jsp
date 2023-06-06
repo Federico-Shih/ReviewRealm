@@ -80,6 +80,18 @@
                                     </a>
                                 </li>
                                 <li>
+                                    <a href="<c:url value="/profile/missions"/>">
+                                        <div class="valign-wrapper profile-dropdown-link">
+                                            <span class="material-icons">
+                                                receipt
+                                            </span>
+                                            <span class="overflow-ellipsis">
+                                                <spring:message code="navbar.missions"/>
+                                            </span>
+                                        </div>
+                                    </a>
+                                </li>
+                                <li>
                                     <a href="<c:url value="/review/submit"/>">
                                         <div class="valign-wrapper profile-dropdown-link">
                                             <span class="material-icons">

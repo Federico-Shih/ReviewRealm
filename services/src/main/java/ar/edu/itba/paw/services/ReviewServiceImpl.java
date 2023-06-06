@@ -7,19 +7,13 @@ import ar.edu.itba.paw.dtos.filtering.ReviewFilterBuilder;
 import ar.edu.itba.paw.dtos.ordering.Ordering;
 import ar.edu.itba.paw.dtos.ordering.ReviewOrderCriteria;
 import ar.edu.itba.paw.dtos.searching.ReviewSearchFilter;
-import ar.edu.itba.paw.enums.Difficulty;
-import ar.edu.itba.paw.enums.FeedbackType;
-import ar.edu.itba.paw.enums.NotificationType;
-import ar.edu.itba.paw.enums.Platform;
+import ar.edu.itba.paw.enums.*;
 import ar.edu.itba.paw.models.Game;
 import ar.edu.itba.paw.models.Paginated;
 import ar.edu.itba.paw.models.Review;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.persistenceinterfaces.ReviewDao;
-import ar.edu.itba.paw.servicesinterfaces.GameService;
-import ar.edu.itba.paw.servicesinterfaces.MailingService;
-import ar.edu.itba.paw.servicesinterfaces.ReviewService;
-import ar.edu.itba.paw.servicesinterfaces.UserService;
+import ar.edu.itba.paw.servicesinterfaces.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,12 +37,15 @@ public class ReviewServiceImpl implements ReviewService {
     private final GameService gameService;
     private final MailingService mailingService;
 
+    private final MissionService missionService;
+
     @Autowired
-    public ReviewServiceImpl(ReviewDao reviewDao, UserService userService, GameService gameService, MailingService mailingService) {
+    public ReviewServiceImpl(ReviewDao reviewDao, UserService userService, GameService gameService, MailingService mailingService, MissionService missionService) {
         this.reviewDao = reviewDao;
         this.userService = userService;
         this.gameService = gameService;
         this.mailingService = mailingService;
+        this.missionService = missionService;
     }
 
     @Transactional
@@ -67,6 +64,7 @@ public class ReviewServiceImpl implements ReviewService {
         LOGGER.info("Creating review - Game: {}, Author: {}, Title: {}, Rating: {}",author.getUsername(),reviewedGame.getName(),title,rating);
         gameService.addNewReviewToGame(reviewedGame.getId(), rating);
 
+        missionService.addMissionProgress(author, Mission.REVIEWS_GOAL, 1f);
         List<User> authorFollowers = userService.getFollowers(author.getId());
 
         for (User follower : authorFollowers) {
@@ -154,6 +152,7 @@ public class ReviewServiceImpl implements ReviewService {
 
             Game game = review.get().getReviewedGame();
             User author = review.get().getAuthor();
+            missionService.addMissionProgress(author, Mission.REVIEWS_GOAL, -1f);
 
             if(userService.isNotificationEnabled(author.getId(), NotificationType.MY_REVIEW_IS_DELETED)) {
                 mailingService.sendReviewDeletedEmail(game, author);
@@ -186,6 +185,7 @@ public class ReviewServiceImpl implements ReviewService {
                 reviewDao.editReviewFeedback(review.getId(), user.getId(), oldFeedback, feedback);
         int userReputationOffset = (oldFeedback == null) ? ((feedback == FeedbackType.LIKE) ? 1 : -1) : ((feedback == FeedbackType.LIKE) ? 2 : -2);
         userService.modifyUserReputation(review.getAuthor().getId(), userReputationOffset);
+        missionService.addMissionProgress(review.getAuthor(), Mission.REPUTATION_GOAL, (float)userReputationOffset);
         return response;
     }
 
@@ -194,7 +194,9 @@ public class ReviewServiceImpl implements ReviewService {
             return false;
         }
         boolean response = reviewDao.deleteReviewFeedback(review.getId(), user.getId(), oldFeedback);
-        userService.modifyUserReputation(review.getAuthor().getId(), (oldFeedback == FeedbackType.LIKE) ? -1 : 1);
+        int reputationOffset = (oldFeedback == FeedbackType.LIKE) ? -1 : 1;
+        userService.modifyUserReputation(review.getAuthor().getId(), reputationOffset);
+        missionService.addMissionProgress(review.getAuthor(), Mission.REPUTATION_GOAL, (float) reputationOffset);
         return response;
     }
 

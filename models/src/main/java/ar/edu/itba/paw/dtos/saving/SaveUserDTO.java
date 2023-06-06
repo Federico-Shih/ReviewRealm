@@ -10,10 +10,11 @@ public class SaveUserDTO {
     private final Long reputation;
     private final Long avatar;
     private final Boolean enabled;
-
     private final Locale language;
 
-    public SaveUserDTO(String username, String email, String password, Boolean enabled, Long reputation, Long avatar, Locale language) {
+    private final Float xp;
+
+    public SaveUserDTO(String username, String email, String password, Boolean enabled, Long reputation, Long avatar, Locale language, Float xp) {
         this.username = username;
         this.email = email;
         this.password = password;
@@ -21,6 +22,7 @@ public class SaveUserDTO {
         this.reputation = reputation;
         this.avatar = avatar;
         this.language = language;
+        this.xp = xp;
     }
 
     public String getUsername() {
@@ -60,5 +62,9 @@ public class SaveUserDTO {
 
     public Locale getLanguage() {
         return language;
+    }
+
+    public Float getXp() {
+        return xp;
     }
 }

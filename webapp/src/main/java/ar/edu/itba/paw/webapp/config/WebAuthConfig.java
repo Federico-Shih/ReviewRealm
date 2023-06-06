@@ -108,7 +108,8 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                         "/for-you/**",
                         "/profile/settings/**",
                         "/profile/settings/**",
-                        "/game/submit"
+                        "/game/submit",
+                        "/profile/missions"
                 ).authenticated()
 
                 /* ACÁ PONEMOS TODOS LOS PATHS QUE REQUIERAN NO HABER INICIADO SESIÓN */

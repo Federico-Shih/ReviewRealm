@@ -304,6 +304,9 @@ nav {
     font-weight: 700;
     padding: 2px 6px;
     white-space: nowrap;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
 }
 
 .rr-blue-text {
@@ -416,7 +419,6 @@ input::-webkit-inner-spin-button {
     height: 200px !important;
     overflow-y: auto !important;
 }
-.vertical-scroll
 
 .border-button {
     border: 1px solid white;

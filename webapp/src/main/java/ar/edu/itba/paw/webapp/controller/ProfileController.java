@@ -2,6 +2,7 @@ package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.dtos.Page;
 import ar.edu.itba.paw.enums.Genre;
+import ar.edu.itba.paw.enums.Mission;
 import ar.edu.itba.paw.enums.RoleType;
 import ar.edu.itba.paw.exceptions.UserNotFoundException;
 import ar.edu.itba.paw.models.*;
@@ -22,7 +23,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
+import java.lang.reflect.Array;
+import java.time.LocalDate;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Controller
@@ -327,6 +331,29 @@ public class ProfileController extends PaginatedController implements QueryContr
         mav.addObject("discoveryQueue",true);
         mav.addObject("positionInQueue", position);
         mav.addObject("queryString", "?position=" + position+"&");
+        return mav;
+    }
+
+    @RequestMapping(value = "/profile/missions", method = RequestMethod.GET)
+    public ModelAndView missionsPage() {
+        ModelAndView mav = new ModelAndView("profile/missions");
+        User loggedUser = AuthenticationHelper.getLoggedUser(userService);
+        if (loggedUser == null) {
+            throw new UserNotFoundException();
+        }
+        Map<Mission, MissionProgress> userMissions = loggedUser.getMissions().stream().collect(Collectors.toMap(MissionProgress::getMission, Function.identity()));
+        List<MissionProgress> currentProgresses = Arrays.stream(Mission.values())
+            .filter(
+                mission -> mission.getRoleType() == null
+                    || loggedUser.getRoles().stream()
+                    .anyMatch(
+                        (role) -> role.getRoleName().equals(mission.getRoleType().getRole())
+                    ))
+            .map(mission -> userMissions.getOrDefault(mission, new MissionProgress(loggedUser, mission, 0f, null, 0))).collect(Collectors.toList());
+        mav.addObject("missions", currentProgresses);
+        mav.addObject("level", loggedUser.getLevel());
+        mav.addObject("xp", loggedUser.getXp());
+        mav.addObject("currentLevelXp", loggedUser.getXp() % 100);
         return mav;
     }
 }
