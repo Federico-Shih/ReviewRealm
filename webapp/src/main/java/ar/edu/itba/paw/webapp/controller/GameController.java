@@ -205,14 +205,16 @@ public class GameController extends PaginatedController implements QueryControll
     @RequestMapping(value = "/game/submissions/{gameId:\\d+}/accept", method = RequestMethod.POST)
     public ModelAndView acceptSubmission(@PathVariable(value="gameId") Long gameId) {
         LOGGER.info("Accepting suggested game, id: {}", gameId);
-        gs.acceptGame(gameId);
+        User user = AuthenticationHelper.getLoggedUser(us);
+        gs.acceptGame(gameId, user);
         return new ModelAndView("redirect:/game/submissions");
     }
 
     @RequestMapping(value = "/game/submissions/{gameId:\\d+}/reject", method = RequestMethod.POST)
     public ModelAndView rejectSubmission(@PathVariable(value="gameId") Long gameId) {
         LOGGER.info("Rejecting suggested game, id: {}", gameId);
-        gs.rejectGame(gameId);
+        User user = AuthenticationHelper.getLoggedUser(us);
+        gs.rejectGame(gameId, user);
         return new ModelAndView("redirect:/game/submissions");
     }
 

@@ -20,7 +20,7 @@ public class ValidationTokenHibernateDao implements ValidationTokenDao {
 
     @Override
     public ExpirationToken create(long userId, String password, LocalDateTime expiration) {
-        User user = em.find(User.class, userId);
+        User user = em.getReference(User.class, userId);
         if (user == null) return null;
         ExpirationToken token = new ExpirationToken(generateId(), user, password, expiration);
         em.persist(token);

@@ -38,9 +38,9 @@ public interface GameService {
 
     void updateReviewFromGame(Long gameId,Integer oldRating,Integer newRating);
 
-    void acceptGame(long gameId);
+    void acceptGame(long gameId, User approvingUser);
 
-    void rejectGame(long gameId);
+    void rejectGame(long gameId, User rejectingUser);
 
     List<Game> getRecommendationsOfGamesForUser(User user);
 

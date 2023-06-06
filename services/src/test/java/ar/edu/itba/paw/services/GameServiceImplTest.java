@@ -101,12 +101,12 @@ public class GameServiceImplTest {
     @Test(expected = NoSuchGameException.class)
     public void testAcceptGameError(){
         Mockito.when(gameDao.setSuggestedFalse(GAME1.getId())).thenReturn(false);
-        gs.acceptGame(GAME1.getId());
+        gs.acceptGame(GAME1.getId(), null);
     }
     @Test(expected = NoSuchGameException.class)
     public void testRejectGameError(){
         Mockito.when(gameDao.deleteGame(GAME1.getId())).thenReturn(false);
-        gs.rejectGame(GAME1.getId());
+        gs.rejectGame(GAME1.getId(), null);
     }
 
     @Test

@@ -53,6 +53,9 @@
                     <span class="profile-user-name">
                         ${profile.username}
                     </span>
+                    <span class="chip-small" style="font-size: 16px">
+                        <spring:message code="profile.level" arguments="${profile.level}" />
+                    </span>
                     <c:if test="${userModerator}">
                          <span class="tooltipped" data-position="top" data-tooltip="<spring:message code="profile.moderator" />">
                             <i class="material-icons profile-user-name">

@@ -9,16 +9,14 @@ import ar.edu.itba.paw.dtos.saving.SubmitGameDTO;
 import ar.edu.itba.paw.dtos.searching.GameSearchFilter;
 import ar.edu.itba.paw.enums.Difficulty;
 import ar.edu.itba.paw.enums.Genre;
+import ar.edu.itba.paw.enums.Mission;
 import ar.edu.itba.paw.enums.Platform;
 import ar.edu.itba.paw.enums.RoleType;
 import ar.edu.itba.paw.exceptions.NoSuchGameException;
 import ar.edu.itba.paw.exceptions.UserNotFoundException;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.persistenceinterfaces.GameDao;
-import ar.edu.itba.paw.servicesinterfaces.GameService;
-import ar.edu.itba.paw.servicesinterfaces.ImageService;
-import ar.edu.itba.paw.servicesinterfaces.ReviewService;
-import ar.edu.itba.paw.servicesinterfaces.UserService;
+import ar.edu.itba.paw.servicesinterfaces.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,14 +36,16 @@ public class GameServiceImpl implements GameService {
     private final ReviewService reviewService;
     private final ImageService imgService;
     private final UserService userService;
+    private final MissionService missionService;
 
     @Lazy
     @Autowired
-    public GameServiceImpl(GameDao gameDao, ReviewService reviewService, ImageService imgService, UserService userService) {
+    public GameServiceImpl(GameDao gameDao, ReviewService reviewService, ImageService imgService, UserService userService, MissionService missionService) {
         this.gameDao = gameDao;
         this.reviewService = reviewService;
         this.imgService = imgService;
         this.userService = userService;
+        this.missionService = missionService;
     }
 
     @Transactional
@@ -103,7 +103,7 @@ public class GameServiceImpl implements GameService {
 
     @Transactional(readOnly = true)
     @Override
-    public GameReviewData   getGameReviewDataByGameId(Long id) {
+    public GameReviewData getGameReviewDataByGameId(Long id) {
         List<Review> reviews = reviewService.getAllReviewsFromGame(id,null);
         if(reviews.size() > 0) {
             HashMap<Difficulty, Integer> difficultyCount = new HashMap<>();
@@ -170,14 +170,16 @@ public class GameServiceImpl implements GameService {
 
     @Transactional
     @Override
-    public void acceptGame(long gameId) {
+    public void acceptGame(long gameId, User approvingUser) {
         decisionGame(gameDao::setSuggestedFalse, gameId);
+        missionService.addMissionProgress(approvingUser, Mission.MANAGE_GAME_SUBMISSIONS, 1f);
     }
 
     @Transactional
     @Override
-    public void rejectGame(long gameId) {
+    public void rejectGame(long gameId, User approvingUser) {
         decisionGame(gameDao::deleteGame, gameId);
+        missionService.addMissionProgress(approvingUser, Mission.MANAGE_GAME_SUBMISSIONS, 1f);
     }
 
     private void decisionGame(Function<Long, Boolean> decisionFunction, Long gameId) {

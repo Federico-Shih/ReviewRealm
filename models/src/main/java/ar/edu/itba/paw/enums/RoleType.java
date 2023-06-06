@@ -1,7 +1,7 @@
 package ar.edu.itba.paw.enums;
 
 public enum RoleType {
-    MODERATOR("MODERATOR");
+    MODERATOR("MODERATOR"), USER("USER");
 
     private final String roleName;
 
