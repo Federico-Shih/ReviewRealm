@@ -72,7 +72,7 @@ public class ProfileController extends PaginatedController implements QueryContr
         mav.addObject("notificationsChanged", notificationsChanged != null && notificationsChanged);
         mav.addObject("games",gameService.getFavoriteGamesFromUser(userId));
         mav.addObject("profile",user.get());
-        mav.addObject("userModerator", user.get().getRoles().contains(new Role(RoleType.MODERATOR.getRole())));
+        mav.addObject("userModerator", user.get().getRoles().contains(RoleType.MODERATOR));
 
         Paginated<Review> userReviews =reviewService.getUserReviews(Page.with(page, pageSize),user.get().getId(),loggedUser);
         super.paginate(mav,userReviews);
@@ -344,12 +344,11 @@ public class ProfileController extends PaginatedController implements QueryContr
         Map<Mission, MissionProgress> userMissions = loggedUser.getMissions().stream().collect(Collectors.toMap(MissionProgress::getMission, Function.identity()));
         List<MissionProgress> currentProgresses = Arrays.stream(Mission.values())
             .filter(
-                mission -> mission.getRoleType() == null
-                    || loggedUser.getRoles().stream()
-                    .anyMatch(
-                        (role) -> role.getRoleName().equals(mission.getRoleType().getRole())
-                    ))
-            .map(mission -> userMissions.getOrDefault(mission, new MissionProgress(loggedUser, mission, 0f, null, 0))).collect(Collectors.toList());
+                mission -> mission.getRoleType() == null ||
+                        loggedUser.getRoles().stream().anyMatch(
+                            (role) -> role.equals(mission.getRoleType())
+                        )
+            ).map(mission -> userMissions.getOrDefault(mission, new MissionProgress(loggedUser, mission, 0f, null, 0))).collect(Collectors.toList());
         mav.addObject("missions", currentProgresses);
         mav.addObject("level", loggedUser.getLevel());
         mav.addObject("xp", loggedUser.getXp());

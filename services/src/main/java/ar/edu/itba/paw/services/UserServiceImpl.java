@@ -5,6 +5,7 @@ import ar.edu.itba.paw.dtos.filtering.UserFilterBuilder;
 import ar.edu.itba.paw.dtos.saving.SaveUserBuilder;
 import ar.edu.itba.paw.enums.Mission;
 import ar.edu.itba.paw.enums.NotificationType;
+import ar.edu.itba.paw.enums.RoleType;
 import ar.edu.itba.paw.exceptions.*;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.persistenceinterfaces.UserDao;
@@ -121,7 +122,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Set<Role> getUserRoles(Long id) {
+    public Set<RoleType> getUserRoles(Long id) {
         return userDao.findById(id).orElseThrow(UserNotFoundException::new).getRoles();
     }
 
@@ -233,9 +234,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public Map<NotificationType, Boolean> getUserNotificationSettings(Long userId) {
         Map<NotificationType, Boolean> notificationSettings = new HashMap<>();
-        Set<DisabledNotification> disabledNotifications = getUserById(userId).orElseThrow(() -> new UserNotFoundException("user.notfound")).getDisabledNotifications();
-        for (DisabledNotification disabledNotification : disabledNotifications) {
-            notificationSettings.put(disabledNotification.getNotificationType(), false);
+        Set<NotificationType> disabledNotifications = getUserById(userId).orElseThrow(UserNotFoundException::new).getDisabledNotifications();
+        for (NotificationType disabledNotification : disabledNotifications) {
+            notificationSettings.put(disabledNotification, false);
         }
         for (NotificationType notificationType : NotificationType.values()) {
             if (!notificationSettings.containsKey(notificationType)) {
@@ -248,8 +249,8 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     @Override
     public Boolean isNotificationEnabled(Long userId, NotificationType notificationType) {
-        Set<DisabledNotification> disabledNotifications = getUserById(userId).orElseThrow(() -> new UserNotFoundException("user.notfound")).getDisabledNotifications();
-        return disabledNotifications.stream().noneMatch(disabledNotification -> disabledNotification.getNotificationType().equals(notificationType));
+        Set<NotificationType> disabledNotifications = getUserById(userId).orElseThrow(UserNotFoundException::new).getDisabledNotifications();
+        return disabledNotifications.stream().noneMatch(disabledNotification -> disabledNotification.equals(notificationType));
     }
 
     @Transactional

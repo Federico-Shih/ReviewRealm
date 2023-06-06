@@ -1,7 +1,9 @@
 package ar.edu.itba.paw.models;
 
 import ar.edu.itba.paw.converters.GenreAttributeConverter;
+import ar.edu.itba.paw.converters.NotificationTypeAttributeConverter;
 import ar.edu.itba.paw.enums.Genre;
+import ar.edu.itba.paw.enums.NotificationType;
 import ar.edu.itba.paw.enums.RoleType;
 
 import javax.persistence.*;
@@ -37,21 +39,17 @@ public class User {
     @Column(name = "reputation")
     private Long reputation;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "user_disabled_notifications",
-            joinColumns = @JoinColumn(name = "userid", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "notificationid", referencedColumnName = "notificationid")
-    )
-    private Set<DisabledNotification> disabledNotifications = new HashSet<>();
+    @ElementCollection(targetClass = NotificationType.class, fetch = FetchType.LAZY)
+    @CollectionTable(name = "user_disabled_notifications", joinColumns = @JoinColumn(name = "userid", referencedColumnName = "id"))
+    @Column(name = "notification")
+    @Convert(converter = NotificationTypeAttributeConverter.class)
+    private Set<NotificationType> disabledNotifications = new HashSet<>();
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "user_roles",
-            joinColumns = @JoinColumn(name = "userid", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "roleid", referencedColumnName = "roleid")
-    )
-    private Set<Role> roles;
+    @ElementCollection(targetClass = RoleType.class, fetch = FetchType.LAZY)
+    @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "userid", referencedColumnName = "id"))
+    @Column(name = "role")
+    @Enumerated(EnumType.STRING)
+    private Set<RoleType> roles = new HashSet<>();
 
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(
@@ -112,8 +110,8 @@ public class User {
                 Set<Genre> preferences,
                 boolean enabled,
                 Long reputation,
-                Set<DisabledNotification> disabledNotifications,
-                Set<Role> roles,
+                Set<NotificationType> disabledNotifications,
+                Set<RoleType> roles,
                 Long avatarId,
                 Set<User> following,
                 Set<User> followers
@@ -220,11 +218,14 @@ public class User {
         return enabled;
     }
 
-    public Set<Role> getRoles() {
-        return roles.size() != 0 ? roles : new HashSet<>(Collections.singletonList(new Role(RoleType.USER.getRole())));
+    public Set<RoleType> getRoles() {
+        if (roles.size() == 0) {
+            return new HashSet<>(Collections.singletonList(RoleType.USER));
+        }
+        return roles;
     }
 
-    public Set<DisabledNotification> getDisabledNotifications() {
+    public Set<NotificationType> getDisabledNotifications() {
         return disabledNotifications;
     }
 
@@ -271,12 +272,12 @@ public class User {
         this.xp = xp;
     }
 
-    public void setRoles(Set<Role> roles) {
-        this.roles = roles;
-    }
-
     public int getLevel() {
         return (int) (xp / 100);
+    }
+
+    public void setRoles(Set<RoleType> objects) {
+        this.roles = objects;
     }
 }
 

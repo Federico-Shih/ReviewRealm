@@ -8,7 +8,7 @@ public class NotificationTypeAttributeConverter implements AttributeConverter<No
 
     @Override
     public String convertToDatabaseColumn(NotificationType notificationType) {
-        return notificationType != null ? notificationType.getNameCode() : null;
+        return notificationType != null ? notificationType.getTypeName() : null;
     }
 
     @Override

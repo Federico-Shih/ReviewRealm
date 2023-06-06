@@ -8,16 +8,14 @@ public enum ReviewOrderCriteria implements OrderCriteria {
     REVIEW_POPULAR(2, "order.criteria.review.popular", "popularity", "popularity"),
     REVIEW_CONTROVERSIAL(3, "order.criteria.review.controversial", "controversial", "controversial");
 
-    final Integer value;
-    final String localizedNameCode;
-    final String altName;
-
-    final String tableName;
+    private final Integer value;
+    private final String localizedNameCode;
+    private final String altName;
+    private final String tableName;
 
     ReviewOrderCriteria(Integer value, String localizedNameCode, String altName, String tableName) {
         this.value = value;
         this.localizedNameCode = localizedNameCode;
-
         this.altName = altName;
         this.tableName = tableName;
     }
@@ -34,10 +32,6 @@ public enum ReviewOrderCriteria implements OrderCriteria {
         return this.altName;
     }
 
-    public String getTableName() {
-        return this.tableName;
-    }
-
     public static ReviewOrderCriteria fromValue(Integer value) {
         for (ReviewOrderCriteria orderCriteria : values()) {
             if (Objects.equals(orderCriteria.getValue(), value)){
@@ -45,5 +39,9 @@ public enum ReviewOrderCriteria implements OrderCriteria {
             }
         }
         return null;
+    }
+
+    public String getTableName() {
+        return tableName;
     }
 }

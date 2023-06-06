@@ -61,8 +61,7 @@ public class UserDaoImplTest {
     @Before
     public void setUp() {
         jdbcTemplate = new JdbcTemplate(ds);
-        jdbcTemplate.execute(String.format("INSERT INTO notifications VALUES (1, '%s')", NotificationType.MY_REVIEW_IS_DELETED.getTypeName()));
-     //   JdbcTestUtils.deleteFromTables(jdbcTemplate, "users");
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, "users");
     }
 
     @Rollback
@@ -483,7 +482,7 @@ public class UserDaoImplTest {
     @Test
     public void testEnableNotification() {
         jdbcTemplate.execute("INSERT INTO users (id, username, email, password) VALUES (" + ID + ", '" + USERNAME + "', '" + EMAIL + "','" + PASSWORD + "')");
-        jdbcTemplate.execute("INSERT INTO user_disabled_notifications (userid, notificationid) VALUES (" + ID + ", 1)");
+        jdbcTemplate.execute("INSERT INTO user_disabled_notifications (userid, notification) VALUES (" + ID + ",'"+ NotificationType.MY_REVIEW_IS_DELETED.getTypeName() +"')");
 
         userDao.enableNotification(ID, NotificationType.MY_REVIEW_IS_DELETED.getTypeName());
         em.flush();

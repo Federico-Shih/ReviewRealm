@@ -4,6 +4,7 @@ import ar.edu.itba.paw.dtos.saving.SubmitGameDTO;
 import ar.edu.itba.paw.enums.Difficulty;
 import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.enums.Platform;
+import ar.edu.itba.paw.enums.RoleType;
 import ar.edu.itba.paw.exceptions.NoSuchGameException;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.persistenceinterfaces.GameDao;
@@ -124,7 +125,7 @@ public class GameServiceImplTest {
     public void testCreateGame(){
         Mockito.when(imgService.uploadImage(any(),any())).thenReturn(new Image("a","jpg",new byte[0]));
         Mockito.when(userService.getUserById(any())).thenReturn(Optional.of(user));
-        Mockito.when(user.getRoles()).thenReturn(new HashSet<>(Arrays.asList(new Role("MODERATOR"))));
+        Mockito.when(user.getRoles()).thenReturn(new HashSet<>(Collections.singletonList(RoleType.MODERATOR)));
         Mockito.when(dto.getGenres()).thenReturn(Arrays.asList(Genre.ACTION.getId(), Genre.ADVENTURE.getId()));
 
         Mockito.when(gameDao.create(any(),any(),any(),any(),any(),any(),any(),eq(false))).thenReturn(Optional.of(GAME1));

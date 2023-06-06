@@ -1,14 +1,11 @@
 package ar.edu.itba.paw.webapp.auth;
 
 import ar.edu.itba.paw.enums.RoleType;
-import ar.edu.itba.paw.models.Role;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.servicesinterfaces.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContext;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,9 +13,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.context.request.RequestAttributes;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Collection;
@@ -60,13 +54,10 @@ public class PawUserDetailsService implements UserDetailsService {
         final User user = us.getUserByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("No user found for email: " + email));
 
-        if(!BCRYPT_PATTERN.matcher(user.getPassword()).matches()) {
-            throw new UsernameNotFoundException("User password is not hashed");
-        }
-
-        final Set<Role> roleList = user.getRoles();
+        final Set<RoleType> roleList = user.getRoles();
         final Collection<GrantedAuthority> authorities = new HashSet<>();
-        roleList.forEach((role -> authorities.add(new SimpleGrantedAuthority(String.format("ROLE_%s", role.getRoleName())))));
+        roleList.forEach((role -> authorities.add(new SimpleGrantedAuthority(String.format("ROLE_%s", role.getRole())))));
+
         LOGGER.debug("User {} logged in - email: {}", user.getId(), user.getEmail());
         Locale current = getCurrentSessionLocale();
         if (current != user.getLanguage()) {
