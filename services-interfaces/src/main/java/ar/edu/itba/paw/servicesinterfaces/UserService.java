@@ -1,10 +1,10 @@
 package ar.edu.itba.paw.servicesinterfaces;
 
 import ar.edu.itba.paw.enums.NotificationType;
+import ar.edu.itba.paw.enums.RoleType;
 import ar.edu.itba.paw.exceptions.*;
 import ar.edu.itba.paw.models.FollowerFollowingCount;
 import ar.edu.itba.paw.models.Paginated;
-import ar.edu.itba.paw.models.Role;
 import ar.edu.itba.paw.models.User;
 
 import java.util.*;
@@ -30,7 +30,7 @@ public interface UserService {
 
     FollowerFollowingCount getFollowerFollowingCount(Long id);
 
-    Set<Role> getUserRoles(Long id);
+    Set<RoleType> getUserRoles(Long id);
 
     boolean followUserById(Long userId, Long otherId);
 

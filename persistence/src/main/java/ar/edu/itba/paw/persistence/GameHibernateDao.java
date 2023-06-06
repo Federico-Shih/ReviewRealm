@@ -45,7 +45,13 @@ public class GameHibernateDao implements GameDao, PaginationDao<GameFilter> {
             return new Paginated<>(page.getPageNumber(), page.getPageSize(), totalPages, new ArrayList<>());
         }
         QueryBuilder queryBuilder = getQueryBuilderFromFilter(filter);
-        Query nativeQuery = em.createNativeQuery("SELECT distinct g.id FROM " + toTableString(filter) + queryBuilder.toQuery());
+        Query nativeQuery = em.createNativeQuery(
+                "SELECT distinct id FROM ("+
+                        "SELECT g.id, g.ratingsum / coalesce(nullif(g.reviewcount, 0), 1) as averageRating  FROM " +
+                        toTableString(filter) +
+                        queryBuilder.toQuery() +
+                        toOrderString(ordering) +
+                        ") as games");
         prepareParametersForNativeQuery(queryBuilder, nativeQuery);
         nativeQuery.setMaxResults(page.getPageSize());
         nativeQuery.setFirstResult(page.getOffset().intValue());
@@ -194,11 +200,15 @@ public class GameHibernateDao implements GameDao, PaginationDao<GameFilter> {
         if (order == null || order.getOrderCriteria() == null) {
             return "";
         }
-        return " ORDER BY " +
-                order.getOrderCriteria().getAltName() +
-                " " +
-                (order.getOrderDirection() == null ? "" : order.getOrderDirection().getAltName()) +
-                " NULLS LAST ";
+        StringBuilder str = new StringBuilder();
+        str.append(" ORDER BY ");
+        str.append(order.getOrderCriteria().getAltName());
+        if (order.getOrderDirection() != null) {
+            str.append(" ");
+            str.append(order.getOrderDirection().getAltName());
+        }
+        str.append(" NULLS LAST ");
+        return str.toString();
     }
 
     @Override

@@ -1,7 +1,7 @@
 package ar.edu.itba.paw.webapp.controller;
 
+import ar.edu.itba.paw.enums.RoleType;
 import ar.edu.itba.paw.exceptions.*;
-import ar.edu.itba.paw.models.Role;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.servicesinterfaces.UserService;
 import ar.edu.itba.paw.webapp.auth.PawAuthUserDetails;
@@ -122,8 +122,8 @@ public class UserController {
     }
 
     private void authWithoutPassword(User user) {
-         Set<Role> roles = us.getUserRoles(user.getId());
-        List<GrantedAuthority> authorities = roles.stream().map(p -> new SimpleGrantedAuthority("ROLE_" + p.getRoleName())).collect(Collectors.toList());
+         Set<RoleType> roles = us.getUserRoles(user.getId());
+        List<GrantedAuthority> authorities = roles.stream().map(roleType -> new SimpleGrantedAuthority("ROLE_" + roleType.getRole())).collect(Collectors.toList());
          Authentication result = new UsernamePasswordAuthenticationToken(new PawAuthUserDetails(user.getEmail(), user.getPassword(), authorities), null, authorities);
          SecurityContextHolder.getContext().setAuthentication(result);
     }

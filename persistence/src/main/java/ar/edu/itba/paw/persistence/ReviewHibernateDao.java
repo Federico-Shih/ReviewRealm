@@ -127,7 +127,7 @@ public class ReviewHibernateDao implements ReviewDao, PaginationDao<ReviewFilter
             return new Paginated<>(pagination.getPageNumber(), pagination.getPageSize(), totalPages, new ArrayList<>());
         }
         QueryBuilder queryBuilder = getQueryBuilderFromFilter(filter);
-        Query nativeQuery = em.createNativeQuery("SELECT distinct r.id FROM " + toTableString(filter) + queryBuilder.toQuery());
+        Query nativeQuery = em.createNativeQuery("SELECT distinct id FROM ("+ "SELECT r.id as id, r.likes + r.dislikes as controversial, r.likes - r.dislikes as popularity FROM " + toTableString(filter) + queryBuilder.toQuery() + toOrderString(ordering, true) + ") as review");
         prepareParametersForNativeQuery(queryBuilder, nativeQuery);
         nativeQuery.setMaxResults(pagination.getPageSize());
         nativeQuery.setFirstResult(pagination.getOffset().intValue());
@@ -135,7 +135,7 @@ public class ReviewHibernateDao implements ReviewDao, PaginationDao<ReviewFilter
         @SuppressWarnings("unchecked")
         final List<Long> idlist = (List<Long>) nativeQuery.getResultList().stream().map(n -> (Long)((Number) n).longValue()).collect(Collectors.toList());
 
-        final TypedQuery<Review> query = em.createQuery("from Review WHERE id IN :ids " + toOrderString(ordering), Review.class);
+        final TypedQuery<Review> query = em.createQuery("from Review WHERE id IN :ids " + toOrderString(ordering, false), Review.class);
         query.setParameter("ids", idlist);
         User currentUser = em.find(User.class, activeUserId != null ? activeUserId : -1);
         List<Review> reviewList = query.getResultList();
@@ -249,13 +249,17 @@ public class ReviewHibernateDao implements ReviewDao, PaginationDao<ReviewFilter
         return str.toString();
     }
 
-    private String toOrderString(Ordering<ReviewOrderCriteria> order) {
+    private String toOrderString(Ordering<ReviewOrderCriteria> order, boolean isNative) {
         if (order == null || order.getOrderCriteria() == null) {
             return "";
         }
-        return " ORDER BY " +
-                order.getOrderCriteria().getAltName() +
-                " " +
-                (order.getOrderDirection() == null ? "" : order.getOrderDirection().getAltName());
+        StringBuilder orderQuery = new StringBuilder();
+        orderQuery.append(" ORDER BY ");
+        orderQuery.append(isNative ? order.getOrderCriteria().getTableName() : order.getOrderCriteria().getAltName());
+        if (order.getOrderDirection() != null) {
+            orderQuery.append(" ");
+            orderQuery.append(order.getOrderDirection().getAltName());
+        }
+        return orderQuery.toString();
     }
 }

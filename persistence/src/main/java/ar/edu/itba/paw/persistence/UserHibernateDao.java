@@ -5,7 +5,6 @@ import ar.edu.itba.paw.dtos.filtering.UserFilter;
 import ar.edu.itba.paw.dtos.saving.SaveUserDTO;
 import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.enums.NotificationType;
-import ar.edu.itba.paw.models.DisabledNotification;
 import ar.edu.itba.paw.models.FollowerFollowingCount;
 import ar.edu.itba.paw.models.Paginated;
 import ar.edu.itba.paw.models.User;
@@ -227,11 +226,7 @@ public class UserHibernateDao implements UserDao, PaginationDao<UserFilter> {
     public void disableNotification(long userId, String notificationType) {
         User user = em.find(User.class, userId);
         if (user != null) {
-            final TypedQuery<DisabledNotification> disabledNotificationTypedQuery = em.createQuery("from DisabledNotification as dn", DisabledNotification.class);
-            Optional<DisabledNotification> notification = disabledNotificationTypedQuery.getResultList().stream()
-                    .filter(n -> n.getNotificationType().equals(NotificationType.valueFrom(notificationType)))
-                    .findFirst();
-            notification.ifPresent(disabledNotification -> user.getDisabledNotifications().add(disabledNotification));
+            user.getDisabledNotifications().add(NotificationType.valueFrom(notificationType));
         }
     }
 
@@ -239,12 +234,7 @@ public class UserHibernateDao implements UserDao, PaginationDao<UserFilter> {
     public void enableNotification(long userId, String notificationType) {
         User user = em.find(User.class, userId);
         if (user != null) {
-            final TypedQuery<DisabledNotification> disabledNotificationTypedQuery = em.createQuery("from DisabledNotification as dn", DisabledNotification.class);
-            List<DisabledNotification> notifications = disabledNotificationTypedQuery.getResultList();
-            Optional<DisabledNotification> notification = notifications.stream()
-                    .filter(n -> n.getNotificationType().equals(NotificationType.valueFrom(notificationType)))
-                    .findFirst();
-            notification.ifPresent(disabledNotification -> user.getDisabledNotifications().remove(disabledNotification));
+            user.getDisabledNotifications().remove(NotificationType.valueFrom(notificationType));
         }
     }
 }

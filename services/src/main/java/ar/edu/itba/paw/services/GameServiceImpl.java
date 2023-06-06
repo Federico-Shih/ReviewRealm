@@ -10,6 +10,7 @@ import ar.edu.itba.paw.dtos.searching.GameSearchFilter;
 import ar.edu.itba.paw.enums.Difficulty;
 import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.enums.Platform;
+import ar.edu.itba.paw.enums.RoleType;
 import ar.edu.itba.paw.exceptions.NoSuchGameException;
 import ar.edu.itba.paw.exceptions.UserNotFoundException;
 import ar.edu.itba.paw.models.*;
@@ -59,7 +60,7 @@ public class GameServiceImpl implements GameService {
                 .getUserById(userId)
                 .orElseThrow(() -> new UserNotFoundException("user.notfound"))
                 .getRoles()
-                .stream().anyMatch(role -> role.getRoleName().equals("MODERATOR"));
+                .stream().anyMatch(role -> role.equals(RoleType.MODERATOR));
 
         LOGGER.info("{} game - name: {}, developer: {}", isModerator ? "Creating" : "Suggesting", gameDTO.getName(), gameDTO.getName());
         List<Genre> genreList = new ArrayList<>();

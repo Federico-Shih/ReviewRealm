@@ -68,7 +68,7 @@ public class ProfileController extends PaginatedController implements QueryContr
         mav.addObject("notificationsChanged", notificationsChanged != null && notificationsChanged);
         mav.addObject("games",gameService.getFavoriteGamesFromUser(userId));
         mav.addObject("profile",user.get());
-        mav.addObject("userModerator", user.get().getRoles().contains(new Role(RoleType.MODERATOR.getRole())));
+        mav.addObject("userModerator", user.get().getRoles().contains(RoleType.MODERATOR));
 
         Paginated<Review> userReviews =reviewService.getUserReviews(Page.with(page, pageSize),user.get().getId(),loggedUser);
         super.paginate(mav,userReviews);
