@@ -181,4 +181,25 @@ public class Game {
     public void setSuggestion(boolean suggestion) {
         this.suggestion = suggestion;
     }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setDeveloper(String developer) {
+        this.developer = developer;
+    }
+
+    public void setPublisher(String publisher) {
+        this.publisher = publisher;
+    }
+
+    public void setImage(Image image) {
+        this.image = image;
+    }
+
 }

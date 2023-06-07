@@ -147,7 +147,8 @@ public class UserHibernateDao implements UserDao, PaginationDao<UserFilter> {
             criteriaQuery.where(criteriaBuilder.equal(root.get("id"), userFilter.getId()));
         }
         if (userFilter.getSearch() != null) {
-            criteriaQuery.where(criteriaBuilder.like(root.get("username"), "%" + userFilter.getSearch() + "%"));
+            String escapedSearch = userFilter.getSearch().replace("%","\\%").replace("_", "\\_");
+            criteriaQuery.where(criteriaBuilder.like(root.get("username"), "%" + escapedSearch + "%"));
         }
     }
 

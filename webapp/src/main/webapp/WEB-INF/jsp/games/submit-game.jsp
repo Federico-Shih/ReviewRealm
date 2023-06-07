@@ -19,13 +19,10 @@
         document.addEventListener('DOMContentLoaded', function() {
             var elems = document.querySelectorAll('.collapsible');
             var instances = M.Collapsible.init(elems, {});
-
             <c:forEach items="${gameForm.genres}" var="genre">
-                document.querySelector('#${genre}').setAttribute("checked", "checked");
+                document.getElementById('${genre}').setAttribute("checked", "checked");
             </c:forEach>
         });
-
-
     </script>
 </head>
 <!-- general variables
@@ -40,7 +37,7 @@
 </jsp:include>
 
 <div class="container">
-    <form:form modelAttribute="gameForm" enctype="multipart/form-data" method="post">
+    <form:form modelAttribute="gameForm" action="" enctype="multipart/form-data" method="post">
         <div class="card form-text">
             <div class="card-content">
                 <div class="card-title">
@@ -102,6 +99,14 @@
                             </div>
                         <form:errors path="image" cssClass="error" element="p" />
                     </div>
+                    <c:if test="${edit}">
+                        <div class="col s6 center" id="old-image-div">
+                            <div class="card-for-preview z-depth-2">
+                                <c:url value="${oldImage}" var="oldImage" />
+                                <img class="preview-image" id="oldImage" src="${oldImage}" alt="Old Image"/>
+                            </div>
+                        </div>
+                    </c:if>
                     <div class="col s6 center hide" id="preview-div">
                         <div class="card-for-preview z-depth-2">
                             <img class="preview-image" id="imageShow" src="" alt="Preview"/>
@@ -136,7 +141,14 @@
                 <button class="btn" type="submit">
                     <c:choose>
                         <c:when test="${roles.moderator}">
-                           <spring:message code="game.submit.create" />
+                            <c:choose>
+                                <c:when test="${edit}">
+                                    <spring:message code="game.submit.save" />
+                                </c:when>
+                                <c:otherwise>
+                                    <spring:message code="game.submit.create" />
+                                </c:otherwise>
+                            </c:choose>
                         </c:when>
                         <c:otherwise>
                             <spring:message code="game.submit.submit.suggestion" />
@@ -152,6 +164,7 @@
     document.getElementById('image').onchange = function () {
         document.getElementById('imageShow').src = URL.createObjectURL(this.files[0]);
         document.getElementById('preview-div').classList.remove('hide');
+        document.getElementById('old-image-div').classList.add('hide');
     }
 </script>
 

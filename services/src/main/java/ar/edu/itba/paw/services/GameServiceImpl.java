@@ -63,6 +63,28 @@ public class GameServiceImpl implements GameService {
                 .stream().anyMatch(role -> role.equals(RoleType.MODERATOR));
 
         LOGGER.info("{} game - name: {}, developer: {}", isModerator ? "Creating" : "Suggesting", gameDTO.getName(), gameDTO.getName());
+        List<Genre> genreList = prepareGenres(gameDTO);
+
+        Optional<Game> toReturn = gameDao.create(gameDTO.getName(), gameDTO.getDescription(), gameDTO.getDeveloper(), gameDTO.getPublisher(), img.getId(), genreList, LocalDate.now(), !isModerator);
+        return (isModerator) ? toReturn : Optional.empty();
+    }
+
+    @Transactional
+    @Override
+    public void editGame(SubmitGameDTO gameDTO, long gameId) {
+        Image img = null;
+        if(gameDTO.getImageData().length!=0) {
+            img = imgService.uploadImage(gameDTO.getImageData(), gameDTO.getMediatype());
+            if (img == null)
+                throw new RuntimeException("Error creating image");
+        }
+
+        List<Genre> genreList = prepareGenres(gameDTO);
+        LOGGER.info("Editing game - name: {}, developer: {}", gameDTO.getName(), gameDTO.getName());
+        gameDao.edit(gameId,gameDTO.getName(),gameDTO.getDescription(),gameDTO.getDeveloper(),gameDTO.getPublisher(), (img!=null)? img.getId() : null, genreList);
+    }
+
+    private List<Genre> prepareGenres(SubmitGameDTO gameDTO) {
         List<Genre> genreList = new ArrayList<>();
         Optional<Genre> g;
         if (gameDTO.getGenres() != null) {
@@ -71,10 +93,9 @@ public class GameServiceImpl implements GameService {
                 g.ifPresent(genreList::add);
             }
         }
-
-        Optional<Game> toReturn = gameDao.create(gameDTO.getName(), gameDTO.getDescription(), gameDTO.getDeveloper(), gameDTO.getPublisher(), img.getId(), genreList, LocalDate.now(), !isModerator);
-        return (isModerator) ? toReturn : Optional.empty();
+        return genreList;
     }
+
     @Transactional(readOnly = true)
     @Override
     public Optional<Game> getGameById(Long id) {

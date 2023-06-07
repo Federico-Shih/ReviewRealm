@@ -198,26 +198,26 @@
                     </c:if>
                 </div>
             </c:if>
-            <div class="row">
-                <ul class="center-align pagination">
-                    <c:if test="${currentPage > 1}">
-                        <li class="waves-effect"><a href="${queriesToKeepAtPageChange}page=${currentPage-1}"><i
-                                class="material-icons">chevron_left</i></a></li>
+        </div>
+        <div class="row">
+            <ul class="center-align pagination">
+                <c:if test="${currentPage > 1}">
+                    <li class="waves-effect"><a href="${queriesToKeepAtPageChange}page=${currentPage-1}"><i
+                            class="material-icons">chevron_left</i></a></li>
+                </c:if>
+                <c:forEach var="i" begin="${initialPage}" end="${maxPages}">
+                    <c:if test="${i == currentPage}">
+                        <li class="pagination-active"><a href="${queriesToKeepAtPageChange}page=${i}">${i}</a></li>
                     </c:if>
-                    <c:forEach var="i" begin="${initialPage}" end="${maxPages}">
-                        <c:if test="${i == currentPage}">
-                            <li class="pagination-active"><a href="${queriesToKeepAtPageChange}page=${i}">${i}</a></li>
-                        </c:if>
-                        <c:if test="${i != currentPage}">
-                            <li class="waves-effect"><a href="${queriesToKeepAtPageChange}page=${i}">${i}</a></li>
-                        </c:if>
-                    </c:forEach>
-                    <c:if test="${currentPage < maxPages}">
-                        <li class="waves-effect"><a href="${queriesToKeepAtPageChange}page=${currentPage+1}"><i
-                                class="material-icons">chevron_right</i></a></li>
+                    <c:if test="${i != currentPage}">
+                        <li class="waves-effect"><a href="${queriesToKeepAtPageChange}page=${i}">${i}</a></li>
                     </c:if>
-                </ul>
-            </div>
+                </c:forEach>
+                <c:if test="${currentPage < maxPages}">
+                    <li class="waves-effect"><a href="${queriesToKeepAtPageChange}page=${currentPage+1}"><i
+                            class="material-icons">chevron_right</i></a></li>
+                </c:if>
+            </ul>
         </div>
     </div>
 </div>

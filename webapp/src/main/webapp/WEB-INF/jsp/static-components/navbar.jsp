@@ -92,7 +92,7 @@
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="<c:url value="/review/submit"/>">
+                                    <a href="<c:url value="/review/submit/search"/>">
                                         <div class="valign-wrapper profile-dropdown-link">
                                             <span class="material-icons">
                                                 create

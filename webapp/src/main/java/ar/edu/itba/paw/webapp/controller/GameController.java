@@ -18,10 +18,12 @@ import ar.edu.itba.paw.webapp.forms.SubmitGameForm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
@@ -30,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Controller
@@ -45,7 +48,6 @@ public class GameController extends PaginatedController implements QueryControll
     private static final int DEFAULT_REVIEW_PAGE_SIZE = 10;
 
     private static final int PAGE_SIZE = 10;
-
     private static final int INITIAL_PAGE = 1;
 
     @Autowired
@@ -55,6 +57,8 @@ public class GameController extends PaginatedController implements QueryControll
         this.us = us;
         this.rs = rs;
     }
+
+
 
     @RequestMapping("/game/{id:\\d+}")
     public ModelAndView game_details(
@@ -89,6 +93,7 @@ public class GameController extends PaginatedController implements QueryControll
         }
         return mav;
     }
+
 
     @RequestMapping(value = "/game/list", method = RequestMethod.GET)
     public ModelAndView gameList(
@@ -158,7 +163,8 @@ public class GameController extends PaginatedController implements QueryControll
         queriesToKeepAtPageChange.add(Pair.of("o-dir", orderDirection));
         queriesToKeepAtPageChange.add(Pair.of("search", search));
         queriesToKeepAtPageChange.add(Pair.of("f-rat", ratingFilter));
-        queriesToKeepAtPageChange.add(Pair.of("f-enr", excludeNoRatingFilter));
+        if(excludeNoRatingFilter!=null)
+            queriesToKeepAtPageChange.add(Pair.of("f-enr", excludeNoRatingFilter));
         queriesToKeepAtPageChange.addAll(genresFilter.stream().map((value) -> Pair.of("f-gen", (Object)value)).collect(Collectors.toList()));
 
         mav.addObject("queriesToKeepAtPageChange", toQueryString(queriesToKeepAtPageChange));
@@ -176,11 +182,43 @@ public class GameController extends PaginatedController implements QueryControll
         return mav;
     }
 
+    @RequestMapping(value = "/game/{gameId:\\d+}/edit")
+    public ModelAndView editGameForm(@PathVariable("gameId") final Long gameId, @ModelAttribute("gameForm") SubmitGameForm form) {
+        // mejor hacerlo de otra forma
+        Optional<Game> gameOptional = gs.getGameById(gameId);
+        ModelAndView mav = new ModelAndView("games/submit-game");
+        if(gameOptional.isPresent()){
+            Game game = gameOptional.get();
+            form.setName(game.getName());
+            form.setDescription(game.getDescription());
+            form.setDeveloper(game.getDeveloper());
+            form.setPublisher(game.getPublisher());
+            form.setGenres(game.getGenres().stream().map(Genre::getId).collect(Collectors.toList()));
+            mav.addObject("oldImage", gameOptional.get().getImageUrl());
+        }
+        mav.addObject("genres", Genre.values());
+        mav.addObject("edit", true);
+        return mav;
+    }
+
+    @RequestMapping(value = "/game/{gameId:\\d+}/edit", method = RequestMethod.POST)
+    public ModelAndView editGame(@PathVariable("gameId") final Long gameId, @ModelAttribute("gameForm") SubmitGameForm form, final BindingResult errors) {
+        if(errors.hasErrors())
+            return editGameForm(gameId, form);
+        try {
+            gs.editGame(form.toSubmitDTO(), gameId);
+        } catch (IOException e) {
+            LOGGER.error("Failed to create image: {}", e.getMessage());
+            errors.addError(new ObjectError("image", "game.submit.errors.failedimg"));
+        }
+        return new ModelAndView("redirect:/game/" + gameId);
+    }
 
     @RequestMapping(value = "/game/submit", method = RequestMethod.GET)
     public ModelAndView createGameForm(@ModelAttribute("gameForm") SubmitGameForm gameForm) {
         ModelAndView mav = new ModelAndView("games/submit-game");
         mav.addObject("genres", Genre.values());
+        mav.addObject("edit", false);
         return mav;
     }
 

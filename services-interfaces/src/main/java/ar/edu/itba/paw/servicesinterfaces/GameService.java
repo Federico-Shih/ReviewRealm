@@ -15,6 +15,8 @@ public interface GameService {
 
     Optional<Game> createGame(SubmitGameDTO gameDTO, long userId);
 
+    void editGame(SubmitGameDTO gameDTO, long userId);
+
     Optional<Game> getGameById(Long id);
 
     List<Genre> getGameGenresById(Long id);

@@ -33,6 +33,25 @@ public class GameHibernateDao implements GameDao, PaginationDao<GameFilter> {
     }
 
     @Override
+    public Optional<Game> edit(Long gameId,String name, String description, String developer, String publisher, String imageid, List<Genre> genres) {
+
+        final Game game = em.find(Game.class, gameId);
+        if(game==null)
+            return Optional.empty();
+        game.setName(name);
+        game.setDescription(description);
+        game.setDeveloper(developer);
+        game.setPublisher(publisher);
+        if(imageid!=null) {
+            final Image image = em.find(Image.class, imageid);
+            game.setImage(image);
+        }
+        game.setGenres(genres);
+        em.persist(game);
+        return Optional.of(game);
+    }
+
+    @Override
     public Optional<Game> getById(Long id) {
         final Game game = em.find(Game.class, id);
         return Optional.ofNullable(game);
