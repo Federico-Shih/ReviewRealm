@@ -709,6 +709,7 @@ public class ReviewDaoImplTest {
         Assert.assertEquals(result.getTotalPages(), 4);
         Assert.assertEquals(result.getList().size(), 5);
     }
+    //TODO: Test excluding games and authors in filters
 
     @Rollback
     @Transactional

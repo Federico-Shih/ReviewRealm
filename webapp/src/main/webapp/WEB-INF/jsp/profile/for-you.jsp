@@ -9,7 +9,6 @@
     <link rel="stylesheet" href="<c:url value="/css/main.css" />">
     <link rel="stylesheet" href="<c:url value="/css/for-you.css" />">
     <link rel="stylesheet" href="<c:url value="/css/review.css" />">
-    <link rel="stylesheet" href="<c:url value="/css/game.css" />"/>
     <link rel="shortcut icon" type="image/png" href="<c:url value="/static/review_realm_logo_white_32px.png" />">
     <script src="<c:url value="/js/materialize.min.js" />"></script>
     <script src="<c:url value="/js/reviewfeedback.js"/> "></script>
@@ -66,48 +65,74 @@
             </c:if>
         </div>
     </div>
+<%--    <div class="for-you-section">--%>
+<%--        <span class="for-you-section-header"><spring:message code="for-you.search.users"/></span>--%>
+<%--        <form action="${sendSearch}" class="entire-width">--%>
+<%--            <div class="search-section">--%>
+<%--                <div class="search-game-list">--%>
+<%--                    <input name="search" class="z-depth-1-half search-field" type="search" value="${search}"--%>
+<%--                           placeholder="<spring:message code="for-you.search-placeholder"/>">--%>
+<%--                    <button class="btn-flat button-color white-text" type="submit"><i class="material-icons">search</i>--%>
+<%--                    </button>--%>
+<%--                    <input type="hidden" name="page" value="${currentPage}">--%>
+<%--                    <input type="hidden" name="pagesize" value="${pagesize}">--%>
+<%--                </div>--%>
+<%--            </div>--%>
+<%--        </form>--%>
+<%--        <c:if test="${not empty search}">--%>
+<%--            <div class="container row">--%>
+<%--                <c:forEach var="user" items="${users}">--%>
+<%--                    <div class="col s5 card user-card-small">--%>
+<%--                        <a href="<c:url value="/profile/${user.id}"/> ">--%>
+<%--                            <div class="card-content">--%>
+<%--                                <div class="card-title">--%>
+<%--                                    <div class="align-icon-text">--%>
+<%--                                        <i class="material-icons">person</i>--%>
+<%--                                        <span><c:out value="${user.username}" /></span>--%>
+<%--                                    </div>--%>
+<%--                                </div>--%>
+<%--                            </div>--%>
+<%--                        </a>--%>
+<%--                    </div>--%>
+<%--                </c:forEach>--%>
+<%--            </div>--%>
+<%--        </c:if>--%>
+<%--    </div>--%>
     <div class="for-you-section">
-        <span class="for-you-section-header"><spring:message code="for-you.search.users"/></span>
-        <form action="${sendSearch}" class="entire-width">
-            <div class="search-section">
-                <div class="search-game-list">
-                    <input name="search" class="z-depth-1-half search-field" type="search" value="${search}"
-                           placeholder="<spring:message code="for-you.search-placeholder"/>">
-                    <button class="btn-flat button-color white-text" type="submit"><i class="material-icons">search</i>
-                    </button>
-                    <input type="hidden" name="page" value="${currentPage}">
-                    <input type="hidden" name="pagesize" value="${pagesize}">
+        <span class="for-you-section-header"><spring:message code="${contentTabHeaderCode}"/></span>
+        <div class="full-width row">
+            <div class="col s12">
+                <div class="card indigo darken-4">
+                      <div class="card-content f-row f-jc-start f-ai-baseline f-gap-2">
+                          <a href="<c:url value="/for-you/?content=FOLLOWING"/>" class="white-text">
+                              <div class="chip-content-tab f-row f-ai-end f-jc-sbetween ${(contentTab == "FOLLOWING")? 'active-chip-tab':''}">
+                                    <i class="material-icons">groups</i>
+                                    <span class="chip-content-padding"><spring:message code="for-you.reviews.following.chip"/></span>
+                              </div>
+                          </a>
+                          <a href="<c:url value="/for-you/?content=RECOMMENDED"/>" class="white-text">
+                              <div class="chip-content-tab  f-row f-ai-end f-jc-sbetween ${(contentTab == "RECOMMENDED")? 'active-chip-tab':''}">
+                                    <i class="material-icons">local_fire_department</i>
+                                    <span class="chip-content-padding"><spring:message code="for-you.reviews.recommended.chip"/></span>
+                              </div>
+                          </a>
+                          <a href="<c:url value="/for-you/?content=NEW"/>" class="white-text">
+                              <div class="chip-content-tab f-row f-ai-end f-jc-sbetween ${(contentTab == "NEW")? 'active-chip-tab':''}">
+                                    <i class="material-icons">newspaper</i>
+                                    <span class="chip-content-padding"><spring:message code="for-you.reviews.new.chip"/></span>
+                              </div>
+                          </a>
+                      </div>
                 </div>
             </div>
-        </form>
-        <c:if test="${not empty search}">
-            <div class="container row">
-                <c:forEach var="user" items="${users}">
-                    <div class="col s5 card user-card-small">
-                        <a href="<c:url value="/profile/${user.id}"/> ">
-                            <div class="card-content">
-                                <div class="card-title">
-                                    <div class="align-icon-text">
-                                        <i class="material-icons">person</i>
-                                        <span><c:out value="${user.username}" /></span>
-                                    </div>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                </c:forEach>
-            </div>
-        </c:if>
-    </div>
-    <div class="for-you-section">
-        <span class="for-you-section-header"><spring:message code="for-you.reviews.header"/></span>
+        </div>
         <div class="review-card-list row">
-            <c:if test="${empty reviewsFollowing}">
+            <c:if test="${empty reviews}">
                 <div class="s12 col center">
-                    <span> <spring:message code="for-you.reviews.notfound"/></span>
+                    <span> <spring:message code="${contentNotFoundCode}"/></span>
                 </div>
             </c:if>
-            <c:forEach var="review" items="${reviewsFollowing}">
+            <c:forEach var="review" items="${reviews}">
                 <c:set var="review" value="${review}" scope="request" />
                 <c:import url="/WEB-INF/jsp/review/review-card.jsp" />
             </c:forEach>

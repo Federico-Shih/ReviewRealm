@@ -93,9 +93,14 @@ public class ReviewHibernateDao implements ReviewDao, PaginationDao<ReviewFilter
     }
 
     private QueryBuilder getQueryBuilderFromFilter(ReviewFilter filter) {
-        QueryBuilder queryBuilder = new QueryBuilder()
-                .withList("gg.genreid", filter.getFilterGameGenres())
-                .withList("ap.genreid", filter.getAuthorPreferences())
+        QueryBuilder queryBuilder = new QueryBuilder().PARENTHESIS_OPEN()
+                .withList("gg.genreid", filter.getFilterGameGenres());
+
+        queryBuilder = (filter.getOrBetweenGenres() != null && filter.getOrBetweenGenres())? queryBuilder.OR():queryBuilder;
+        queryBuilder = queryBuilder.withList("ap.genreid", filter.getAuthorPreferences())
+                .PARENTHESIS_CLOSE();
+        queryBuilder= queryBuilder.NOT().withList("r.authorid",filter.getAuthorsToExclude())
+                .NOT().withList("r.gameid",filter.getGamesToExclude())
                 .PARENTHESIS_OPEN()
                 .withSimilar("r.content", filter.getReviewContent())
                 .OR()

@@ -42,3 +42,19 @@
     width: 100%;
     padding: 2% 4%;
 }
+.chip-content-tab{
+    background: #13112D;
+    border: 1px solid #444155;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 2px 8px;
+}
+.chip-content-padding{
+    padding: 0 6px;
+}
+.active-chip-tab{
+    background-color: darkgray !important;
+    color: rgba(0, 0, 0, 0.6) !important;
+    font-weight: 700;
+}

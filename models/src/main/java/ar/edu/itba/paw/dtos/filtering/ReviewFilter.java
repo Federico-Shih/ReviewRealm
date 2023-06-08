@@ -18,7 +18,13 @@ public class ReviewFilter {
 
     private final Boolean replayable;
 
-    public ReviewFilter(List<Integer> filterGameGenres, List<Integer> authorPreferences, List<Long> authors, String reviewContent, Long gameId, Double minTimePlayed, List<Platform> platforms, List<Difficulty> difficulties, Boolean completed, Boolean replayable) {
+    private final Boolean orBetweenGenres;
+
+    private final List<Long> authorsToExclude;
+
+    private final List<Long> gamesToExclude;
+
+    public ReviewFilter(List<Integer> filterGameGenres, List<Integer> authorPreferences, List<Long> authors, String reviewContent, Long gameId, Double minTimePlayed, List<Platform> platforms, List<Difficulty> difficulties, Boolean completed, Boolean replayable,Boolean orBetweenGenres, List<Long> authorsToExclude, List<Long> gamesToExclude) {
         this.filterGameGenres = filterGameGenres;
         this.authorPreferences = authorPreferences;
         this.authors = authors;
@@ -29,6 +35,9 @@ public class ReviewFilter {
         this.difficulties = difficulties;
         this.completed = completed;
         this.replayable = replayable;
+        this.orBetweenGenres = orBetweenGenres;
+        this.authorsToExclude = authorsToExclude;
+        this.gamesToExclude = gamesToExclude;
     }
 
     public List<Integer> getFilterGameGenres() {
@@ -70,4 +79,10 @@ public class ReviewFilter {
     public Boolean getReplayable() {
         return replayable;
     }
+
+    public Boolean getOrBetweenGenres() { return orBetweenGenres; }
+
+    public List<Long> getAuthorsToExclude() { return authorsToExclude; }
+
+    public List<Long> getGamesToExclude() { return gamesToExclude; }
 }

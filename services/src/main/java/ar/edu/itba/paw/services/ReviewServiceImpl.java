@@ -141,6 +141,29 @@ public class ReviewServiceImpl implements ReviewService {
         return reviewDao.findAll(page, filterBuilder.build(), Ordering.defaultOrder(ReviewOrderCriteria.REVIEW_DATE), userId);
     }
 
+    @Transactional(readOnly = true)
+    @Override
+    public Paginated<Review> getRecommendedReviewsByUser(User user, Page page) {
+        List<Integer> preferences = user.getPreferences().stream().map(Genre::getId).collect(Collectors.toList());
+        List<Long> authorsToExclude = new ArrayList<>();
+        authorsToExclude.add(user.getId());
+        ReviewFilterBuilder filterBuilder = new ReviewFilterBuilder()
+                .withGameGenres(preferences).withAuthorGenres(preferences).withOrBetweenGenres(true).withAuthorsToExclude(authorsToExclude);
+        return reviewDao.findAll(page, filterBuilder.build(), Ordering.defaultOrder(ReviewOrderCriteria.REVIEW_DATE), user.getId());
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Paginated<Review> getNewReviewsExcludingActiveUser(Page page, User activeUser) {
+        List<Long> authorsToExclude = new ArrayList<>();
+        if(activeUser != null){
+            authorsToExclude.add(activeUser.getId());
+        }
+        ReviewFilterBuilder filterBuilder = new ReviewFilterBuilder().withAuthorsToExclude(authorsToExclude);
+
+        return reviewDao.findAll(page, filterBuilder.build(), Ordering.defaultOrder(ReviewOrderCriteria.REVIEW_DATE), (activeUser != null) ? activeUser.getId() : null);
+    }
+
     @Transactional
     @Override
     public boolean deleteReviewById(Long id) {

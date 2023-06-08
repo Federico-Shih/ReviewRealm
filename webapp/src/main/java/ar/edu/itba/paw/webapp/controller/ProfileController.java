@@ -10,6 +10,7 @@ import ar.edu.itba.paw.servicesinterfaces.GameService;
 import ar.edu.itba.paw.servicesinterfaces.ReviewService;
 import ar.edu.itba.paw.servicesinterfaces.UserService;
 import ar.edu.itba.paw.webapp.auth.AuthenticationHelper;
+import ar.edu.itba.paw.webapp.controller.datacontainers.ContentTab;
 import ar.edu.itba.paw.webapp.exceptions.ObjectNotFoundException;
 import ar.edu.itba.paw.webapp.forms.EditPreferencesForm;
 import ar.edu.itba.paw.webapp.forms.FavoriteGamesForm;
@@ -267,7 +268,7 @@ public class ProfileController extends PaginatedController implements QueryContr
     @RequestMapping(value="/for-you", method = RequestMethod.GET)
     public ModelAndView forYouPage(@RequestParam(value = "page", defaultValue = "1") Integer page,
                                    @RequestParam(value = "pagesize", defaultValue = "8") Integer pageSize,
-                                   @RequestParam(value= "search", defaultValue = "") String search,
+                                   @RequestParam(value= "content", defaultValue = "FOLLOWING") String content,
                                    @RequestParam(value= "endofqueue", defaultValue = "false") Boolean endOfQueue){
         final ModelAndView mav = new ModelAndView("profile/for-you");
         User loggedUser = AuthenticationHelper.getLoggedUser(userService);
@@ -276,23 +277,49 @@ public class ProfileController extends PaginatedController implements QueryContr
             pageSize = DEFAULT_PAGE_SIZE;
         }
 
-        if(!search.isEmpty()) {
-            Paginated<User> searchedUsers = userService.getSearchedUsers(1, DEFAULT_PAGE_SIZE, search);
-            mav.addObject("users", searchedUsers.getList());
+        ContentTab contentTab;
+        try {
+            contentTab = ContentTab.valueOf(content);
+        } catch (IllegalArgumentException e){
+            contentTab = ContentTab.FOLLOWING;
         }
-        Paginated<Review> reviewsFollowing =reviewService.getReviewsFromFollowingByUser(loggedUser.getId(), Page.with(page, DEFAULT_PAGE_SIZE));
-        super.paginate(mav, reviewsFollowing );
-        mav.addObject("search", search);
-        mav.addObject("reviewsFollowing",reviewsFollowing.getList() );
+        Page pageToPaginate = Page.with(page, pageSize);
+        Paginated<Review> reviews = new Paginated<>(pageToPaginate.getPageNumber(), pageToPaginate.getPageSize(), 0, new ArrayList<>());
+        Boolean noFollowingAndFollowTab=false;
+        switch (contentTab){
+            case FOLLOWING:
+                reviews = reviewService.getReviewsFromFollowingByUser(loggedUser.getId(), pageToPaginate);
+                noFollowingAndFollowTab = loggedUser.getFollowing().isEmpty();
+                break;
+            case NEW:
+                reviews = reviewService.getNewReviewsExcludingActiveUser(pageToPaginate,loggedUser);
+                break;
+            case RECOMMENDED:
+                reviews = reviewService.getRecommendedReviewsByUser(loggedUser, pageToPaginate);
+                break;
+            default:
+                break;
+        }
+
+        super.paginate(mav, reviews );
+
+        mav.addObject("reviews",reviews.getList());
 
         mav.addObject("user", loggedUser);
         mav.addObject("userSetPreferences", loggedUser.hasPreferencesSet());
         mav.addObject("pagesize", pageSize);
+        mav.addObject("contentTab", contentTab);
+        mav.addObject("contentTabHeaderCode", contentTab.getHeaderCode());
+        if(noFollowingAndFollowTab){
+            mav.addObject("contentNotFoundCode","for-you.reviews.following.nofollowing");
+        }else{
+            mav.addObject("contentNotFoundCode",contentTab.getNotFoundCode());
+        }
         mav.addObject("endOfQueue", endOfQueue);
         List<Pair<String, Object>> queriesToKeepAtPageChange = new ArrayList<>();
 
-        queriesToKeepAtPageChange.add(new Pair<>("search", search));
         queriesToKeepAtPageChange.add(new Pair<>("pagesize", pageSize));
+        queriesToKeepAtPageChange.add(new Pair<>("content", contentTab.toString()));
 
         mav.addObject("queriesToKeepAtPageChange", toQueryString(queriesToKeepAtPageChange));
         return mav;

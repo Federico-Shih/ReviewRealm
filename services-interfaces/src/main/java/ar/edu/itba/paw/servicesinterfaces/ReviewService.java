@@ -49,6 +49,11 @@ public interface ReviewService {
 
     Paginated<Review> getReviewsFromFollowingByUser(Long userId, Page page);
 
+    Paginated<Review> getRecommendedReviewsByUser(User user, Page page);
+
+    Paginated<Review> getNewReviewsExcludingActiveUser(Page page, User activeUser);
+
+
     boolean deleteReviewById(Long id);
 
     boolean updateOrCreateReviewFeedback(Review review, User user, FeedbackType feedback);

@@ -8,6 +8,11 @@ import java.util.List;
 public class ReviewFilterBuilder {
     private List<Integer> gameGenres = null;
     private List<Integer> authorGenres = null;
+
+    private List<Long> gamesToExclude = null;
+
+    private List<Long> authorsToExclude = null;
+
     private List<Long> authors = null;
     private String reviewContent = null;
     private Long gameId = null;
@@ -17,6 +22,8 @@ public class ReviewFilterBuilder {
     private Boolean completed = null;
 
     private Boolean replayable = null;
+
+    private Boolean orBetweenGenres = null;
 
     public ReviewFilterBuilder withGameGenres(List<Integer> genres) {
         this.gameGenres = genres;
@@ -68,7 +75,20 @@ public class ReviewFilterBuilder {
         return this;
     }
 
+    public  ReviewFilterBuilder withOrBetweenGenres(Boolean orBetweenGenres) {
+        this.orBetweenGenres = orBetweenGenres;
+        return this;
+    }
+    public ReviewFilterBuilder withAuthorsToExclude(List<Long> authorsToExclude) {
+        this.authorsToExclude = authorsToExclude;
+        return this;
+    }
+    public ReviewFilterBuilder withGamesToExclude(List<Long> gamesToExclude) {
+        this.gamesToExclude = gamesToExclude;
+        return this;
+    }
+
     public ReviewFilter build() {
-        return new ReviewFilter(gameGenres, authorGenres, authors, reviewContent, gameId, minTimePlayed, platforms, difficulties, completed, replayable);
+        return new ReviewFilter(gameGenres, authorGenres, authors, reviewContent, gameId, minTimePlayed, platforms, difficulties, completed, replayable,orBetweenGenres,authorsToExclude,gamesToExclude);
     }
 }
