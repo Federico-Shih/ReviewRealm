@@ -16,6 +16,10 @@
     <link rel="shortcut icon" type="image/png" href="<c:url value="/static/review_realm_logo_white_32px.png" />">
     <title><spring:message code="game.details.title" arguments="${game.name}"/></title>
     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var elems = document.querySelectorAll('.modal');
+            var instances = M.Modal.init(elems);
+        });
         <c:if test="${created}">
             document.addEventListener('DOMContentLoaded', function () {
                 M.toast({html: '<spring:message code="game.created" />', classes: 'created-toast'});
@@ -28,7 +32,7 @@
 <c:url value="/game/list/" var="gameList"/>
 <jsp:include page="../static-components/navbar.jsp"/>
 <div class="row margin-2">
-    <div class="col s10 valign-wrapper breadcrumb-align">
+    <div class="col s9 valign-wrapper breadcrumb-align">
         <a href="${gameList}" class="breadcrumb"><spring:message code="game.list.placeholder.search" /></a>
         <a href="#" class="breadcrumb"><c:out value="${game.name}" /></a>
     </div>
@@ -39,6 +43,12 @@
                     <span><spring:message code="game.edit"/></span>
                 </button>
             </a>
+        </div>
+        <c:url value="/game/delete/${game.id}" var="moderateUrl" />
+        <div class="col s1 valign-wrapper">
+            <button data-position="bottom" data-tooltip="<spring:message code="game.delete" />" class="tooltipped waves-effect btn-flat valign-wrapper highlight light-gray-text modal-trigger" data-target="delete-confirmation-modal">
+                <i class="material-icons">delete</i>
+            </button>
         </div>
     </c:if>
 </div>
@@ -55,7 +65,7 @@
         <p class="game-description"><c:out value="${game.description}"/></p>
         <div class="divider"></div>
     </div>
-    <div class="game-card col s12 l4 push-l1">
+    <div class="game-card col s4 push-l1">
         <c:url value="${game.imageUrl}" var="imageUrl" />
         <img class="game-img" src="${imageUrl}" alt="Game image">
         <span class="game-card-text">
@@ -190,6 +200,21 @@
                         class="material-icons">chevron_right</i></a></li>
             </c:if>
         </ul>
+    </div>
+</div>
+<div id="delete-confirmation-modal" class="modal">
+    <div class="modal-content">
+        <h5><spring:message code="game.delete.confirmation"/></h5>
+    </div>
+    <div class="modal-footer f-row f-jc-end f-gap-2">
+        <a href="#" class="modal-close waves-effect btn-flat white-text"><spring:message code="cancel.button"/></a>
+        <div>
+            <form action="<c:url value="/game/delete/${game.id}"/>" method="post">
+                <button class="btn waves-light" type="submit">
+                    <span><spring:message code="game.delete"/></span>
+                </button>
+            </form>
+        </div>
     </div>
 </div>
 </body>

@@ -71,6 +71,16 @@ public class GameServiceImpl implements GameService {
 
     @Transactional
     @Override
+    public void deleteGame(long gameId) {
+        Optional<Game> game = gameDao.getById(gameId);
+        if(game.isPresent())
+            gameDao.deleteGame(gameId);
+        else
+            throw new NoSuchGameException("No game with id" + gameId);
+    }
+
+    @Transactional
+    @Override
     public void editGame(SubmitGameDTO gameDTO, long gameId) {
         Image img = null;
         if(gameDTO.getImageData().length!=0) {

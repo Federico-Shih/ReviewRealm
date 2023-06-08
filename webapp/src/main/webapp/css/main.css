@@ -457,6 +457,11 @@ input::-webkit-inner-spin-button {
     color: white;
 }
 
+.deleted-toast {
+    background-color: #d70412;
+    color: white;
+}
+
 .nav-bar-top {
     z-index: 999;
 }

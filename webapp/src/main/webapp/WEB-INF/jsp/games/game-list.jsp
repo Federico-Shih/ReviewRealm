@@ -41,6 +41,11 @@
             M.toast({html: '<spring:message code="game.suggested" />', classes: 'created-toast'});
         });
         </c:if>
+        <c:if test="${deleted}">
+        document.addEventListener('DOMContentLoaded', function () {
+            M.toast({html: '<spring:message code="game.deleted" />', classes: 'deleted-toast'});
+        });
+        </c:if>
     </script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {

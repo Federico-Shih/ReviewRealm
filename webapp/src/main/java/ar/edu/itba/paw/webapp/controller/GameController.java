@@ -7,6 +7,7 @@ import ar.edu.itba.paw.dtos.ordering.Ordering;
 import ar.edu.itba.paw.dtos.searching.GameSearchFilter;
 import ar.edu.itba.paw.dtos.searching.GameSearchFilterBuilder;
 import ar.edu.itba.paw.enums.Genre;
+import ar.edu.itba.paw.exceptions.NoSuchGameException;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.servicesinterfaces.GameService;
 import ar.edu.itba.paw.servicesinterfaces.ReviewService;
@@ -105,7 +106,8 @@ public class GameController extends PaginatedController implements QueryControll
             @RequestParam(value = "f-rat", defaultValue = "") String ratingFilter,
             @RequestParam(value = "f-enr", defaultValue = "") Boolean excludeNoRatingFilter,
             @RequestParam(value = "search", defaultValue = "") String search,
-            @RequestParam(value = "created", required = false) Boolean created
+            @RequestParam(value = "created", required = false) Boolean created,
+            @RequestParam(value = "deleted", required = false) Boolean deleted
     ){
         final ModelAndView mav = new ModelAndView("games/game-list");
 
@@ -141,6 +143,7 @@ public class GameController extends PaginatedController implements QueryControll
 
         super.paginate(mav,games);
         mav.addObject("created", created != null && created);
+        mav.addObject("deleted", deleted!= null && deleted);
         mav.addObject("games", games.getList());
         mav.addObject("currentPage", page);
         mav.addObject("orderCriteria", GameOrderCriteria.values());
@@ -180,6 +183,17 @@ public class GameController extends PaginatedController implements QueryControll
             mav.addObject("userPreferences", loggedUser.getPreferences().stream().map(Genre::getId).collect(Collectors.toList()));
         }
         return mav;
+    }
+
+    @RequestMapping(value = "/game/delete/{gameId:\\d+}", method = RequestMethod.POST)
+    public ModelAndView deleteGame(@PathVariable(value = "gameId") Long gameId) {
+        try {
+            gs.deleteGame(gameId);
+        } catch (NoSuchGameException e) {
+            // TODO: Poner mensaje de error
+            return new ModelAndView("redirect:/game/list");
+        }
+        return new ModelAndView("redirect:/game/list" + "?deleted=true");
     }
 
     @RequestMapping(value = "/game/{gameId:\\d+}/edit")

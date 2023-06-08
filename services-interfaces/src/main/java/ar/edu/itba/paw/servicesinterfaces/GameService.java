@@ -15,6 +15,8 @@ public interface GameService {
 
     Optional<Game> createGame(SubmitGameDTO gameDTO, long userId);
 
+    void deleteGame(long gameId);
+
     void editGame(SubmitGameDTO gameDTO, long userId);
 
     Optional<Game> getGameById(Long id);
