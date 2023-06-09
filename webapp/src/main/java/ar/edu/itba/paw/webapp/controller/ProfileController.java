@@ -11,6 +11,8 @@ import ar.edu.itba.paw.servicesinterfaces.ReviewService;
 import ar.edu.itba.paw.servicesinterfaces.UserService;
 import ar.edu.itba.paw.webapp.auth.AuthenticationHelper;
 import ar.edu.itba.paw.webapp.controller.datacontainers.ContentTab;
+import ar.edu.itba.paw.webapp.controller.helpers.PaginationHelper;
+import ar.edu.itba.paw.webapp.controller.helpers.QueryHelper;
 import ar.edu.itba.paw.webapp.exceptions.ObjectNotFoundException;
 import ar.edu.itba.paw.webapp.forms.EditPreferencesForm;
 import ar.edu.itba.paw.webapp.forms.FavoriteGamesForm;
@@ -24,14 +26,12 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
-import java.lang.reflect.Array;
-import java.time.LocalDate;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Controller
-public class ProfileController extends PaginatedController implements QueryController {
+public class ProfileController{
     private static final Logger LOGGER = LoggerFactory.getLogger(ProfileController.class);
     private final UserService userService;
     private final ReviewService reviewService;
@@ -41,7 +41,6 @@ public class ProfileController extends PaginatedController implements QueryContr
     @Autowired
     public ProfileController(UserService userService, ReviewService reviewService,
                              GameService gameService) {
-        super();
         this.userService = userService;
         this.reviewService = reviewService;
         this.gameService = gameService;
@@ -76,11 +75,13 @@ public class ProfileController extends PaginatedController implements QueryContr
         mav.addObject("userModerator", user.get().getRoles().contains(RoleType.MODERATOR));
 
         Paginated<Review> userReviews =reviewService.getUserReviews(Page.with(page, pageSize),user.get().getId(),loggedUser);
-        super.paginate(mav,userReviews);
+
+        PaginationHelper.paginate(mav,userReviews);
+
         mav.addObject("reviews",userReviews.getList());
         List<Pair<String, Object>> queriesToKeepAtPageChange = new ArrayList<>();
         queriesToKeepAtPageChange.add(new Pair<>("pagesize", pageSize));
-        mav.addObject("queriesToKeepAtPageChange", toQueryString(queriesToKeepAtPageChange));
+        mav.addObject("queriesToKeepAtPageChange", QueryHelper.toQueryString(queriesToKeepAtPageChange));
 
         FollowerFollowingCount ffc = userService.getFollowerFollowingCount(userId);
         mav.addObject("followerCount", ffc.getFollowerCount());
@@ -301,7 +302,7 @@ public class ProfileController extends PaginatedController implements QueryContr
                 break;
         }
 
-        super.paginate(mav, reviews );
+        PaginationHelper.paginate(mav,reviews);
 
         mav.addObject("reviews",reviews.getList());
 
@@ -321,7 +322,7 @@ public class ProfileController extends PaginatedController implements QueryContr
         queriesToKeepAtPageChange.add(new Pair<>("pagesize", pageSize));
         queriesToKeepAtPageChange.add(new Pair<>("content", contentTab.toString()));
 
-        mav.addObject("queriesToKeepAtPageChange", toQueryString(queriesToKeepAtPageChange));
+        mav.addObject("queriesToKeepAtPageChange", QueryHelper.toQueryString(queriesToKeepAtPageChange));
         return mav;
     }
 
@@ -352,7 +353,7 @@ public class ProfileController extends PaginatedController implements QueryContr
         mav.addObject("game",game);
         GameReviewData reviewData = gameService.getGameReviewDataByGameId(game.getId());
         Paginated<Review> reviews = reviewService.getReviewsFromGame(Page.with(page, pageSize), game.getId(), loggedUser);
-        super.paginate(mav,reviews);
+        PaginationHelper.paginate(mav, reviews);
         mav.addObject("gameReviewData", reviewData);
         mav.addObject("reviews", reviews.getList());
         mav.addObject("discoveryQueue",true);

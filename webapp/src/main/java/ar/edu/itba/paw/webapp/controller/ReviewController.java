@@ -16,6 +16,8 @@ import ar.edu.itba.paw.servicesinterfaces.ReviewService;
 import ar.edu.itba.paw.servicesinterfaces.UserService;
 import ar.edu.itba.paw.webapp.auth.AuthenticationHelper;
 import ar.edu.itba.paw.webapp.controller.datacontainers.FilteredList;
+import ar.edu.itba.paw.webapp.controller.helpers.PaginationHelper;
+import ar.edu.itba.paw.webapp.controller.helpers.QueryHelper;
 import ar.edu.itba.paw.webapp.exceptions.ObjectNotFoundException;
 import ar.edu.itba.paw.webapp.forms.EditReviewForm;
 import ar.edu.itba.paw.webapp.forms.SubmitReviewForm;
@@ -34,20 +36,17 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Controller
-public class ReviewController extends PaginatedController implements QueryController {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ReviewController.class);
+public class ReviewController{
+    private static final Logger LOGGER = LoggerFactory.getLogger(ReviewController.class); //TODO: Sacar?
     private final GameService gameService;
     private final ReviewService reviewService;
     private final UserService userService;
-
-    private static final int MAX_PAGES_PAGINATION = 6;
     private static final int PAGE_SIZE = 8;
     private static final int INITIAL_PAGE = 1;
     private static final int MAX_SEARCH_RESULTS = 6;
 
     @Autowired
     public ReviewController(GameService gameService, ReviewService reviewService, UserService userService) {
-        super(MAX_PAGES_PAGINATION, INITIAL_PAGE);
         this.gameService = gameService;
         this.reviewService = reviewService;
         this.userService = userService;
@@ -72,7 +71,7 @@ public class ReviewController extends PaginatedController implements QueryContro
         }else {
             GameSearchFilter filter = new GameSearchFilterBuilder().withSearch(searchquery).build();
             Paginated<Game> games = gameService.searchGames(Page.with(page, pageSize), filter, new Ordering<>(OrderDirection.ASCENDING, GameOrderCriteria.NAME));
-            super.paginate(mav, games);
+            PaginationHelper.paginate(mav,games);
             mav.addObject("games", games.getList());
         }
         mav.addObject("searchField", searchquery);
@@ -80,7 +79,7 @@ public class ReviewController extends PaginatedController implements QueryContro
         List<Pair<String, Object>> queriesToKeepAtPageChange = new ArrayList<>();
         queriesToKeepAtPageChange.add(new Pair<>("searchquery", searchquery));
         queriesToKeepAtPageChange.add(new Pair<>("pagesize", pageSize));
-        mav.addObject("queriesToKeepAtPageChange", toQueryString(queriesToKeepAtPageChange));
+        mav.addObject("queriesToKeepAtPageChange", QueryHelper.toQueryString(queriesToKeepAtPageChange));
 
         return mav;
     }
@@ -213,9 +212,9 @@ public class ReviewController extends PaginatedController implements QueryContro
                 searchFilter,
                 new Ordering<>(OrderDirection.fromValue(orderDirection), ReviewOrderCriteria.fromValue(orderCriteria)),
                 loggedUser
-        );
+        ); //TODO: Sacar esto al service
 
-        super.paginate(mav, reviewPaginated);
+        PaginationHelper.paginate(mav,reviewPaginated);
 
         mav.addObject("reviews", reviewPaginated.getList());
         mav.addObject("totalReviews", reviewPaginated.getTotalPages());
@@ -251,11 +250,11 @@ public class ReviewController extends PaginatedController implements QueryContro
             queriesToKeepAtPageChange.add(Pair.of("f-rpl", replayableFilter));
         queriesToKeepAtPageChange.add(Pair.of("f-tpl", timePlayedFilter));
 
-        mav.addObject("queriesToKeepAtPageChange", toQueryString(queriesToKeepAtPageChange));
+        mav.addObject("queriesToKeepAtPageChange", QueryHelper.toQueryString(queriesToKeepAtPageChange));
 
         List<Pair<String, Object>> queriesToKeepAtRemoveFilters = new ArrayList<>();
 
-        mav.addObject("queriesToKeepAtRemoveFilters", toQueryString(queriesToKeepAtRemoveFilters));
+        mav.addObject("queriesToKeepAtRemoveFilters", QueryHelper.toQueryString(queriesToKeepAtRemoveFilters));
 
         if(loggedUser == null || !loggedUser.hasPreferencesSet()) {
             mav.addObject("showFavoritesShortcut", false);

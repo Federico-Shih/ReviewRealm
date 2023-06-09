@@ -1,12 +1,17 @@
-package ar.edu.itba.paw.webapp.controller;
-
+package ar.edu.itba.paw.webapp.controller.helpers;
 
 import ar.edu.itba.paw.models.Pair;
+
 import java.util.List;
 
-public interface QueryController {
+public class QueryHelper {
 
-    default String toQueryString(List<Pair<String, Object>> entries) {
+
+    private QueryHelper() {
+
+    }
+
+    public static String toQueryString(List<Pair<String, Object>> entries) {
         StringBuilder str = new StringBuilder();
         str.append("?");
         entries.forEach((pair) -> {

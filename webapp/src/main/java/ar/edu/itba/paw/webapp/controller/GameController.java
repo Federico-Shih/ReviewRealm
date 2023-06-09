@@ -14,17 +14,17 @@ import ar.edu.itba.paw.servicesinterfaces.ReviewService;
 import ar.edu.itba.paw.servicesinterfaces.UserService;
 import ar.edu.itba.paw.webapp.auth.AuthenticationHelper;
 import ar.edu.itba.paw.webapp.controller.datacontainers.FilteredList;
+import ar.edu.itba.paw.webapp.controller.helpers.PaginationHelper;
+import ar.edu.itba.paw.webapp.controller.helpers.QueryHelper;
 import ar.edu.itba.paw.webapp.exceptions.ObjectNotFoundException;
 import ar.edu.itba.paw.webapp.forms.SubmitGameForm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
@@ -33,27 +33,22 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Controller
-public class GameController extends PaginatedController implements QueryController {
+public class GameController{
     private static final Logger LOGGER = LoggerFactory.getLogger(GameController.class);
 
     private final GameService gs;
     private final UserService us;
     private final ReviewService rs;
 
-    private static final int MAX_PAGES_PAGINATION = 6;
-
     private static final int DEFAULT_REVIEW_PAGE_SIZE = 10;
-
     private static final int PAGE_SIZE = 10;
     private static final int INITIAL_PAGE = 1;
 
     @Autowired
     public GameController(GameService gs, UserService us, ReviewService rs) {
-        super(MAX_PAGES_PAGINATION, INITIAL_PAGE);
         this.gs = gs;
         this.us = us;
         this.rs = rs;
@@ -80,10 +75,10 @@ public class GameController extends PaginatedController implements QueryControll
             GameReviewData reviewData = gs.getGameReviewDataByGameId(gameId);
 
             Paginated<Review> reviews = rs.getReviewsFromGame(Page.with(page, pageSize), gameId, loggedUser);
-            super.paginate(mav,reviews);
+            PaginationHelper.paginate(mav,reviews);
             List<Pair<String, Object>> queriesToKeepAtPageChange = new ArrayList<>();
             queriesToKeepAtPageChange.add(new Pair<>("pagesize", pageSize));
-            mav.addObject("queriesToKeepAtPageChange", toQueryString(queriesToKeepAtPageChange));
+            mav.addObject("queriesToKeepAtPageChange", QueryHelper.toQueryString(queriesToKeepAtPageChange));
 
             mav.addObject("gameReviewData", reviewData);
             mav.addObject("reviews", reviews.getList());
@@ -139,9 +134,10 @@ public class GameController extends PaginatedController implements QueryControll
                 Page.with(page != null ? page: INITIAL_PAGE, pageSize),
                 searchFilter,
                 new Ordering<>(OrderDirection.fromValue(orderDirection), GameOrderCriteria.fromValue(orderCriteria))
-        );
+        );//TODO:MOVERLO A SERVICE
 
-        super.paginate(mav,games);
+        PaginationHelper.paginate(mav,games);
+
         mav.addObject("created", created != null && created);
         mav.addObject("deleted", deleted!= null && deleted);
         mav.addObject("games", games.getList());
@@ -170,11 +166,11 @@ public class GameController extends PaginatedController implements QueryControll
             queriesToKeepAtPageChange.add(Pair.of("f-enr", excludeNoRatingFilter));
         queriesToKeepAtPageChange.addAll(genresFilter.stream().map((value) -> Pair.of("f-gen", (Object)value)).collect(Collectors.toList()));
 
-        mav.addObject("queriesToKeepAtPageChange", toQueryString(queriesToKeepAtPageChange));
+        mav.addObject("queriesToKeepAtPageChange", QueryHelper.toQueryString(queriesToKeepAtPageChange));
 
         List<Pair<String, Object>> queriesToKeepAtRemoveFilters = new ArrayList<>();
 
-        mav.addObject("queriesToKeepAtRemoveFilters", toQueryString(queriesToKeepAtRemoveFilters));
+        mav.addObject("queriesToKeepAtRemoveFilters", QueryHelper.toQueryString(queriesToKeepAtRemoveFilters));
 
         if(loggedUser == null || !loggedUser.hasPreferencesSet()) {
             mav.addObject("showFavoritesShortcut", false);
@@ -283,7 +279,9 @@ public class GameController extends PaginatedController implements QueryControll
                 searchFilter,
                 new Ordering<>(OrderDirection.fromValue(0), GameOrderCriteria.fromValue(1))
         );
-        super.paginate(mav,games);
+
+        PaginationHelper.paginate(mav,games);
+
         mav.addObject("suggestedgames", games.getList());
         return mav;
     }

@@ -10,6 +10,10 @@ import java.util.Collection;
 import java.util.Optional;
 
 public class AuthenticationHelper {
+
+    private AuthenticationHelper() {
+
+    }
     private static Optional<PawAuthUserDetails> getPrincipalFromContext() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if(auth == null || !auth.isAuthenticated() || auth.getPrincipal() == null || auth.getPrincipal().equals("anonymousUser"))

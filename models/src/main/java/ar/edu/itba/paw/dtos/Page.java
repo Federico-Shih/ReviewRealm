@@ -10,6 +10,9 @@ public class Page {
         page.pageSize = pageSize;
         return page;
     }
+    private Page(){
+
+    }
 
     public Integer getPageNumber() {
         return pageNumber;
