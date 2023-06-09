@@ -106,6 +106,7 @@ public class MailingServiceImpl implements MailingService {
 
             Context thymeleafContext = new Context();
             thymeleafContext.setVariables(templateVariables);
+            thymeleafContext.setLocale(userLocale);
             String htmlBody = templateEngine.process(template, thymeleafContext);
             mimeMessageHelper.setText(htmlBody, true);
 

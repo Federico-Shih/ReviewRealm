@@ -17,6 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.*;
@@ -53,7 +54,7 @@ public class UserServiceImplTest {
         Mockito.when(userDao.create(eq(USERNAME), eq(EMAIL), eq("")))
                 .thenReturn(new User(ID, USERNAME, EMAIL, PASSWORD));
         //2.execute
-        User newUser = us.createUser(USERNAME, EMAIL, PASSWORD);
+        User newUser = us.createUser(USERNAME, EMAIL, PASSWORD, Locale.ENGLISH);
 
         //3.assert
         Assert.assertNotNull(newUser);
@@ -70,7 +71,7 @@ public class UserServiceImplTest {
         Mockito.when(userDao.getByEmail(EMAIL))
                 .thenReturn(Optional.empty());
         //2.execute
-        User newUser = us.createUser(USERNAME, EMAIL,PASSWORD);
+        User newUser = us.createUser(USERNAME, EMAIL,PASSWORD, Locale.ENGLISH);
     }
 
     @Test(expected = EmailAlreadyExistsException.class)
@@ -79,7 +80,7 @@ public class UserServiceImplTest {
         Mockito.when(userDao.getByEmail(EMAIL))
                 .thenReturn(Optional.of(new User(ID,USERNAME,EMAIL,PASSWORD)));
         //2.execute
-        User newUser = us.createUser(USERNAME, EMAIL,PASSWORD);
+        User newUser = us.createUser(USERNAME, EMAIL,PASSWORD, Locale.ENGLISH);
     }
 
     @Test(expected = UserNotFoundException.class)

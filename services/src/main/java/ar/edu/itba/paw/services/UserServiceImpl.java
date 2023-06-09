@@ -50,7 +50,7 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public User createUser(String username, String email, String password) throws EmailAlreadyExistsException, UsernameAlreadyExistsException {
+    public User createUser(String username, String email, String password, Locale locale) throws EmailAlreadyExistsException, UsernameAlreadyExistsException {
         Optional<User> user = userDao.getByEmail(email);
         if (user.isPresent()) {
             throw new EmailAlreadyExistsException();
@@ -60,6 +60,8 @@ public class UserServiceImpl implements UserService {
         User createdUser;
         LOGGER.info("Creating user: {}", email);
         createdUser = userDao.create(username, email, "");
+        changeUserLanguage(createdUser.getId(), locale);
+        createdUser.setLanguage(locale);
 
         ExpirationToken token = this.tokenDao.create(
                 createdUser.getId(),

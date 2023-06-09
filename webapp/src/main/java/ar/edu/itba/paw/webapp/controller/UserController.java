@@ -22,6 +22,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
@@ -32,6 +33,9 @@ import java.util.stream.Collectors;
 public class UserController {
     private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
     private final UserService us;
+
+    @Autowired
+    private HttpServletRequest httpServletRequest;
     @Autowired
     public UserController(UserService us) {
         this.us = us;
@@ -63,7 +67,7 @@ public class UserController {
             return registerForm(form);
         }
         try {
-            us.createUser(form.getUsername(), form.getEmail(), form.getPassword());
+            us.createUser(form.getUsername(), form.getEmail(), form.getPassword(), httpServletRequest.getLocale());
         } catch (EmailAlreadyExistsException e) {
             errors.rejectValue("email", "error.email.already.exists");
             return registerForm(form);

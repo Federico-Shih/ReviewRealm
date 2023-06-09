@@ -10,7 +10,7 @@ import ar.edu.itba.paw.models.User;
 import java.util.*;
 
 public interface UserService {
-    User createUser(String username, String email, String password) throws EmailAlreadyExistsException, UsernameAlreadyExistsException;
+    User createUser(String username, String email, String password, Locale currentLocale) throws EmailAlreadyExistsException, UsernameAlreadyExistsException;
 
     Optional<User> getUserByEmail(String email);
 
