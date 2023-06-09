@@ -249,15 +249,14 @@ public class GameDaoImplTest {
     @Test
     public void testCreateWithGenres() {
 
-        Optional<Game> game = gameDao.create(NAME, DESCRIPTION, DEVELOPER, PUBLISHER, IMAGE_ID, Arrays.asList(GENRE1, GENRE2), LocalDate.now(), SUGGESTED);
+        Game game = gameDao.create(NAME, DESCRIPTION, DEVELOPER, PUBLISHER, IMAGE_ID, Arrays.asList(GENRE1, GENRE2), LocalDate.now(), SUGGESTED);
         em.flush();
         List<Game> games = jdbcTemplate.query("SELECT * FROM games", CommonRowMappers.TEST_GAME_ROW_MAPPER);
 
-        Assert.assertTrue(game.isPresent());
         Assert.assertEquals(1, games.size());
-        Assert.assertEquals(game.get().getId(), games.get(0).getId());
+        Assert.assertEquals(game.getId(), games.get(0).getId());
 
-        List<Genre> genres = game.get().getGenres();
+        List<Genre> genres = game.getGenres();
 
         Assert.assertEquals(2, genres.size());
         Assert.assertTrue(genres.stream().anyMatch(g -> g.getId() == GENRE1.getId()));
@@ -267,14 +266,13 @@ public class GameDaoImplTest {
     @Test
     public void testCreateNoGenres() {
 
-        Optional<Game> game = gameDao.create(NAME, DESCRIPTION, DEVELOPER, PUBLISHER, IMAGE_ID, new ArrayList<>(), LocalDate.now(), SUGGESTED);
+        Game game = gameDao.create(NAME, DESCRIPTION, DEVELOPER, PUBLISHER, IMAGE_ID, new ArrayList<>(), LocalDate.now(), SUGGESTED);
         em.flush();
         List<Game> games = jdbcTemplate.query("SELECT * FROM games", CommonRowMappers.TEST_GAME_ROW_MAPPER);
 
-        Assert.assertTrue(game.isPresent());
         Assert.assertEquals(1, games.size());
-        Assert.assertEquals(game.get().getId(), games.get(0).getId());
-        List<Genre> genres = game.get().getGenres();
+        Assert.assertEquals(game.getId(), games.get(0).getId());
+        List<Genre> genres = game.getGenres();
 
         Assert.assertEquals(0, genres.size());
 

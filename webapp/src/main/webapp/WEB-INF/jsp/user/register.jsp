@@ -45,6 +45,7 @@
                 <form:label for="repeatPassword" path="repeatPassword"><spring:message
                         code="register.repeat.password.field"/></form:label>
                 <form:input type="password" name="repeatPassword" id="repeatPassword" path="repeatPassword" class="white-text"/>
+                <form:errors code="register.repeat.password.error" cssClass="error" element="span"/>
                 <form:errors path="repeatPassword" cssClass="error" element="span"/>
             </div>
         <div>

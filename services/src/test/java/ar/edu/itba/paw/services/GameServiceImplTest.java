@@ -128,7 +128,7 @@ public class GameServiceImplTest {
         Mockito.when(user.getRoles()).thenReturn(new HashSet<>(Collections.singletonList(RoleType.MODERATOR)));
         Mockito.when(dto.getGenres()).thenReturn(Arrays.asList(Genre.ACTION.getId(), Genre.ADVENTURE.getId()));
 
-        Mockito.when(gameDao.create(any(),any(),any(),any(),any(),any(),any(),eq(false))).thenReturn(Optional.of(GAME1));
+        Mockito.when(gameDao.create(any(),any(),any(),any(),any(),any(),any(),eq(false))).thenReturn(GAME1);
 
         Optional<Game> game = gs.createGame(dto,1L);
 
@@ -142,7 +142,7 @@ public class GameServiceImplTest {
         Mockito.when(user.getRoles()).thenReturn(new HashSet<>(new ArrayList<>()));
         Mockito.when(dto.getGenres()).thenReturn(Arrays.asList(Genre.ACTION.getId(), Genre.ADVENTURE.getId()));
 
-        Mockito.when(gameDao.create(any(),any(),any(),any(),any(),any(),any(),eq(true))).thenReturn(Optional.of(GAME1));
+        Mockito.when(gameDao.create(any(),any(),any(),any(),any(),any(),any(),eq(true))).thenReturn(GAME1);
 
         Optional<Game> game = gs.createGame(dto,1L);
 

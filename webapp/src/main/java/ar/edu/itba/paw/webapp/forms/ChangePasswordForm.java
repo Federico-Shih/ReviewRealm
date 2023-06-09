@@ -1,7 +1,10 @@
 package ar.edu.itba.paw.webapp.forms;
 
+import ar.edu.itba.paw.webapp.annotations.FieldMatch;
+
 import javax.validation.constraints.Size;
 
+@FieldMatch(first = "repeatPassword", second = "password", message="FieldMatch.passwordForm.repeatPassword")
 public class ChangePasswordForm {
     @Size(min = 8, max = 100)
     private String password;

@@ -1,6 +1,7 @@
-package ar.edu.itba.paw.annotations;
+package ar.edu.itba.paw.webapp.annotations;
 
-import ar.edu.itba.paw.validators.MediaTypeSizeValidator;
+import ar.edu.itba.paw.webapp.validators.MediaTypeSizeValidator;
+
 import javax.validation.Constraint;
 import javax.validation.Payload;
 import java.lang.annotation.*;

@@ -58,10 +58,8 @@ public class UserController {
             @Valid @ModelAttribute("registerForm") final RegisterForm form,
             final BindingResult errors
     ) {
-        if(!form.getPassword().equals(form.getRepeatPassword())) {
-            errors.rejectValue("repeatPassword", "error.passwords.dont.match");
-        }
         if(errors.hasErrors()) {
+            System.out.println(errors.getAllErrors());
             return registerForm(form);
         }
         try {

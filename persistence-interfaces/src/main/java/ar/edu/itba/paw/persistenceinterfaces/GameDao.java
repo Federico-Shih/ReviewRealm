@@ -15,7 +15,7 @@ import java.util.Set;
 
 public interface GameDao {
 
-    Optional<Game> create(String name,String description,String developer, String publisher, String imageid, List<Genre> genres, LocalDate publishDate, boolean suggested);
+    Game create(String name,String description,String developer, String publisher, String imageid, List<Genre> genres, LocalDate publishDate, boolean suggested);
 
     Optional<Game> edit(Long gameId,String name, String description, String developer, String publisher, String imageid, List<Genre> genres);
 

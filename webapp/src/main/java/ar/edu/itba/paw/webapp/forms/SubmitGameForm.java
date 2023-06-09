@@ -1,7 +1,7 @@
 package ar.edu.itba.paw.webapp.forms;
 
-import ar.edu.itba.paw.annotations.ValidMediaSize;
-import ar.edu.itba.paw.annotations.ValidMediaType;
+import ar.edu.itba.paw.webapp.annotations.ValidMediaSize;
+import ar.edu.itba.paw.webapp.annotations.ValidMediaType;
 import ar.edu.itba.paw.dtos.saving.SubmitGameDTO;
 import org.springframework.http.MediaType;
 import org.springframework.web.multipart.MultipartFile;

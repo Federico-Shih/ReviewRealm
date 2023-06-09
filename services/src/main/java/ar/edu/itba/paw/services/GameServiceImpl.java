@@ -65,8 +65,8 @@ public class GameServiceImpl implements GameService {
         LOGGER.info("{} game - name: {}, developer: {}", isModerator ? "Creating" : "Suggesting", gameDTO.getName(), gameDTO.getName());
         List<Genre> genreList = prepareGenres(gameDTO);
 
-        Optional<Game> toReturn = gameDao.create(gameDTO.getName(), gameDTO.getDescription(), gameDTO.getDeveloper(), gameDTO.getPublisher(), img.getId(), genreList, LocalDate.now(), !isModerator);
-        return (isModerator) ? toReturn : Optional.empty();
+        Game toReturn = gameDao.create(gameDTO.getName(), gameDTO.getDescription(), gameDTO.getDeveloper(), gameDTO.getPublisher(), img.getId(), genreList, LocalDate.now(), !isModerator);
+        return (isModerator) ? Optional.of(toReturn) : Optional.empty();
     }
 
     @Transactional
