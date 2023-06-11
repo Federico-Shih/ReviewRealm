@@ -65,41 +65,9 @@
             </c:if>
         </div>
     </div>
-<%--    <div class="for-you-section">--%>
-<%--        <span class="for-you-section-header"><spring:message code="for-you.search.users"/></span>--%>
-<%--        <form action="${sendSearch}" class="entire-width">--%>
-<%--            <div class="search-section">--%>
-<%--                <div class="search-game-list">--%>
-<%--                    <input name="search" class="z-depth-1-half search-field" type="search" value="${search}"--%>
-<%--                           placeholder="<spring:message code="for-you.search-placeholder"/>">--%>
-<%--                    <button class="btn-flat button-color white-text" type="submit"><i class="material-icons">search</i>--%>
-<%--                    </button>--%>
-<%--                    <input type="hidden" name="page" value="${currentPage}">--%>
-<%--                    <input type="hidden" name="pagesize" value="${pagesize}">--%>
-<%--                </div>--%>
-<%--            </div>--%>
-<%--        </form>--%>
-<%--        <c:if test="${not empty search}">--%>
-<%--            <div class="container row">--%>
-<%--                <c:forEach var="user" items="${users}">--%>
-<%--                    <div class="col s5 card user-card-small">--%>
-<%--                        <a href="<c:url value="/profile/${user.id}"/> ">--%>
-<%--                            <div class="card-content">--%>
-<%--                                <div class="card-title">--%>
-<%--                                    <div class="align-icon-text">--%>
-<%--                                        <i class="material-icons">person</i>--%>
-<%--                                        <span><c:out value="${user.username}" /></span>--%>
-<%--                                    </div>--%>
-<%--                                </div>--%>
-<%--                            </div>--%>
-<%--                        </a>--%>
-<%--                    </div>--%>
-<%--                </c:forEach>--%>
-<%--            </div>--%>
-<%--        </c:if>--%>
-<%--    </div>--%>
+
     <div class="for-you-section">
-        <span class="for-you-section-header"><spring:message code="${contentTabHeaderCode}"/></span>
+        <span class="section-header"><spring:message code="${contentTabHeaderCode}"/></span>
         <div class="full-width row">
             <div class="col s12">
                 <div class="card indigo darken-4">

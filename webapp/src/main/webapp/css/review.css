@@ -90,6 +90,7 @@
     flex-direction: column;
     margin-top: -4px;
     width: 65%;
+    margin-left: 4%;
 }
 
 .review-card-feedback-footer{
@@ -211,6 +212,19 @@
     color: darkgray;
     font-size: 14px;
     font-weight: 500; /*medium*/
+    text-decoration: underline;
+}
+
+.author-hover:hover {
+    cursor: default;
+}
+
+.profile-card-on-hover {
+    position: absolute;
+    display: none;
+    z-index: 8;
+    top: 60px;
+    left: 0;
 }
 
 #author-profile-image {
@@ -225,7 +239,6 @@
     width: 96px;
     height: 48px;
     object-fit: cover;
-    margin-right: 4%;
 }
 
 #review-card-preferences{

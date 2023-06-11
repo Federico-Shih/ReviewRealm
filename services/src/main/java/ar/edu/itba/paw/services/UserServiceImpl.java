@@ -2,7 +2,10 @@ package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.dtos.Page;
 import ar.edu.itba.paw.dtos.filtering.UserFilterBuilder;
+import ar.edu.itba.paw.dtos.ordering.Ordering;
+import ar.edu.itba.paw.dtos.ordering.UserOrderCriteria;
 import ar.edu.itba.paw.dtos.saving.SaveUserBuilder;
+import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.enums.Mission;
 import ar.edu.itba.paw.enums.NotificationType;
 import ar.edu.itba.paw.enums.RoleType;
@@ -10,6 +13,7 @@ import ar.edu.itba.paw.exceptions.*;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.persistenceinterfaces.UserDao;
 import ar.edu.itba.paw.persistenceinterfaces.ValidationTokenDao;
+import ar.edu.itba.paw.servicesinterfaces.GameService;
 import ar.edu.itba.paw.servicesinterfaces.MailingService;
 import ar.edu.itba.paw.servicesinterfaces.MissionService;
 import ar.edu.itba.paw.servicesinterfaces.UserService;
@@ -22,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -30,6 +35,8 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final ValidationTokenDao tokenDao;
     private final MailingService mailingService;
+
+    private final GameService gameService;
 
     private final MissionService missionService;
     private static final int EXPIRATION_TIME = 60 * 60 * 24; // 24hs
@@ -40,11 +47,12 @@ public class UserServiceImpl implements UserService {
                            PasswordEncoder passwordEncoder,
                            ValidationTokenDao tokenDao,
                            MailingService mailingService,
-                           MissionService missionService) {
+                           GameService gameService, MissionService missionService) {
         this.userDao = userDao;
         this.passwordEncoder = passwordEncoder;
         this.tokenDao = tokenDao;
         this.mailingService = mailingService;
+        this.gameService = gameService;
         this.missionService = missionService;
     }
 
@@ -206,8 +214,41 @@ public class UserServiceImpl implements UserService {
 
     @Transactional(readOnly = true)
     @Override
-    public Paginated<User> getSearchedUsers(int page, int pageSize, String search) {
-        return userDao.findAll(Page.with(page, pageSize), new UserFilterBuilder().withSearch(search).build());
+    public Paginated<User> searchUsers(Page page, String search, Ordering<UserOrderCriteria> ordering) {
+        UserFilterBuilder userFilterBuilder = new UserFilterBuilder();
+        if(search != null) {
+            userFilterBuilder = userFilterBuilder.withSearch(search);
+        }
+        return userDao.findAll(page, userFilterBuilder.build(), ordering);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Paginated<User> getUsersWhoReviewedSameGames(Page page, User currentUser, Ordering<UserOrderCriteria> ordering) {
+        Set<Game> reviewedGames = gameService.getGamesReviewedByUser(currentUser.getId());
+        return userDao.findAll(page,
+                new UserFilterBuilder()
+                        .withGamesPlayed(reviewedGames.stream().map(Game::getId).collect(Collectors.toList()))
+                        .notWithId(currentUser.getId())
+                        .build(),
+                ordering);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public boolean hasUserReviewedAnything(User currentUser) {
+        return !gameService.getGamesReviewedByUser(currentUser.getId()).isEmpty();
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Paginated<User> getUsersWithSamePreferences(Page page, User currentUser, Ordering<UserOrderCriteria> ordering) {
+        return userDao.findAll(page,
+                new UserFilterBuilder()
+                        .withPreferences(currentUser.getPreferences().stream().map(Genre::getId).collect(Collectors.toList()))
+                        .notWithId(currentUser.getId())
+                        .build(),
+                ordering);
     }
 
     @Transactional

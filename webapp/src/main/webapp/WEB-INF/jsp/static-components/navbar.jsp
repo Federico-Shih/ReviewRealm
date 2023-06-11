@@ -31,11 +31,11 @@
             <div class="f-row">
                 <a href="<c:url value="/"/>" class="navbar-logo">
                     <img class="navbar-logo-image" src="<c:url value="/static/review_realm_logo_white_630px.png"/>" alt="Review Realm Logo">
-                    <span class="navbar-logo-title hide-on-med-and-down">Review Realm</span>
+                    <span class="navbar-logo-title">Review Realm</span>
                 </a>
             </div>
             <div class="navbar-search">
-                <div class="input-field  valign-wrapper">
+                <div class="input-field valign-wrapper" style="padding: 0 8px 0 0;">
                     <i class="material-icons prefix icon-prefix">search</i>
                     <input
                             name="search"
@@ -57,14 +57,20 @@
                     </c:if>
                     <li class="navbar-option"><a href="<c:url value="/game/list"/>" class="${param.selected == "game-list" ? "chosen-tab" : "" }"><span><spring:message code="navbar.games"/></span></a></li>
                     <li class="navbar-option"><a href="<c:url value="/"/>" class="${param.selected == "review-list" ? "chosen-tab" : "" }"><span><spring:message code="navbar.reviews"/></span></a></li>
+                    <li class="navbar-option"><a href="<c:url value="/community"/>" class="${param.selected == "community" ? "chosen-tab" : "" }"><span><spring:message code="navbar.community"/></span></a></li>
 
                     <c:if test="${loggedUser != null}">
                         <li class="navbar-dropdown-container">
                             <a class="dropdown-trigger btn navbar-dropdown" href="#" data-target="dropdownProfile">
-                                <span class="overflow-ellipsis">
+                                <span class="overflow-ellipsis navbar-welcome-button-wide">
                                     <spring:message code="navbar.welcome" arguments="${loggedUser.username}"/>
                                 </span>
-                                <i class="material-icons right">arrow_drop_down</i>
+                                <div class="navbar-welcome-button-wide f-column f-jc-center">
+                                    <i class="material-icons right">arrow_drop_down</i>
+                                </div>
+                                <div class="navbar-welcome-button-narrow f-column f-jc-center">
+                                    <i class="material-icons">menu</i>
+                                </div>
                             </a>
                             <ul id="dropdownProfile" class="dropdown-content profile-dropdown">
                                 <li>

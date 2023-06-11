@@ -2,6 +2,9 @@ package ar.edu.itba.paw.persistence.tests;
 
 import ar.edu.itba.paw.dtos.Page;
 import ar.edu.itba.paw.dtos.filtering.UserFilterBuilder;
+import ar.edu.itba.paw.dtos.ordering.OrderDirection;
+import ar.edu.itba.paw.dtos.ordering.Ordering;
+import ar.edu.itba.paw.dtos.ordering.UserOrderCriteria;
 import ar.edu.itba.paw.dtos.saving.SaveUserBuilder;
 import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.enums.NotificationType;
@@ -27,6 +30,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -44,6 +48,10 @@ public class UserDaoImplTest {
     private final static String EMAIL2 = "email2";
     private final static String PASSWORD2 = "password2";
     private final static Long ID3 =3L;
+    private final static String TEXT1 = "estoesuntexto";
+    private final static String TEXT2 = "estotambienesuntexto";
+    private final static String EXAMPLE_DATE = "2023-06-08";
+    private final static Integer RATING = 5;
 
     private final static boolean ENABLED = true;
 
@@ -99,7 +107,7 @@ public class UserDaoImplTest {
         jdbcTemplate.execute("INSERT INTO users (id,username,email,password) VALUES (" + ID + ",'" + USERNAME + "', '" + EMAIL + "','" + PASSWORD + "')");
 
         //2.execute
-        Paginated<User> userlist = userDao.findAll(Page.with(1, 10), new UserFilterBuilder().build());
+        Paginated<User> userlist = userDao.findAll(Page.with(1, 10), new UserFilterBuilder().build(), new Ordering<>(OrderDirection.DESCENDING, UserOrderCriteria.LEVEL));
 
         Assert.assertEquals(userlist.getTotalPages(), 1);
         Assert.assertTrue(userlist.getList().contains(new User(ID,USERNAME,EMAIL, PASSWORD)));
@@ -113,7 +121,7 @@ public class UserDaoImplTest {
         jdbcTemplate.execute("INSERT INTO users (id,username,email,password) VALUES (" + ID2 + ",'" + USERNAME2 + "', '" + EMAIL2 + "','" + PASSWORD2 + "')");
 
         //2.execute
-        Paginated<User> userlist = userDao.findAll(Page.with(1, 10), new UserFilterBuilder().build());
+        Paginated<User> userlist = userDao.findAll(Page.with(1, 10), new UserFilterBuilder().build(), new Ordering<>(OrderDirection.DESCENDING, UserOrderCriteria.LEVEL));
 
         Assert.assertEquals(userlist.getTotalPages(), 1);
         Assert.assertTrue(userlist.getList().contains(new User(ID, USERNAME, EMAIL, PASSWORD)));
@@ -131,7 +139,7 @@ public class UserDaoImplTest {
         jdbcTemplate.execute("INSERT INTO users (id,username,email,password) VALUES (4,'username4', 'email4','password4')");
 
         //2.execute
-        Paginated<User> userlist = userDao.findAll(Page.with(1, 10), new UserFilterBuilder().withEmail("email2").build());
+        Paginated<User> userlist = userDao.findAll(Page.with(1, 10), new UserFilterBuilder().withEmail("email2").build(), new Ordering<>(OrderDirection.DESCENDING, UserOrderCriteria.LEVEL));
 
         Assert.assertEquals(userlist.getTotalPages(), 1);
         Assert.assertTrue(userlist.getList().contains(new User(2L, "username2", "email4", "password4")));
@@ -145,10 +153,10 @@ public class UserDaoImplTest {
         jdbcTemplate.execute("INSERT INTO users (id,username,email,password) VALUES (3,'username3', 'email3','password3')");
         jdbcTemplate.execute("INSERT INTO users (id,username,email,password) VALUES (4,'username4', 'email4','password4')");
         Assert.assertThrows(RuntimeException.class, () -> {
-            userDao.findAll(Page.with(0, 0), new UserFilterBuilder().build());
+            userDao.findAll(Page.with(0, 0), new UserFilterBuilder().build(), new Ordering<>(OrderDirection.DESCENDING, UserOrderCriteria.LEVEL));
         });
 
-        Paginated<User> userlist = userDao.findAll(Page.with(1000000, 10), new UserFilterBuilder().build());
+        Paginated<User> userlist = userDao.findAll(Page.with(1000000, 10), new UserFilterBuilder().build(), new Ordering<>(OrderDirection.DESCENDING, UserOrderCriteria.LEVEL));
         Assert.assertEquals(userlist.getTotalPages(), 1);
         Assert.assertEquals(userlist.getList().size(), 0);
     }

@@ -3,6 +3,7 @@ package ar.edu.itba.paw.models;
 import ar.edu.itba.paw.converters.GenreAttributeConverter;
 import ar.edu.itba.paw.converters.NotificationTypeAttributeConverter;
 import ar.edu.itba.paw.enums.Genre;
+import ar.edu.itba.paw.enums.LevelRange;
 import ar.edu.itba.paw.enums.NotificationType;
 import ar.edu.itba.paw.enums.RoleType;
 
@@ -37,7 +38,7 @@ public class User {
     private Boolean enabled;
 
     @Column(name = "reputation")
-    private Long reputation;
+    private Long reputation = 0L;
 
     @ElementCollection(targetClass = NotificationType.class, fetch = FetchType.LAZY)
     @CollectionTable(name = "user_disabled_notifications", joinColumns = @JoinColumn(name = "userid", referencedColumnName = "id"))
@@ -274,6 +275,10 @@ public class User {
 
     public int getLevel() {
         return (int) (xp / 100);
+    }
+
+    public LevelRange getLevelRange() {
+        return LevelRange.levelToRange(getLevel());
     }
 
     public void setRoles(Set<RoleType> objects) {

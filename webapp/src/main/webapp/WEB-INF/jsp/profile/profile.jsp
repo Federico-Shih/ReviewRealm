@@ -53,9 +53,13 @@
                     <span class="profile-user-name">
                         ${profile.username}
                     </span>
-                    <span class="chip-small" style="font-size: 16px">
-                        <spring:message code="profile.level" arguments="${profile.level}" />
-                    </span>
+                    <div class="f-row f-ai-center f-gap-2 margin-left-2">
+                        <c:set var="level" value="${profile.level}"/>
+                        <div class="level-badge-container tooltipped" data-position="top" data-tooltip="<spring:message code="profile.level" arguments="${profile.level}" />">
+                            <i class="material-icons level-badge-icon level-${profile.levelRange.rangeTitle}">sports_esports</i>
+                            <span class="level-badge-text"><c:out value="${level}"/></span>
+                        </div>
+                    </div>
                     <c:if test="${userModerator}">
                          <span class="tooltipped" data-position="top" data-tooltip="<spring:message code="profile.moderator" />">
                             <i class="material-icons profile-user-name">

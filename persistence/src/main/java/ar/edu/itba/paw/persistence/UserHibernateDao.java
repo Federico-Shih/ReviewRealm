@@ -1,24 +1,34 @@
 package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.dtos.Page;
+import ar.edu.itba.paw.dtos.filtering.ReviewFilter;
 import ar.edu.itba.paw.dtos.filtering.UserFilter;
+import ar.edu.itba.paw.dtos.ordering.Ordering;
+import ar.edu.itba.paw.dtos.ordering.ReviewOrderCriteria;
+import ar.edu.itba.paw.dtos.ordering.UserOrderCriteria;
 import ar.edu.itba.paw.dtos.saving.SaveUserDTO;
+import ar.edu.itba.paw.enums.Difficulty;
 import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.enums.NotificationType;
+import ar.edu.itba.paw.enums.Platform;
 import ar.edu.itba.paw.models.FollowerFollowingCount;
+import ar.edu.itba.paw.models.Game;
 import ar.edu.itba.paw.models.Paginated;
 import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.persistence.helpers.QueryBuilder;
 import ar.edu.itba.paw.persistenceinterfaces.PaginationDao;
 import ar.edu.itba.paw.persistenceinterfaces.UserDao;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Repository
 public class UserHibernateDao implements UserDao, PaginationDao<UserFilter> {
@@ -95,26 +105,44 @@ public class UserHibernateDao implements UserDao, PaginationDao<UserFilter> {
         return query.getSingleResult();
     }
 
+    private QueryBuilder getQueryBuilderFromFilter(UserFilter filter) {
+        QueryBuilder queryBuilder = new QueryBuilder()
+                .withExact("u.username", filter.getUsername())
+                .withExact("u.email", filter.getEmail())
+                .withExact("u.reputation", filter.getReputation())
+                .withExact("u.enabled", filter.isEnabled())
+                .withExact("u.id", filter.getId())
+                .NOT().withExact("u.id", filter.getNotId())
+                .withSimilar("u.username", filter.getSearch())
+                .withList("gu.genreid", filter.getPreferences())
+                .withList("r.gameid", filter.getGamesPlayed())
+                ;
+
+        return queryBuilder;
+    }
+
     @Override
-    public Paginated<User> findAll(Page page, UserFilter userFilter) {
+    public Paginated<User> findAll(Page page, UserFilter userFilter, Ordering<UserOrderCriteria> ordering) {
         int pages = getPageCount(userFilter, page.getPageSize());
-        if (page.getPageNumber() > pages) {
+        if (page.getPageNumber() > pages || page.getPageNumber() <= 0) {
             return new Paginated<>(page.getPageNumber(), page.getPageSize(), pages, Collections.emptyList());
         }
 
-        final CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
-        final CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
-        final Root<User> root = criteriaQuery.from(User.class);
+        QueryBuilder queryBuilder = getQueryBuilderFromFilter(userFilter);
+        Query nativeQuery = em.createNativeQuery("SELECT distinct id FROM ("+ "SELECT u.id as id, u.xp as xp, u.reputation as reputation, coalesce((SELECT count(distinct f.userid) FROM followers as f WHERE f.following=u.id GROUP BY f.following), 0) as follower_count FROM " + toTableString(userFilter) + queryBuilder.toQuery() + toOrderString(ordering, true) + ") as users");
+        prepareParametersForNativeQuery(queryBuilder, nativeQuery);
+        nativeQuery.setMaxResults(page.getPageSize());
+        nativeQuery.setFirstResult(page.getOffset().intValue());
 
-        criteriaQuery.select(root.get("id"));
-        addUserFilterQuery(userFilter, criteriaQuery, criteriaBuilder, root);
-        final TypedQuery<Long> query = em.createQuery(criteriaQuery);
-        query.setFirstResult(Math.toIntExact(page.getOffset()));
-        query.setMaxResults(page.getPageSize());
-        final List<Long> list = query.getResultList();
+        @SuppressWarnings("unchecked")
+        final List<Long> idlist = (List<Long>) nativeQuery.getResultList().stream().map(n -> ((Number) n).longValue()).collect(Collectors.toList());
 
-        final TypedQuery<User> userQuery = em.createQuery("from User where id IN :ids", User.class);
-        userQuery.setParameter("ids", list);
+        if(idlist.isEmpty()) {
+            return new Paginated<>(page.getPageNumber(), page.getPageSize(), pages, new ArrayList<>());
+        }
+
+        final TypedQuery<User> userQuery = em.createQuery("from User where id IN :ids"+ toOrderString(ordering, false), User.class);
+        userQuery.setParameter("ids", idlist);
 
         return new Paginated<>(page.getPageNumber(), page.getPageSize(), pages, userQuery.getResultList());
     }
@@ -239,6 +267,42 @@ public class UserHibernateDao implements UserDao, PaginationDao<UserFilter> {
         User user = em.find(User.class, userId);
         if (user != null) {
             user.getDisabledNotifications().remove(NotificationType.valueFrom(notificationType));
+        }
+    }
+
+    private String toTableString(UserFilter filter) {
+        StringBuilder str = new StringBuilder();
+        str.append("users as u ");
+        if (filter.getPreferences() != null && !filter.getPreferences().isEmpty()) {
+            str.append("JOIN genreforusers as gu ON u.id = gu.userid ");
+        }
+        if (filter.getGamesPlayed() != null && !filter.getGamesPlayed().isEmpty()) {
+            str.append("JOIN reviews as r ON u.id = r.authorid ");
+        }
+        return str.toString();
+    }
+
+    //TODO: estos dos métodos están repetidos en User, Game y ReviewDao
+
+    private String toOrderString(Ordering<UserOrderCriteria> order, boolean isNative) {
+        if (order == null || order.getOrderCriteria() == null) {
+            return "";
+        }
+        StringBuilder orderQuery = new StringBuilder();
+        orderQuery.append(" ORDER BY ");
+        orderQuery.append(isNative ? order.getOrderCriteria().getTableName() : order.getOrderCriteria().getAltName());
+        if (order.getOrderDirection() != null) {
+            orderQuery.append(" ");
+            orderQuery.append(order.getOrderDirection().getAltName());
+        }
+        return orderQuery.toString();
+    }
+
+    private void prepareParametersForNativeQuery(QueryBuilder queryBuilder, Query nativeQuery) {
+        int length = queryBuilder.toArguments().size();
+        ArrayList<Object> array = new ArrayList<>(queryBuilder.toArguments());
+        for (int i = 0; i < length; i += 1) {
+            nativeQuery.setParameter(i + 1, array.get(i));
         }
     }
 }

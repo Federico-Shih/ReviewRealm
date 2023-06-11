@@ -1,26 +1,24 @@
 package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.dtos.Page;
-import ar.edu.itba.paw.dtos.ordering.GameOrderCriteria;
-import ar.edu.itba.paw.dtos.ordering.OrderDirection;
-import ar.edu.itba.paw.dtos.ordering.Ordering;
-import ar.edu.itba.paw.dtos.ordering.ReviewOrderCriteria;
+import ar.edu.itba.paw.dtos.ordering.*;
 import ar.edu.itba.paw.dtos.searching.GameSearchFilterBuilder;
 import ar.edu.itba.paw.dtos.searching.ReviewSearchFilterBuilder;
-import ar.edu.itba.paw.models.Game;
-import ar.edu.itba.paw.models.Paginated;
-import ar.edu.itba.paw.models.Review;
-import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.servicesinterfaces.GameService;
 import ar.edu.itba.paw.servicesinterfaces.ReviewService;
 import ar.edu.itba.paw.servicesinterfaces.UserService;
 import ar.edu.itba.paw.webapp.auth.AuthenticationHelper;
+import ar.edu.itba.paw.webapp.controller.helpers.PaginationHelper;
+import ar.edu.itba.paw.webapp.controller.helpers.QueryHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
+
 import java.util.ArrayList;
+import java.util.List;
 
 @Controller
 public class SearchController {
@@ -44,7 +42,11 @@ public class SearchController {
             return new ModelAndView("search/search").addObject("users", new ArrayList<>()).addObject("games",
                     new ArrayList<>()).addObject("reviews", new ArrayList<>()).addObject("search", search);
         }
-        Paginated<User> users = userService.getSearchedUsers(1, MAX_RESULTS, search);
+        Paginated<User> users = userService.searchUsers(
+                Page.with(1, MAX_RESULTS),
+                search,
+                new Ordering<>(OrderDirection.DESCENDING, UserOrderCriteria.LEVEL)
+        );
         GameSearchFilterBuilder gameSearchFilterBuilder = new GameSearchFilterBuilder().withSearch(search);
         Paginated<Game> games = gameService.searchGames(Page.with(1, MAX_RESULTS),
                 gameSearchFilterBuilder.build(),
@@ -56,5 +58,68 @@ public class SearchController {
                 AuthenticationHelper.getLoggedUser(userService));
         return new ModelAndView("search/search").addObject("users", users.getList()).addObject("games",
                 games.getList()).addObject("reviews", reviews.getList()).addObject("search", search);
+    }
+
+    @RequestMapping("/community")
+    public ModelAndView community(
+            @RequestParam(value = "search", defaultValue = "") final String search,
+            @RequestParam(value = "page", defaultValue = "1") Integer page,
+            @RequestParam(value = "pageSize", required = false) Integer pageSize,
+            @RequestParam(value = "o-crit", defaultValue = "0") Integer orderCriteria,
+            @RequestParam(value = "o-dir", defaultValue = "0") Integer orderDirection
+    ) {
+        ModelAndView mav = new ModelAndView("search/community");
+        mav.addObject("userSearch", search);
+        User loggedUser = AuthenticationHelper.getLoggedUser(userService);
+        Ordering<UserOrderCriteria> ordering = new Ordering<>(OrderDirection.fromValue(orderDirection), UserOrderCriteria.fromValue(orderCriteria));
+
+        if(!search.isEmpty()) {
+            if (pageSize == null || pageSize < 1) {
+                pageSize = MAX_RESULTS;
+            }
+            Paginated<User> users = userService.searchUsers(Page.with(page, pageSize), search, ordering);
+            PaginationHelper.paginate(mav,users);
+            mav.addObject("searchedUsers", users);
+        }
+
+        boolean userSetPreferences = false;
+        boolean userHasReviewedAnything = false;
+        List<User> samePreferencesUsers = new ArrayList<>();
+        List<User> sameGamesUsers = new ArrayList<>();
+        if(loggedUser != null) {
+            userSetPreferences = loggedUser.hasPreferencesSet();
+            userHasReviewedAnything = userService.hasUserReviewedAnything(loggedUser);
+            if(userSetPreferences) {
+                samePreferencesUsers = userService.getUsersWithSamePreferences(Page.with(1, MAX_RESULTS), loggedUser, ordering).getList();
+            }
+            if(userHasReviewedAnything) {
+                sameGamesUsers = userService.getUsersWhoReviewedSameGames(Page.with(1, MAX_RESULTS), loggedUser, ordering).getList();
+            }
+        }
+
+        mav.addObject("samePreferencesUsers", samePreferencesUsers);
+        mav.addObject("sameGamesUsers", sameGamesUsers);
+        mav.addObject("userSetPreferences", userSetPreferences);
+        mav.addObject("userHasReviewedAnything", userHasReviewedAnything);
+        mav.addObject("isLoggedIn", loggedUser!=null);
+
+        Paginated<User> defaultUsers = userService.searchUsers(Page.with(1, MAX_RESULTS), null, ordering);
+        mav.addObject("defaultUsers", defaultUsers);
+
+        mav.addObject("orderCriteria", orderCriteria);
+        mav.addObject("orderDirection", orderDirection);
+        mav.addObject("criteriaOptions", UserOrderCriteria.values());
+        mav.addObject("directionOptions", OrderDirection.values());
+
+
+        if(!search.isEmpty()) {
+            List<Pair<String, Object>> queriesToKeep = new ArrayList<>();
+            queriesToKeep.add(Pair.of("pageSize", pageSize));
+            queriesToKeep.add(Pair.of("search", search));
+            mav.addObject("queriesToKeepAtPageChange", QueryHelper.toQueryString(queriesToKeep));
+        }
+
+
+        return mav;
     }
 }

@@ -52,7 +52,7 @@ public class QueryBuilder {
         if (queryContent != null) {
             str.append(" ");
             str.append(operator.getOperator());
-            str.append(String.format(" %s %s ?%d ", queryField, (not) ? "<>" : "=", params.size() + 1));
+            str.append(String.format(" %s (%s %s ?%d) ", (not)? "NOT" : "" ,queryField, "=", params.size() + 1));
             params.add(queryContent);
             operator = QueryOperator.AND;
         }
