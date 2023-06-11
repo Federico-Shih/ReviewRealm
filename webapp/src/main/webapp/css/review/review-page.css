@@ -205,8 +205,3 @@ input[type=number] {
     font-size: 24px;
     font-weight: bold;
 }
-
-.cancel-button {
-    background-color: red;
-    color: white;
-}

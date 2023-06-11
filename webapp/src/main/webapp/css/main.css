@@ -493,6 +493,11 @@ input::-webkit-inner-spin-button {
     color: white;
 }
 
+.cancel-button {
+    background-color: red;
+    color: white;
+}
+
 .nav-bar-top {
     z-index: 999;
 }

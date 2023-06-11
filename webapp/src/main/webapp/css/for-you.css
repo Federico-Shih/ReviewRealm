@@ -17,6 +17,11 @@
     width: 100%;
 }
 
+.for-you-selector {
+    width: 91% ;
+    margin: 1% auto 0 auto !important;
+}
+
 
 .search-section {
     width: 50%;

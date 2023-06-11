@@ -5,7 +5,12 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <html>
 <head>
-    <title><spring:message code="game.submit.title" /></title> <!-- Compiled and minified CSS -->
+    <c:if test="${edit}">
+        <title><spring:message code="game.edit.title"/></title>
+    </c:if>
+    <c:if test="${!edit}">
+        <title><spring:message code="game.submit.title"/></title>
+    </c:if>
     <link rel="stylesheet" type="text/css" href="<c:url value="/css/materialize.min.css" />" media="screen,projection"/>
     <link rel="stylesheet" href="<c:url value="/css/main.css" />">
     <!-- Compiled and minified JavaScript -->
@@ -42,6 +47,9 @@
             <div class="card-content">
                 <div class="card-title">
                     <c:choose>
+                        <c:when test="${edit}">
+                            <spring:message code="game.edit.title" />
+                        </c:when>
                         <c:when test="${roles.moderator}">
                             <spring:message code="game.submit.title" />
                         </c:when>
@@ -137,7 +145,13 @@
                     </div>
                 </div>
             </div>
-            <div class="card-action">
+            <div class="card-action f-row f-jc-end f-gap-2">
+                <c:if test="${edit}">
+                    <a href="<c:url value="/game/${gameId}" />"
+                       class="waves-effect btn-flat cancel-button white-text">
+                        <spring:message code="cancel.button"/>
+                    </a>
+                </c:if>
                 <button class="btn" type="submit">
                     <c:choose>
                         <c:when test="${roles.moderator}">

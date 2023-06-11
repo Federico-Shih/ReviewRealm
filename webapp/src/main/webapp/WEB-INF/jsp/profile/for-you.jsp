@@ -68,30 +68,23 @@
 
     <div class="for-you-section">
         <span class="section-header"><spring:message code="${contentTabHeaderCode}"/></span>
-        <div class="full-width row">
-            <div class="col s12">
-                <div class="card indigo darken-4">
-                      <div class="card-content f-row f-jc-start f-ai-baseline f-gap-2">
-                          <a href="<c:url value="/for-you/?content=FOLLOWING"/>" class="white-text">
-                              <div class="chip-content-tab f-row f-ai-end f-jc-sbetween ${(contentTab == "FOLLOWING")? 'active-chip-tab':''}">
-                                    <i class="material-icons">groups</i>
-                                    <span class="chip-content-padding"><spring:message code="for-you.reviews.following.chip"/></span>
-                              </div>
-                          </a>
-                          <a href="<c:url value="/for-you/?content=RECOMMENDED"/>" class="white-text">
-                              <div class="chip-content-tab  f-row f-ai-end f-jc-sbetween ${(contentTab == "RECOMMENDED")? 'active-chip-tab':''}">
-                                    <i class="material-icons">local_fire_department</i>
-                                    <span class="chip-content-padding"><spring:message code="for-you.reviews.recommended.chip"/></span>
-                              </div>
-                          </a>
-                          <a href="<c:url value="/for-you/?content=NEW"/>" class="white-text">
-                              <div class="chip-content-tab f-row f-ai-end f-jc-sbetween ${(contentTab == "NEW")? 'active-chip-tab':''}">
-                                    <i class="material-icons">newspaper</i>
-                                    <span class="chip-content-padding"><spring:message code="for-you.reviews.new.chip"/></span>
-                              </div>
-                          </a>
-                      </div>
-                </div>
+        <div class="f-row wide-selector for-you-selector f-jc-sbetween">
+            <div class="f-row f-gap-2 f-jc-start">
+                <a href="<c:url value="/for-you/?content=FOLLOWING"/>"
+                   class="criteria-selector selector-option f-row f-ai-center ${(contentTab == "FOLLOWING")? 'selected':''}">
+                    <i class="material-icons selector-option-icon">groups</i>
+                    <span class="selector-option-text"><spring:message code="for-you.reviews.following.chip"/></span>
+                </a>
+                <a href="<c:url value="/for-you/?content=RECOMMENDED"/>"
+                   class="criteria-selector selector-option f-row f-ai-center ${(contentTab == "RECOMMENDED")? 'selected':''}">
+                    <i class="material-icons selector-option-icon">local_fire_department</i>
+                    <span class="selector-option-text"><spring:message code="for-you.reviews.recommended.chip"/></span>
+                </a>
+                <a href="<c:url value="/for-you/?content=NEW"/>"
+                   class="criteria-selector selector-option f-row f-ai-center ${(contentTab == "NEW")? 'selected':''}">
+                    <i class="material-icons selector-option-icon">newspaper</i>
+                    <span class="selector-option-text"><spring:message code="for-you.reviews.new.chip"/></span>
+                </a>
             </div>
         </div>
         <div class="review-card-list row">

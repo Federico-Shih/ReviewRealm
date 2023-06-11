@@ -32,15 +32,15 @@
 <c:url value="/game/list/" var="gameList"/>
 <jsp:include page="../static-components/navbar.jsp"/>
 <div class="row margin-2">
-    <div class="col s9 valign-wrapper breadcrumb-align">
+    <div class="col s10 valign-wrapper breadcrumb-align">
         <a href="${gameList}" class="breadcrumb"><spring:message code="game.list.placeholder.search" /></a>
         <a href="#" class="breadcrumb"><c:out value="${game.name}" /></a>
     </div>
     <c:if test="${roles.moderator}">
-        <div class="col s2 valign-wrapper">
+        <div class="col s1 valign-wrapper">
             <a href="<c:url value="/game/${game.id}/edit"/>">
-                <button class="btn waves-light">
-                    <span><spring:message code="game.edit"/></span>
+                <button data-position="bottom" data-tooltip="<spring:message code="game.edit" />" class="tooltipped waves-effect btn-flat valign-wrapper highlight light-gray-text" type="button">
+                    <i class="material-icons">edit</i>
                 </button>
             </a>
         </div>
