@@ -1,12 +1,13 @@
 package ar.edu.itba.paw.servicesinterfaces;
 
 import ar.edu.itba.paw.dtos.Page;
+import ar.edu.itba.paw.dtos.filtering.ReviewFilter;
 import ar.edu.itba.paw.dtos.ordering.Ordering;
 import ar.edu.itba.paw.dtos.ordering.ReviewOrderCriteria;
-import ar.edu.itba.paw.dtos.searching.ReviewSearchFilter;
 import ar.edu.itba.paw.enums.Difficulty;
 import ar.edu.itba.paw.enums.FeedbackType;
 import ar.edu.itba.paw.enums.Platform;
+import ar.edu.itba.paw.exceptions.ReviewAlreadyExistsException;
 import ar.edu.itba.paw.models.Game;
 import ar.edu.itba.paw.models.Paginated;
 import ar.edu.itba.paw.models.Review;
@@ -25,7 +26,7 @@ public interface ReviewService {
                         Double gameLength,
                         Platform platform,
                         Boolean completed,
-                        Boolean replayable);
+                        Boolean replayable) throws ReviewAlreadyExistsException;
 
     int updateReview(Long id,
                      String title,
@@ -41,7 +42,7 @@ public interface ReviewService {
 
     Paginated<Review> getUserReviews(Page page, Long userId,User activeUser);
 
-    Paginated<Review> searchReviews(Page page, ReviewSearchFilter filter, Ordering<ReviewOrderCriteria> ordering, User activeUser);
+    Paginated<Review> searchReviews(Page page, ReviewFilter filter, Ordering<ReviewOrderCriteria> ordering, User activeUser);
 
     Paginated<Review> getReviewsFromGame(Page page, Long gameId, User activeUser);
 

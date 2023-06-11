@@ -6,8 +6,8 @@ import ar.edu.itba.paw.dtos.filtering.ReviewFilter;
 import ar.edu.itba.paw.dtos.filtering.ReviewFilterBuilder;
 import ar.edu.itba.paw.dtos.ordering.Ordering;
 import ar.edu.itba.paw.dtos.ordering.ReviewOrderCriteria;
-import ar.edu.itba.paw.dtos.searching.ReviewSearchFilter;
 import ar.edu.itba.paw.enums.*;
+import ar.edu.itba.paw.exceptions.ReviewAlreadyExistsException;
 import ar.edu.itba.paw.models.Game;
 import ar.edu.itba.paw.models.Paginated;
 import ar.edu.itba.paw.models.Review;
@@ -60,6 +60,10 @@ public class ReviewServiceImpl implements ReviewService {
                                Platform platform,
                                Boolean completed,
                                Boolean replayable) {
+        List<Review> reviews = author.getReviews();
+        if (reviews.stream().anyMatch((review) -> review.getReviewedGame().equals(reviewedGame))) {
+            throw new ReviewAlreadyExistsException(reviewedGame);
+        }
         Review review = reviewDao.create(title, content, rating, reviewedGame, author, difficulty, gameLength, platform, completed, replayable);
         LOGGER.info("Creating review - Game: {}, Author: {}, Title: {}, Rating: {}",author.getUsername(),reviewedGame.getName(),title,rating);
         gameService.addNewReviewToGame(reviewedGame.getId(), rating);
@@ -113,19 +117,8 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Transactional(readOnly = true)
     @Override
-    public Paginated<Review> searchReviews(Page page, ReviewSearchFilter searchFilter, Ordering<ReviewOrderCriteria> ordering, User activeUser) {
-        ReviewFilter filter = new ReviewFilterBuilder()
-                .withGameGenres(searchFilter.getGenres())
-                .withAuthorGenres(searchFilter.getPreferences())
-                .withReviewContent(searchFilter.getSearch())
-                .withMinTimePlayed(searchFilter.getMinTimePlayed())
-                .withPlatforms(searchFilter.getPlatforms())
-                .withDifficulties(searchFilter.getDifficulties())
-                .withCompleted(searchFilter.getCompleted())
-                .withReplayable(searchFilter.getReplayable())
-                .withReviewContent(searchFilter.getSearch())
-                .build();
-        return reviewDao.findAll(page, filter, ordering, (activeUser != null) ? activeUser.getId() : null);
+    public Paginated<Review> searchReviews(Page page, ReviewFilter searchFilter, Ordering<ReviewOrderCriteria> ordering, User activeUser) {
+        return reviewDao.findAll(page, searchFilter, ordering, (activeUser != null) ? activeUser.getId() : null);
     }
 
     @Transactional(readOnly = true)

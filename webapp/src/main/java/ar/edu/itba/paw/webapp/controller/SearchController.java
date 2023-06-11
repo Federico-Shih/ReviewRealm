@@ -1,12 +1,14 @@
 package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.dtos.Page;
+import ar.edu.itba.paw.dtos.filtering.GameFilter;
+import ar.edu.itba.paw.dtos.filtering.GameFilterBuilder;
+import ar.edu.itba.paw.dtos.filtering.ReviewFilter;
+import ar.edu.itba.paw.dtos.filtering.ReviewFilterBuilder;
 import ar.edu.itba.paw.dtos.ordering.GameOrderCriteria;
 import ar.edu.itba.paw.dtos.ordering.OrderDirection;
 import ar.edu.itba.paw.dtos.ordering.Ordering;
 import ar.edu.itba.paw.dtos.ordering.ReviewOrderCriteria;
-import ar.edu.itba.paw.dtos.searching.GameSearchFilterBuilder;
-import ar.edu.itba.paw.dtos.searching.ReviewSearchFilterBuilder;
 import ar.edu.itba.paw.models.Game;
 import ar.edu.itba.paw.models.Paginated;
 import ar.edu.itba.paw.models.Review;
@@ -45,13 +47,14 @@ public class SearchController {
                     new ArrayList<>()).addObject("reviews", new ArrayList<>()).addObject("search", search);
         }
         Paginated<User> users = userService.getSearchedUsers(1, MAX_RESULTS, search);
-        GameSearchFilterBuilder gameSearchFilterBuilder = new GameSearchFilterBuilder().withSearch(search);
+        GameFilter gameSearchFilter = new GameFilterBuilder().withGameContent(search).build();
         Paginated<Game> games = gameService.searchGames(Page.with(1, MAX_RESULTS),
-                gameSearchFilterBuilder.build(),
+                gameSearchFilter,
                 new Ordering<>(OrderDirection.ASCENDING, GameOrderCriteria.NAME));
-        ReviewSearchFilterBuilder reviewSearchFilterBuilder = new ReviewSearchFilterBuilder().withSearch(search);
+
+        ReviewFilter reviewFilter = new ReviewFilterBuilder().withReviewContent(search).build();
         Paginated<Review> reviews = reviewService.searchReviews(Page.with(1, MAX_RESULTS),
-                reviewSearchFilterBuilder.build(),
+                reviewFilter,
                 new Ordering<>(OrderDirection.DESCENDING, ReviewOrderCriteria.REVIEW_DATE),
                 AuthenticationHelper.getLoggedUser(userService));
         return new ModelAndView("search/search").addObject("users", users.getList()).addObject("games",

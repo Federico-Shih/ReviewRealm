@@ -1,15 +1,16 @@
 package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.dtos.Page;
+import ar.edu.itba.paw.dtos.filtering.GameFilter;
+import ar.edu.itba.paw.dtos.filtering.GameFilterBuilder;
+import ar.edu.itba.paw.dtos.filtering.ReviewFilter;
+import ar.edu.itba.paw.dtos.filtering.ReviewFilterBuilder;
 import ar.edu.itba.paw.dtos.ordering.GameOrderCriteria;
 import ar.edu.itba.paw.dtos.ordering.OrderDirection;
 import ar.edu.itba.paw.dtos.ordering.Ordering;
 import ar.edu.itba.paw.dtos.ordering.ReviewOrderCriteria;
-import ar.edu.itba.paw.dtos.searching.GameSearchFilter;
-import ar.edu.itba.paw.dtos.searching.GameSearchFilterBuilder;
-import ar.edu.itba.paw.dtos.searching.ReviewSearchFilter;
-import ar.edu.itba.paw.dtos.searching.ReviewSearchFilterBuilder;
 import ar.edu.itba.paw.enums.*;
+import ar.edu.itba.paw.exceptions.ReviewAlreadyExistsException;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.servicesinterfaces.GameService;
 import ar.edu.itba.paw.servicesinterfaces.ReviewService;
@@ -24,6 +25,7 @@ import ar.edu.itba.paw.webapp.forms.SubmitReviewForm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Controller;
@@ -37,7 +39,7 @@ import java.util.stream.Collectors;
 
 @Controller
 public class ReviewController{
-    private static final Logger LOGGER = LoggerFactory.getLogger(ReviewController.class); //TODO: Sacar?
+    private static final Logger LOGGER = LoggerFactory.getLogger(ReviewController.class);
     private final GameService gameService;
     private final ReviewService reviewService;
     private final UserService userService;
@@ -61,15 +63,14 @@ public class ReviewController{
         if(pageSize == null || pageSize < 1) {
             pageSize = MAX_SEARCH_RESULTS;
         }
-
         //Se supone que solo podes llegar aca si estas loggeado
         User loggedUser = AuthenticationHelper.getLoggedUser(userService);
 
         if(searchquery.isEmpty()){
             List<Game> list = gameService.getRecommendationsOfGamesForUser(loggedUser);
             mav.addObject("games", list.subList(0, Math.min(list.size(), MAX_SEARCH_RESULTS)));
-        }else {
-            GameSearchFilter filter = new GameSearchFilterBuilder().withSearch(searchquery).build();
+        } else {
+            GameFilter filter = new GameFilterBuilder().withGameContent(searchquery).build();
             Paginated<Game> games = gameService.searchGames(Page.with(page, pageSize), filter, new Ordering<>(OrderDirection.ASCENDING, GameOrderCriteria.NAME));
             PaginationHelper.paginate(mav,games);
             mav.addObject("games", games.getList());
@@ -183,8 +184,8 @@ public class ReviewController{
             minTimePlayed = Double.parseDouble(timePlayedFilter);
         } catch (Exception ignored) {}
 
-        ReviewSearchFilterBuilder searchFilterBuilder = new ReviewSearchFilterBuilder()
-                .withGenres(genresFilter)
+        ReviewFilter searchFilter = new ReviewFilterBuilder()
+                .withGameGenres(genresFilter)
                 .withPlatforms(
                         platformsFilter.stream()
                         .map(Platform::getById)
@@ -199,20 +200,20 @@ public class ReviewController{
                         .map(Optional::get)
                         .collect(Collectors.toList())
                 )
-                .withCompleted((completedFilter!=null && completedFilter)? true : null)
-                .withReplayable((replayableFilter!=null && replayableFilter)? true : null)
-                .withPreferences(preferencesFilter)
-                .withSearch(search)
-                .withMinTimePlayed(minTimePlayed);
+                .withCompleted((completedFilter != null && completedFilter) ? true : null)
+                .withReplayable((replayableFilter!=null && replayableFilter) ? true : null)
+                .withAuthorGenres(preferencesFilter)
+                .withReviewContent(search)
+                .withMinTimePlayed(minTimePlayed)
+                .build();
 
-        ReviewSearchFilter searchFilter = searchFilterBuilder.build();
 
         Paginated<Review> reviewPaginated = reviewService.searchReviews(
                 Page.with(page != null ? page : INITIAL_PAGE, pageSize),
                 searchFilter,
                 new Ordering<>(OrderDirection.fromValue(orderDirection), ReviewOrderCriteria.fromValue(orderCriteria)),
                 loggedUser
-        ); //TODO: Sacar esto al service
+        );
 
         PaginationHelper.paginate(mav,reviewPaginated);
 
@@ -221,10 +222,10 @@ public class ReviewController{
         mav.addObject("orderCriteria", ReviewOrderCriteria.values());
         mav.addObject("orderDirections", OrderDirection.values());
         mav.addObject("searchField", search);
-        mav.addObject("genresFilter", new FilteredList<Genre>(allGenres, (genre) -> genresFilter.contains(genre.getId())));
-        mav.addObject("preferencesFilter", new FilteredList<Genre>(allGenres, (preference) -> preferencesFilter.contains(preference.getId())));
-        mav.addObject("platformsFilter", new FilteredList<Platform>(Arrays.asList(Platform.values()), (platform) -> platformsFilter.contains(platform.getId())));
-        mav.addObject("difficultiesFilter", new FilteredList<Difficulty>(Arrays.asList(Difficulty.values()), (difficulty) -> difficultyFilter.contains(difficulty.getId())));
+        mav.addObject("genresFilter", new FilteredList<>(allGenres, (genre) -> genresFilter.contains(genre.getId())));
+        mav.addObject("preferencesFilter", new FilteredList<>(allGenres, (preference) -> preferencesFilter.contains(preference.getId())));
+        mav.addObject("platformsFilter", new FilteredList<>(Arrays.asList(Platform.values()), (platform) -> platformsFilter.contains(platform.getId())));
+        mav.addObject("difficultiesFilter", new FilteredList<>(Arrays.asList(Difficulty.values()), (difficulty) -> difficultyFilter.contains(difficulty.getId())));
         mav.addObject("completedFilter", completedFilter);
         mav.addObject("replayableFilter", replayableFilter);
         mav.addObject("selectedOrderDirection", OrderDirection.fromValue(orderDirection));
@@ -327,5 +328,16 @@ public class ReviewController{
             throw new ObjectNotFoundException("review.notfound");
         }
         return new ModelAndView("redirect:/review/" + reviewId);
+    }
+
+    @ExceptionHandler(ReviewAlreadyExistsException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ModelAndView reviewExists(ReviewAlreadyExistsException exception) {
+        User user = AuthenticationHelper.getLoggedUser(userService);
+        Optional<Review> review = user.getReviews().stream().filter((r) -> r.getReviewedGame().equals(exception.getReviewedGame())).findFirst();
+        if (!review.isPresent()) {
+            throw new ObjectNotFoundException();
+        }
+        return reviewDetails(review.get().getId(), false);
     }
 }

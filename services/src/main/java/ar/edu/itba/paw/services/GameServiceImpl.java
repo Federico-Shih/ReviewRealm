@@ -2,11 +2,9 @@ package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.dtos.Page;
 import ar.edu.itba.paw.dtos.filtering.GameFilter;
-import ar.edu.itba.paw.dtos.filtering.GameFilterBuilder;
 import ar.edu.itba.paw.dtos.ordering.GameOrderCriteria;
 import ar.edu.itba.paw.dtos.ordering.Ordering;
 import ar.edu.itba.paw.dtos.saving.SubmitGameDTO;
-import ar.edu.itba.paw.dtos.searching.GameSearchFilter;
 import ar.edu.itba.paw.enums.Difficulty;
 import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.enums.Mission;
@@ -120,15 +118,9 @@ public class GameServiceImpl implements GameService {
 
     @Transactional(readOnly = true)
     @Override
-    public Paginated<Game> searchGames(Page page, GameSearchFilter searchFilter, Ordering<GameOrderCriteria> ordering)
+    public Paginated<Game> searchGames(Page page, GameFilter searchFilter, Ordering<GameOrderCriteria> ordering)
     {
-        GameFilter filter = new GameFilterBuilder()
-                .withGameContent(searchFilter.getSearch())
-                .withGameGenres(searchFilter.getGenres())
-                .withRatingRange(searchFilter.getMinRating(), searchFilter.getMaxRating(), searchFilter.getIncludeNoRating())
-                .withSuggestion(searchFilter.getSuggestion())
-                .build();
-        return gameDao.findAll(page, filter, ordering);
+        return gameDao.findAll(page, searchFilter, ordering);
     }
 
 

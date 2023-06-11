@@ -1,10 +1,10 @@
 package ar.edu.itba.paw.servicesinterfaces;
 
 import ar.edu.itba.paw.dtos.*;
+import ar.edu.itba.paw.dtos.filtering.GameFilter;
 import ar.edu.itba.paw.dtos.ordering.GameOrderCriteria;
 import ar.edu.itba.paw.dtos.ordering.Ordering;
 import ar.edu.itba.paw.dtos.saving.SubmitGameDTO;
-import ar.edu.itba.paw.dtos.searching.GameSearchFilter;
 import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.models.*;
 import java.util.List;
@@ -23,7 +23,8 @@ public interface GameService {
 
     List<Genre> getGameGenresById(Long id);
 
-    Paginated<Game> searchGames(Page page, GameSearchFilter filter, Ordering<GameOrderCriteria> ordering);
+    // todo test
+    Paginated<Game> searchGames(Page page, GameFilter filter, Ordering<GameOrderCriteria> ordering);
 
     GameReviewData getGameReviewDataByGameId(Long id);
 

@@ -14,9 +14,7 @@ import java.util.Set;
 
 public interface UserDao {
     boolean exists(final long id);
-
     int update(final long id, SaveUserDTO saveUserDTO);
-
     User create(String username, String email, String password);
     Optional<User> getByEmail(String email);
     Optional<User> getByUsername(String username);

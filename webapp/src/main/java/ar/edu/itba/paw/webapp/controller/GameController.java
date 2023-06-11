@@ -1,11 +1,11 @@
 package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.dtos.Page;
+import ar.edu.itba.paw.dtos.filtering.GameFilter;
+import ar.edu.itba.paw.dtos.filtering.GameFilterBuilder;
 import ar.edu.itba.paw.dtos.ordering.GameOrderCriteria;
 import ar.edu.itba.paw.dtos.ordering.OrderDirection;
 import ar.edu.itba.paw.dtos.ordering.Ordering;
-import ar.edu.itba.paw.dtos.searching.GameSearchFilter;
-import ar.edu.itba.paw.dtos.searching.GameSearchFilterBuilder;
 import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.exceptions.NoSuchGameException;
 import ar.edu.itba.paw.models.*;
@@ -121,20 +121,18 @@ public class GameController{
             maxRating = Float.parseFloat(ratingFilterArray[1]);
         } catch (Exception ignored) {}
 
-        GameSearchFilterBuilder searchFilterBuilder = new GameSearchFilterBuilder()
-                .withSearch(search)
+        GameFilter searchFilter = new GameFilterBuilder()
+                .withGameContent(search)
                 .withSuggestion(false)
-                .withGenres(genresFilter)
-                .withRatingRange(minRating,maxRating, excludeNoRatingFilter == null || !excludeNoRatingFilter);
-
-
-        GameSearchFilter searchFilter = searchFilterBuilder.build();
+                .withGameGenres(genresFilter)
+                .withRatingRange(minRating,maxRating, excludeNoRatingFilter == null || !excludeNoRatingFilter)
+                .build();
 
         Paginated<Game> games = gs.searchGames(
                 Page.with(page != null ? page: INITIAL_PAGE, pageSize),
                 searchFilter,
                 new Ordering<>(OrderDirection.fromValue(orderDirection), GameOrderCriteria.fromValue(orderCriteria))
-        );//TODO:MOVERLO A SERVICE
+        );
 
         PaginationHelper.paginate(mav,games);
 
@@ -270,9 +268,9 @@ public class GameController{
     public ModelAndView checkSubmissions() {
         ModelAndView mav = new ModelAndView("/games/game-addition");
 
-        GameSearchFilterBuilder searchFilterBuilder = new GameSearchFilterBuilder()
-                .withSuggestion(true);
-        GameSearchFilter searchFilter = searchFilterBuilder.build();
+        GameFilter searchFilter = new GameFilterBuilder()
+                .withSuggestion(true)
+                .build();
 
         Paginated<Game> games = gs.searchGames(
                 Page.with(INITIAL_PAGE, PAGE_SIZE),
