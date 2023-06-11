@@ -24,6 +24,14 @@
     justify-content: space-between;
 }
 
+.f-jc-saround {
+    justify-content: space-around;
+}
+
+.f-jc-sevenly {
+    justify-content: space-evenly;
+}
+
 .f-ai-start {
     align-items: flex-start;
 }
@@ -178,6 +186,12 @@ nav {
     font-weight: 700;
 }
 
+@media(max-width: 1300px) {
+    .navbar-logo-title {
+        display: none;
+    }
+}
+
 .navbar-options-list {
     display: flex;
     flex-direction: row;
@@ -187,6 +201,18 @@ nav {
 
 .navbar-option {
     width: fit-content;
+}
+
+@media(max-width: 1000px) {
+    .navbar-welcome-button-wide {
+        display: none;
+    }
+}
+
+@media(min-width: 1001px) {
+    .navbar-welcome-button-narrow {
+        display: none;
+    }
 }
 
 .button-color{
@@ -388,11 +414,6 @@ nav {
     background-color: #13112D !important;
 }
 
-.entire-width {
-    width: 100%;
-}
-
-
 .input-general ::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
     color: white !important;
     opacity: 1; /* Firefox */
@@ -415,6 +436,16 @@ input::-webkit-inner-spin-button {
 .review-content-input {
     height: 200px !important;
     overflow-y: auto !important;
+}
+
+.section-header{
+    font-size: 28px;
+    font-weight: 600;
+}
+
+.section-subheader{
+    font-size: 20px;
+    font-weight: 600;
 }
 
 .border-button {
@@ -462,6 +493,128 @@ input::-webkit-inner-spin-button {
     color: white;
 }
 
+.cancel-button {
+    background-color: red;
+    color: white;
+}
+
 .nav-bar-top {
     z-index: 999;
+}
+
+.level-badge-container {
+    width: 36px;
+    height: 36px;
+}
+
+.level-badge-icon {
+    position: absolute;
+    font-size: 36px !important;
+}
+
+.level-basic {
+    color: #243276;
+}
+
+.level-basic-background {
+    background: #19224f;
+}
+
+.level-basic-border {
+    border: 2px solid #243276;
+}
+
+.level-bronze {
+    color: #593d1b;
+}
+
+.level-bronze-background {
+    background: #382711;
+}
+
+.level-bronze-border {
+    border: 2px solid #593d1b;
+}
+
+.level-silver {
+    color: #4d4d4d;
+}
+
+.level-silver-background {
+    background: #2f2f2f;
+}
+
+.level-silver-border {
+    border: 2px solid #4d4d4d;
+}
+
+.level-gold {
+    color: #8a7919;
+}
+
+.level-gold-background {
+    background: #574c10;
+}
+
+.level-gold-border {
+    border: 2px solid #8a7919;
+}
+
+.level-epic {
+    color: #82108a;
+}
+
+.level-epic-background {
+    background: #450949;
+}
+
+.level-epic-border {
+    border: 2px solid #82108a;
+}
+
+.level-badge-text {
+    position: absolute;
+    font-size: 20px;
+    font-weight: 700;
+    text-align: center;
+    width: 36px;
+    height: 36px;
+}
+
+.wide-selector {
+    background: #13112d;
+    border-radius: 4px;
+    box-shadow: 3px 3px 6px 4px rgb(0 0 0 / 0.2);
+    margin: 8px 4px;
+    padding: 8px 12px;
+}
+
+.selector-option {
+    color: #939398;
+    width: fit-content;
+    padding: 4px 8px;
+    cursor: pointer;
+}
+
+.selector-option:hover {
+    background: rgba(100, 100, 100, 0.3);
+    border-radius: 16px;
+    color: white !important;
+}
+
+.selected {
+    background: rgba(100, 100, 100, 0.4);
+    border-radius: 16px;
+    color: white !important;
+}
+
+.selector-option-icon {
+    font-size: 26px;
+
+}
+
+.selector-option-text {
+    font-size: 18px;
+    font-weight: 600;
+    margin-left: 6px;
 }

@@ -118,7 +118,9 @@
                     <div class="apply-filters-panel f-row pushpin">
                         <div>
                             <div class="full-width">
-                                <button type="submit" class="btn full-width"><spring:message code="apply.filters"/></button>
+                                <div>
+                                    <button type="submit" class="btn full-width no-wrap"><spring:message code="apply.filters"/></button>
+                                </div>
                             </div>
                             <div class="full-width">
                                 <c:if test="${showResetFiltersButton}">

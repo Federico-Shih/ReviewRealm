@@ -7,7 +7,13 @@
 <c:url value="/review/submit/${game.id}" var="submitEndpoint"/>
 <c:url value="/review/${id}/edit" var="reviewEditEndpoint" />
 <head>
-    <title><spring:message code="review.page.title"/></title>
+    <c:if test="${edit}">
+        <title><spring:message code="review.page.edit.title"/></title>
+    </c:if>
+    <c:if test="${!edit}">
+        <title><spring:message code="review.page.title"/></title>
+    </c:if>
+
     <link rel="stylesheet" type="text/css" href="<c:url value="/css/materialize.min.css" />" media="screen,projection"/>
     <link rel="stylesheet" href="<c:url value="/css/main.css" />">
     <link rel="stylesheet" href="<c:url value="/css/review/review-page.css" />">

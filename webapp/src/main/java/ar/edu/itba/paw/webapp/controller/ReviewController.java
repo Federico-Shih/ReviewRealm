@@ -241,6 +241,7 @@ public class ReviewController{
         queriesToKeepAtPageChange.add(Pair.of("o-crit", orderCriteria));
         queriesToKeepAtPageChange.add(Pair.of("o-dir", orderDirection));
         queriesToKeepAtPageChange.add(Pair.of("pageSize", pageSize));
+        queriesToKeepAtPageChange.add(Pair.of("search", search));
         queriesToKeepAtPageChange.addAll(genresFilter.stream().map((value) -> Pair.of("f-gen", (Object)value)).collect(Collectors.toList()));
         queriesToKeepAtPageChange.addAll(preferencesFilter.stream().map((value) -> Pair.of("f-prf", (Object)value)).collect(Collectors.toList()));
         queriesToKeepAtPageChange.addAll(platformsFilter.stream().map((value) -> Pair.of("f-plt", (Object)value)).collect(Collectors.toList()));

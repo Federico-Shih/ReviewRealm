@@ -1,9 +1,14 @@
 package ar.edu.itba.paw.servicesinterfaces;
 
+import ar.edu.itba.paw.dtos.Page;
+import ar.edu.itba.paw.dtos.ordering.Ordering;
+import ar.edu.itba.paw.dtos.ordering.UserOrderCriteria;
+import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.enums.NotificationType;
 import ar.edu.itba.paw.enums.RoleType;
 import ar.edu.itba.paw.exceptions.*;
 import ar.edu.itba.paw.models.FollowerFollowingCount;
+import ar.edu.itba.paw.models.Game;
 import ar.edu.itba.paw.models.Paginated;
 import ar.edu.itba.paw.models.User;
 
@@ -44,7 +49,13 @@ public interface UserService {
 
     void refreshToken(String token);
 
-    Paginated<User> getSearchedUsers(int page, int pageSize, String search);
+    Paginated<User> searchUsers(Page page, String search, Ordering<UserOrderCriteria> ordering);
+
+    Paginated<User> getUsersWhoReviewedSameGames(Page page, User currentUser, Ordering<UserOrderCriteria> ordering);
+
+    boolean hasUserReviewedAnything(User currentUser);
+
+    Paginated<User> getUsersWithSamePreferences(Page page, User currentUser, Ordering<UserOrderCriteria> ordering);
 
     void sendPasswordResetToken(String email) throws UserNotFoundException;
 
