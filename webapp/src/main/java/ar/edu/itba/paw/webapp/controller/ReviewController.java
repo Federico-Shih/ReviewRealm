@@ -95,6 +95,12 @@ public class ReviewController{
         if (!reviewedGame.isPresent()) {
             throw new ObjectNotFoundException("game.notfound");
         }
+        User loggedUser = AuthenticationHelper.getLoggedUser(userService);
+        // Si ya reseñaste este juego
+        Optional<Review> possibleReview = loggedUser.getReviews().stream().filter(r -> r.getReviewedGame().equals(reviewedGame.get())).findFirst();
+        if (possibleReview.isPresent()) {
+            return new ModelAndView("redirect:/review/" + possibleReview.get().getId());
+        }
         mav.addObject("edit", false);
         mav.addObject("game", reviewedGame.get());
         mav.addObject("selectedGameId", gameId);
@@ -111,7 +117,7 @@ public class ReviewController{
     @RequestMapping(value = "/review/{id:\\d+}", method = RequestMethod.GET)
     public ModelAndView reviewDetails(@PathVariable(value = "id") Long reviewId, @RequestParam(value = "created", required = false) Boolean created) {
         User loggedUser = AuthenticationHelper.getLoggedUser(userService);
-        Optional<Review> review = reviewService.getReviewById(reviewId, loggedUser.getId());
+        Optional<Review> review = reviewService.getReviewById(reviewId, loggedUser != null ? loggedUser.getId() : null);
         if (!review.isPresent()) {
             return new ModelAndView("errors/not-found");
         }
@@ -208,7 +214,7 @@ public class ReviewController{
                 Page.with(page != null ? page : INITIAL_PAGE, pageSize),
                 searchFilter,
                 new Ordering<>(OrderDirection.fromValue(orderDirection), ReviewOrderCriteria.fromValue(orderCriteria)),
-                loggedUser.getId()
+                loggedUser != null ? loggedUser.getId() : null
         );
 
         PaginationHelper.paginate(mav,reviewPaginated);

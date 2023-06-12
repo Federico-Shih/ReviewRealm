@@ -57,7 +57,7 @@ public class GameController{
 
 
     @RequestMapping("/game/{id:\\d+}")
-    public ModelAndView game_details(
+    public ModelAndView gameDetails(
             @PathVariable("id") final Long gameId,
             @RequestParam(value = "page", defaultValue = "1") Integer page,
             @RequestParam(value = "pagesize", defaultValue = "8") Integer pageSize,
@@ -74,7 +74,7 @@ public class GameController{
             mav.addObject("game",game.get());
             GameReviewData reviewData = gs.getGameReviewDataByGameId(gameId);
 
-            Paginated<Review> reviews = rs.getReviewsFromGame(Page.with(page, pageSize), gameId, loggedUser.getId());
+            Paginated<Review> reviews = rs.getReviewsFromGame(Page.with(page, pageSize), gameId, loggedUser != null ? loggedUser.getId() : null);
             PaginationHelper.paginate(mav,reviews);
             List<Pair<String, Object>> queriesToKeepAtPageChange = new ArrayList<>();
             queriesToKeepAtPageChange.add(new Pair<>("pagesize", pageSize));

@@ -40,14 +40,14 @@ public class MissionServiceImpl implements MissionService {
                 .findById(user, mission)
                 .orElseGet(() -> this.missionDao.create(user, mission, 0f, LocalDate.now()));
         if (!missionProgress.isCompleted()) {
-            missionProgress = missionDao.updateProgress(user, mission, missionProgress.getProgress() + progress);
+            missionProgress = missionDao.updateProgress(user, mission, missionProgress.getProgress() + progress).orElseThrow(IllegalArgumentException::new);
             if (missionProgress.isCompleted()) {
                 LOGGER.info("Completed mission {} for user {}, gained {} xp", mission.getTitle(), user.getId(), mission.getXp());
-                missionProgress = missionDao.completeMission(user, mission);
+                missionProgress = missionDao.completeMission(user, mission).orElseThrow(IllegalArgumentException::new);
                 userDao.update(user.getId(), new SaveUserBuilder().withXp(user.getXp() + mission.getXp()).build());
                 // Automatically reset repeatable and none time frequency missions
                 if (mission.isRepeatable() && mission.getFrequency() == Mission.MissionFrequency.NONE) {
-                    missionProgress = missionDao.resetProgress(user, mission);
+                    missionProgress = missionDao.resetProgress(user, mission).orElseThrow(IllegalArgumentException::new);
                 }
             }
         }

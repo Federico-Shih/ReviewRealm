@@ -159,7 +159,7 @@ public class GameServiceImpl implements GameService {
     @Transactional
     @Override
     public Game deleteReviewFromGame(long gameId, int reviewRating) {
-        return gameDao.deleteReview(gameId,reviewRating).orElseThrow(GameNotFoundException::new);
+        return gameDao.deleteReviewFromGame(gameId,reviewRating).orElseThrow(GameNotFoundException::new);
     }
 
     @Transactional
@@ -229,7 +229,7 @@ public class GameServiceImpl implements GameService {
     @Override
     public User setFavoriteGames(long userId, List<Long> gameIds) {
         //TODO: mover en el dao tambien
-        gameDao.replaceAllFavoriteGames(userId, gameIds==null? new ArrayList<>(): gameIds);
+        return gameDao.replaceAllFavoriteGames(userId, gameIds==null? new ArrayList<>(): gameIds).orElseThrow(UserNotFoundException::new);
     }
 
 }

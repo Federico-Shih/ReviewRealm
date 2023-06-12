@@ -618,3 +618,7 @@ input::-webkit-inner-spin-button {
     font-weight: 600;
     margin-left: 6px;
 }
+
+.navbar-input-field {
+    width: 95% !important;
+}

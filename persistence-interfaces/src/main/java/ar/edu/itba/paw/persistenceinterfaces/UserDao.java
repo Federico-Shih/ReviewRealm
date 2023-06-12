@@ -18,7 +18,7 @@ public interface UserDao {
 
     boolean exists(final long id);
 
-    User update(final long id, SaveUserDTO saveUserDTO);
+    Optional<User> update(final long id, SaveUserDTO saveUserDTO);
 
     User create(String username, String email, String password);
 
@@ -44,11 +44,11 @@ public interface UserDao {
 
     Set<Genre> getPreferences(final long userId);
 
-    User setPreferences(Set<Integer> genres, long userId);
+    Optional<User> setPreferences(Set<Integer> genres, long userId);
 
     Long getTotalAmountOfUsers();
 
-    User disableNotification(long userId, String notificationType);
+    Optional<User> disableNotification(long userId, String notificationType);
 
-    User enableNotification(long userId, String notificationType);
+    Optional<User> enableNotification(long userId, String notificationType);
 }

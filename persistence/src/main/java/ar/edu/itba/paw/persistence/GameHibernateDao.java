@@ -156,7 +156,7 @@ public class GameHibernateDao implements GameDao, PaginationDao<GameFilter> {
     }
 
     @Override
-    public Optional<Game> deleteReview(long gameId, int rating) {
+    public Optional<Game> deleteReviewFromGame(long gameId, int rating) {
         final Optional<Game> game = Optional.ofNullable(em.find(Game.class, gameId));
         game.ifPresent((g) -> {
             g.setReviewCount(g.getReviewCount() - 1);
@@ -184,13 +184,15 @@ public class GameHibernateDao implements GameDao, PaginationDao<GameFilter> {
     }
 
     @Override
-    public void replaceAllFavoriteGames(long userId, List<Long> gameIds) {
+    public Optional<User> replaceAllFavoriteGames(long userId, List<Long> gameIds) {
         User user = em.find(User.class, userId);
+        if (user == null) return Optional.empty();
         List<Game> favGames = user.getFavoriteGames();
         favGames.clear();
         for (Long gameId : gameIds) {
             favGames.add(em.find(Game.class, gameId));
         }
+        return Optional.of(user);
     }
 
 

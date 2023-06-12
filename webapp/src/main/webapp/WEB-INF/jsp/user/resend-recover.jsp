@@ -50,7 +50,7 @@
                     <form:input type="email" name="email" id="email" path="email" class="white-text"/>
                     <form:errors path="email" cssClass="error" element="span"/>
                 </div>
-                <button class="btn-large" type="submit"><spring:message code="email.sendpasswordrecovery.cta"/></button>
+                <button class="btn-large margin-top-2" type="submit"><spring:message code="email.sendpasswordrecovery.cta"/></button>
             </div>
         </form:form>
     </article>

@@ -51,6 +51,7 @@ public class ProfileController{
                                 @RequestParam(value = "preferences-changed", required = false) Boolean preferencesChanged,
                                 @RequestParam(value = "avatar-changed", required = false) Boolean avatarChanged,
                                 @RequestParam(value = "notifications-changed", required = false) Boolean notificationsChanged,
+                                @RequestParam(value = "favorite_games_changed", required = false) Boolean favoriteGamesChanged,
                                 @RequestParam(value = "page", defaultValue = "1") Integer page,
                                 @RequestParam(value = "pagesize", defaultValue ="8" ) Integer pageSize
     )
@@ -70,6 +71,8 @@ public class ProfileController{
         mav.addObject("preferencesChanged", preferencesChanged != null && preferencesChanged);
         mav.addObject("avatarChanged", avatarChanged != null && avatarChanged);
         mav.addObject("notificationsChanged", notificationsChanged != null && notificationsChanged);
+        mav.addObject("favoriteGamesChanged", favoriteGamesChanged != null && favoriteGamesChanged);
+
         mav.addObject("games",gameService.getFavoriteGamesFromUser(userId));
         mav.addObject("profile",user.get());
         mav.addObject("userModerator", user.get().getRoles().contains(RoleType.MODERATOR));

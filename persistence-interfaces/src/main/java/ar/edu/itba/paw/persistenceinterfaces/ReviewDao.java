@@ -25,7 +25,7 @@ public interface ReviewDao {
                          Boolean completed,
                          Boolean replayable);
 
-    Review update(long id, SaveReviewDTO reviewDTO);
+    Optional<Review> update(long id, SaveReviewDTO reviewDTO);
 
     Optional<Review> findById(long id, Long activeUserId);
 
@@ -35,12 +35,12 @@ public interface ReviewDao {
 
     boolean deleteReview(long id);
 
-    ReviewFeedback editReviewFeedback(long reviewId, long userId, FeedbackType oldFeedback, FeedbackType feedback);
+    Optional<ReviewFeedback> editReviewFeedback(long reviewId, long userId, FeedbackType oldFeedback, FeedbackType feedback);
 
-    ReviewFeedback addReviewFeedback(long reviewId, long userId, FeedbackType feedback);
+    Optional<ReviewFeedback> addReviewFeedback(long reviewId, long userId, FeedbackType feedback);
 
     boolean deleteReviewFeedback(long reviewId, long userId, FeedbackType oldfeedback);
 
-    FeedbackType getReviewFeedback(long reviewId, long userId);
+    Optional<FeedbackType> getReviewFeedback(long reviewId, long userId);
 
 }

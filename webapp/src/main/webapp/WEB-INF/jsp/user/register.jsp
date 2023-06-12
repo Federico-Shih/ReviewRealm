@@ -22,25 +22,25 @@
 <div class="container">
     <h3><spring:message code="register.header.title"/></h3>
     <form:form class="card form-body" action="${postPath}" method="post" modelAttribute="registerForm">
-            <div class="input-field">
+            <div class="input-field full-width">
                 <i class="material-icons prefix">email</i>
                 <form:label for="email" path="email"><spring:message code="register.email.field"/></form:label>
                 <form:input type="text" name="email" id="email" path="email" class="white-text"/>
                 <form:errors path="email" cssClass="error" element="span"/>
             </div>
-            <div class="input-field">
+            <div class="input-field full-width">
                 <i class="material-icons prefix">person</i>
                 <form:label for="username" path="username"><spring:message code="register.username.field"/></form:label>
                 <form:input type="text" name="username" id="username" path="username" class="white-text"/>
                 <form:errors path="username" cssClass="error" element="span"/>
             </div>
-            <div class="input-field">
+            <div class="input-field full-width">
                 <i class="material-icons prefix">lock</i>
                 <form:label for="password" path="password"><spring:message code="register.password.field"/></form:label>
                 <form:input type="password" name="password" id="password" path="password" class="white-text"/>
                 <form:errors path="password" cssClass="error" element="span"/>
             </div>
-            <div class="input-field">
+            <div class="input-field full-width">
                 <i class="material-icons prefix">lock</i>
                 <form:label for="repeatPassword" path="repeatPassword"><spring:message
                         code="register.repeat.password.field"/></form:label>

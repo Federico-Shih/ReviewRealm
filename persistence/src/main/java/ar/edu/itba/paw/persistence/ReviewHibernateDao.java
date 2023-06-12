@@ -60,10 +60,10 @@ public class ReviewHibernateDao implements ReviewDao, PaginationDao<ReviewFilter
 
 
     @Override
-    public Review update(long id, SaveReviewDTO reviewDTO) {
+    public Optional<Review> update(long id, SaveReviewDTO reviewDTO) {
         Review review = em.find(Review.class, id);
         if (review == null) {
-            return null;
+            return Optional.empty();
         }
         if (reviewDTO.getTitle() != null) {
             review.setTitle(reviewDTO.getTitle());
@@ -89,7 +89,7 @@ public class ReviewHibernateDao implements ReviewDao, PaginationDao<ReviewFilter
         if (reviewDTO.getGameLength() != null) {
             review.setGameLength(reviewDTO.getGameLength());
         }
-        return review;
+        return Optional.of(review);
     }
 
     private QueryBuilder getQueryBuilderFromFilter(ReviewFilter filter) {
@@ -189,34 +189,36 @@ public class ReviewHibernateDao implements ReviewDao, PaginationDao<ReviewFilter
     }
 
     @Override
-    public FeedbackType getReviewFeedback(long reviewId, long userId) {
+    public Optional<FeedbackType> getReviewFeedback(long reviewId, long userId) {
         ReviewFeedback feedback = em.find(ReviewFeedback.class, new ReviewFeedbackId(em.find(User.class, userId), em.find(Review.class, reviewId)));
-        if(feedback == null) return null;
-        return feedback.getFeedback();
+        if(feedback == null) return Optional.empty();
+        return Optional.of(feedback.getFeedback());
     }
 
     @Override
-    public ReviewFeedback editReviewFeedback(long reviewId, long userId, FeedbackType oldFeedback, FeedbackType feedback) {
+    public Optional<ReviewFeedback> editReviewFeedback(long reviewId, long userId, FeedbackType oldFeedback, FeedbackType feedback) {
         Review review = em.find(Review.class, reviewId);
         ReviewFeedback reviewFeedback = em.find(ReviewFeedback.class, new ReviewFeedbackId(em.find(User.class, userId), review));
-        if(reviewFeedback == null || review == null || oldFeedback == feedback) {
-            return null;
+        if(reviewFeedback == null || review == null) {
+            return Optional.empty();
         }
-        reviewFeedback.setFeedback(feedback);
-        Long currentLikes = review.getLikes();
-        Long currentDislikes = review.getDislikes();
-        review.setLikes(currentLikes + (oldFeedback == FeedbackType.LIKE ? -1 : 1));
-        review.setDislikes(currentDislikes + (oldFeedback == FeedbackType.DISLIKE ? -1 : 1));
-        return reviewFeedback;
+        if (oldFeedback != feedback) {
+            reviewFeedback.setFeedback(feedback);
+            Long currentLikes = review.getLikes();
+            Long currentDislikes = review.getDislikes();
+            review.setLikes(currentLikes + (oldFeedback == FeedbackType.LIKE ? -1 : 1));
+            review.setDislikes(currentDislikes + (oldFeedback == FeedbackType.DISLIKE ? -1 : 1));
+        }
+        return Optional.of(reviewFeedback);
     }
 
     @Override
-    public ReviewFeedback addReviewFeedback(long reviewId, long userId, FeedbackType feedback) {
+    public Optional<ReviewFeedback> addReviewFeedback(long reviewId, long userId, FeedbackType feedback) {
         Review likedReview = em.find(Review.class, reviewId);
         User likedUser = em.find(User.class, userId);
-        if (likedReview == null || likedUser == null) return null;
+        if (likedReview == null || likedUser == null) return Optional.empty();
         ReviewFeedback possibleFeedback = em.find(ReviewFeedback.class, new ReviewFeedbackId(likedUser, likedReview));
-        if (possibleFeedback != null) return null;
+        if (possibleFeedback != null) return Optional.empty();
         ReviewFeedback reviewFeedback = new ReviewFeedback(likedUser, likedReview, feedback);
         em.persist(reviewFeedback);
 
@@ -225,7 +227,8 @@ public class ReviewHibernateDao implements ReviewDao, PaginationDao<ReviewFilter
         } else {
             likedReview.setDislikes(likedReview.getDislikes() + 1);
         }
-        return reviewFeedback;
+        em.persist(likedReview);
+        return Optional.of(reviewFeedback);
     }
 
     @Override

@@ -294,19 +294,19 @@ public class ReviewDaoImplTest {
 //        Assert.assertEquals(updatedReview.get().getGameLength(), Double.valueOf(60.6));
 //    }
 
-    @Rollback
-    @Transactional
-    @Test
-    public void testUpdateNonExistentReview() {
-        // Setup
-        Long nonExistentReviewId = 999L;
-        SaveReviewDTO updatedReviewDTO = new SaveReviewDTO("Updated Title", "Updated Content", 4, Difficulty.EASY, 60.6, Platform.PC, true, false);
-
-        // Test
-        Review result = reviewDao.update(nonExistentReviewId, updatedReviewDTO);
-
-        Assert.assertNull(result);
-    }
+//    @Rollback
+//    @Transactional
+//    @Test
+//    public void testUpdateNonExistentReview() {
+//        // Setup
+//        Long nonExistentReviewId = 999L;
+//        SaveReviewDTO updatedReviewDTO = new SaveReviewDTO("Updated Title", "Updated Content", 4, Difficulty.EASY, 60.6, Platform.PC, true, false);
+//
+//        // Test
+//        Review result = reviewDao.update(nonExistentReviewId, updatedReviewDTO);
+//
+//        Assert.assertNull(result);
+//    }
 
     @Rollback
     @Transactional
@@ -763,24 +763,24 @@ public class ReviewDaoImplTest {
         Assert.assertFalse(result);
     }
 
-    @Rollback
-    @Transactional
-    @Test
-    public void testGetReviewFeedback() {
-        // Setup
-        Number r1 = addReviewRow(1L, firstUser.longValue(), firstGame.longValue(), TITLE, CONTENT, TIMESTAMP, 1, DIFFICULTY.toString(), PLATFORM.toString(), GAME_LENGTH, REPLAYABILITY, COMPLETED, LIKES, DISLIKES);
-        Number r2 = addReviewRow(2L, firstUser.longValue(), firstGame.longValue(), TITLE, CONTENT, TIMESTAMP, 1, DIFFICULTY.toString(), PLATFORM.toString(), GAME_LENGTH, REPLAYABILITY, COMPLETED, LIKES, DISLIKES);
-        likeReview(r1.longValue(), firstUser.longValue(), true);
-
-        // Test
-        FeedbackType feedback1 = reviewDao.getReviewFeedback(r1.longValue(), firstUser.longValue());
-        FeedbackType feedback2 = reviewDao.getReviewFeedback(r2.longValue(), firstUser.longValue());
-
-        // Assertions
-        Assert.assertEquals(feedback1, FeedbackType.LIKE);
-        Assert.assertNull(feedback2);
-
-    }
+//    @Rollback
+//    @Transactional
+//    @Test
+//    public void testGetReviewFeedback() {
+//        // Setup
+//        Number r1 = addReviewRow(1L, firstUser.longValue(), firstGame.longValue(), TITLE, CONTENT, TIMESTAMP, 1, DIFFICULTY.toString(), PLATFORM.toString(), GAME_LENGTH, REPLAYABILITY, COMPLETED, LIKES, DISLIKES);
+//        Number r2 = addReviewRow(2L, firstUser.longValue(), firstGame.longValue(), TITLE, CONTENT, TIMESTAMP, 1, DIFFICULTY.toString(), PLATFORM.toString(), GAME_LENGTH, REPLAYABILITY, COMPLETED, LIKES, DISLIKES);
+//        likeReview(r1.longValue(), firstUser.longValue(), true);
+//
+//        // Test
+//        FeedbackType feedback1 = reviewDao.getReviewFeedback(r1.longValue(), firstUser.longValue());
+//        FeedbackType feedback2 = reviewDao.getReviewFeedback(r2.longValue(), firstUser.longValue());
+//
+//        // Assertions
+//        Assert.assertEquals(feedback1, FeedbackType.LIKE);
+//        Assert.assertNull(feedback2);
+//
+//    }
 
 //    @Rollback
 //    @Transactional

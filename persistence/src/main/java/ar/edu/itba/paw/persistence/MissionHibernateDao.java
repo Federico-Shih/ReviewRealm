@@ -33,28 +33,28 @@ public class MissionHibernateDao implements MissionDao {
     }
 
     @Override
-    public MissionProgress updateProgress(User user, Mission mission, float progress) {
+    public Optional<MissionProgress> updateProgress(User user, Mission mission, float progress) {
         MissionProgress missionProgress = em.find(MissionProgress.class, new MissionProgressId(user, mission));
-        if (missionProgress == null) return null;
+        if (missionProgress == null) return Optional.empty();
         missionProgress.setProgress(progress);
-        return missionProgress;
+        return Optional.of(missionProgress);
     }
 
     @Override
-    public MissionProgress resetProgress(User user, Mission mission) {
+    public Optional<MissionProgress> resetProgress(User user, Mission mission) {
         MissionProgress missionProgress = em.find(MissionProgress.class, new MissionProgressId(user, mission));
-        if (missionProgress == null) return null;
+        if (missionProgress == null) return Optional.empty();
         missionProgress.setProgress(0f);
         missionProgress.setStartDate(LocalDate.now());
-        return missionProgress;
+        return Optional.of(missionProgress);
     }
 
     @Override
-    public MissionProgress completeMission(User user, Mission mission) {
+    public Optional<MissionProgress> completeMission(User user, Mission mission) {
         MissionProgress missionProgress = em.find(MissionProgress.class, new MissionProgressId(user, mission));
-        if (missionProgress == null) return null;
+        if (missionProgress == null) return Optional.empty();
         missionProgress.setTimes(missionProgress.getTimes() + 1);
-        return missionProgress;
+        return Optional.of(missionProgress);
     }
 
     @Override

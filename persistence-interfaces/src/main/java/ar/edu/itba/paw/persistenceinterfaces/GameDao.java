@@ -7,6 +7,7 @@ import ar.edu.itba.paw.dtos.ordering.Ordering;
 import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.models.Game;
 import ar.edu.itba.paw.models.Paginated;
+import ar.edu.itba.paw.models.User;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -39,11 +40,11 @@ public interface GameDao {
 
     Optional<Game> modifyReview(long gameId, int oldRating, int newRating);
 
-    Optional<Game> deleteReview(long gameId, int rating);
+    Optional<Game> deleteReviewFromGame(long gameId, int rating);
 
     Optional<Game> setSuggestedFalse(long gameId);
 
     boolean deleteGame(long gameId);
 
-    void replaceAllFavoriteGames(long userId, List<Long> gameIds);
+    Optional<User> replaceAllFavoriteGames(long userId, List<Long> gameIds);
 }

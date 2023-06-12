@@ -5,10 +5,7 @@
     align-items: flex-start;
 }
 
-.input-field {
-    width: 95%;
-}
-
 .form-submit-button {
     align-self: flex-end;
 }
+

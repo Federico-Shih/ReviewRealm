@@ -7,10 +7,7 @@ import ar.edu.itba.paw.dtos.filtering.ReviewFilterBuilder;
 import ar.edu.itba.paw.dtos.ordering.Ordering;
 import ar.edu.itba.paw.dtos.ordering.ReviewOrderCriteria;
 import ar.edu.itba.paw.enums.*;
-import ar.edu.itba.paw.exceptions.GameNotFoundException;
-import ar.edu.itba.paw.exceptions.ReviewAlreadyExistsException;
-import ar.edu.itba.paw.exceptions.ReviewNotFoundException;
-import ar.edu.itba.paw.exceptions.UserNotFoundException;
+import ar.edu.itba.paw.exceptions.*;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.persistenceinterfaces.ReviewDao;
 import ar.edu.itba.paw.servicesinterfaces.*;
@@ -102,8 +99,7 @@ public class ReviewServiceImpl implements ReviewService {
                         gameLength,
                         platform,
                         completed,
-                        replayable));
-        if (modifiedReview == null) throw new ReviewNotFoundException();
+                        replayable)).orElseThrow(ReviewNotFoundException::new);
         gameService.updateReviewFromGame(review.getReviewedGame().getId(), review.getRating(), rating);
         if(rating <= MINFAVORITEGAMERATING)
             gameService.deleteFavoriteGame(review.getAuthor().getId(), review.getReviewedGame().getId());
@@ -199,20 +195,23 @@ public class ReviewServiceImpl implements ReviewService {
         User user = userService.getUserById(userId).orElseThrow(UserNotFoundException::new);
         Review review = getReviewById(reviewId, null).orElseThrow(ReviewNotFoundException::new);
         
-        FeedbackType oldFeedback = reviewDao.getReviewFeedback(review.getId(), user.getId());
+        FeedbackType oldFeedback = reviewDao.getReviewFeedback(review.getId(), user.getId()).orElse(null);
         if (oldFeedback == feedback) {
             boolean deleted = deleteReviewFeedback(review, user, oldFeedback);
             LOGGER.info("User {} deleted review {} feedback: {}", userId, reviewId, deleted);
             return null;
         }
-        ReviewFeedback updatedFeedback = (oldFeedback == null) ? reviewDao.addReviewFeedback(review.getId(), user.getId(), feedback) :
+        Optional<ReviewFeedback> updatedFeedback = (oldFeedback == null) ? reviewDao.addReviewFeedback(review.getId(), user.getId(), feedback) :
                 reviewDao.editReviewFeedback(review.getId(), user.getId(), oldFeedback, feedback);
+        if (!updatedFeedback.isPresent()) {
+            return null;
+        }
 
         int userReputationOffset = (oldFeedback == null) ? ((feedback == FeedbackType.LIKE) ? 1 : -1) : ((feedback == FeedbackType.LIKE) ? 2 : -2);
 
         userService.modifyUserReputation(review.getAuthor().getId(), userReputationOffset);
         missionService.addMissionProgress(review.getAuthor().getId(), Mission.REPUTATION_GOAL, (float)userReputationOffset);
-        return updatedFeedback;
+        return updatedFeedback.get();
     }
 
     private boolean deleteReviewFeedback(Review review, User user, FeedbackType oldFeedback) {

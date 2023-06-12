@@ -110,7 +110,7 @@ public class UserServiceImpl implements UserService {
         LOGGER.info("Changing password: {}", email);
         User user = getUserByEmail(email).orElseThrow(() -> new UserNotFoundException("notfound.user"));
         SaveUserBuilder saveUserBuilder = new SaveUserBuilder().withPassword(passwordEncoder.encode(password));
-        return userDao.update(user.getId(), saveUserBuilder.build());
+        return userDao.update(user.getId(), saveUserBuilder.build()).orElse(null);
     }
 
     @Transactional(readOnly = true)
@@ -273,7 +273,13 @@ public class UserServiceImpl implements UserService {
             LOGGER.error("Token for User {} password reset expired", existentToken.getUser().getId());
             throw new TokenExpiredException("token.expired");
         }
-        User user = userDao.update(existentToken.getUser().getId(), new SaveUserBuilder().withPassword(passwordEncoder.encode(password)).withEnabled(true).build());
+        User user = userDao.update(
+                existentToken.getUser().getId(),
+                new SaveUserBuilder()
+                        .withPassword(passwordEncoder.encode(password))
+                        .withEnabled(true)
+                        .build()
+        ).orElse(null);
         LOGGER.info("User {} reset password", existentToken.getUser().getId());
         return user;
     }
@@ -308,10 +314,10 @@ public class UserServiceImpl implements UserService {
         User modifiedUser = getUserById(userId).orElseThrow(UserNotFoundException::new);
         for (Map.Entry<NotificationType, Boolean> entry : notificationSettings.entrySet()) {
             if (entry.getValue() && !currentNotificationSettings.get(entry.getKey())) {
-                modifiedUser = userDao.enableNotification(userId, entry.getKey().getTypeName());
+                modifiedUser = userDao.enableNotification(userId, entry.getKey().getTypeName()).orElseThrow(UserNotFoundException::new);
                 LOGGER.info("User {} enabled notification {}", userId, entry.getKey().getTypeName());
             } else if (!entry.getValue() && currentNotificationSettings.get(entry.getKey())) {
-                modifiedUser = userDao.disableNotification(userId, entry.getKey().getTypeName());
+                modifiedUser = userDao.disableNotification(userId, entry.getKey().getTypeName()).orElseThrow(UserNotFoundException::new);
                 LOGGER.info("User {} disabled notification {}", userId, entry.getKey().getTypeName());
             }
         }
@@ -321,11 +327,8 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public User setPreferences(Set<Integer> genres, long userId){
-        if (!userDao.exists(userId)) {
-            throw new UserNotFoundException("notfound.user");
-        }
         LOGGER.info("User {} set genre preferences", userId);
-        User modifiedUser = userDao.setPreferences(genres, userId);
+        User modifiedUser = userDao.setPreferences(genres, userId).orElseThrow(UserNotFoundException::new);
         if (!modifiedUser.getPreferences().isEmpty()) {
             missionService.addMissionProgress(modifiedUser.getId(), Mission.SETUP_PREFERENCES, 1f);
         }
@@ -337,7 +340,7 @@ public class UserServiceImpl implements UserService {
     public User modifyUserReputation(long id, int reputation) {
         User user = userDao.findById(id).orElseThrow(() -> new UserNotFoundException("user.notfound"));
         SaveUserBuilder builder = new SaveUserBuilder().withReputation(user.getReputation() + reputation);
-        return userDao.update(id, builder.build());
+        return userDao.update(id, builder.build()).orElseThrow(UserNotFoundException::new);
     }
 
     @Transactional
@@ -349,7 +352,7 @@ public class UserServiceImpl implements UserService {
         SaveUserBuilder builder = new SaveUserBuilder().withAvatar(imageId);
         missionService.addMissionProgress(user.getId(), Mission.CHANGE_AVATAR, 1f);
         LOGGER.info("User {} changed avatar to {}", userId, imageId);
-        return userDao.update(userId, builder.build());
+        return userDao.update(userId, builder.build()).orElseThrow(UserNotFoundException::new);
     }
 
     @Transactional
@@ -358,6 +361,6 @@ public class UserServiceImpl implements UserService {
         User user = userDao.findById(userId).orElseThrow(UserNotFoundException::new);
         SaveUserBuilder builder = new SaveUserBuilder().withLanguage(language);
         LOGGER.info("User {} changed language to {}", userId, language);
-        return userDao.update(user.getId(), builder.build());
+        return userDao.update(user.getId(), builder.build()).orElseThrow(UserNotFoundException::new);
     }
 }

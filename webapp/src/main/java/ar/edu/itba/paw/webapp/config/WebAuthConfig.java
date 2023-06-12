@@ -111,12 +111,8 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                         "/game/submit",
                         "/profile/missions"
                 ).authenticated()
-
-                /* ACÁ PONEMOS TODOS LOS PATHS QUE REQUIERAN NO HABER INICIADO SESIÓN */
-                .antMatchers("/login", "/register", "/recover").anonymous()
-
                 /* POR DEFAULT NO ES NECESARIO INICIAR SESIÓN */
-                .antMatchers("/**").permitAll()
+                .antMatchers("/login", "/register", "/recover", "/**").permitAll()
             .and().formLogin()
                 .loginPage("/login")
                 .usernameParameter("email")

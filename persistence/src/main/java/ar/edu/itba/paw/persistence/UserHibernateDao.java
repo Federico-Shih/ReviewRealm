@@ -43,10 +43,10 @@ public class UserHibernateDao implements UserDao, PaginationDao<UserFilter> {
     }
 
     @Override
-    public User update(long id, SaveUserDTO saveUserDTO) {
+    public Optional<User> update(long id, SaveUserDTO saveUserDTO) {
         final User user = em.find(User.class, id);
         if (user == null) {
-            return null;
+            return Optional.empty();
         }
         if (saveUserDTO.isEnabled() != null) {
             user.setEnabled(saveUserDTO.isEnabled());
@@ -75,7 +75,7 @@ public class UserHibernateDao implements UserDao, PaginationDao<UserFilter> {
         if (saveUserDTO.getXp() != null) {
             user.setXp(saveUserDTO.getXp());
         }
-        return user;
+        return Optional.of(user);
     }
 
     @Override
@@ -240,9 +240,9 @@ public class UserHibernateDao implements UserDao, PaginationDao<UserFilter> {
     }
 
     @Override
-    public User setPreferences(Set<Integer> genres, long userId) {
+    public Optional<User> setPreferences(Set<Integer> genres, long userId) {
         User user = em.find(User.class, userId);
-        if (user == null) return null;
+        if (user == null) return Optional.empty();
         user.getPreferences().clear();
         Set<Genre> preferences = user.getPreferences();
         for (Integer genreId : genres) {
@@ -251,25 +251,23 @@ public class UserHibernateDao implements UserDao, PaginationDao<UserFilter> {
                preferences.add(genre);
             }
         }
-        return user;
+        return Optional.of(user);
     }
 
     @Override
-    public User disableNotification(long userId, String notificationType) {
+    public Optional<User> disableNotification(long userId, String notificationType) {
         User user = em.find(User.class, userId);
-        if (user != null) {
-            user.getDisabledNotifications().add(NotificationType.valueFrom(notificationType));
-        }
-        return user;
+        if (user == null) return Optional.empty();
+        user.getDisabledNotifications().add(NotificationType.valueFrom(notificationType));
+        return Optional.of(user);
     }
 
     @Override
-    public User enableNotification(long userId, String notificationType) {
+    public Optional<User> enableNotification(long userId, String notificationType) {
         User user = em.find(User.class, userId);
-        if (user != null) {
-            user.getDisabledNotifications().remove(NotificationType.valueFrom(notificationType));
-        }
-        return user;
+        if (user == null) return Optional.empty();
+        user.getDisabledNotifications().remove(NotificationType.valueFrom(notificationType));
+        return Optional.of(user);
     }
 
     private String toTableString(UserFilter filter) {
