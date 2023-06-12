@@ -132,7 +132,7 @@ public class ReviewHibernateDao implements ReviewDao, PaginationDao<ReviewFilter
             return new Paginated<>(pagination.getPageNumber(), pagination.getPageSize(), totalPages, new ArrayList<>());
         }
         QueryBuilder queryBuilder = getQueryBuilderFromFilter(filter);
-        Query nativeQuery = em.createNativeQuery("SELECT distinct id FROM ("+ "SELECT r.id as id, r.likes + r.dislikes as controversial, r.likes - r.dislikes as popularity FROM " + toTableString(filter) + queryBuilder.toQuery() + toOrderString(ordering, true) + ") as review");
+        Query nativeQuery = em.createNativeQuery("SELECT reviewid FROM ("+ "SELECT distinct r.id as reviewid, *, r.likes + r.dislikes as controversial, r.likes - r.dislikes as popularity FROM " + toTableString(filter) + queryBuilder.toQuery() + ") as review"+ toOrderString(ordering, true));
         prepareParametersForNativeQuery(queryBuilder, nativeQuery);
         nativeQuery.setMaxResults(pagination.getPageSize());
         nativeQuery.setFirstResult(pagination.getOffset().intValue());
