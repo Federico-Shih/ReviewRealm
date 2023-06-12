@@ -5,7 +5,6 @@ import ar.edu.itba.paw.dtos.filtering.GameFilter;
 import ar.edu.itba.paw.dtos.ordering.GameOrderCriteria;
 import ar.edu.itba.paw.dtos.ordering.Ordering;
 import ar.edu.itba.paw.dtos.saving.SubmitGameDTO;
-import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.models.*;
 import java.util.List;
 import java.util.Optional;
@@ -15,39 +14,37 @@ public interface GameService {
 
     Optional<Game> createGame(SubmitGameDTO gameDTO, long userId);
 
-    void deleteGame(long gameId);
+    boolean deleteGame(long gameId);
 
-    void editGame(SubmitGameDTO gameDTO, long userId);
+    Game editGame(SubmitGameDTO gameDTO, long userId);
 
-    Optional<Game> getGameById(Long id);
+    Optional<Game> getGameById(long id);
 
-    List<Genre> getGameGenresById(Long id);
-
-    // todo test
     Paginated<Game> searchGames(Page page, GameFilter filter, Ordering<GameOrderCriteria> ordering);
 
-    GameReviewData getGameReviewDataByGameId(Long id);
+    GameReviewData getGameReviewDataByGameId(long id);
 
-
+    //TODO: mover estos 4 a UserService
     List<Game> getFavoriteGamesFromUser(long userId);
 
     List<Game> getPossibleFavGamesFromUser(long userId);
 
-    void deleteFavoriteGame(long userId, long gameId);
+    boolean deleteFavoriteGame(long userId, long gameId);
 
-    void setFavoriteGames(long userId, List<Long> gameIds);
+    User setFavoriteGames(long userId, List<Long> gameIds);
+    // ---
 
-    void addNewReviewToGame(Long gameId,Integer rating);
+    Game addNewReviewToGame(long gameId, int rating);
 
-    void deleteReviewFromGame(Long gameId,Integer rating);
+    Game deleteReviewFromGame(long gameId, int rating);
 
-    void updateReviewFromGame(Long gameId,Integer oldRating,Integer newRating);
+    Game updateReviewFromGame(long gameId, int oldRating, int newRating);
 
-    void acceptGame(long gameId, User approvingUser);
+    Game acceptGame(long gameId, long approvingUserId);
 
-    void rejectGame(long gameId, User rejectingUser);
+    boolean rejectGame(long gameId, long rejectingUserId);
 
-    List<Game> getRecommendationsOfGamesForUser(User user);
+    List<Game> getRecommendationsOfGamesForUser(long userId);
 
-    Set<Game> getGamesReviewedByUser(Long userId);
+    Set<Game> getGamesReviewedByUser(long userId);
 }

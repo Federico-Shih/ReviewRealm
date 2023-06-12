@@ -67,7 +67,7 @@ public class ReviewController{
         User loggedUser = AuthenticationHelper.getLoggedUser(userService);
 
         if(searchquery.isEmpty()){
-            List<Game> list = gameService.getRecommendationsOfGamesForUser(loggedUser);
+            List<Game> list = gameService.getRecommendationsOfGamesForUser(loggedUser.getId());
             mav.addObject("games", list.subList(0, Math.min(list.size(), MAX_SEARCH_RESULTS)));
         } else {
             GameFilter filter = new GameFilterBuilder().withGameContent(searchquery).build();

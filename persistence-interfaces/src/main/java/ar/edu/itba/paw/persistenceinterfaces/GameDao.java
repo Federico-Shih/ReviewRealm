@@ -25,23 +25,23 @@ public interface GameDao {
 
     List<Genre> getGenresByGame(long id);
 
-    List<Game> getFavoriteGamesFromUser(long userId);
+    Optional<List<Game>> getFavoriteGamesFromUser(long userId);
 
     List<Game> getFavoriteGamesCandidates(long userId, int minRating);
 
-    void deleteFavoriteGameForUser(long userId, long gameId);
+    boolean deleteFavoriteGameForUser(long userId, long gameId);
 
     List<Game> getRecommendationsForUser(List<Integer> userPreferences,List<Long> gamesToExclude);
 
-    Set<Game> getGamesReviewedByUser(Long userId);
+    Optional<Set<Game>> getGamesReviewedByUser(long userId);
 
-    void addNewReview(Long gameId,Integer rating);
+    Optional<Game> addNewReview(long gameId, int rating);
 
-    void modifyReview(Long gameId,Integer oldRating, Integer newRating);
+    Optional<Game> modifyReview(long gameId, int oldRating, int newRating);
 
-    void deleteReview(Long gameId,Integer rating);
+    Optional<Game> deleteReview(long gameId, int rating);
 
-    boolean setSuggestedFalse(long gameId);
+    Optional<Game> setSuggestedFalse(long gameId);
 
     boolean deleteGame(long gameId);
 

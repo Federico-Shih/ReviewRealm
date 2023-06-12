@@ -5,7 +5,7 @@ import ar.edu.itba.paw.enums.Difficulty;
 import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.enums.Platform;
 import ar.edu.itba.paw.enums.RoleType;
-import ar.edu.itba.paw.exceptions.NoSuchGameException;
+import ar.edu.itba.paw.exceptions.GameNotFoundException;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.persistenceinterfaces.GameDao;
 import ar.edu.itba.paw.servicesinterfaces.ImageService;
@@ -98,12 +98,12 @@ public class GameServiceImplTest {
         Assert.assertEquals(0,Double.compare((1/3.0)*100,data.getReplayability()));
         Assert.assertEquals(0,Double.compare((2/3.0)*100,data.getCompletability()));
     }
-    @Test(expected = NoSuchGameException.class)
+    @Test(expected = GameNotFoundException.class)
     public void testAcceptGameError(){
         Mockito.when(gameDao.setSuggestedFalse(GAME1.getId())).thenReturn(false);
         gs.acceptGame(GAME1.getId(), null);
     }
-    @Test(expected = NoSuchGameException.class)
+    @Test(expected = GameNotFoundException.class)
     public void testRejectGameError(){
         Mockito.when(gameDao.deleteGame(GAME1.getId())).thenReturn(false);
         gs.rejectGame(GAME1.getId(), null);

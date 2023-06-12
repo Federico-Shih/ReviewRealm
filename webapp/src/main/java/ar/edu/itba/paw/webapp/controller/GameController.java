@@ -7,7 +7,7 @@ import ar.edu.itba.paw.dtos.ordering.GameOrderCriteria;
 import ar.edu.itba.paw.dtos.ordering.OrderDirection;
 import ar.edu.itba.paw.dtos.ordering.Ordering;
 import ar.edu.itba.paw.enums.Genre;
-import ar.edu.itba.paw.exceptions.NoSuchGameException;
+import ar.edu.itba.paw.exceptions.GameNotFoundException;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.servicesinterfaces.GameService;
 import ar.edu.itba.paw.servicesinterfaces.ReviewService;
@@ -183,7 +183,7 @@ public class GameController{
     public ModelAndView deleteGame(@PathVariable(value = "gameId") Long gameId) {
         try {
             gs.deleteGame(gameId);
-        } catch (NoSuchGameException e) {
+        } catch (GameNotFoundException e) {
             // TODO: Poner mensaje de error
             return new ModelAndView("redirect:/game/list");
         }

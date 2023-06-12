@@ -235,8 +235,8 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Transactional
     @Override
-    public List<Review> getAllReviewsFromGame(Long gameId, User activeUser) {
+    public List<Review> getAllReviewsFromGame(long gameId, Long activeUserId) {
         ReviewFilter filter = new ReviewFilterBuilder().withGameId(gameId).build();
-        return reviewDao.findAll(filter, Ordering.defaultOrder(ReviewOrderCriteria.REVIEW_DATE), (activeUser != null)? activeUser.getId() : null);
+        return reviewDao.findAll(filter, Ordering.defaultOrder(ReviewOrderCriteria.REVIEW_DATE), activeUserId);
     }
 }

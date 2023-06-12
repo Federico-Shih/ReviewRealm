@@ -1,7 +1,7 @@
 package ar.edu.itba.paw.exceptions;
 
-public class NoSuchGameException extends RuntimeException {
-    public NoSuchGameException(String message) {
+public class GameNotFoundException extends RuntimeException {
+    public GameNotFoundException(String message) {
         super(message);
     }
     public GameNotFoundException() {
