@@ -15,33 +15,40 @@ import java.util.Optional;
 import java.util.Set;
 
 public interface UserDao {
+
     boolean exists(final long id);
 
-    int update(final long id, SaveUserDTO saveUserDTO);
+    Optional<User> update(final long id, SaveUserDTO saveUserDTO);
 
     User create(String username, String email, String password);
+
     Optional<User> getByEmail(String email);
+
     Optional<User> getByUsername(String username);
+
     Paginated<User> findAll(Page page, UserFilter userFilter, Ordering<UserOrderCriteria> ordering);
+
     Optional<User> findById(final long id);
-    List<User> getFollowers(final long id);
-    List<User> getFollowing(final long id);
-    FollowerFollowingCount getFollowerFollowingCount(final long id);
 
-    boolean createFollow(final long userId, final long id);
+    Optional<List<User>> getFollowers(final long id);
 
-    boolean deleteFollow(final long userId, final long id);
+    Optional<List<User>> getFollowing(final long id);
+
+    Optional<FollowerFollowingCount> getFollowerFollowingCount(final long id);
+
+    Optional<User> createFollow(final long userId, final long id);
+
+    Optional<User> deleteFollow(final long userId, final long id);
 
     boolean follows(final long userId, final long id);
 
     Set<Genre> getPreferences(final long userId);
 
-    void setPreferences(Set<Integer> genres, long userId);
+    Optional<User> setPreferences(Set<Integer> genres, long userId);
 
     Long getTotalAmountOfUsers();
 
-    void disableNotification(long userId, String notificationType);
+    Optional<User> disableNotification(long userId, String notificationType);
 
-    void enableNotification(long userId, String notificationType);
-
+    Optional<User> enableNotification(long userId, String notificationType);
 }

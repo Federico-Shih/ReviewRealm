@@ -1,13 +1,13 @@
 package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.dtos.Page;
+import ar.edu.itba.paw.dtos.filtering.GameFilter;
+import ar.edu.itba.paw.dtos.filtering.GameFilterBuilder;
 import ar.edu.itba.paw.dtos.ordering.GameOrderCriteria;
 import ar.edu.itba.paw.dtos.ordering.OrderDirection;
 import ar.edu.itba.paw.dtos.ordering.Ordering;
-import ar.edu.itba.paw.dtos.searching.GameSearchFilter;
-import ar.edu.itba.paw.dtos.searching.GameSearchFilterBuilder;
 import ar.edu.itba.paw.enums.Genre;
-import ar.edu.itba.paw.exceptions.NoSuchGameException;
+import ar.edu.itba.paw.exceptions.GameNotFoundException;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.servicesinterfaces.GameService;
 import ar.edu.itba.paw.servicesinterfaces.ReviewService;
@@ -57,7 +57,7 @@ public class GameController{
 
 
     @RequestMapping("/game/{id:\\d+}")
-    public ModelAndView game_details(
+    public ModelAndView gameDetails(
             @PathVariable("id") final Long gameId,
             @RequestParam(value = "page", defaultValue = "1") Integer page,
             @RequestParam(value = "pagesize", defaultValue = "8") Integer pageSize,
@@ -74,7 +74,7 @@ public class GameController{
             mav.addObject("game",game.get());
             GameReviewData reviewData = gs.getGameReviewDataByGameId(gameId);
 
-            Paginated<Review> reviews = rs.getReviewsFromGame(Page.with(page, pageSize), gameId, loggedUser);
+            Paginated<Review> reviews = rs.getReviewsFromGame(Page.with(page, pageSize), gameId, loggedUser != null ? loggedUser.getId() : null);
             PaginationHelper.paginate(mav,reviews);
             List<Pair<String, Object>> queriesToKeepAtPageChange = new ArrayList<>();
             queriesToKeepAtPageChange.add(new Pair<>("pagesize", pageSize));
@@ -121,20 +121,18 @@ public class GameController{
             maxRating = Float.parseFloat(ratingFilterArray[1]);
         } catch (Exception ignored) {}
 
-        GameSearchFilterBuilder searchFilterBuilder = new GameSearchFilterBuilder()
-                .withSearch(search)
+        GameFilter searchFilter = new GameFilterBuilder()
+                .withGameContent(search)
                 .withSuggestion(false)
-                .withGenres(genresFilter)
-                .withRatingRange(minRating,maxRating, excludeNoRatingFilter == null || !excludeNoRatingFilter);
-
-
-        GameSearchFilter searchFilter = searchFilterBuilder.build();
+                .withGameGenres(genresFilter)
+                .withRatingRange(minRating,maxRating, excludeNoRatingFilter == null || !excludeNoRatingFilter)
+                .build();
 
         Paginated<Game> games = gs.searchGames(
                 Page.with(page != null ? page: INITIAL_PAGE, pageSize),
                 searchFilter,
                 new Ordering<>(OrderDirection.fromValue(orderDirection), GameOrderCriteria.fromValue(orderCriteria))
-        );//TODO:MOVERLO A SERVICE
+        );
 
         PaginationHelper.paginate(mav,games);
 
@@ -185,7 +183,7 @@ public class GameController{
     public ModelAndView deleteGame(@PathVariable(value = "gameId") Long gameId) {
         try {
             gs.deleteGame(gameId);
-        } catch (NoSuchGameException e) {
+        } catch (GameNotFoundException e) {
             // TODO: Poner mensaje de error
             return new ModelAndView("redirect:/game/list");
         }
@@ -254,7 +252,7 @@ public class GameController{
     public ModelAndView acceptSubmission(@PathVariable(value="gameId") Long gameId) {
         LOGGER.info("Accepting suggested game, id: {}", gameId);
         User user = AuthenticationHelper.getLoggedUser(us);
-        gs.acceptGame(gameId, user);
+        gs.acceptGame(gameId, user.getId());
         return new ModelAndView("redirect:/game/submissions");
     }
 
@@ -262,7 +260,7 @@ public class GameController{
     public ModelAndView rejectSubmission(@PathVariable(value="gameId") Long gameId) {
         LOGGER.info("Rejecting suggested game, id: {}", gameId);
         User user = AuthenticationHelper.getLoggedUser(us);
-        gs.rejectGame(gameId, user);
+        gs.rejectGame(gameId, user.getId());
         return new ModelAndView("redirect:/game/submissions");
     }
 
@@ -270,9 +268,9 @@ public class GameController{
     public ModelAndView checkSubmissions() {
         ModelAndView mav = new ModelAndView("/games/game-addition");
 
-        GameSearchFilterBuilder searchFilterBuilder = new GameSearchFilterBuilder()
-                .withSuggestion(true);
-        GameSearchFilter searchFilter = searchFilterBuilder.build();
+        GameFilter searchFilter = new GameFilterBuilder()
+                .withSuggestion(true)
+                .build();
 
         Paginated<Game> games = gs.searchGames(
                 Page.with(INITIAL_PAGE, PAGE_SIZE),

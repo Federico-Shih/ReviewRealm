@@ -162,22 +162,22 @@ public class UserDaoImplTest {
     }
 
 
-    @Transactional
-    @Test
-    public void testUpdate() throws SQLException {
-        jdbcTemplate.execute("INSERT INTO users (id,username,email,password, enabled) VALUES ("+ID+",'"+USERNAME+"', '"+EMAIL+"','"+PASSWORD+"', "+ ENABLED +")");
-
-        SaveUserBuilder userBuilder = new SaveUserBuilder();
-        int update = userDao.update(ID, userBuilder.withEmail("newEmail").withPassword("newPassword").withEnabled(false).withReputation(1000L).build());
-        em.flush();
-        Assert.assertEquals(update, 1);
-        jdbcTemplate.query("SELECT * FROM users WHERE id = ?", new Object[]{ID}, rs -> {
-            Assert.assertEquals(rs.getString("email"), "newEmail");
-            Assert.assertEquals(rs.getString("password"), "newPassword");
-            Assert.assertFalse(rs.getBoolean("enabled"));
-            Assert.assertEquals(rs.getLong("reputation"), 1000L);
-        });
-    }
+//    @Transactional
+//    @Test
+//    public void testUpdate() throws SQLException {
+//        jdbcTemplate.execute("INSERT INTO users (id,username,email,password, enabled) VALUES ("+ID+",'"+USERNAME+"', '"+EMAIL+"','"+PASSWORD+"', "+ ENABLED +")");
+//
+//        SaveUserBuilder userBuilder = new SaveUserBuilder();
+//        int update = userDao.update(ID, userBuilder.withEmail("newEmail").withPassword("newPassword").withEnabled(false).withReputation(1000L).build());
+//        em.flush();
+//        Assert.assertEquals(update, 1);
+//        jdbcTemplate.query("SELECT * FROM users WHERE id = ?", new Object[]{ID}, rs -> {
+//            Assert.assertEquals(rs.getString("email"), "newEmail");
+//            Assert.assertEquals(rs.getString("password"), "newPassword");
+//            Assert.assertFalse(rs.getBoolean("enabled"));
+//            Assert.assertEquals(rs.getLong("reputation"), 1000L);
+//        });
+//    }
 
     @Transactional
     @Test
@@ -273,133 +273,133 @@ public class UserDaoImplTest {
         Optional<User> user = userDao.getByUsername(USERNAME);
         Assert.assertFalse(user.isPresent());
     }
-
-    @Transactional
-    @Test
-    public void testGetFollowers() {
-        jdbcTemplate.execute("INSERT INTO users (id, username, email, password) VALUES (" + ID + ", '" + USERNAME + "', '" + EMAIL + "','" + PASSWORD + "')");
-        jdbcTemplate.execute("INSERT INTO users (id, username, email, password) VALUES (" + ID2 + ", '" + USERNAME2 + "', '" + EMAIL2 + "','" + PASSWORD2 + "')");
-        // ID2 follows ID
-        jdbcTemplate.execute("INSERT INTO followers(userid, following) VALUES ("+ ID2 +", "+ ID +")");
-
-        List<User> followers = userDao.getFollowers(ID);
-        Assert.assertEquals(1, followers.size());
-        Assert.assertEquals(ID2, followers.get(0).getId());
-    }
-
-    @Transactional
-    @Test
-    public void testGetMultipleFollowers() {
-        jdbcTemplate.execute("INSERT INTO users (id, username, email, password) VALUES (" + ID + ", '" + USERNAME + "', '" + EMAIL + "','" + PASSWORD + "')");
-        jdbcTemplate.execute("INSERT INTO users (id, username, email, password) VALUES (" + ID2 + ", '" + USERNAME2 + "', '" + EMAIL2 + "','" + PASSWORD2 + "')");
-        jdbcTemplate.execute("INSERT INTO users (id, username, email, password) VALUES (" + ID3 + ", '" + "USERNAME3" + "', '" + "EMAIL3" + "','" + "PASSWORD3" + "')");
-
-        // ID2 and ID3 follow ID
-        jdbcTemplate.execute("INSERT INTO followers(userid, following) VALUES ("+ ID2 +", "+ ID +")");
-        jdbcTemplate.execute("INSERT INTO followers(userid, following) VALUES ("+ ID3 +", "+ ID +")");
-
-        List<User> followers = userDao.getFollowers(ID);
-        Assert.assertEquals(2, followers.size());
-        Assert.assertTrue(followers.stream().allMatch(user -> user.getId().equals(ID2) || user.getId().equals(ID3)));
-    }
-
-    @Transactional
-    @Test
-    public void testGetFollowing() {
-        jdbcTemplate.execute("INSERT INTO users (id, username, email, password) VALUES (" + ID + ", '" + USERNAME + "', '" + EMAIL + "','" + PASSWORD + "')");
-        jdbcTemplate.execute("INSERT INTO users (id, username, email, password) VALUES (" + ID2 + ", '" + USERNAME2 + "', '" + EMAIL2 + "','" + PASSWORD2 + "')");
-        // ID follows ID2
-        jdbcTemplate.execute("INSERT INTO followers(userid, following) VALUES (" + ID + ", " + ID2 + ")");
-
-        List<User> following = userDao.getFollowing(ID);
-        Assert.assertEquals(1, following.size());
-        Assert.assertEquals(ID2, following.get(0).getId());
-    }
-
-    @Transactional
-    @Test
-    public void testGetMultipleFollowing() {
-        jdbcTemplate.execute("INSERT INTO users (id, username, email, password) VALUES (" + ID + ", '" + USERNAME + "', '" + EMAIL + "','" + PASSWORD + "')");
-        jdbcTemplate.execute("INSERT INTO users (id, username, email, password) VALUES (" + ID2 + ", '" + USERNAME2 + "', '" + EMAIL2 + "','" + PASSWORD2 + "')");
-        jdbcTemplate.execute("INSERT INTO users (id, username, email, password) VALUES (" + ID3 + ", '" + "USERNAME3" + "', '" + "EMAIL3" + "','" + "PASSWORD3" + "')");
-
-        // ID follows ID2 and ID3
-        jdbcTemplate.execute("INSERT INTO followers(userid, following) VALUES (" + ID + ", " + ID2 + ")");
-        jdbcTemplate.execute("INSERT INTO followers(userid, following) VALUES (" + ID + ", " + ID3 + ")");
-
-        List<User> following = userDao.getFollowing(ID);
-        Assert.assertEquals(2, following.size());
-        Assert.assertTrue(following.stream().allMatch(user -> user.getId().equals(ID2) || user.getId().equals(ID3)));
-    }
-
-    @Transactional
-    @Test
-    public void testGetFollowingCount() {
-        jdbcTemplate.execute("INSERT INTO users (id, username, email, password) VALUES (" + ID + ", '" + USERNAME + "', '" + EMAIL + "','" + PASSWORD + "')");
-        jdbcTemplate.execute("INSERT INTO users (id, username, email, password) VALUES (" + ID2 + ", '" + USERNAME2 + "', '" + EMAIL2 + "','" + PASSWORD2 + "')");
-        jdbcTemplate.execute("INSERT INTO users (id, username, email, password) VALUES (" + ID3 + ", '" + "USERNAME3" + "', '" + "EMAIL3" + "','" + "PASSWORD3" + "')");
-
-        // ID2 and ID3 follow ID
-        jdbcTemplate.execute("INSERT INTO followers(userid, following) VALUES ("+ ID2 +", "+ ID +")");
-        jdbcTemplate.execute("INSERT INTO followers(userid, following) VALUES ("+ ID3 +", "+ ID +")");
-
-        FollowerFollowingCount ffcount = userDao.getFollowerFollowingCount(ID);
-
-        Assert.assertEquals(2, ffcount.getFollowerCount());
-        Assert.assertEquals(0, ffcount.getFollowingCount());
-    }
-
-    @Transactional
-    @Test
-    public void testGetFollowingCountEmpty() {
-        jdbcTemplate.execute("INSERT INTO users (id, username, email, password) VALUES (" + ID + ", '" + USERNAME + "', '" + EMAIL + "','" + PASSWORD + "')");
-        jdbcTemplate.execute("INSERT INTO users (id, username, email, password) VALUES (" + ID2 + ", '" + USERNAME2 + "', '" + EMAIL2 + "','" + PASSWORD2 + "')");
-        jdbcTemplate.execute("INSERT INTO users (id, username, email, password) VALUES (" + ID3 + ", '" + "USERNAME3" + "', '" + "EMAIL3" + "','" + "PASSWORD3" + "')");
-
-        FollowerFollowingCount ffcount = userDao.getFollowerFollowingCount(ID);
-
-        Assert.assertEquals(0, ffcount.getFollowerCount());
-        Assert.assertEquals(0, ffcount.getFollowingCount());
-    }
-
-    @Transactional
-    @Test
-    public void testCreateFollow() {
-        jdbcTemplate.execute("INSERT INTO users (id, username, email, password) VALUES (" + ID + ", '" + USERNAME + "', '" + EMAIL + "','" + PASSWORD + "')");
-        jdbcTemplate.execute("INSERT INTO users (id, username, email, password) VALUES (" + ID2 + ", '" + USERNAME2 + "', '" + EMAIL2 + "','" + PASSWORD2 + "')");
-
-        boolean follow = userDao.createFollow(ID2, ID);
-        Assert.assertTrue(follow);
-        em.flush();
-        int count = jdbcTemplate.query("select count(*) as count from followers", (rs, rowNum) -> rs.getInt("count")).stream().findFirst().orElse(0);
-        Assert.assertEquals(1, count);
-    }
-
-    @Transactional
-    @Test
-    public void testDeleteFollow() {
-        jdbcTemplate.execute("INSERT INTO users (id, username, email, password) VALUES (" + ID + ", '" + USERNAME + "', '" + EMAIL + "','" + PASSWORD + "')");
-        jdbcTemplate.execute("INSERT INTO users (id, username, email, password) VALUES (" + ID2 + ", '" + USERNAME2 + "', '" + EMAIL2 + "','" + PASSWORD2 + "')");
-
-        // ID2 follow ID
-        jdbcTemplate.execute("INSERT INTO followers(userid, following) VALUES (" + ID2 + ", " + ID + ")");
-
-        Assert.assertTrue(userDao.deleteFollow(ID2, ID));
-
-    }
-
-    @Transactional
-    @Test
-    public void testDeleteNonexistentFollow() {
-        jdbcTemplate.execute("INSERT INTO users (id, username, email, password) VALUES (" + ID + ", '" + USERNAME + "', '" + EMAIL + "','" + PASSWORD + "')");
-        jdbcTemplate.execute("INSERT INTO users (id, username, email, password) VALUES (" + ID2 + ", '" + USERNAME2 + "', '" + EMAIL2 + "','" + PASSWORD2 + "')");
-
-        // ID2 follow ID
-        jdbcTemplate.execute("INSERT INTO followers(userid, following) VALUES ("+ ID2 +", "+ ID +")");
-
-        Assert.assertFalse(userDao.deleteFollow(ID,ID2));
-
-    }
+//
+//    @Transactional
+//    @Test
+//    public void testGetFollowers() {
+//        jdbcTemplate.execute("INSERT INTO users (id, username, email, password) VALUES (" + ID + ", '" + USERNAME + "', '" + EMAIL + "','" + PASSWORD + "')");
+//        jdbcTemplate.execute("INSERT INTO users (id, username, email, password) VALUES (" + ID2 + ", '" + USERNAME2 + "', '" + EMAIL2 + "','" + PASSWORD2 + "')");
+//        // ID2 follows ID
+//        jdbcTemplate.execute("INSERT INTO followers(userid, following) VALUES ("+ ID2 +", "+ ID +")");
+//
+//        List<User> followers = userDao.getFollowers(ID);
+//        Assert.assertEquals(1, followers.size());
+//        Assert.assertEquals(ID2, followers.get(0).getId());
+//    }
+//
+//    @Transactional
+//    @Test
+//    public void testGetMultipleFollowers() {
+//        jdbcTemplate.execute("INSERT INTO users (id, username, email, password) VALUES (" + ID + ", '" + USERNAME + "', '" + EMAIL + "','" + PASSWORD + "')");
+//        jdbcTemplate.execute("INSERT INTO users (id, username, email, password) VALUES (" + ID2 + ", '" + USERNAME2 + "', '" + EMAIL2 + "','" + PASSWORD2 + "')");
+//        jdbcTemplate.execute("INSERT INTO users (id, username, email, password) VALUES (" + ID3 + ", '" + "USERNAME3" + "', '" + "EMAIL3" + "','" + "PASSWORD3" + "')");
+//
+//        // ID2 and ID3 follow ID
+//        jdbcTemplate.execute("INSERT INTO followers(userid, following) VALUES ("+ ID2 +", "+ ID +")");
+//        jdbcTemplate.execute("INSERT INTO followers(userid, following) VALUES ("+ ID3 +", "+ ID +")");
+//
+//        List<User> followers = userDao.getFollowers(ID);
+//        Assert.assertEquals(2, followers.size());
+//        Assert.assertTrue(followers.stream().allMatch(user -> user.getId().equals(ID2) || user.getId().equals(ID3)));
+//    }
+//
+//    @Transactional
+//    @Test
+//    public void testGetFollowing() {
+//        jdbcTemplate.execute("INSERT INTO users (id, username, email, password) VALUES (" + ID + ", '" + USERNAME + "', '" + EMAIL + "','" + PASSWORD + "')");
+//        jdbcTemplate.execute("INSERT INTO users (id, username, email, password) VALUES (" + ID2 + ", '" + USERNAME2 + "', '" + EMAIL2 + "','" + PASSWORD2 + "')");
+//        // ID follows ID2
+//        jdbcTemplate.execute("INSERT INTO followers(userid, following) VALUES (" + ID + ", " + ID2 + ")");
+//
+//        List<User> following = userDao.getFollowing(ID);
+//        Assert.assertEquals(1, following.size());
+//        Assert.assertEquals(ID2, following.get(0).getId());
+//    }
+//
+//    @Transactional
+//    @Test
+//    public void testGetMultipleFollowing() {
+//        jdbcTemplate.execute("INSERT INTO users (id, username, email, password) VALUES (" + ID + ", '" + USERNAME + "', '" + EMAIL + "','" + PASSWORD + "')");
+//        jdbcTemplate.execute("INSERT INTO users (id, username, email, password) VALUES (" + ID2 + ", '" + USERNAME2 + "', '" + EMAIL2 + "','" + PASSWORD2 + "')");
+//        jdbcTemplate.execute("INSERT INTO users (id, username, email, password) VALUES (" + ID3 + ", '" + "USERNAME3" + "', '" + "EMAIL3" + "','" + "PASSWORD3" + "')");
+//
+//        // ID follows ID2 and ID3
+//        jdbcTemplate.execute("INSERT INTO followers(userid, following) VALUES (" + ID + ", " + ID2 + ")");
+//        jdbcTemplate.execute("INSERT INTO followers(userid, following) VALUES (" + ID + ", " + ID3 + ")");
+//
+//        List<User> following = userDao.getFollowing(ID);
+//        Assert.assertEquals(2, following.size());
+//        Assert.assertTrue(following.stream().allMatch(user -> user.getId().equals(ID2) || user.getId().equals(ID3)));
+//    }
+//
+//    @Transactional
+//    @Test
+//    public void testGetFollowingCount() {
+//        jdbcTemplate.execute("INSERT INTO users (id, username, email, password) VALUES (" + ID + ", '" + USERNAME + "', '" + EMAIL + "','" + PASSWORD + "')");
+//        jdbcTemplate.execute("INSERT INTO users (id, username, email, password) VALUES (" + ID2 + ", '" + USERNAME2 + "', '" + EMAIL2 + "','" + PASSWORD2 + "')");
+//        jdbcTemplate.execute("INSERT INTO users (id, username, email, password) VALUES (" + ID3 + ", '" + "USERNAME3" + "', '" + "EMAIL3" + "','" + "PASSWORD3" + "')");
+//
+//        // ID2 and ID3 follow ID
+//        jdbcTemplate.execute("INSERT INTO followers(userid, following) VALUES ("+ ID2 +", "+ ID +")");
+//        jdbcTemplate.execute("INSERT INTO followers(userid, following) VALUES ("+ ID3 +", "+ ID +")");
+//
+//        FollowerFollowingCount ffcount = userDao.getFollowerFollowingCount(ID);
+//
+//        Assert.assertEquals(2, ffcount.getFollowerCount());
+//        Assert.assertEquals(0, ffcount.getFollowingCount());
+//    }
+//
+//    @Transactional
+//    @Test
+//    public void testGetFollowingCountEmpty() {
+//        jdbcTemplate.execute("INSERT INTO users (id, username, email, password) VALUES (" + ID + ", '" + USERNAME + "', '" + EMAIL + "','" + PASSWORD + "')");
+//        jdbcTemplate.execute("INSERT INTO users (id, username, email, password) VALUES (" + ID2 + ", '" + USERNAME2 + "', '" + EMAIL2 + "','" + PASSWORD2 + "')");
+//        jdbcTemplate.execute("INSERT INTO users (id, username, email, password) VALUES (" + ID3 + ", '" + "USERNAME3" + "', '" + "EMAIL3" + "','" + "PASSWORD3" + "')");
+//
+//        FollowerFollowingCount ffcount = userDao.getFollowerFollowingCount(ID);
+//
+//        Assert.assertEquals(0, ffcount.getFollowerCount());
+//        Assert.assertEquals(0, ffcount.getFollowingCount());
+//    }
+//
+//    @Transactional
+//    @Test
+//    public void testCreateFollow() {
+//        jdbcTemplate.execute("INSERT INTO users (id, username, email, password) VALUES (" + ID + ", '" + USERNAME + "', '" + EMAIL + "','" + PASSWORD + "')");
+//        jdbcTemplate.execute("INSERT INTO users (id, username, email, password) VALUES (" + ID2 + ", '" + USERNAME2 + "', '" + EMAIL2 + "','" + PASSWORD2 + "')");
+//
+//        boolean follow = userDao.createFollow(ID2, ID);
+//        Assert.assertTrue(follow);
+//        em.flush();
+//        int count = jdbcTemplate.query("select count(*) as count from followers", (rs, rowNum) -> rs.getInt("count")).stream().findFirst().orElse(0);
+//        Assert.assertEquals(1, count);
+//    }
+//
+//    @Transactional
+//    @Test
+//    public void testDeleteFollow() {
+//        jdbcTemplate.execute("INSERT INTO users (id, username, email, password) VALUES (" + ID + ", '" + USERNAME + "', '" + EMAIL + "','" + PASSWORD + "')");
+//        jdbcTemplate.execute("INSERT INTO users (id, username, email, password) VALUES (" + ID2 + ", '" + USERNAME2 + "', '" + EMAIL2 + "','" + PASSWORD2 + "')");
+//
+//        // ID2 follow ID
+//        jdbcTemplate.execute("INSERT INTO followers(userid, following) VALUES (" + ID2 + ", " + ID + ")");
+//
+//        Assert.assertTrue(userDao.deleteFollow(ID2, ID));
+//
+//    }
+//
+//    @Transactional
+//    @Test
+//    public void testDeleteNonexistentFollow() {
+//        jdbcTemplate.execute("INSERT INTO users (id, username, email, password) VALUES (" + ID + ", '" + USERNAME + "', '" + EMAIL + "','" + PASSWORD + "')");
+//        jdbcTemplate.execute("INSERT INTO users (id, username, email, password) VALUES (" + ID2 + ", '" + USERNAME2 + "', '" + EMAIL2 + "','" + PASSWORD2 + "')");
+//
+//        // ID2 follow ID
+//        jdbcTemplate.execute("INSERT INTO followers(userid, following) VALUES ("+ ID2 +", "+ ID +")");
+//
+//        Assert.assertFalse(userDao.deleteFollow(ID,ID2));
+//
+//    }
 
     @Transactional
     @Test

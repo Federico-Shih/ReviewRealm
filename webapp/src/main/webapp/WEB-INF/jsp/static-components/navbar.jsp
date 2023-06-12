@@ -14,6 +14,16 @@
         });
         var elemsTooltip = document.querySelectorAll('.tooltipped');
         var instancesTooltip = M.Tooltip.init(elemsTooltip, {});
+        var submitButtons = document.querySelectorAll('button[type="submit"]');
+
+        submitButtons.forEach(function(button) {
+            button.addEventListener('click', function() {
+                button.disabled = true;
+                setTimeout(function() {
+                    button.disabled = false;
+                }, 100);
+            });
+        });
     });
 </script>
 
@@ -35,7 +45,7 @@
                 </a>
             </div>
             <div class="navbar-search">
-                <div class="input-field valign-wrapper" style="padding: 0 8px 0 0;">
+                <div class="input-field valign-wrapper navbar-input-field" style="padding: 0 8px 0 0;">
                     <i class="material-icons prefix icon-prefix">search</i>
                     <input
                             name="search"

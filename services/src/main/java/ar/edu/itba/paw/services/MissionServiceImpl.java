@@ -31,7 +31,8 @@ public class MissionServiceImpl implements MissionService {
 
     @Transactional
     @Override
-    public MissionProgress addMissionProgress(User user, Mission mission, Float progress) {
+    public MissionProgress addMissionProgress(long userId, Mission mission, float progress) {
+        User user = this.userDao.findById(userId).orElseThrow(IllegalArgumentException::new);
         if (mission.getRoleType() != null && !user.getRoles().contains(mission.getRoleType())) {
             return null;
         }
@@ -39,14 +40,14 @@ public class MissionServiceImpl implements MissionService {
                 .findById(user, mission)
                 .orElseGet(() -> this.missionDao.create(user, mission, 0f, LocalDate.now()));
         if (!missionProgress.isCompleted()) {
-            missionProgress = missionDao.updateProgress(user, mission, missionProgress.getProgress() + progress);
+            missionProgress = missionDao.updateProgress(user, mission, missionProgress.getProgress() + progress).orElseThrow(IllegalArgumentException::new);
             if (missionProgress.isCompleted()) {
                 LOGGER.info("Completed mission {} for user {}, gained {} xp", mission.getTitle(), user.getId(), mission.getXp());
-                missionProgress = missionDao.completeMission(user, mission);
+                missionProgress = missionDao.completeMission(user, mission).orElseThrow(IllegalArgumentException::new);
                 userDao.update(user.getId(), new SaveUserBuilder().withXp(user.getXp() + mission.getXp()).build());
                 // Automatically reset repeatable and none time frequency missions
                 if (mission.isRepeatable() && mission.getFrequency() == Mission.MissionFrequency.NONE) {
-                    missionProgress = missionDao.resetProgress(user, mission);
+                    missionProgress = missionDao.resetProgress(user, mission).orElseThrow(IllegalArgumentException::new);
                 }
             }
         }

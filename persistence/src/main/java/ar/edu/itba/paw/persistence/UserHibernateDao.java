@@ -43,10 +43,10 @@ public class UserHibernateDao implements UserDao, PaginationDao<UserFilter> {
     }
 
     @Override
-    public int update(long id, SaveUserDTO saveUserDTO) {
+    public Optional<User> update(long id, SaveUserDTO saveUserDTO) {
         final User user = em.find(User.class, id);
         if (user == null) {
-            return 0;
+            return Optional.empty();
         }
         if (saveUserDTO.isEnabled() != null) {
             user.setEnabled(saveUserDTO.isEnabled());
@@ -75,7 +75,7 @@ public class UserHibernateDao implements UserDao, PaginationDao<UserFilter> {
         if (saveUserDTO.getXp() != null) {
             user.setXp(saveUserDTO.getXp());
         }
-        return 1;
+        return Optional.of(user);
     }
 
     @Override
@@ -186,44 +186,42 @@ public class UserHibernateDao implements UserDao, PaginationDao<UserFilter> {
     }
 
     @Override
-    public List<User> getFollowers(long id) {
+    public Optional<List<User>> getFollowers(long id) {
         User user = em.find(User.class, id);
-        if (user == null) return new ArrayList<>();
-        return new ArrayList<>(user.getFollowers());
+        if (user == null) return Optional.empty();
+        return Optional.of(new ArrayList<>(user.getFollowers()));
     }
 
     @Override
-    public List<User> getFollowing(long id) {
+    public Optional<List<User>> getFollowing(long id) {
         User user = em.find(User.class, id);
-        if (user == null) return new ArrayList<>();
-        return new ArrayList<>(user.getFollowing());
+        if (user == null) return Optional.empty();
+        return Optional.of(new ArrayList<>(user.getFollowing()));
     }
 
     @Override
-    public FollowerFollowingCount getFollowerFollowingCount(long id) {
+    public Optional<FollowerFollowingCount> getFollowerFollowingCount(long id) {
         User user = em.find(User.class, id);
-        if (user == null) return new FollowerFollowingCount(0, 0);
-        return new FollowerFollowingCount(user.getFollowers().size(), user.getFollowing().size());
+        if (user == null) return Optional.empty();
+        return Optional.of(new FollowerFollowingCount(user.getFollowers().size(), user.getFollowing().size()));
     }
 
     @Override
-    public boolean createFollow(long userId, long id) {
+    public Optional<User>  createFollow(long userId, long id) {
         User user = em.find(User.class, userId);
-        User userToFollow = em.find(User.class, id);
+        User userToFollow = em.getReference(User.class, id);
+        if(user == null || userToFollow == null) return Optional.empty();
         user.getFollowing().add(userToFollow);
-        return true;
+        return Optional.of(user);
     }
 
     @Override
-    public boolean deleteFollow(long userId, long id) {
+    public Optional<User> deleteFollow(long userId, long id) {
         User user = em.find(User.class, userId);
         User followedUser = em.getReference(User.class, id);
-        if (user == null || followedUser == null) return false;
-        if (!user.getFollowing().contains(followedUser)) {
-            return false;
-        }
+        if (user == null || followedUser == null) return Optional.empty();
         user.getFollowing().remove(followedUser);
-        return true;
+        return Optional.of(user);
     }
 
     @Override
@@ -242,32 +240,34 @@ public class UserHibernateDao implements UserDao, PaginationDao<UserFilter> {
     }
 
     @Override
-    public void setPreferences(Set<Integer> genres, long userId) {
+    public Optional<User> setPreferences(Set<Integer> genres, long userId) {
         User user = em.find(User.class, userId);
-        if (user == null) return;
+        if (user == null) return Optional.empty();
         user.getPreferences().clear();
+        Set<Genre> preferences = user.getPreferences();
         for (Integer genreId : genres) {
             Genre genre = Genre.valueFrom(genreId);
             if (genre != null) {
-                user.getPreferences().add(genre);
+               preferences.add(genre);
             }
         }
+        return Optional.of(user);
     }
 
     @Override
-    public void disableNotification(long userId, String notificationType) {
+    public Optional<User> disableNotification(long userId, String notificationType) {
         User user = em.find(User.class, userId);
-        if (user != null) {
-            user.getDisabledNotifications().add(NotificationType.valueFrom(notificationType));
-        }
+        if (user == null) return Optional.empty();
+        user.getDisabledNotifications().add(NotificationType.valueFrom(notificationType));
+        return Optional.of(user);
     }
 
     @Override
-    public void enableNotification(long userId, String notificationType) {
+    public Optional<User> enableNotification(long userId, String notificationType) {
         User user = em.find(User.class, userId);
-        if (user != null) {
-            user.getDisabledNotifications().remove(NotificationType.valueFrom(notificationType));
-        }
+        if (user == null) return Optional.empty();
+        user.getDisabledNotifications().remove(NotificationType.valueFrom(notificationType));
+        return Optional.of(user);
     }
 
     private String toTableString(UserFilter filter) {

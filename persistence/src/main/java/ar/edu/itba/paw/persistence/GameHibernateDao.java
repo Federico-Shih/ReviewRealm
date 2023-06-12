@@ -33,7 +33,7 @@ public class GameHibernateDao implements GameDao, PaginationDao<GameFilter> {
     }
 
     @Override
-    public Optional<Game> edit(Long gameId,String name, String description, String developer, String publisher, String imageid, List<Genre> genres) {
+    public Optional<Game> edit(long gameId,String name, String description, String developer, String publisher, String imageid, List<Genre> genres) {
 
         final Game game = em.find(Game.class, gameId);
         if(game==null)
@@ -52,7 +52,7 @@ public class GameHibernateDao implements GameDao, PaginationDao<GameFilter> {
     }
 
     @Override
-    public Optional<Game> getById(Long id) {
+    public Optional<Game> getById(long id) {
         final Game game = em.find(Game.class, id);
         return Optional.ofNullable(game);
     }
@@ -84,7 +84,7 @@ public class GameHibernateDao implements GameDao, PaginationDao<GameFilter> {
     }
 
     @Override
-    public List<Genre> getGenresByGame(Long id) {
+    public List<Genre> getGenresByGame(long id) {
         final Game game = em.find(Game.class, id);
         if(game == null) {
             return new ArrayList<>();
@@ -93,12 +93,12 @@ public class GameHibernateDao implements GameDao, PaginationDao<GameFilter> {
     }
 
     @Override
-    public List<Game> getFavoriteGamesFromUser(long userId) {
+    public Optional<List<Game>> getFavoriteGamesFromUser(long userId) {
         final User user = em.find(User.class, userId);
         if(user == null) {
-            return new ArrayList<>();
+            return Optional.empty();
         }
-        return user.getFavoriteGames();
+        return Optional.of(user.getFavoriteGames());
     }
 
 
@@ -112,10 +112,10 @@ public class GameHibernateDao implements GameDao, PaginationDao<GameFilter> {
     }
 
     @Override
-    public void deleteFavoriteGameForUser(long userId, long gameId) {
+    public boolean deleteFavoriteGameForUser(long userId, long gameId) {
         final User user = em.find(User.class, userId);
-        user.getFavoriteGames().removeIf(game -> game.getId() == gameId);
-        //TODO:Checkear si se hace el persist de User de forma automatica
+        if(user==null) return false;
+        return user.getFavoriteGames().removeIf(game -> game.getId() == gameId);
     }
 
     @Override
@@ -130,44 +130,49 @@ public class GameHibernateDao implements GameDao, PaginationDao<GameFilter> {
     }
 
     @Override
-    public Set<Game> getGamesReviewedByUser(Long userId) {
+    public Optional<Set<Game>> getGamesReviewedByUser(long userId) {
         User user = em.find(User.class, userId);
-        if (user == null) return new HashSet<>();
-        return user.getReviews().stream().map(Review::getReviewedGame).collect(Collectors.toSet());
+        if (user == null) return Optional.empty();
+        return Optional.of(user.getReviews().stream().map(Review::getReviewedGame).collect(Collectors.toSet()));
     }
 
     @Override
-    public void addNewReview(Long gameId, Integer rating) {
-        final Game game = em.find(Game.class, gameId);
-        game.setReviewCount(game.getReviewCount() + 1);
-        game.setRatingSum(game.getRatingSum() + rating);
-        //TODO:Checkear si se hace el persist de Game de forma automatica
+    public Optional<Game> addNewReview(long gameId, int rating) {
+        final Optional<Game> game = Optional.ofNullable(em.find(Game.class, gameId));
+        game.ifPresent((g) -> {
+            g.setReviewCount(g.getReviewCount() + 1);
+            g.setRatingSum(g.getRatingSum() + rating);
+        });
+        return game;
     }
 
     @Override
-    public void modifyReview(Long gameId, Integer oldRating, Integer newRating) {
-        final Game game = em.find(Game.class, gameId);
-        game.setRatingSum(game.getRatingSum() + newRating - oldRating);
-        //TODO:Checkear si se hace el persist de Game de forma automatica
+    public Optional<Game> modifyReview(long gameId, int oldRating, int newRating) {
+        final Optional<Game> game = Optional.ofNullable(em.find(Game.class, gameId));
+        game.ifPresent((g) -> {
+            g.setRatingSum(g.getRatingSum() + newRating - oldRating);
+        });
+        return game;
     }
 
     @Override
-    public void deleteReview(Long gameId, Integer rating) {
-        final Game game = em.find(Game.class, gameId);
-        game.setReviewCount(game.getReviewCount() - 1);
-        game.setRatingSum(game.getRatingSum() - rating);
-        //TODO:Checkear si se hace el persist de Game de forma automatica
+    public Optional<Game> deleteReviewFromGame(long gameId, int rating) {
+        final Optional<Game> game = Optional.ofNullable(em.find(Game.class, gameId));
+        game.ifPresent((g) -> {
+            g.setReviewCount(g.getReviewCount() - 1);
+            g.setRatingSum(g.getRatingSum() - rating);
+        });
+        return game;
     }
 
     @Override
-    public boolean setSuggestedFalse(long gameId) {
-        final Game game = em.find(Game.class, gameId);
-        if (game == null) {
-            return false;
+    public Optional<Game> setSuggestedFalse(long gameId) {
+        final Optional<Game> game = Optional.ofNullable(em.find(Game.class, gameId));
+        if(game.isPresent()) {
+            game.get().setSuggestion(false);
+            em.persist(game.get());
         }
-        game.setSuggestion(false);
-        em.persist(game);
-        return true;
+        return game;
     }
 
     @Override
@@ -178,15 +183,16 @@ public class GameHibernateDao implements GameDao, PaginationDao<GameFilter> {
         return game!=null;
     }
 
-    //TODO: No hay forma de que sea así, estamos haciendo muchos calls
     @Override
-    public void replaceAllFavoriteGames(long userId, List<Long> gameIds) {
+    public Optional<User> replaceAllFavoriteGames(long userId, List<Long> gameIds) {
         User user = em.find(User.class, userId);
+        if (user == null) return Optional.empty();
         List<Game> favGames = user.getFavoriteGames();
         favGames.clear();
         for (Long gameId : gameIds) {
             favGames.add(em.find(Game.class, gameId));
         }
+        return Optional.of(user);
     }
 
 

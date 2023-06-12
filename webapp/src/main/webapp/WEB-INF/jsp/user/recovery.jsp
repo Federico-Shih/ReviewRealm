@@ -75,7 +75,7 @@
                         <spring:message code="no-token.cta"/>
                     </a>
                 </div>
-                <button type="submit" class="btn-large">
+                <button type="submit" class="btn-large margin-top-2">
                     <spring:message code="email.validation.cta"/>
                 </button>
             </form>

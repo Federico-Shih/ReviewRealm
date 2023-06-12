@@ -27,6 +27,11 @@
             <c:forEach items="${gameForm.genres}" var="genre">
                 document.getElementById('${genre}').setAttribute("checked", "checked");
             </c:forEach>
+            document.getElementById('image').onchange = function () {
+                document.getElementById('imageShow').src = URL.createObjectURL(this.files[0]);
+                document.getElementById('preview-div').classList.remove('hide');
+                document.getElementById('old-image-div').classList.add('hide');
+            }
         });
     </script>
 </head>
@@ -173,14 +178,5 @@
         </div>
     </form:form>
 </div>
-
-<script>
-    document.getElementById('image').onchange = function () {
-        document.getElementById('imageShow').src = URL.createObjectURL(this.files[0]);
-        document.getElementById('preview-div').classList.remove('hide');
-        document.getElementById('old-image-div').classList.add('hide');
-    }
-</script>
-
 </body>
 </html>

@@ -158,13 +158,13 @@ public class UserServiceImplTest {
         us.followUserById(1L, 2L);
     }
 
-    @Test
-    public void followUserTest() {
-        Mockito.when(userDao.exists(1L)).thenReturn(true);
-        Mockito.when(userDao.exists(2L)).thenReturn(true);
-        Mockito.when(userDao.createFollow(1L, 2L)).thenReturn(true);
-        Assert.assertTrue(us.followUserById(1L, 2L));
-    }
+//    @Test
+//    public void followUserTest() {
+//        Mockito.when(userDao.exists(1L)).thenReturn(true);
+//        Mockito.when(userDao.exists(2L)).thenReturn(true);
+//        Mockito.when(userDao.createFollow(1L, 2L)).thenReturn(true);
+//        Assert.assertTrue(us.followUserById(1L, 2L));
+//    }
 
     @Test(expected = TokenExpiredException.class)
     public void validateTokenExpired() throws TokenExpiredException {

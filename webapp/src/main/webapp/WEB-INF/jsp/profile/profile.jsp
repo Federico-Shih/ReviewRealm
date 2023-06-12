@@ -32,6 +32,9 @@
             <c:if test="${notificationsChanged}">
                 M.toast({html: '<spring:message code="profile.notifications-changed" />', classes: 'created-toast'});
             </c:if>
+            <c:if test="${favoriteGamesChanged}">
+                M.toast({html: '<spring:message code="profile.favorite-games-changed" />', classes: 'created-toast'});
+            </c:if>
         });
     </script>
 </head>
@@ -44,11 +47,11 @@
 </jsp:include>
 <div class="container">
     <div class="profile-info-panel f-row f-jc-sbetween">
-        <div class="f-row f-ai-center">
+        <div class="f-row f-ai-center full-width">
             <img class="profile-info-panel-image"
                  src="<c:url value="${avatar}"/>"
                  alt="profilePic"/>
-            <div class="profile-info-panel-info f-column f-jc-center">
+            <div class="profile-info-panel-info full-width f-column f-jc-center">
                 <div class="f-row f-ai-center f-gap-2">
                     <span class="profile-user-name">
                         ${profile.username}

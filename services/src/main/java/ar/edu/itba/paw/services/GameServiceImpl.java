@@ -2,17 +2,16 @@ package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.dtos.Page;
 import ar.edu.itba.paw.dtos.filtering.GameFilter;
-import ar.edu.itba.paw.dtos.filtering.GameFilterBuilder;
 import ar.edu.itba.paw.dtos.ordering.GameOrderCriteria;
 import ar.edu.itba.paw.dtos.ordering.Ordering;
 import ar.edu.itba.paw.dtos.saving.SubmitGameDTO;
-import ar.edu.itba.paw.dtos.searching.GameSearchFilter;
 import ar.edu.itba.paw.enums.Difficulty;
 import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.enums.Mission;
 import ar.edu.itba.paw.enums.Platform;
 import ar.edu.itba.paw.enums.RoleType;
-import ar.edu.itba.paw.exceptions.NoSuchGameException;
+import ar.edu.itba.paw.exceptions.GameNotFoundException;
+import ar.edu.itba.paw.exceptions.GenreNotFoundException;
 import ar.edu.itba.paw.exceptions.UserNotFoundException;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.persistenceinterfaces.GameDao;
@@ -26,7 +25,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -71,17 +69,13 @@ public class GameServiceImpl implements GameService {
 
     @Transactional
     @Override
-    public void deleteGame(long gameId) {
-        Optional<Game> game = gameDao.getById(gameId);
-        if(game.isPresent())
-            gameDao.deleteGame(gameId);
-        else
-            throw new NoSuchGameException("No game with id" + gameId);
+    public boolean deleteGame(long gameId) {
+        return gameDao.deleteGame(gameId);
     }
 
     @Transactional
     @Override
-    public void editGame(SubmitGameDTO gameDTO, long gameId) {
+    public Game editGame(SubmitGameDTO gameDTO, long gameId) {
         Image img = null;
         if(gameDTO.getImageData().length!=0) {
             img = imgService.uploadImage(gameDTO.getImageData(), gameDTO.getMediatype());
@@ -91,16 +85,21 @@ public class GameServiceImpl implements GameService {
 
         List<Genre> genreList = prepareGenres(gameDTO);
         LOGGER.info("Editing game - name: {}, developer: {}", gameDTO.getName(), gameDTO.getName());
-        gameDao.edit(gameId,gameDTO.getName(),gameDTO.getDescription(),gameDTO.getDeveloper(),gameDTO.getPublisher(), (img!=null)? img.getId() : null, genreList);
+        return gameDao.edit(gameId,gameDTO.getName(),gameDTO.getDescription(),gameDTO.getDeveloper(),gameDTO.getPublisher(), (img!=null)? img.getId() : null, genreList).orElseThrow(GameNotFoundException::new);
     }
 
-    private List<Genre> prepareGenres(SubmitGameDTO gameDTO) {
+    private List<Genre> prepareGenres(SubmitGameDTO gameDTO) throws GenreNotFoundException {
         List<Genre> genreList = new ArrayList<>();
         Optional<Genre> g;
         if (gameDTO.getGenres() != null) {
             for (Integer c : gameDTO.getGenres()) {
                 g = Genre.getById(c);
-                g.ifPresent(genreList::add);
+                if(g.isPresent()) {
+                    genreList.add(g.get());
+                }
+                else {
+                    throw new GenreNotFoundException();
+                }
             }
         }
         return genreList;
@@ -108,33 +107,23 @@ public class GameServiceImpl implements GameService {
 
     @Transactional(readOnly = true)
     @Override
-    public Optional<Game> getGameById(Long id) {
+    public Optional<Game> getGameById(long id) {
         return gameDao.getById(id);
     }
 
     @Transactional(readOnly = true)
     @Override
-    public List<Genre> getGameGenresById(Long id) {
-        return gameDao.getGenresByGame(id);
-    }
-
-    @Transactional(readOnly = true)
-    @Override
-    public Paginated<Game> searchGames(Page page, GameSearchFilter searchFilter, Ordering<GameOrderCriteria> ordering)
+    public Paginated<Game> searchGames(Page page, GameFilter searchFilter, Ordering<GameOrderCriteria> ordering)
     {
-        GameFilter filter = new GameFilterBuilder()
-                .withGameContent(searchFilter.getSearch())
-                .withGameGenres(searchFilter.getGenres())
-                .withRatingRange(searchFilter.getMinRating(), searchFilter.getMaxRating(), searchFilter.getIncludeNoRating())
-                .withSuggestion(searchFilter.getSuggestion())
-                .build();
-        return gameDao.findAll(page, filter, ordering);
+        return gameDao.findAll(page, searchFilter, ordering);
     }
 
 
     @Transactional(readOnly = true)
     @Override
-    public GameReviewData getGameReviewDataByGameId(Long id) {
+    public GameReviewData getGameReviewDataByGameId(long id) {
+        if(!getGameById(id).isPresent())
+            throw new GameNotFoundException();
         List<Review> reviews = reviewService.getAllReviewsFromGame(id,null);
         if(reviews.size() > 0) {
             HashMap<Difficulty, Integer> difficultyCount = new HashMap<>();
@@ -163,25 +152,26 @@ public class GameServiceImpl implements GameService {
 
     @Transactional
     @Override
-    public void addNewReviewToGame(Long gameId, Integer rating) {
-        gameDao.addNewReview(gameId, rating);
+    public Game addNewReviewToGame(long gameId, int rating) {
+        return gameDao.addNewReview(gameId, rating).orElseThrow(GameNotFoundException::new);
     }
 
     @Transactional
     @Override
-    public void deleteReviewFromGame(Long gameId, Integer reviewRating) {
-        gameDao.deleteReview(gameId,reviewRating);
+    public Game deleteReviewFromGame(long gameId, int reviewRating) {
+        return gameDao.deleteReviewFromGame(gameId,reviewRating).orElseThrow(GameNotFoundException::new);
     }
 
     @Transactional
     @Override
-    public void updateReviewFromGame(Long gameId, Integer oldRating, Integer newRating) {
-        gameDao.modifyReview(gameId, oldRating, newRating);
+    public Game updateReviewFromGame(long gameId, int oldRating, int newRating) {
+        return gameDao.modifyReview(gameId, oldRating, newRating).orElseThrow(GameNotFoundException::new);
     }
 
     @Transactional(readOnly = true)
     @Override
-    public List<Game> getRecommendationsOfGamesForUser(User user) {
+    public List<Game> getRecommendationsOfGamesForUser(long userId) {
+        User user = userService.getUserById(userId).orElseThrow(UserNotFoundException::new);
         if(!user.hasPreferencesSet()){
             return new ArrayList<>();
         }
@@ -195,51 +185,51 @@ public class GameServiceImpl implements GameService {
 
     @Transactional(readOnly = true)
     @Override
-    public Set<Game> getGamesReviewedByUser(Long userId) {
-        return gameDao.getGamesReviewedByUser(userId);
+    public Set<Game> getGamesReviewedByUser(long userId) {
+        return gameDao.getGamesReviewedByUser(userId).orElseThrow(UserNotFoundException::new);
     }
 
     @Transactional
     @Override
-    public void acceptGame(long gameId, User approvingUser) {
-        decisionGame(gameDao::setSuggestedFalse, gameId);
-        missionService.addMissionProgress(approvingUser, Mission.MANAGE_GAME_SUBMISSIONS, 1f);
+    public Game acceptGame(long gameId, long approvingUserId) {
+        Game game = gameDao.setSuggestedFalse(gameId).orElseThrow(GameNotFoundException::new);
+        missionService.addMissionProgress(approvingUserId, Mission.MANAGE_GAME_SUBMISSIONS, 1f);
+        return game;
     }
 
     @Transactional
     @Override
-    public void rejectGame(long gameId, User approvingUser) {
-        decisionGame(gameDao::deleteGame, gameId);
-        missionService.addMissionProgress(approvingUser, Mission.MANAGE_GAME_SUBMISSIONS, 1f);
-    }
-
-    private void decisionGame(Function<Long, Boolean> decisionFunction, Long gameId) {
-        if(!decisionFunction.apply(gameId))
-            throw new NoSuchGameException(String.format("There's no game with such id: %d", gameId));
+    public boolean rejectGame(long gameId, long approvingUserId) {
+        boolean deleted = gameDao.deleteGame(gameId);
+        missionService.addMissionProgress(approvingUserId, Mission.MANAGE_GAME_SUBMISSIONS, 1f);
+        return deleted;
     }
 
     @Transactional(readOnly = true)
     @Override
     public List<Game> getFavoriteGamesFromUser(long userId) {
-        return gameDao.getFavoriteGamesFromUser(userId);
+        return gameDao.getFavoriteGamesFromUser(userId).orElseThrow(UserNotFoundException::new);
     }
 
     @Transactional(readOnly = true)
     @Override
     public List<Game> getPossibleFavGamesFromUser(long userId) {
+        if(!userService.getUserById(userId).isPresent())
+            throw new UserNotFoundException();
         return gameDao.getFavoriteGamesCandidates(userId, 8);
     }
 
     @Override
-    public void deleteFavoriteGame(long userId, long gameId) {
+    public boolean deleteFavoriteGame(long userId, long gameId) {
         LOGGER.info("Possibly deleting gameId: {} from favorite games, for user {}", gameId, userId);
-        gameDao.deleteFavoriteGameForUser(userId, gameId);
+        return gameDao.deleteFavoriteGameForUser(userId, gameId);
     }
 
     @Transactional
     @Override
-    public void setFavoriteGames(long userId, List<Long> gameIds) {
-        gameDao.replaceAllFavoriteGames(userId, gameIds==null? new ArrayList<>(): gameIds);
+    public User setFavoriteGames(long userId, List<Long> gameIds) {
+        //TODO: mover en el dao tambien
+        return gameDao.replaceAllFavoriteGames(userId, gameIds==null? new ArrayList<>(): gameIds).orElseThrow(UserNotFoundException::new);
     }
 
 }

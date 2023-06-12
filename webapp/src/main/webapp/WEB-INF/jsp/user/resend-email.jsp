@@ -42,7 +42,7 @@
                         <spring:message code="has-token.cta"/>
                     </a>
                 </div>
-                <button type="submit" class="btn-large">
+                <button type="submit" class="btn-large margin-top-2">
                     <spring:message code="register.submit"/>
                 </button>
             </form:form>

@@ -51,6 +51,7 @@ public class ProfileController{
                                 @RequestParam(value = "preferences-changed", required = false) Boolean preferencesChanged,
                                 @RequestParam(value = "avatar-changed", required = false) Boolean avatarChanged,
                                 @RequestParam(value = "notifications-changed", required = false) Boolean notificationsChanged,
+                                @RequestParam(value = "favorite_games_changed", required = false) Boolean favoriteGamesChanged,
                                 @RequestParam(value = "page", defaultValue = "1") Integer page,
                                 @RequestParam(value = "pagesize", defaultValue ="8" ) Integer pageSize
     )
@@ -70,11 +71,13 @@ public class ProfileController{
         mav.addObject("preferencesChanged", preferencesChanged != null && preferencesChanged);
         mav.addObject("avatarChanged", avatarChanged != null && avatarChanged);
         mav.addObject("notificationsChanged", notificationsChanged != null && notificationsChanged);
+        mav.addObject("favoriteGamesChanged", favoriteGamesChanged != null && favoriteGamesChanged);
+
         mav.addObject("games",gameService.getFavoriteGamesFromUser(userId));
         mav.addObject("profile",user.get());
         mav.addObject("userModerator", user.get().getRoles().contains(RoleType.MODERATOR));
 
-        Paginated<Review> userReviews =reviewService.getUserReviews(Page.with(page, pageSize),user.get().getId(),loggedUser);
+        Paginated<Review> userReviews = reviewService.getUserReviews(Page.with(page, pageSize),user.get().getId(), loggedUser != null ? loggedUser.getId() : null);
 
         PaginationHelper.paginate(mav,userReviews);
 
@@ -286,17 +289,17 @@ public class ProfileController{
         }
         Page pageToPaginate = Page.with(page, pageSize);
         Paginated<Review> reviews = new Paginated<>(pageToPaginate.getPageNumber(), pageToPaginate.getPageSize(), 0, new ArrayList<>());
-        Boolean noFollowingAndFollowTab=false;
+        boolean noFollowingAndFollowTab = false;
         switch (contentTab){
             case FOLLOWING:
                 reviews = reviewService.getReviewsFromFollowingByUser(loggedUser.getId(), pageToPaginate);
                 noFollowingAndFollowTab = loggedUser.getFollowing().isEmpty();
                 break;
             case NEW:
-                reviews = reviewService.getNewReviewsExcludingActiveUser(pageToPaginate,loggedUser);
+                reviews = reviewService.getNewReviewsExcludingActiveUser(pageToPaginate,loggedUser.getId());
                 break;
             case RECOMMENDED:
-                reviews = reviewService.getRecommendedReviewsByUser(loggedUser, pageToPaginate);
+                reviews = reviewService.getRecommendedReviewsByUser(loggedUser.getId(), pageToPaginate);
                 break;
             default:
                 break;
@@ -332,7 +335,7 @@ public class ProfileController{
                                        @RequestParam(value = "pagesize", defaultValue = "8") Integer pageSize){
         final ModelAndView mav = new ModelAndView("games/game-details");
         User loggedUser = AuthenticationHelper.getLoggedUser(userService);
-        List<Game> recommendedGames = gameService.getRecommendationsOfGamesForUser(loggedUser);
+        List<Game> recommendedGames = gameService.getRecommendationsOfGamesForUser(loggedUser.getId());
 
         if(position == null || position < 0){
             position = 0;
@@ -352,7 +355,7 @@ public class ProfileController{
         Game game = recommendedGames.get(position);
         mav.addObject("game",game);
         GameReviewData reviewData = gameService.getGameReviewDataByGameId(game.getId());
-        Paginated<Review> reviews = reviewService.getReviewsFromGame(Page.with(page, pageSize), game.getId(), loggedUser);
+        Paginated<Review> reviews = reviewService.getReviewsFromGame(Page.with(page, pageSize), game.getId(), loggedUser.getId());
         PaginationHelper.paginate(mav, reviews);
         mav.addObject("gameReviewData", reviewData);
         mav.addObject("reviews", reviews.getList());

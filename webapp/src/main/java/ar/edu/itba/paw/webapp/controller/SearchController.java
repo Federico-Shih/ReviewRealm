@@ -1,9 +1,11 @@
 package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.dtos.Page;
+import ar.edu.itba.paw.dtos.filtering.GameFilter;
+import ar.edu.itba.paw.dtos.filtering.GameFilterBuilder;
+import ar.edu.itba.paw.dtos.filtering.ReviewFilter;
+import ar.edu.itba.paw.dtos.filtering.ReviewFilterBuilder;
 import ar.edu.itba.paw.dtos.ordering.*;
-import ar.edu.itba.paw.dtos.searching.GameSearchFilterBuilder;
-import ar.edu.itba.paw.dtos.searching.ReviewSearchFilterBuilder;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.servicesinterfaces.GameService;
 import ar.edu.itba.paw.servicesinterfaces.ReviewService;
@@ -47,15 +49,19 @@ public class SearchController {
                 search,
                 new Ordering<>(OrderDirection.DESCENDING, UserOrderCriteria.LEVEL)
         );
-        GameSearchFilterBuilder gameSearchFilterBuilder = new GameSearchFilterBuilder().withSearch(search);
+        GameFilter gameSearchFilter = new GameFilterBuilder().withGameContent(search).build();
         Paginated<Game> games = gameService.searchGames(Page.with(1, MAX_RESULTS),
-                gameSearchFilterBuilder.build(),
+                gameSearchFilter,
                 new Ordering<>(OrderDirection.ASCENDING, GameOrderCriteria.NAME));
-        ReviewSearchFilterBuilder reviewSearchFilterBuilder = new ReviewSearchFilterBuilder().withSearch(search);
+
+        ReviewFilter reviewFilter = new ReviewFilterBuilder().withReviewContent(search).build();
+
+        User loggedUser = AuthenticationHelper.getLoggedUser(userService);
+
         Paginated<Review> reviews = reviewService.searchReviews(Page.with(1, MAX_RESULTS),
-                reviewSearchFilterBuilder.build(),
+                reviewFilter,
                 new Ordering<>(OrderDirection.DESCENDING, ReviewOrderCriteria.REVIEW_DATE),
-                AuthenticationHelper.getLoggedUser(userService));
+                loggedUser == null ? null : loggedUser.getId());
         return new ModelAndView("search/search").addObject("users", users.getList()).addObject("games",
                 games.getList()).addObject("reviews", reviews.getList()).addObject("search", search);
     }
@@ -118,8 +124,6 @@ public class SearchController {
             queriesToKeep.add(Pair.of("search", search));
             mav.addObject("queriesToKeepAtPageChange", QueryHelper.toQueryString(queriesToKeep));
         }
-
-
         return mav;
     }
 }

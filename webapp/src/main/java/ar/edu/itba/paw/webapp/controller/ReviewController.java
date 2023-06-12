@@ -1,15 +1,16 @@
 package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.dtos.Page;
+import ar.edu.itba.paw.dtos.filtering.GameFilter;
+import ar.edu.itba.paw.dtos.filtering.GameFilterBuilder;
+import ar.edu.itba.paw.dtos.filtering.ReviewFilter;
+import ar.edu.itba.paw.dtos.filtering.ReviewFilterBuilder;
 import ar.edu.itba.paw.dtos.ordering.GameOrderCriteria;
 import ar.edu.itba.paw.dtos.ordering.OrderDirection;
 import ar.edu.itba.paw.dtos.ordering.Ordering;
 import ar.edu.itba.paw.dtos.ordering.ReviewOrderCriteria;
-import ar.edu.itba.paw.dtos.searching.GameSearchFilter;
-import ar.edu.itba.paw.dtos.searching.GameSearchFilterBuilder;
-import ar.edu.itba.paw.dtos.searching.ReviewSearchFilter;
-import ar.edu.itba.paw.dtos.searching.ReviewSearchFilterBuilder;
 import ar.edu.itba.paw.enums.*;
+import ar.edu.itba.paw.exceptions.ReviewAlreadyExistsException;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.servicesinterfaces.GameService;
 import ar.edu.itba.paw.servicesinterfaces.ReviewService;
@@ -24,6 +25,7 @@ import ar.edu.itba.paw.webapp.forms.SubmitReviewForm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Controller;
@@ -37,7 +39,7 @@ import java.util.stream.Collectors;
 
 @Controller
 public class ReviewController{
-    private static final Logger LOGGER = LoggerFactory.getLogger(ReviewController.class); //TODO: Sacar?
+    private static final Logger LOGGER = LoggerFactory.getLogger(ReviewController.class);
     private final GameService gameService;
     private final ReviewService reviewService;
     private final UserService userService;
@@ -61,15 +63,14 @@ public class ReviewController{
         if(pageSize == null || pageSize < 1) {
             pageSize = MAX_SEARCH_RESULTS;
         }
-
         //Se supone que solo podes llegar aca si estas loggeado
         User loggedUser = AuthenticationHelper.getLoggedUser(userService);
 
         if(searchquery.isEmpty()){
-            List<Game> list = gameService.getRecommendationsOfGamesForUser(loggedUser);
+            List<Game> list = gameService.getRecommendationsOfGamesForUser(loggedUser.getId());
             mav.addObject("games", list.subList(0, Math.min(list.size(), MAX_SEARCH_RESULTS)));
-        }else {
-            GameSearchFilter filter = new GameSearchFilterBuilder().withSearch(searchquery).build();
+        } else {
+            GameFilter filter = new GameFilterBuilder().withGameContent(searchquery).build();
             Paginated<Game> games = gameService.searchGames(Page.with(page, pageSize), filter, new Ordering<>(OrderDirection.ASCENDING, GameOrderCriteria.NAME));
             PaginationHelper.paginate(mav,games);
             mav.addObject("games", games.getList());
@@ -94,6 +95,12 @@ public class ReviewController{
         if (!reviewedGame.isPresent()) {
             throw new ObjectNotFoundException("game.notfound");
         }
+        User loggedUser = AuthenticationHelper.getLoggedUser(userService);
+        // Si ya reseñaste este juego
+        Optional<Review> possibleReview = loggedUser.getReviews().stream().filter(r -> r.getReviewedGame().equals(reviewedGame.get())).findFirst();
+        if (possibleReview.isPresent()) {
+            return new ModelAndView("redirect:/review/" + possibleReview.get().getId());
+        }
         mav.addObject("edit", false);
         mav.addObject("game", reviewedGame.get());
         mav.addObject("selectedGameId", gameId);
@@ -110,7 +117,7 @@ public class ReviewController{
     @RequestMapping(value = "/review/{id:\\d+}", method = RequestMethod.GET)
     public ModelAndView reviewDetails(@PathVariable(value = "id") Long reviewId, @RequestParam(value = "created", required = false) Boolean created) {
         User loggedUser = AuthenticationHelper.getLoggedUser(userService);
-        Optional<Review> review = reviewService.getReviewById(reviewId,loggedUser);
+        Optional<Review> review = reviewService.getReviewById(reviewId, loggedUser != null ? loggedUser.getId() : null);
         if (!review.isPresent()) {
             return new ModelAndView("errors/not-found");
         }
@@ -135,16 +142,12 @@ public class ReviewController{
         }
         Review createdReview;
         User author = AuthenticationHelper.getLoggedUser(userService);
-        Optional<Game> reviewedGame = gameService.getGameById(gameId);
-        if (!reviewedGame.isPresent()) {
-            throw new ObjectNotFoundException("Game with id " + gameId + " not found");
-        }
         createdReview = reviewService.createReview(
                 form.getReviewTitle(),
                 form.getReviewContent(),
                 form.getReviewRating(),
-                author,
-                reviewedGame.get(),
+                author.getId(),
+                gameId,
                 form.getDifficultyEnum(),
                 form.getGameLengthSeconds(),
                 form.getPlatformEnum(),
@@ -183,8 +186,8 @@ public class ReviewController{
             minTimePlayed = Double.parseDouble(timePlayedFilter);
         } catch (Exception ignored) {}
 
-        ReviewSearchFilterBuilder searchFilterBuilder = new ReviewSearchFilterBuilder()
-                .withGenres(genresFilter)
+        ReviewFilter searchFilter = new ReviewFilterBuilder()
+                .withGameGenres(genresFilter)
                 .withPlatforms(
                         platformsFilter.stream()
                         .map(Platform::getById)
@@ -199,20 +202,20 @@ public class ReviewController{
                         .map(Optional::get)
                         .collect(Collectors.toList())
                 )
-                .withCompleted((completedFilter!=null && completedFilter)? true : null)
-                .withReplayable((replayableFilter!=null && replayableFilter)? true : null)
-                .withPreferences(preferencesFilter)
-                .withSearch(search)
-                .withMinTimePlayed(minTimePlayed);
+                .withCompleted((completedFilter != null && completedFilter) ? true : null)
+                .withReplayable((replayableFilter!=null && replayableFilter) ? true : null)
+                .withAuthorGenres(preferencesFilter)
+                .withReviewContent(search)
+                .withMinTimePlayed(minTimePlayed)
+                .build();
 
-        ReviewSearchFilter searchFilter = searchFilterBuilder.build();
 
         Paginated<Review> reviewPaginated = reviewService.searchReviews(
                 Page.with(page != null ? page : INITIAL_PAGE, pageSize),
                 searchFilter,
                 new Ordering<>(OrderDirection.fromValue(orderDirection), ReviewOrderCriteria.fromValue(orderCriteria)),
-                loggedUser
-        ); //TODO: Sacar esto al service
+                loggedUser != null ? loggedUser.getId() : null
+        );
 
         PaginationHelper.paginate(mav,reviewPaginated);
 
@@ -221,10 +224,10 @@ public class ReviewController{
         mav.addObject("orderCriteria", ReviewOrderCriteria.values());
         mav.addObject("orderDirections", OrderDirection.values());
         mav.addObject("searchField", search);
-        mav.addObject("genresFilter", new FilteredList<Genre>(allGenres, (genre) -> genresFilter.contains(genre.getId())));
-        mav.addObject("preferencesFilter", new FilteredList<Genre>(allGenres, (preference) -> preferencesFilter.contains(preference.getId())));
-        mav.addObject("platformsFilter", new FilteredList<Platform>(Arrays.asList(Platform.values()), (platform) -> platformsFilter.contains(platform.getId())));
-        mav.addObject("difficultiesFilter", new FilteredList<Difficulty>(Arrays.asList(Difficulty.values()), (difficulty) -> difficultyFilter.contains(difficulty.getId())));
+        mav.addObject("genresFilter", new FilteredList<>(allGenres, (genre) -> genresFilter.contains(genre.getId())));
+        mav.addObject("preferencesFilter", new FilteredList<>(allGenres, (preference) -> preferencesFilter.contains(preference.getId())));
+        mav.addObject("platformsFilter", new FilteredList<>(Arrays.asList(Platform.values()), (platform) -> platformsFilter.contains(platform.getId())));
+        mav.addObject("difficultiesFilter", new FilteredList<>(Arrays.asList(Difficulty.values()), (difficulty) -> difficultyFilter.contains(difficulty.getId())));
         mav.addObject("completedFilter", completedFilter);
         mav.addObject("replayableFilter", replayableFilter);
         mav.addObject("selectedOrderDirection", OrderDirection.fromValue(orderDirection));
@@ -283,11 +286,7 @@ public class ReviewController{
     public ModelAndView updateReviewFeedback(@PathVariable(value = "id") Long id,
                                    @RequestParam(value = "feedback") String feedback,
                                    @RequestParam(value = "url", defaultValue = "/") String url){
-        Optional<Review> review = reviewService.getReviewById(id,null);
         User loggedUser = AuthenticationHelper.getLoggedUser(userService);
-        if (!review.isPresent()) {
-            throw new ObjectNotFoundException();
-        }
         FeedbackType fb;
         try {
             fb = FeedbackType.valueOf(feedback);
@@ -295,7 +294,7 @@ public class ReviewController{
             throw new ObjectNotFoundException();
         }
 
-        boolean response = reviewService.updateOrCreateReviewFeedback(review.get(), loggedUser,fb);
+        reviewService.updateOrCreateReviewFeedback(id, loggedUser.getId(), fb);
 
         return new ModelAndView("redirect:" + url);
     }
@@ -303,7 +302,7 @@ public class ReviewController{
     @RequestMapping(value = "/review/{id:\\d+}/edit", method = RequestMethod.GET)
     public ModelAndView editReviewForm(@PathVariable("id") Long reviewId, @ModelAttribute("reviewForm") EditReviewForm form) {
         User user = AuthenticationHelper.getLoggedUser(userService);
-        Review review = reviewService.getReviewById(reviewId, user).orElseThrow(() -> new ObjectNotFoundException("review.notfound"));
+        Review review = reviewService.getReviewById(reviewId, user.getId()).orElseThrow(ObjectNotFoundException::new);
         form.fromReview(review);
         ModelAndView mav = new ModelAndView("review/submit-review");
         mav.addObject("edit", true);
@@ -318,15 +317,21 @@ public class ReviewController{
 
     @RequestMapping(value = "/review/{id:\\d+}/edit", method = RequestMethod.POST)
     public ModelAndView editReview(@PathVariable("id") Long reviewId, @Valid @ModelAttribute("reviewForm") EditReviewForm form, final BindingResult errors) {
-        User user = AuthenticationHelper.getLoggedUser(userService);
         if (errors.hasErrors()) {
             return editReviewForm(reviewId, form);
         }
-        Review review = reviewService.getReviewById(reviewId, user).orElseThrow(() -> new ObjectNotFoundException("review.notfound"));
-        int update = reviewService.updateReview(review.getId(), form.getReviewTitle(), form.getReviewContent(), form.getReviewRating(), form.getDifficultyEnum(), form.getGameLengthSeconds(), form.getPlatformEnum(),  form.getReplayability(),  form.getReplayability());
-        if (update == 0) {
-            throw new ObjectNotFoundException("review.notfound");
+        Review update = reviewService.updateReview(reviewId, form.getReviewTitle(), form.getReviewContent(), form.getReviewRating(), form.getDifficultyEnum(), form.getGameLengthSeconds(), form.getPlatformEnum(),  form.getReplayability(),  form.getReplayability());
+        return new ModelAndView("redirect:/review/" + update.getId());
+    }
+
+    @ExceptionHandler(ReviewAlreadyExistsException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ModelAndView reviewExists(ReviewAlreadyExistsException exception) {
+        User user = AuthenticationHelper.getLoggedUser(userService);
+        Optional<Review> review = user.getReviews().stream().filter((r) -> r.getReviewedGame().equals(exception.getReviewedGame())).findFirst();
+        if (!review.isPresent()) {
+            throw new ObjectNotFoundException();
         }
-        return new ModelAndView("redirect:/review/" + reviewId);
+        return reviewDetails(review.get().getId(), false);
     }
 }

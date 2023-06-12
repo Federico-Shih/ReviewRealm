@@ -19,12 +19,12 @@
     <div class="container">
         <h3><spring:message code="login.header.title"/></h3>
         <form class="card form-body" action="${postPath}" method="post">
-            <div class="input-field">
+            <div class="input-field full-width">
                 <i class="material-icons prefix">email</i>
                 <label for="email"><spring:message code="login.email.field"/></label>
                 <input type="text" name="email" id="email" class="white-text" required>
             </div>
-            <div class="input-field">
+            <div class="input-field full-width">
                 <i class="material-icons prefix">lock</i>
                 <label for="password"><spring:message code="login.password.field"/></label>
                 <input type="password" name="password" id="password" class="white-text" required>

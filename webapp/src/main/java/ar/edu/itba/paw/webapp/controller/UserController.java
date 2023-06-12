@@ -125,7 +125,7 @@ public class UserController {
 
     private void authWithoutPassword(User user) {
          Set<RoleType> roles = us.getUserRoles(user.getId());
-        List<GrantedAuthority> authorities = roles.stream().map(roleType -> new SimpleGrantedAuthority("ROLE_" + roleType.getRole())).collect(Collectors.toList());
+         List<GrantedAuthority> authorities = roles.stream().map(roleType -> new SimpleGrantedAuthority("ROLE_" + roleType.getRole())).collect(Collectors.toList());
          Authentication result = new UsernamePasswordAuthenticationToken(new PawAuthUserDetails(user.getEmail(), user.getPassword(), authorities), null, authorities);
          SecurityContextHolder.getContext().setAuthentication(result);
     }

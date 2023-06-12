@@ -2,6 +2,7 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ page pageEncoding="UTF-8" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <html>
 <head>
@@ -88,7 +89,8 @@
                         <div class="f-row review-game-length f-jc-sbetween">
                             <div>
                                 <spring:message code="review.gameLength"/>:
-                                <c:out value="${review.gameLengthInUnits.value}"/>
+                                <fmt:formatNumber value="${review.gameLengthInUnits.value}" type="number" maxFractionDigits="2" minFractionDigits="2" var="gameLengthFormatted"/>
+                                <c:out value="${gameLengthFormatted}"/>
                                 <spring:message code="${review.gameLengthInUnits.key.code}"/>
                             </div>
                             <div>
@@ -102,30 +104,30 @@
                             <spring:message code="review.tags"/>
                             <c:if test="${review.platform != null}">
                                 <a href="<c:url value="/?f-plt=${review.platform.id}"/>">
-                                    <div class="chip chip-color">
+                                    <span class="chip-small-inverted">
                                         <spring:message code="${review.platform.code}"/>
-                                    </div>
+                                    </span>
                                 </a>
                             </c:if>
                             <c:if test="${review.difficulty != null}">
                                 <a href="<c:url value="/?f-dif=${review.difficulty.id}"/>">
-                                    <div class="chip chip-color">
+                                    <span class="chip-small-inverted">
                                         <spring:message code="${review.difficulty.code}"/>
-                                    </div>
+                                    </span>
                                 </a>
                             </c:if>
                             <c:if test="${review.completed != null && review.completed}">
                                 <a href="<c:url value="/?f-cpt=on"/>">
-                                    <div class="chip chip-color">
+                                    <span class="chip-small-inverted">
                                         <spring:message code="reviewForm.completed"/>
-                                    </div>
+                                    </span>
                                 </a>
                             </c:if>
                             <c:if test="${review.replayability != null && review.replayability}">
                                 <a href="<c:url value="/?f-rpl=on"/>">
-                                    <div class="chip chip-color">
+                                    <span class="chip-small-inverted">
                                         <spring:message code="review.replayable"/>
-                                    </div>
+                                    </span>
                                 </a>
                             </c:if>
                         </div>
