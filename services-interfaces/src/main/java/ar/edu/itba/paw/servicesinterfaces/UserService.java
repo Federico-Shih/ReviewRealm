@@ -18,27 +18,27 @@ public interface UserService {
 
     Optional<User> getUserByUsername(String username);
 
-    Optional<User> getUserById(Long id);
+    Optional<User> getUserById(long id);
 
     Optional<User> getUserByToken(String token);
 
-    void changeUserPassword(String email, String password);
+    User changeUserPassword(String email, String password);
 
-    void setPreferences(Set<Integer> genres, long userId);
+    User setPreferences(Set<Integer> genres, long userId);
 
-    List<User> getFollowers(Long id);
+    List<User> getFollowers(long id);
 
-    List<User> getFollowing(Long id);
+    List<User> getFollowing(long id);
 
-    FollowerFollowingCount getFollowerFollowingCount(Long id);
+    FollowerFollowingCount getFollowerFollowingCount(long id);
 
-    Set<RoleType> getUserRoles(Long id);
+    Set<RoleType> getUserRoles(long id);
 
-    boolean followUserById(Long userId, Long otherId);
+    User followUserById(long userId, long otherId);
 
-    boolean unfollowUserById(Long userId, Long otherId);
+    User unfollowUserById(long userId, long otherId);
 
-    boolean userFollowsId(Long userId, Long otherId);
+    boolean userFollowsId(long userId, long otherId);
 
     Optional<User> validateToken(String token) throws TokenExpiredException;
 
@@ -58,9 +58,9 @@ public interface UserService {
 
     User resetPassword(String token, String password) throws TokenExpiredException, TokenNotFoundException;
 
-    Map<NotificationType, Boolean> getUserNotificationSettings(Long userId);
+    Map<NotificationType, Boolean> getUserNotificationSettings(long userId);
 
-    Boolean isNotificationEnabled(Long userId, NotificationType notificationType);
+    Boolean isNotificationEnabled(long userId, NotificationType notificationType);
 
     User setUserNotificationSettings(long userId, Map<NotificationType, Boolean> notificationSettings);
 

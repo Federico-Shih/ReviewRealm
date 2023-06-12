@@ -93,7 +93,7 @@ public class UserServiceImpl implements UserService {
 
     @Transactional(readOnly = true)
     @Override
-    public Optional<User> getUserById(Long id) {
+    public Optional<User> getUserById(long id) {
         return userDao.findById(id);
     }
 
@@ -106,60 +106,62 @@ public class UserServiceImpl implements UserService {
 
     @Transactional(readOnly = true)
     @Override
-    public void changeUserPassword(String email, String password) {
+    public User changeUserPassword(String email, String password) {
         LOGGER.info("Changing password: {}", email);
         User user = getUserByEmail(email).orElseThrow(() -> new UserNotFoundException("notfound.user"));
         SaveUserBuilder saveUserBuilder = new SaveUserBuilder().withPassword(passwordEncoder.encode(password));
-        userDao.update(user.getId(), saveUserBuilder.build());
+        return userDao.update(user.getId(), saveUserBuilder.build());
     }
 
     @Transactional(readOnly = true)
     @Override
-    public List<User> getFollowers(Long id) {
-        return userDao.getFollowers(id);
+    public List<User> getFollowers(long id) {
+        return userDao.getFollowers(id).orElseThrow(() -> new UserNotFoundException("notfound.user"));
     }
 
     @Transactional(readOnly = true)
     @Override
-    public List<User> getFollowing(Long id) {
-        return userDao.getFollowing(id);
+    public List<User> getFollowing(long id) {
+        return userDao.getFollowing(id).orElseThrow(() -> new UserNotFoundException("notfound.user"));
     }
 
     @Transactional(readOnly = true)
     @Override
-    public FollowerFollowingCount getFollowerFollowingCount(Long id) {
-        return userDao.getFollowerFollowingCount(id);
+    public FollowerFollowingCount getFollowerFollowingCount(long id) {
+        return userDao.getFollowerFollowingCount(id).orElseThrow(() -> new UserNotFoundException("notfound.user"));
     }
 
+    @Transactional(readOnly = true)
     @Override
-    public Set<RoleType> getUserRoles(Long id) {
-        return userDao.findById(id).orElseThrow(UserNotFoundException::new).getRoles();
+    public Set<RoleType> getUserRoles(long id) {
+        return userDao.findById(id).orElseThrow(() -> new UserNotFoundException("notfound.user")).getRoles();
     }
 
     @Transactional
     @Override
-    public boolean followUserById(Long userId, Long otherId) {
+    public User followUserById(long userId, long otherId) {
+        User toReturn = userDao.createFollow(userId, otherId).orElseThrow(() -> new UserNotFoundException("notfound.user"));
+        LOGGER.info("User {} followed user {}", userId, otherId);
+        return toReturn;
+    }
+
+    @Transactional
+    @Override
+    public User unfollowUserById(long userId, long otherId) {
+        User toReturn = userDao.deleteFollow(userId, otherId).orElseThrow(() -> new UserNotFoundException("notfound.user"));
+        LOGGER.info("User {} possibly unfollowed user {}", userId, otherId);
+        return toReturn;
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public boolean userFollowsId(long userId, long otherId) {
         if (!userDao.exists(userId)) {
             throw new UserNotFoundException("notfound.currentuser");
         }
         if (!userDao.exists(otherId)) {
             throw new UserNotFoundException("notfound.otheruser");
         }
-        LOGGER.info("User {} followed user {}", userId, otherId);
-        return userDao.createFollow(userId, otherId);
-    }
-
-    @Transactional
-    @Override
-    public boolean unfollowUserById(Long userId, Long otherId) {
-        boolean op = userDao.deleteFollow(userId, otherId);
-        LOGGER.info("User {} unfollowed user {}", userId, otherId);
-        return op;
-    }
-
-    @Transactional
-    @Override
-    public boolean userFollowsId(Long userId, Long otherId) {
         return userDao.follows(userId, otherId);
     }
 
@@ -273,12 +275,12 @@ public class UserServiceImpl implements UserService {
         }
         User user = userDao.update(existentToken.getUser().getId(), new SaveUserBuilder().withPassword(passwordEncoder.encode(password)).withEnabled(true).build());
         LOGGER.info("User {} reset password", existentToken.getUser().getId());
-        return op;
+        return user;
     }
 
     @Transactional(readOnly = true)
     @Override
-    public Map<NotificationType, Boolean> getUserNotificationSettings(Long userId) {
+    public Map<NotificationType, Boolean> getUserNotificationSettings(long userId) {
         Map<NotificationType, Boolean> notificationSettings = new HashMap<>();
         Set<NotificationType> disabledNotifications = getUserById(userId).orElseThrow(UserNotFoundException::new).getDisabledNotifications();
         for (NotificationType disabledNotification : disabledNotifications) {
@@ -294,7 +296,7 @@ public class UserServiceImpl implements UserService {
 
     @Transactional(readOnly = true)
     @Override
-    public Boolean isNotificationEnabled(Long userId, NotificationType notificationType) {
+    public Boolean isNotificationEnabled(long userId, NotificationType notificationType) {
         Set<NotificationType> disabledNotifications = getUserById(userId).orElseThrow(UserNotFoundException::new).getDisabledNotifications();
         return disabledNotifications.stream().noneMatch(disabledNotification -> disabledNotification.equals(notificationType));
     }
@@ -303,15 +305,17 @@ public class UserServiceImpl implements UserService {
     @Override
     public User setUserNotificationSettings(long userId, Map<NotificationType, Boolean> notificationSettings) {
         Map<NotificationType, Boolean> currentNotificationSettings = getUserNotificationSettings(userId);
+        User modifiedUser = getUserById(userId).orElseThrow(UserNotFoundException::new);
         for (Map.Entry<NotificationType, Boolean> entry : notificationSettings.entrySet()) {
             if (entry.getValue() && !currentNotificationSettings.get(entry.getKey())) {
-                userDao.enableNotification(userId, entry.getKey().getTypeName());
+                modifiedUser = userDao.enableNotification(userId, entry.getKey().getTypeName());
                 LOGGER.info("User {} enabled notification {}", userId, entry.getKey().getTypeName());
             } else if (!entry.getValue() && currentNotificationSettings.get(entry.getKey())) {
-                userDao.disableNotification(userId, entry.getKey().getTypeName());
+                modifiedUser = userDao.disableNotification(userId, entry.getKey().getTypeName());
                 LOGGER.info("User {} disabled notification {}", userId, entry.getKey().getTypeName());
             }
         }
+        return modifiedUser;
     }
 
     @Transactional
