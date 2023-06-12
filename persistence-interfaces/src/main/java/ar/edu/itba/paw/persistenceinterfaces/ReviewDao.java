@@ -8,10 +8,7 @@ import ar.edu.itba.paw.dtos.ordering.ReviewOrderCriteria;
 import ar.edu.itba.paw.enums.Difficulty;
 import ar.edu.itba.paw.enums.FeedbackType;
 import ar.edu.itba.paw.enums.Platform;
-import ar.edu.itba.paw.models.Game;
-import ar.edu.itba.paw.models.Paginated;
-import ar.edu.itba.paw.models.Review;
-import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,22 +25,22 @@ public interface ReviewDao {
                          Boolean completed,
                          Boolean replayable);
 
-    int update(Long id, SaveReviewDTO reviewDTO);
+    Review update(long id, SaveReviewDTO reviewDTO);
 
-    Optional<Review> findById(Long id, Long activeUserId);
+    Optional<Review> findById(long id, Long activeUserId);
 
     Paginated<Review> findAll(Page pagination, ReviewFilter filter, Ordering<ReviewOrderCriteria> ordering, Long activeUserId);
 
     List<Review> findAll(ReviewFilter filter, Ordering<ReviewOrderCriteria> ordering, Long activeUserId);
 
-    boolean deleteReview(Long id);
+    boolean deleteReview(long id);
 
-    boolean editReviewFeedback(Long reviewId, Long userId, FeedbackType oldFeedback, FeedbackType feedback);
+    ReviewFeedback editReviewFeedback(long reviewId, long userId, FeedbackType oldFeedback, FeedbackType feedback);
 
-    boolean addReviewFeedback(Long reviewId, Long userId, FeedbackType feedback);
+    ReviewFeedback addReviewFeedback(long reviewId, long userId, FeedbackType feedback);
 
-    boolean deleteReviewFeedback(Long reviewId, Long userId, FeedbackType oldfeedback);
+    boolean deleteReviewFeedback(long reviewId, long userId, FeedbackType oldfeedback);
 
-    FeedbackType getReviewFeedback(Long reviewId, Long userId);
+    FeedbackType getReviewFeedback(long reviewId, long userId);
 
 }

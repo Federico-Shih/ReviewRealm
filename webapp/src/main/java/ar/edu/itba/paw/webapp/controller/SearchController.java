@@ -5,14 +5,8 @@ import ar.edu.itba.paw.dtos.filtering.GameFilter;
 import ar.edu.itba.paw.dtos.filtering.GameFilterBuilder;
 import ar.edu.itba.paw.dtos.filtering.ReviewFilter;
 import ar.edu.itba.paw.dtos.filtering.ReviewFilterBuilder;
-import ar.edu.itba.paw.dtos.ordering.GameOrderCriteria;
-import ar.edu.itba.paw.dtos.ordering.OrderDirection;
-import ar.edu.itba.paw.dtos.ordering.Ordering;
-import ar.edu.itba.paw.dtos.ordering.ReviewOrderCriteria;
-import ar.edu.itba.paw.models.Game;
-import ar.edu.itba.paw.models.Paginated;
-import ar.edu.itba.paw.models.Review;
-import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.dtos.ordering.*;
+import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.servicesinterfaces.GameService;
 import ar.edu.itba.paw.servicesinterfaces.ReviewService;
 import ar.edu.itba.paw.servicesinterfaces.UserService;
@@ -61,10 +55,13 @@ public class SearchController {
                 new Ordering<>(OrderDirection.ASCENDING, GameOrderCriteria.NAME));
 
         ReviewFilter reviewFilter = new ReviewFilterBuilder().withReviewContent(search).build();
+
+        User loggedUser = AuthenticationHelper.getLoggedUser(userService);
+
         Paginated<Review> reviews = reviewService.searchReviews(Page.with(1, MAX_RESULTS),
                 reviewFilter,
                 new Ordering<>(OrderDirection.DESCENDING, ReviewOrderCriteria.REVIEW_DATE),
-                AuthenticationHelper.getLoggedUser(userService));
+                loggedUser == null ? null : loggedUser.getId());
         return new ModelAndView("search/search").addObject("users", users.getList()).addObject("games",
                 games.getList()).addObject("reviews", reviews.getList()).addObject("search", search);
     }
@@ -127,8 +124,6 @@ public class SearchController {
             queriesToKeep.add(Pair.of("search", search));
             mav.addObject("queriesToKeepAtPageChange", QueryHelper.toQueryString(queriesToKeep));
         }
-
-
         return mav;
     }
 }

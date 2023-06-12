@@ -46,7 +46,7 @@ public class ReviewHibernateDao implements ReviewDao, PaginationDao<ReviewFilter
     }
 
     @Override
-    public Optional<Review> findById(Long id, Long activeUserId) {
+    public Optional<Review> findById(long id, Long activeUserId) {
         Review review = em.find(Review.class, id);
         User user = em.find(User.class, activeUserId != null ? activeUserId : -1);
         if (user != null) {
@@ -60,10 +60,10 @@ public class ReviewHibernateDao implements ReviewDao, PaginationDao<ReviewFilter
 
 
     @Override
-    public int update(Long id, SaveReviewDTO reviewDTO) {
+    public Review update(long id, SaveReviewDTO reviewDTO) {
         Review review = em.find(Review.class, id);
         if (review == null) {
-            return 0;
+            return null;
         }
         if (reviewDTO.getTitle() != null) {
             review.setTitle(reviewDTO.getTitle());
@@ -89,7 +89,7 @@ public class ReviewHibernateDao implements ReviewDao, PaginationDao<ReviewFilter
         if (reviewDTO.getGameLength() != null) {
             review.setGameLength(reviewDTO.getGameLength());
         }
-        return 1;
+        return review;
     }
 
     private QueryBuilder getQueryBuilderFromFilter(ReviewFilter filter) {
@@ -181,7 +181,7 @@ public class ReviewHibernateDao implements ReviewDao, PaginationDao<ReviewFilter
     }
 
     @Override
-    public boolean deleteReview(Long id) {
+    public boolean deleteReview(long id) {
         Review review = em.find(Review.class, id);
         if(review == null) return false;
         em.remove(review);
@@ -189,45 +189,47 @@ public class ReviewHibernateDao implements ReviewDao, PaginationDao<ReviewFilter
     }
 
     @Override
-    public FeedbackType getReviewFeedback(Long reviewId, Long userId) {
+    public FeedbackType getReviewFeedback(long reviewId, long userId) {
         ReviewFeedback feedback = em.find(ReviewFeedback.class, new ReviewFeedbackId(em.find(User.class, userId), em.find(Review.class, reviewId)));
         if(feedback == null) return null;
         return feedback.getFeedback();
     }
 
     @Override
-    public boolean editReviewFeedback(Long reviewId, Long userId, FeedbackType oldFeedback, FeedbackType feedback) {
+    public ReviewFeedback editReviewFeedback(long reviewId, long userId, FeedbackType oldFeedback, FeedbackType feedback) {
         Review review = em.find(Review.class, reviewId);
         ReviewFeedback reviewFeedback = em.find(ReviewFeedback.class, new ReviewFeedbackId(em.find(User.class, userId), review));
         if(reviewFeedback == null || review == null || oldFeedback == feedback) {
-            return false;
+            return null;
         }
         reviewFeedback.setFeedback(feedback);
         Long currentLikes = review.getLikes();
         Long currentDislikes = review.getDislikes();
         review.setLikes(currentLikes + (oldFeedback == FeedbackType.LIKE ? -1 : 1));
         review.setDislikes(currentDislikes + (oldFeedback == FeedbackType.DISLIKE ? -1 : 1));
-        return true;
+        return reviewFeedback;
     }
 
     @Override
-    public boolean addReviewFeedback(Long reviewId, Long userId, FeedbackType feedback) {
+    public ReviewFeedback addReviewFeedback(long reviewId, long userId, FeedbackType feedback) {
         Review likedReview = em.find(Review.class, reviewId);
         User likedUser = em.find(User.class, userId);
-        if (likedReview == null || likedUser == null) return false;
+        if (likedReview == null || likedUser == null) return null;
         ReviewFeedback possibleFeedback = em.find(ReviewFeedback.class, new ReviewFeedbackId(likedUser, likedReview));
-        if (possibleFeedback != null) return false;
-        em.persist(new ReviewFeedback(likedUser, likedReview, feedback));
+        if (possibleFeedback != null) return null;
+        ReviewFeedback reviewFeedback = new ReviewFeedback(likedUser, likedReview, feedback);
+        em.persist(reviewFeedback);
+
         if (feedback == FeedbackType.LIKE) {
             likedReview.setLikes(likedReview.getLikes() + 1);
         } else {
             likedReview.setDislikes(likedReview.getDislikes() + 1);
         }
-        return true;
+        return reviewFeedback;
     }
 
     @Override
-    public boolean deleteReviewFeedback(Long reviewId, Long userId, FeedbackType oldFeedback) {
+    public boolean deleteReviewFeedback(long reviewId, long userId, FeedbackType oldFeedback) {
         Review likedReview = em.find(Review.class, reviewId);
         User likedUser = em.find(User.class, userId);
         if (likedReview == null || likedUser == null) return false;

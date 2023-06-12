@@ -111,7 +111,7 @@ public class ReviewController{
     @RequestMapping(value = "/review/{id:\\d+}", method = RequestMethod.GET)
     public ModelAndView reviewDetails(@PathVariable(value = "id") Long reviewId, @RequestParam(value = "created", required = false) Boolean created) {
         User loggedUser = AuthenticationHelper.getLoggedUser(userService);
-        Optional<Review> review = reviewService.getReviewById(reviewId,loggedUser);
+        Optional<Review> review = reviewService.getReviewById(reviewId, loggedUser.getId());
         if (!review.isPresent()) {
             return new ModelAndView("errors/not-found");
         }
@@ -136,16 +136,12 @@ public class ReviewController{
         }
         Review createdReview;
         User author = AuthenticationHelper.getLoggedUser(userService);
-        Optional<Game> reviewedGame = gameService.getGameById(gameId);
-        if (!reviewedGame.isPresent()) {
-            throw new ObjectNotFoundException("Game with id " + gameId + " not found");
-        }
         createdReview = reviewService.createReview(
                 form.getReviewTitle(),
                 form.getReviewContent(),
                 form.getReviewRating(),
-                author,
-                reviewedGame.get(),
+                author.getId(),
+                gameId,
                 form.getDifficultyEnum(),
                 form.getGameLengthSeconds(),
                 form.getPlatformEnum(),
@@ -212,7 +208,7 @@ public class ReviewController{
                 Page.with(page != null ? page : INITIAL_PAGE, pageSize),
                 searchFilter,
                 new Ordering<>(OrderDirection.fromValue(orderDirection), ReviewOrderCriteria.fromValue(orderCriteria)),
-                loggedUser
+                loggedUser.getId()
         );
 
         PaginationHelper.paginate(mav,reviewPaginated);
@@ -284,11 +280,7 @@ public class ReviewController{
     public ModelAndView updateReviewFeedback(@PathVariable(value = "id") Long id,
                                    @RequestParam(value = "feedback") String feedback,
                                    @RequestParam(value = "url", defaultValue = "/") String url){
-        Optional<Review> review = reviewService.getReviewById(id,null);
         User loggedUser = AuthenticationHelper.getLoggedUser(userService);
-        if (!review.isPresent()) {
-            throw new ObjectNotFoundException();
-        }
         FeedbackType fb;
         try {
             fb = FeedbackType.valueOf(feedback);
@@ -296,7 +288,7 @@ public class ReviewController{
             throw new ObjectNotFoundException();
         }
 
-        boolean response = reviewService.updateOrCreateReviewFeedback(review.get(), loggedUser,fb);
+        reviewService.updateOrCreateReviewFeedback(id, loggedUser.getId(), fb);
 
         return new ModelAndView("redirect:" + url);
     }
@@ -304,7 +296,7 @@ public class ReviewController{
     @RequestMapping(value = "/review/{id:\\d+}/edit", method = RequestMethod.GET)
     public ModelAndView editReviewForm(@PathVariable("id") Long reviewId, @ModelAttribute("reviewForm") EditReviewForm form) {
         User user = AuthenticationHelper.getLoggedUser(userService);
-        Review review = reviewService.getReviewById(reviewId, user).orElseThrow(() -> new ObjectNotFoundException("review.notfound"));
+        Review review = reviewService.getReviewById(reviewId, user.getId()).orElseThrow(ObjectNotFoundException::new);
         form.fromReview(review);
         ModelAndView mav = new ModelAndView("review/submit-review");
         mav.addObject("edit", true);
@@ -319,16 +311,11 @@ public class ReviewController{
 
     @RequestMapping(value = "/review/{id:\\d+}/edit", method = RequestMethod.POST)
     public ModelAndView editReview(@PathVariable("id") Long reviewId, @Valid @ModelAttribute("reviewForm") EditReviewForm form, final BindingResult errors) {
-        User user = AuthenticationHelper.getLoggedUser(userService);
         if (errors.hasErrors()) {
             return editReviewForm(reviewId, form);
         }
-        Review review = reviewService.getReviewById(reviewId, user).orElseThrow(() -> new ObjectNotFoundException("review.notfound"));
-        int update = reviewService.updateReview(review.getId(), form.getReviewTitle(), form.getReviewContent(), form.getReviewRating(), form.getDifficultyEnum(), form.getGameLengthSeconds(), form.getPlatformEnum(),  form.getReplayability(),  form.getReplayability());
-        if (update == 0) {
-            throw new ObjectNotFoundException("review.notfound");
-        }
-        return new ModelAndView("redirect:/review/" + reviewId);
+        Review update = reviewService.updateReview(reviewId, form.getReviewTitle(), form.getReviewContent(), form.getReviewRating(), form.getDifficultyEnum(), form.getGameLengthSeconds(), form.getPlatformEnum(),  form.getReplayability(),  form.getReplayability());
+        return new ModelAndView("redirect:/review/" + update.getId());
     }
 
     @ExceptionHandler(ReviewAlreadyExistsException.class)

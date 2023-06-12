@@ -74,7 +74,7 @@ public class GameController{
             mav.addObject("game",game.get());
             GameReviewData reviewData = gs.getGameReviewDataByGameId(gameId);
 
-            Paginated<Review> reviews = rs.getReviewsFromGame(Page.with(page, pageSize), gameId, loggedUser);
+            Paginated<Review> reviews = rs.getReviewsFromGame(Page.with(page, pageSize), gameId, loggedUser.getId());
             PaginationHelper.paginate(mav,reviews);
             List<Pair<String, Object>> queriesToKeepAtPageChange = new ArrayList<>();
             queriesToKeepAtPageChange.add(new Pair<>("pagesize", pageSize));
@@ -252,7 +252,7 @@ public class GameController{
     public ModelAndView acceptSubmission(@PathVariable(value="gameId") Long gameId) {
         LOGGER.info("Accepting suggested game, id: {}", gameId);
         User user = AuthenticationHelper.getLoggedUser(us);
-        gs.acceptGame(gameId, user);
+        gs.acceptGame(gameId, user.getId());
         return new ModelAndView("redirect:/game/submissions");
     }
 
@@ -260,7 +260,7 @@ public class GameController{
     public ModelAndView rejectSubmission(@PathVariable(value="gameId") Long gameId) {
         LOGGER.info("Rejecting suggested game, id: {}", gameId);
         User user = AuthenticationHelper.getLoggedUser(us);
-        gs.rejectGame(gameId, user);
+        gs.rejectGame(gameId, user.getId());
         return new ModelAndView("redirect:/game/submissions");
     }
 

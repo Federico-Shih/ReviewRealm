@@ -31,7 +31,8 @@ public class MissionServiceImpl implements MissionService {
 
     @Transactional
     @Override
-    public MissionProgress addMissionProgress(User user, Mission mission, Float progress) {
+    public MissionProgress addMissionProgress(long userId, Mission mission, float progress) {
+        User user = this.userDao.findById(userId).orElseThrow(IllegalArgumentException::new);
         if (mission.getRoleType() != null && !user.getRoles().contains(mission.getRoleType())) {
             return null;
         }

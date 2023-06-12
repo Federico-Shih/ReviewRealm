@@ -193,16 +193,18 @@ public class GameServiceImpl implements GameService {
 
     @Transactional
     @Override
-    public void acceptGame(long gameId, User approvingUser) {
-        decisionGame(gameDao::setSuggestedFalse, gameId);
-        missionService.addMissionProgress(approvingUser, Mission.MANAGE_GAME_SUBMISSIONS, 1f);
+    public Game acceptGame(long gameId, long approvingUserId) {
+        Game game = gameDao.setSuggestedFalse(gameId).orElseThrow(GameNotFoundException::new);
+        missionService.addMissionProgress(approvingUserId, Mission.MANAGE_GAME_SUBMISSIONS, 1f);
+        return game;
     }
 
     @Transactional
     @Override
-    public void rejectGame(long gameId, User approvingUser) {
-        decisionGame(gameDao::deleteGame, gameId);
-        missionService.addMissionProgress(approvingUser, Mission.MANAGE_GAME_SUBMISSIONS, 1f);
+    public boolean rejectGame(long gameId, long approvingUserId) {
+        boolean deleted = gameDao.deleteGame(gameId);
+        missionService.addMissionProgress(approvingUserId, Mission.MANAGE_GAME_SUBMISSIONS, 1f);
+        return deleted;
     }
 
     private void decisionGame(Function<Long, Boolean> decisionFunction, Long gameId) {

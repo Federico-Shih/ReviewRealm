@@ -7,11 +7,11 @@ import ar.edu.itba.paw.dtos.filtering.ReviewFilterBuilder;
 import ar.edu.itba.paw.dtos.ordering.Ordering;
 import ar.edu.itba.paw.dtos.ordering.ReviewOrderCriteria;
 import ar.edu.itba.paw.enums.*;
+import ar.edu.itba.paw.exceptions.GameNotFoundException;
 import ar.edu.itba.paw.exceptions.ReviewAlreadyExistsException;
-import ar.edu.itba.paw.models.Game;
-import ar.edu.itba.paw.models.Paginated;
-import ar.edu.itba.paw.models.Review;
-import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.exceptions.ReviewNotFoundException;
+import ar.edu.itba.paw.exceptions.UserNotFoundException;
+import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.persistenceinterfaces.ReviewDao;
 import ar.edu.itba.paw.servicesinterfaces.*;
 import org.slf4j.Logger;
@@ -29,7 +29,6 @@ import java.util.stream.Collectors;
 @Lazy
 @Service
 public class ReviewServiceImpl implements ReviewService {
-
     private static final int MINFAVORITEGAMERATING = 7;
     private static final Logger LOGGER = LoggerFactory.getLogger(ReviewServiceImpl.class);
     private final ReviewDao reviewDao;
@@ -51,15 +50,18 @@ public class ReviewServiceImpl implements ReviewService {
     @Transactional
     @Override
     public Review createReview(String title,
-                               String content,
-                               Integer rating,
-                               User author,
-                               Game reviewedGame,
-                               Difficulty difficulty,
-                               Double gameLength,
-                               Platform platform,
-                               Boolean completed,
-                               Boolean replayable) {
+                        String content,
+                        int rating,
+                        long authorId,
+                        long gameId,
+                        Difficulty difficulty,
+                        Double gameLength,
+                        Platform platform,
+                        Boolean completed,
+                        Boolean replayable) {
+        User author = userService.getUserById(authorId).orElseThrow(UserNotFoundException::new);
+        Game reviewedGame = gameService.getGameById(gameId).orElseThrow(GameNotFoundException::new);
+
         List<Review> reviews = author.getReviews();
         if (reviews.stream().anyMatch((review) -> review.getReviewedGame().equals(reviewedGame))) {
             throw new ReviewAlreadyExistsException(reviewedGame);
@@ -68,7 +70,7 @@ public class ReviewServiceImpl implements ReviewService {
         LOGGER.info("Creating review - Game: {}, Author: {}, Title: {}, Rating: {}",author.getUsername(),reviewedGame.getName(),title,rating);
         gameService.addNewReviewToGame(reviewedGame.getId(), rating);
 
-        missionService.addMissionProgress(author, Mission.REVIEWS_GOAL, 1f);
+        missionService.addMissionProgress(author.getId(), Mission.REVIEWS_GOAL, 1f);
         List<User> authorFollowers = userService.getFollowers(author.getId());
 
         for (User follower : authorFollowers) {
@@ -81,19 +83,18 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Transactional
     @Override
-    public int updateReview(Long id, String title,
-                            String content,
-                            Integer rating,
-                            Difficulty difficulty,
-                            Double gameLength,
-                            Platform platform,
-                            Boolean completed,
-                            Boolean replayable) {
-        Optional<Review> review = reviewDao.findById(id, null);
-        if(!review.isPresent()){
-            return 0;
-        }
-        int response = reviewDao.update(id,
+    public Review updateReview(long id,
+                               String title,
+                               String content,
+                               int rating,
+                               Difficulty difficulty,
+                               Double gameLength,
+                               Platform platform,
+                               Boolean completed,
+                               Boolean replayable) {
+        Review review = reviewDao.findById(id, null).orElseThrow(ReviewNotFoundException::new);
+
+        Review modifiedReview = reviewDao.update(id,
                 new SaveReviewDTO(title,
                         content,
                         rating,
@@ -102,28 +103,29 @@ public class ReviewServiceImpl implements ReviewService {
                         platform,
                         completed,
                         replayable));
-        gameService.updateReviewFromGame(review.get().getReviewedGame().getId(), review.get().getRating(), rating);
+        if (modifiedReview == null) throw new ReviewNotFoundException();
+        gameService.updateReviewFromGame(review.getReviewedGame().getId(), review.getRating(), rating);
         if(rating <= MINFAVORITEGAMERATING)
-            gameService.deleteFavoriteGame(review.get().getAuthor().getId(), review.get().getReviewedGame().getId());
-        return response;
+            gameService.deleteFavoriteGame(review.getAuthor().getId(), review.getReviewedGame().getId());
+        return modifiedReview;
     }
 
     @Transactional
     @Override
-    public Optional<Review> getReviewById(Long id, User activeUser) {
-        return reviewDao.findById(id, (activeUser != null)? activeUser.getId() : null);
+    public Optional<Review> getReviewById(long id, Long activeUserId) {
+        return reviewDao.findById(id, activeUserId);
     }
 
 
     @Transactional(readOnly = true)
     @Override
-    public Paginated<Review> searchReviews(Page page, ReviewFilter searchFilter, Ordering<ReviewOrderCriteria> ordering, User activeUser) {
-        return reviewDao.findAll(page, searchFilter, ordering, (activeUser != null) ? activeUser.getId() : null);
+    public Paginated<Review> searchReviews(Page page, ReviewFilter filter, Ordering<ReviewOrderCriteria> ordering, Long activeUserId){
+        return reviewDao.findAll(page, filter, ordering, activeUserId);
     }
 
     @Transactional(readOnly = true)
     @Override
-    public Paginated<Review> getReviewsFromFollowingByUser(Long userId, Page page) {
+    public Paginated<Review> getReviewsFromFollowingByUser(long userId, Page page) {
         List<User> followingUsers = userService.getFollowing(userId);
         if(followingUsers.isEmpty()){
             return new Paginated<>(page.getPageNumber(),page.getPageSize(),0, new ArrayList<>());
@@ -136,7 +138,8 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Transactional(readOnly = true)
     @Override
-    public Paginated<Review> getRecommendedReviewsByUser(User user, Page page) {
+    public Paginated<Review> getRecommendedReviewsByUser(long userId, Page page){
+        User user = userService.getUserById(userId).orElseThrow(UserNotFoundException::new);
         List<Integer> preferences = user.getPreferences().stream().map(Genre::getId).collect(Collectors.toList());
         List<Long> authorsToExclude = new ArrayList<>();
         authorsToExclude.add(user.getId());
@@ -147,19 +150,19 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Transactional(readOnly = true)
     @Override
-    public Paginated<Review> getNewReviewsExcludingActiveUser(Page page, User activeUser) {
+    public Paginated<Review> getNewReviewsExcludingActiveUser(Page page, Long activeUserId) {
         List<Long> authorsToExclude = new ArrayList<>();
-        if(activeUser != null){
-            authorsToExclude.add(activeUser.getId());
+        if(activeUserId != null) {
+            authorsToExclude.add(activeUserId);
         }
         ReviewFilterBuilder filterBuilder = new ReviewFilterBuilder().withAuthorsToExclude(authorsToExclude);
 
-        return reviewDao.findAll(page, filterBuilder.build(), Ordering.defaultOrder(ReviewOrderCriteria.REVIEW_DATE), (activeUser != null) ? activeUser.getId() : null);
+        return reviewDao.findAll(page, filterBuilder.build(), Ordering.defaultOrder(ReviewOrderCriteria.REVIEW_DATE), activeUserId);
     }
 
     @Transactional
     @Override
-    public boolean deleteReviewById(Long id) {
+    public boolean deleteReviewById(long id) {
         Optional<Review> review = getReviewById(id, null);
         if(review.isPresent()){
             reviewDao.deleteReview(id);
@@ -168,7 +171,7 @@ public class ReviewServiceImpl implements ReviewService {
 
             Game game = review.get().getReviewedGame();
             User author = review.get().getAuthor();
-            missionService.addMissionProgress(author, Mission.REVIEWS_GOAL, -1f);
+            missionService.addMissionProgress(author.getId(), Mission.REVIEWS_GOAL, -1f);
 
             if(userService.isNotificationEnabled(author.getId(), NotificationType.MY_REVIEW_IS_DELETED)) {
                 mailingService.sendReviewDeletedEmail(game, author);
@@ -184,25 +187,32 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Transactional(readOnly = true)
     @Override
-    public Paginated<Review> getUserReviews(Page page, Long userId, User activeUser) {
+    public Paginated<Review> getUserReviews(Page page, long userId, Long activeUserId){
         List<Long> authors = new ArrayList<>();
         authors.add(userId);
-        return reviewDao.findAll(page, new ReviewFilterBuilder().withAuthors(authors).build(), Ordering.defaultOrder(ReviewOrderCriteria.REVIEW_DATE), (activeUser != null)? activeUser.getId() : null );
+        return reviewDao.findAll(page, new ReviewFilterBuilder().withAuthors(authors).build(), Ordering.defaultOrder(ReviewOrderCriteria.REVIEW_DATE), activeUserId);
     }
 
     @Transactional
     @Override
-    public boolean updateOrCreateReviewFeedback(Review review, User user, FeedbackType feedback) {
+    public ReviewFeedback updateOrCreateReviewFeedback(long reviewId, long userId, FeedbackType feedback){
+        User user = userService.getUserById(userId).orElseThrow(UserNotFoundException::new);
+        Review review = getReviewById(reviewId, null).orElseThrow(ReviewNotFoundException::new);
+        
         FeedbackType oldFeedback = reviewDao.getReviewFeedback(review.getId(), user.getId());
         if (oldFeedback == feedback) {
-            return deleteReviewFeedback(review, user, oldFeedback);
+            boolean deleted = deleteReviewFeedback(review, user, oldFeedback);
+            LOGGER.info("User {} deleted review {} feedback: {}", userId, reviewId, deleted);
+            return null;
         }
-        boolean response = (oldFeedback == null) ? reviewDao.addReviewFeedback(review.getId(), user.getId(), feedback) :
+        ReviewFeedback updatedFeedback = (oldFeedback == null) ? reviewDao.addReviewFeedback(review.getId(), user.getId(), feedback) :
                 reviewDao.editReviewFeedback(review.getId(), user.getId(), oldFeedback, feedback);
+
         int userReputationOffset = (oldFeedback == null) ? ((feedback == FeedbackType.LIKE) ? 1 : -1) : ((feedback == FeedbackType.LIKE) ? 2 : -2);
+
         userService.modifyUserReputation(review.getAuthor().getId(), userReputationOffset);
-        missionService.addMissionProgress(review.getAuthor(), Mission.REPUTATION_GOAL, (float)userReputationOffset);
-        return response;
+        missionService.addMissionProgress(review.getAuthor().getId(), Mission.REPUTATION_GOAL, (float)userReputationOffset);
+        return updatedFeedback;
     }
 
     private boolean deleteReviewFeedback(Review review, User user, FeedbackType oldFeedback) {
@@ -212,15 +222,15 @@ public class ReviewServiceImpl implements ReviewService {
         boolean response = reviewDao.deleteReviewFeedback(review.getId(), user.getId(), oldFeedback);
         int reputationOffset = (oldFeedback == FeedbackType.LIKE) ? -1 : 1;
         userService.modifyUserReputation(review.getAuthor().getId(), reputationOffset);
-        missionService.addMissionProgress(review.getAuthor(), Mission.REPUTATION_GOAL, (float) reputationOffset);
+        missionService.addMissionProgress(review.getAuthor().getId(), Mission.REPUTATION_GOAL, (float) reputationOffset);
         return response;
     }
 
     @Transactional
     @Override
-    public Paginated<Review> getReviewsFromGame(Page page, Long gameId, User activeUser) {
+    public Paginated<Review> getReviewsFromGame(Page page, long gameId, Long activeUserId) {
         ReviewFilter filter = new ReviewFilterBuilder().withGameId(gameId).build();
-        return reviewDao.findAll(page, filter, Ordering.defaultOrder(ReviewOrderCriteria.REVIEW_DATE), (activeUser != null)? activeUser.getId() : null);
+        return reviewDao.findAll(page, filter, Ordering.defaultOrder(ReviewOrderCriteria.REVIEW_DATE), activeUserId);
     }
 
     @Transactional

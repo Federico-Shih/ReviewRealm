@@ -185,7 +185,7 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public void resendToken(String email) throws UserAlreadyEnabled {
+    public ExpirationToken resendToken(String email) throws UserAlreadyEnabled {
         User user = getUserByEmail(email).orElseThrow(() -> new UserNotFoundException("user.notfound"));
         if (user.isEnabled()) {
             LOGGER.error("User {} already enabled", user.getId());
@@ -196,11 +196,12 @@ public class UserServiceImpl implements UserService {
         tokenDao.delete(token.getToken());
         mailingService.sendValidationTokenEmail(newToken, user);
         LOGGER.info("User {} resent token", user.getId());
+        return newToken;
     }
 
     @Transactional
     @Override
-    public void refreshToken(String token) {
+    public ExpirationToken refreshToken(String token) {
         ExpirationToken expirationToken = tokenDao.getByToken(token).orElseThrow(() -> new UserNotFoundException("user.notfound"));
         User user = getUserById(expirationToken.getUser().getId()).orElseThrow(() -> new UserNotFoundException("user.notfound"));
         ExpirationToken newToken = tokenDao.create(user.getId(), expirationToken.getPassword(), LocalDateTime.now().plusHours(EXPIRATION_TIME));
@@ -210,6 +211,7 @@ public class UserServiceImpl implements UserService {
         }
         tokenDao.delete(expirationToken.getToken());
         mailingService.sendValidationTokenEmail(newToken, user);
+        return newToken;
     }
 
     @Transactional(readOnly = true)
@@ -253,22 +255,23 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public void sendPasswordResetToken(String email) throws UserNotFoundException {
+    public ExpirationToken sendPasswordResetToken(String email) throws UserNotFoundException {
         User user = getUserByEmail(email).orElseThrow(() -> new UserNotFoundException("user.notfound"));
         ExpirationToken newToken = tokenDao.create(user.getId(), "", LocalDateTime.now().plusHours(EXPIRATION_TIME));
         mailingService.sendChangePasswordEmail(newToken, user);
         LOGGER.info("Sending User {} a password reset token", user.getId());
+        return newToken;
     }
 
     @Transactional
     @Override
-    public boolean resetPassword(String token, String password) throws TokenExpiredException, TokenNotFoundException {
+    public User resetPassword(String token, String password) throws TokenExpiredException, TokenNotFoundException {
         ExpirationToken existentToken = tokenDao.getByToken(token).orElseThrow(() -> new TokenNotFoundException("token.notfound"));
         if (existentToken.getExpiration().isBefore(LocalDateTime.now())) {
             LOGGER.error("Token for User {} password reset expired", existentToken.getUser().getId());
             throw new TokenExpiredException("token.expired");
         }
-        boolean op = userDao.update(existentToken.getUser().getId(), new SaveUserBuilder().withPassword(passwordEncoder.encode(password)).withEnabled(true).build()) == 1;
+        User user = userDao.update(existentToken.getUser().getId(), new SaveUserBuilder().withPassword(passwordEncoder.encode(password)).withEnabled(true).build());
         LOGGER.info("User {} reset password", existentToken.getUser().getId());
         return op;
     }
@@ -298,7 +301,7 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public void setUserNotificationSettings(Long userId, Map<NotificationType, Boolean> notificationSettings) {
+    public User setUserNotificationSettings(long userId, Map<NotificationType, Boolean> notificationSettings) {
         Map<NotificationType, Boolean> currentNotificationSettings = getUserNotificationSettings(userId);
         for (Map.Entry<NotificationType, Boolean> entry : notificationSettings.entrySet()) {
             if (entry.getValue() && !currentNotificationSettings.get(entry.getKey())) {
@@ -313,40 +316,44 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public void setPreferences(Set<Integer> genres, long userId){
-        LOGGER.info("User {} set genre preferences", userId);
-        userDao.setPreferences(genres, userId);
-        User user = getUserById(userId).orElseThrow(UserNotFoundException::new);
-        if (!genres.isEmpty()) {
-            missionService.addMissionProgress(user, Mission.SETUP_PREFERENCES, 1f);
+    public User setPreferences(Set<Integer> genres, long userId){
+        if (!userDao.exists(userId)) {
+            throw new UserNotFoundException("notfound.user");
         }
+        LOGGER.info("User {} set genre preferences", userId);
+        User modifiedUser = userDao.setPreferences(genres, userId);
+        if (!modifiedUser.getPreferences().isEmpty()) {
+            missionService.addMissionProgress(modifiedUser.getId(), Mission.SETUP_PREFERENCES, 1f);
+        }
+        return modifiedUser;
     }
 
     @Transactional
     @Override
-    public boolean modifyUserReputation(long id, int reputation) {
+    public User modifyUserReputation(long id, int reputation) {
         User user = userDao.findById(id).orElseThrow(() -> new UserNotFoundException("user.notfound"));
         SaveUserBuilder builder = new SaveUserBuilder().withReputation(user.getReputation() + reputation);
-        return userDao.update(id, builder.build()) == 1;
+        return userDao.update(id, builder.build());
     }
 
     @Transactional
     @Override
-    public void changeUserAvatar(long userId, long imageId) throws InvalidAvatarException {
+    public User changeUserAvatar(long userId, long imageId) throws InvalidAvatarException {
         if(imageId>AVATAR_AMOUNT || imageId<1)
             throw new InvalidAvatarException(imageId);
-        User user = getUserById(userId).orElseThrow(UserNotFoundException::new);
+        User user = userDao.findById(userId).orElseThrow(UserNotFoundException::new);
         SaveUserBuilder builder = new SaveUserBuilder().withAvatar(imageId);
-        userDao.update(userId, builder.build());
-        missionService.addMissionProgress(user, Mission.CHANGE_AVATAR, 1f);
+        missionService.addMissionProgress(user.getId(), Mission.CHANGE_AVATAR, 1f);
         LOGGER.info("User {} changed avatar to {}", userId, imageId);
+        return userDao.update(userId, builder.build());
     }
 
     @Transactional
     @Override
-    public void changeUserLanguage(long userId, Locale language) {
+    public User changeUserLanguage(long userId, Locale language) {
+        User user = userDao.findById(userId).orElseThrow(UserNotFoundException::new);
         SaveUserBuilder builder = new SaveUserBuilder().withLanguage(language);
-        userDao.update(userId, builder.build());
         LOGGER.info("User {} changed language to {}", userId, language);
+        return userDao.update(user.getId(), builder.build());
     }
 }

@@ -17,13 +17,13 @@ public interface GameDao {
 
     Game create(String name,String description,String developer, String publisher, String imageid, List<Genre> genres, LocalDate publishDate, boolean suggested);
 
-    Optional<Game> edit(Long gameId,String name, String description, String developer, String publisher, String imageid, List<Genre> genres);
+    Optional<Game> edit(long gameId, String name, String description, String developer, String publisher, String imageid, List<Genre> genres);
 
-    Optional<Game> getById(Long id);
+    Optional<Game> getById(long id);
 
     Paginated<Game> findAll(Page page, GameFilter filter, Ordering<GameOrderCriteria> ordering);
 
-    List<Genre> getGenresByGame(Long id);
+    List<Genre> getGenresByGame(long id);
 
     List<Game> getFavoriteGamesFromUser(long userId);
 

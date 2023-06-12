@@ -7,10 +7,7 @@ import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.enums.NotificationType;
 import ar.edu.itba.paw.enums.RoleType;
 import ar.edu.itba.paw.exceptions.*;
-import ar.edu.itba.paw.models.FollowerFollowingCount;
-import ar.edu.itba.paw.models.Game;
-import ar.edu.itba.paw.models.Paginated;
-import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.*;
 
 import java.util.*;
 
@@ -45,9 +42,9 @@ public interface UserService {
 
     Optional<User> validateToken(String token) throws TokenExpiredException;
 
-    void resendToken(String email) throws UserAlreadyEnabled;
+    ExpirationToken resendToken(String email) throws UserAlreadyEnabled;
 
-    void refreshToken(String token);
+    ExpirationToken refreshToken(String token);
 
     Paginated<User> searchUsers(Page page, String search, Ordering<UserOrderCriteria> ordering);
 
@@ -57,19 +54,19 @@ public interface UserService {
 
     Paginated<User> getUsersWithSamePreferences(Page page, User currentUser, Ordering<UserOrderCriteria> ordering);
 
-    void sendPasswordResetToken(String email) throws UserNotFoundException;
+    ExpirationToken sendPasswordResetToken(String email) throws UserNotFoundException;
 
-    boolean resetPassword(String token, String password) throws TokenExpiredException, TokenNotFoundException;
+    User resetPassword(String token, String password) throws TokenExpiredException, TokenNotFoundException;
 
     Map<NotificationType, Boolean> getUserNotificationSettings(Long userId);
 
     Boolean isNotificationEnabled(Long userId, NotificationType notificationType);
 
-    void setUserNotificationSettings(Long userId, Map<NotificationType, Boolean> notificationSettings);
+    User setUserNotificationSettings(long userId, Map<NotificationType, Boolean> notificationSettings);
 
-    boolean modifyUserReputation(long id, int reputation);
+    User modifyUserReputation(long id, int reputation);
 
-    void changeUserAvatar(long userId, long imageId) throws InvalidAvatarException;
+    User changeUserAvatar(long userId, long imageId) throws InvalidAvatarException;
 
-    void changeUserLanguage(long userId, Locale language);
+    User changeUserLanguage(long userId, Locale language);
 }

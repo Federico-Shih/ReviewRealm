@@ -13,7 +13,7 @@ public interface MissionDao {
 
     Optional<MissionProgress> findById(User user, Mission mission);
 
-    MissionProgress updateProgress(User user, Mission mission, Float progress);
+    MissionProgress updateProgress(User user, Mission mission, float progress);
 
     MissionProgress resetProgress(User user, Mission mission);
 

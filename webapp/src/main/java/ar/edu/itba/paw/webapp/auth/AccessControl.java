@@ -24,14 +24,14 @@ public class AccessControl {
         User activeUser = AuthenticationHelper.getLoggedUser(userService);
         if(activeUser == null)
             return false;
-        Optional<Review> review = reviewService.getReviewById(reviewId, activeUser);
+        Optional<Review> review = reviewService.getReviewById(reviewId, activeUser.getId());
         return review.isPresent() && Objects.equals(review.get().getAuthor().getId(), activeUser.getId());
     }
     public boolean checkReviewAuthorforFeedback(Long reviewId){
         User activeUser = AuthenticationHelper.getLoggedUser(userService);
         if(activeUser == null)
             return false;
-        Optional<Review> review = reviewService.getReviewById(reviewId, activeUser);
+        Optional<Review> review = reviewService.getReviewById(reviewId, activeUser.getId());
         return review.isPresent() && !Objects.equals(review.get().getAuthor().getId(), activeUser.getId());
     }
 }

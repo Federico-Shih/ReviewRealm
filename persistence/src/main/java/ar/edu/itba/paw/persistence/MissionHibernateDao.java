@@ -33,7 +33,7 @@ public class MissionHibernateDao implements MissionDao {
     }
 
     @Override
-    public MissionProgress updateProgress(User user, Mission mission, Float progress) {
+    public MissionProgress updateProgress(User user, Mission mission, float progress) {
         MissionProgress missionProgress = em.find(MissionProgress.class, new MissionProgressId(user, mission));
         if (missionProgress == null) return null;
         missionProgress.setProgress(progress);

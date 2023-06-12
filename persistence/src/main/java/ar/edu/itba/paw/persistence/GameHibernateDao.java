@@ -33,7 +33,7 @@ public class GameHibernateDao implements GameDao, PaginationDao<GameFilter> {
     }
 
     @Override
-    public Optional<Game> edit(Long gameId,String name, String description, String developer, String publisher, String imageid, List<Genre> genres) {
+    public Optional<Game> edit(long gameId,String name, String description, String developer, String publisher, String imageid, List<Genre> genres) {
 
         final Game game = em.find(Game.class, gameId);
         if(game==null)
@@ -52,7 +52,7 @@ public class GameHibernateDao implements GameDao, PaginationDao<GameFilter> {
     }
 
     @Override
-    public Optional<Game> getById(Long id) {
+    public Optional<Game> getById(long id) {
         final Game game = em.find(Game.class, id);
         return Optional.ofNullable(game);
     }
@@ -84,7 +84,7 @@ public class GameHibernateDao implements GameDao, PaginationDao<GameFilter> {
     }
 
     @Override
-    public List<Genre> getGenresByGame(Long id) {
+    public List<Genre> getGenresByGame(long id) {
         final Game game = em.find(Game.class, id);
         if(game == null) {
             return new ArrayList<>();
