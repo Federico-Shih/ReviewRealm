@@ -129,7 +129,7 @@ public class UserHibernateDao implements UserDao, PaginationDao<UserFilter> {
         }
 
         QueryBuilder queryBuilder = getQueryBuilderFromFilter(userFilter);
-        Query nativeQuery = em.createNativeQuery("SELECT userid FROM ("+ "SELECT distinct u.id as userid, *, coalesce((SELECT count(distinct f.userid) FROM followers as f WHERE f.following=u.id GROUP BY f.following), 0) as follower_count FROM " + toTableString(userFilter) + queryBuilder.toQuery()  + ") as users" + toOrderString(ordering, true));
+        Query nativeQuery = em.createNativeQuery("SELECT mainuserid FROM ("+ "SELECT distinct u.id as mainuserid, *, coalesce((SELECT count(distinct f.userid) FROM followers as f WHERE f.following=u.id GROUP BY f.following), 0) as follower_count FROM " + toTableString(userFilter) + queryBuilder.toQuery()  + ") as users" + toOrderString(ordering, true));
         prepareParametersForNativeQuery(queryBuilder, nativeQuery);
         nativeQuery.setMaxResults(page.getPageSize());
         nativeQuery.setFirstResult(page.getOffset().intValue());

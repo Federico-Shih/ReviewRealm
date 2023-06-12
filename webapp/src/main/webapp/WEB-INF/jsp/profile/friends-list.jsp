@@ -26,15 +26,10 @@
 
         <h3><spring:message code="${pageName}" arguments="${username}" /></h3>
 
-        <c:forEach items="${users}" var="userlist">
-            <div class="col s4 card">
-                <a href="<c:url value="/profile/${userlist.id}"/> ">
-                    <div class="card-content">
-                        <div class="card-title">
-                            <c:out value="${userlist.username}" />
-                        </div>
-                    </div>
-                </a>
+        <c:forEach var="user" items="${users}">
+            <div class="col s12 l6 margin-bottom-2">
+                <c:set var="user" value="${user}" scope="request"/>
+                <c:import url="/WEB-INF/jsp/profile/profile-card.jsp"/>
             </div>
         </c:forEach>
         <c:if test="${usersLength == 0}">

@@ -59,19 +59,24 @@
         <c:if test="${fn:length(users) != 0}">
             <div class="card card-background">
                 <div class="card-content">
-                    <h5 class="card-title">
-                        <spring:message code="search.users.title" />
-                    </h5>
-                    <c:forEach items="${users}" var="user">
-                        <div class="margin-top-3">
-                            <a href="<c:url value="/profile/${user.id}"/>" class="f-row f-ai-center">
-                                <img class="profile-info-panel-image" src="<c:url value="/static/avatars/${user.avatarId}.png"/>" alt="avatarnumber${user.avatarId}.png"/>
-                                <h4>
-                                    <c:out value="${user.username}" />
-                                </h4>
+                    <div class="search-results-header valign-wrapper">
+                        <h5 class="card-title">
+                            <spring:message code="search.users.title" />
+                        </h5>
+                        <div class="top-right">
+                            <a href="<c:url value="/community?search=${search}" /> ">
+                                <spring:message code="search.viewmore" />
                             </a>
                         </div>
-                    </c:forEach>
+                    </div>
+                    <div class="row">
+                        <c:forEach var="user" items="${users}">
+                            <div class="col s12 margin-bottom-2">
+                                <c:set var="user" value="${user}" scope="request"/>
+                                <c:import url="/WEB-INF/jsp/profile/profile-card.jsp"/>
+                            </div>
+                        </c:forEach>
+                    </div>
                 </div>
             </div>
         </c:if>
