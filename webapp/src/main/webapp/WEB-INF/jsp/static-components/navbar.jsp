@@ -15,16 +15,14 @@
         var elemsTooltip = document.querySelectorAll('.tooltipped');
         var instancesTooltip = M.Tooltip.init(elemsTooltip, {});
         var submitButtons = document.querySelectorAll('button[type="submit"]');
-        /*
         submitButtons.forEach(function(button) {
             button.addEventListener('click', function() {
-                button.disabled = true;
+                button.classList.add("disabled");
                 setTimeout(function() {
-                    button.disabled = false;
-                }, 100);
+                    button.classList.remove("disabled");
+                }, 300);
             });
         });
-        */
     });
 </script>
 
