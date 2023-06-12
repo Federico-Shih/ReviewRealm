@@ -73,7 +73,7 @@
     <div class="container">
         <h3 th:text="#{email.deletedreview.longtitle (${game})}"></h3>
         <!-- TODO: link to community guidelines -->
-        <a th:href="@{{base}/review/submit/id} (base=${webBaseUrl},id=${gameId})}">
+        <a th:href="@{{base}/review/submit/{id}(base=${webBaseUrl},id=${gameId})}">
             <span class="goto-button" th:text="#{email.deletedreview.tryagain}">
             </span>
         </a>
