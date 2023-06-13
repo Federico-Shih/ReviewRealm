@@ -1,6 +1,8 @@
 package ar.edu.itba.paw.webapp.forms;
 
 import ar.edu.itba.paw.webapp.annotations.FieldMatch;
+import ar.edu.itba.paw.webapp.annotations.UniqueEmail;
+import ar.edu.itba.paw.webapp.annotations.UniqueUsername;
 
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
@@ -8,9 +10,11 @@ import javax.validation.constraints.Size;
 @FieldMatch(first = "repeatPassword", second = "password", message="FieldMatch.registerForm.repeatPassword")
 public class RegisterForm {
 
+    @UniqueUsername
     @Size(min=4, max = 24)
     private String username;
 
+    @UniqueEmail
     @Pattern(regexp = "^[a-zA-Z0-9]+(?:\\.[a-zA-Z0-9]+)*(\\+[1-9][0-9]*)?@[a-zA-Z0-9]+(?:\\.[a-zA-Z0-9]+)*$")
     @Size(max = 100)
     private String email;

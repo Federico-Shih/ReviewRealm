@@ -369,9 +369,6 @@ public class ProfileController{
     public ModelAndView missionsPage() {
         ModelAndView mav = new ModelAndView("profile/missions");
         User loggedUser = AuthenticationHelper.getLoggedUser(userService);
-        if (loggedUser == null) {
-            throw new UserNotFoundException();
-        }
         Map<Mission, MissionProgress> userMissions = loggedUser.getMissions().stream().collect(Collectors.toMap(MissionProgress::getMission, Function.identity()));
         List<MissionProgress> currentProgresses = Arrays.stream(Mission.values())
             .filter(

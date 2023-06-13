@@ -171,13 +171,14 @@ public class UserServiceImpl implements UserService {
         Optional<ExpirationToken> expToken = tokenDao.getByToken(token);
         if (expToken.isPresent() && expToken.get().getExpiration().isBefore(LocalDateTime.now())) {
             LOGGER.error("Token for User {} expired", expToken.get().getUser().getId());
-            throw new TokenExpiredException("token.expired");
+            refreshToken(token);
+            throw new TokenExpiredException();
         }
         if (!expToken.isPresent()) {
             return Optional.empty();
         }
         ExpirationToken expirationToken = expToken.get();
-        User user = userDao.findById(expirationToken.getUser().getId()).orElseThrow(() -> new UserNotFoundException("illegal.state"));
+        User user = userDao.findById(expirationToken.getUser().getId()).orElseThrow(UserNotFoundException::new);
         SaveUserBuilder userBuilder = new SaveUserBuilder().withEnabled(true).withPassword(expirationToken.getPassword());
         userDao.update(user.getId(), userBuilder.build());
         tokenDao.delete(expirationToken.getToken());
@@ -188,12 +189,12 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public ExpirationToken resendToken(String email) throws UserAlreadyEnabled {
-        User user = getUserByEmail(email).orElseThrow(() -> new UserNotFoundException("user.notfound"));
+        User user = getUserByEmail(email).orElseThrow(UserNotFoundException::new);
         if (user.isEnabled()) {
             LOGGER.error("User {} already enabled", user.getId());
             throw new UserAlreadyEnabled();
         }
-        ExpirationToken token = tokenDao.findLastPasswordToken(user.getId()).orElseThrow(() -> new UserNotFoundException("user.notfound"));
+        ExpirationToken token = tokenDao.findLastPasswordToken(user.getId()).orElseThrow(UserNotFoundException::new);
         ExpirationToken newToken = tokenDao.create(user.getId(), token.getPassword(), LocalDateTime.now().plusHours(EXPIRATION_TIME));
         tokenDao.delete(token.getToken());
         mailingService.sendValidationTokenEmail(newToken, user);
@@ -204,12 +205,12 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public ExpirationToken refreshToken(String token) {
-        ExpirationToken expirationToken = tokenDao.getByToken(token).orElseThrow(() -> new UserNotFoundException("user.notfound"));
-        User user = getUserById(expirationToken.getUser().getId()).orElseThrow(() -> new UserNotFoundException("user.notfound"));
+        ExpirationToken expirationToken = tokenDao.getByToken(token).orElseThrow(UserNotFoundException::new);
+        User user = expirationToken.getUser();
         ExpirationToken newToken = tokenDao.create(user.getId(), expirationToken.getPassword(), LocalDateTime.now().plusHours(EXPIRATION_TIME));
         if (newToken == null) {
             LOGGER.error("User {} not found when refreshing token", user.getId());
-            throw new UserNotFoundException("user.not.found");
+            throw new UserNotFoundException();
         }
         tokenDao.delete(expirationToken.getToken());
         mailingService.sendValidationTokenEmail(newToken, user);
