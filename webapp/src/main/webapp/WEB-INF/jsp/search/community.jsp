@@ -44,7 +44,7 @@
 
 <c:url value="/community" var="searchUsers"/>
 
-<div class="container f-column">
+<div class="community-container f-column">
 
     <div class="f-column">
         <form action="${searchUsers}" id="community-form">
@@ -59,7 +59,8 @@
             </div>
 
             <div class="f-row wide-selector f-jc-sbetween">
-                <div class="f-row f-gap-2 f-jc-start">
+                <div class="f-row f-gap-2 f-jc-start f-ai-center">
+                    <span class="no-wrap"><spring:message code="order.by"/></span>
                     <c:forEach var="criteria" items="${criteriaOptions}">
                         <a class="criteria-selector selector-option f-row f-ai-center <c:if test="${criteria.value == orderCriteria}"> selected </c:if>" data-criteria-id="${criteria.value}">
                             <i class="material-icons selector-option-icon">
@@ -115,7 +116,7 @@
             <c:if test="${!empty searchedUsers.list}">
                 <div class="row">
                     <c:forEach var="user" items="${searchedUsers.list}">
-                        <div class="col s12 l6 margin-bottom-2">
+                        <div class="col s12 l6 margin-bottom-2 f-row f-jc-center">
                             <c:set var="user" value="${user}" scope="request"/>
                             <c:import url="/WEB-INF/jsp/profile/profile-card.jsp"/>
                         </div>
@@ -156,14 +157,14 @@
         <c:if test="${isLoggedIn}">
             <div class="row full-width height-fit-content">
 
-                <div class="col s12 l6 f-column">
+                <div class="col s12 l6 f-column f-ai-center">
                     <span class="section-subheader">
                         <spring:message code="community.same.preferences"/>
                     </span>
                     <c:if test="${!empty samePreferencesUsers}">
                         <div class="row">
                             <c:forEach var="user" items="${samePreferencesUsers}">
-                                <div class="col s12 margin-bottom-2">
+                                <div class="col s12 margin-bottom-2 f-row f-jc-center">
                                     <c:set var="user" value="${user}" scope="request"/>
                                     <c:import url="/WEB-INF/jsp/profile/profile-card.jsp"/>
                                 </div>
@@ -185,14 +186,14 @@
                         </a>
                     </c:if>
                 </div>
-                <div class="col s12 l6 f-column">
+                <div class="col s12 l6 f-column f-ai-center">
                     <span class="section-subheader">
                         <spring:message code="community.same.games"/>
                     </span>
                     <c:if test="${!empty sameGamesUsers}">
                         <div class="row">
                             <c:forEach var="user" items="${sameGamesUsers}">
-                                <div class="col s12 margin-bottom-2">
+                                <div class="col s12 margin-bottom-2 f-row f-jc-center">
                                     <c:set var="user" value="${user}" scope="request"/>
                                     <c:import url="/WEB-INF/jsp/profile/profile-card.jsp"/>
                                 </div>
@@ -214,21 +215,23 @@
                         </a>
                     </c:if>
                 </div>
+
             </div>
+            <div class="divider-h margin-bottom-2"></div>
         </c:if>
         <div class="row full-width height-fit-content">
-            <div class="col s12 f-column">
-            <span class="section-subheader">
+            <div class="col s12 f-column f-ai-center">
+            <span class="section-subheader margin-bottom-2">
                 <spring:message code="community.default.users"/>
             </span>
-                <div class="row">
-                    <c:forEach var="user" items="${defaultUsers.list}">
-                        <div class="col s12 l6 margin-bottom-2">
-                            <c:set var="user" value="${user}" scope="request"/>
-                            <c:import url="/WEB-INF/jsp/profile/profile-card.jsp"/>
-                        </div>
-                    </c:forEach>
-                </div>
+            <div class="row">
+                <c:forEach var="user" items="${defaultUsers.list}">
+                    <div class="col s12 l6 margin-bottom-2 f-row f-jc-center">
+                        <c:set var="user" value="${user}" scope="request"/>
+                        <c:import url="/WEB-INF/jsp/profile/profile-card.jsp"/>
+                    </div>
+                </c:forEach>
+            </div>
             </div>
         </div>
 

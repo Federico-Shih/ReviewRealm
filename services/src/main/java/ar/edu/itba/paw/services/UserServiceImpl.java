@@ -228,29 +228,39 @@ public class UserServiceImpl implements UserService {
 
     @Transactional(readOnly = true)
     @Override
-    public Paginated<User> getUsersWhoReviewedSameGames(Page page, User currentUser, Ordering<UserOrderCriteria> ordering) {
-        Set<Game> reviewedGames = gameService.getGamesReviewedByUser(currentUser.getId());
+    public Paginated<User> getOtherUsers(Page page, Long userId, Ordering<UserOrderCriteria> ordering) {
+        UserFilterBuilder userFilterBuilder = new UserFilterBuilder();
+        if(userId!=null)
+            userFilterBuilder = userFilterBuilder.notWithId(userId);
+        return userDao.findAll(page, userFilterBuilder.build(), ordering);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Paginated<User> getUsersWhoReviewedSameGames(Page page, long userId, Ordering<UserOrderCriteria> ordering) {
+        Set<Game> reviewedGames = gameService.getGamesReviewedByUser(userId);
         return userDao.findAll(page,
                 new UserFilterBuilder()
                         .withGamesPlayed(reviewedGames.stream().map(Game::getId).collect(Collectors.toList()))
-                        .notWithId(currentUser.getId())
+                        .notWithId(userId)
                         .build(),
                 ordering);
     }
 
     @Transactional(readOnly = true)
     @Override
-    public boolean hasUserReviewedAnything(User currentUser) {
-        return !gameService.getGamesReviewedByUser(currentUser.getId()).isEmpty();
+    public boolean hasUserReviewedAnything(long userId) {
+        return !gameService.getGamesReviewedByUser(userId).isEmpty();
     }
 
     @Transactional(readOnly = true)
     @Override
-    public Paginated<User> getUsersWithSamePreferences(Page page, User currentUser, Ordering<UserOrderCriteria> ordering) {
+    public Paginated<User> getUsersWithSamePreferences(Page page, long userId, Ordering<UserOrderCriteria> ordering) {
+        User user = getUserById(userId).orElseThrow(UserNotFoundException::new);
         return userDao.findAll(page,
                 new UserFilterBuilder()
-                        .withPreferences(currentUser.getPreferences().stream().map(Genre::getId).collect(Collectors.toList()))
-                        .notWithId(currentUser.getId())
+                        .withPreferences(user.getPreferences().stream().map(Genre::getId).collect(Collectors.toList()))
+                        .notWithId(userId)
                         .build(),
                 ordering);
     }

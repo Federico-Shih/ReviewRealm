@@ -94,12 +94,12 @@ public class SearchController {
         List<User> sameGamesUsers = new ArrayList<>();
         if(loggedUser != null) {
             userSetPreferences = loggedUser.hasPreferencesSet();
-            userHasReviewedAnything = userService.hasUserReviewedAnything(loggedUser);
+            userHasReviewedAnything = userService.hasUserReviewedAnything(loggedUser.getId());
             if(userSetPreferences) {
-                samePreferencesUsers = userService.getUsersWithSamePreferences(Page.with(1, MAX_RESULTS), loggedUser, ordering).getList();
+                samePreferencesUsers = userService.getUsersWithSamePreferences(Page.with(1, MAX_RESULTS), loggedUser.getId(), ordering).getList();
             }
             if(userHasReviewedAnything) {
-                sameGamesUsers = userService.getUsersWhoReviewedSameGames(Page.with(1, MAX_RESULTS), loggedUser, ordering).getList();
+                sameGamesUsers = userService.getUsersWhoReviewedSameGames(Page.with(1, MAX_RESULTS), loggedUser.getId(), ordering).getList();
             }
         }
 
@@ -109,7 +109,7 @@ public class SearchController {
         mav.addObject("userHasReviewedAnything", userHasReviewedAnything);
         mav.addObject("isLoggedIn", loggedUser!=null);
 
-        Paginated<User> defaultUsers = userService.searchUsers(Page.with(1, MAX_RESULTS), null, ordering);
+        Paginated<User> defaultUsers = userService.getOtherUsers(Page.with(1, MAX_RESULTS), loggedUser!=null? loggedUser.getId() : null, ordering);
         mav.addObject("defaultUsers", defaultUsers);
 
         mav.addObject("orderCriteria", orderCriteria);
