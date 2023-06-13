@@ -65,8 +65,8 @@ public class GameHibernateDao implements GameDao, PaginationDao<GameFilter> {
         }
         QueryBuilder queryBuilder = getQueryBuilderFromFilter(filter);
         Query nativeQuery = em.createNativeQuery(
-                "SELECT id FROM ("+
-                        "SELECT distinct g.id as gameid, *, g.ratingsum / coalesce(nullif(g.reviewcount, 0), 1) as averageRating  FROM " +
+                "SELECT gameid FROM ("+
+                        "SELECT distinct g.id as gameid, g.publishdate, g.name, g.ratingsum / coalesce(nullif(g.reviewcount, 0), 1) as averageRating  FROM " +
                         toTableString(filter) +
                         queryBuilder.toQuery() +
                         ") as games" +
