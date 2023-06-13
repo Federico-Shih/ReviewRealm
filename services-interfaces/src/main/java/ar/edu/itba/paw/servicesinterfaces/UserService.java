@@ -48,11 +48,13 @@ public interface UserService {
 
     Paginated<User> searchUsers(Page page, String search, Ordering<UserOrderCriteria> ordering);
 
-    Paginated<User> getUsersWhoReviewedSameGames(Page page, User currentUser, Ordering<UserOrderCriteria> ordering);
+    Paginated<User> getOtherUsers(Page page, Long userId, Ordering<UserOrderCriteria> ordering);
 
-    boolean hasUserReviewedAnything(User currentUser);
+    Paginated<User> getUsersWhoReviewedSameGames(Page page, long userId, Ordering<UserOrderCriteria> ordering);
 
-    Paginated<User> getUsersWithSamePreferences(Page page, User currentUser, Ordering<UserOrderCriteria> ordering);
+    boolean hasUserReviewedAnything(long userId);
+
+    Paginated<User> getUsersWithSamePreferences(Page page, long userId, Ordering<UserOrderCriteria> ordering);
 
     ExpirationToken sendPasswordResetToken(String email) throws UserNotFoundException;
 

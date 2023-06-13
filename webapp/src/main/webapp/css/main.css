@@ -446,6 +446,7 @@ input::-webkit-inner-spin-button {
 .section-subheader{
     font-size: 20px;
     font-weight: 600;
+    margin-bottom: 4px;
 }
 
 .border-button {
@@ -621,4 +622,9 @@ input::-webkit-inner-spin-button {
 
 .navbar-input-field {
     width: 95% !important;
+}
+
+.community-container {
+    width: 90%;
+    margin: 0 auto;
 }

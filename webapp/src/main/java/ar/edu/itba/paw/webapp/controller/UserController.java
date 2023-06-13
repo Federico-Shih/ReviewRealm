@@ -63,16 +63,11 @@ public class UserController {
             final BindingResult errors
     ) {
         if(errors.hasErrors()) {
-            System.out.println(errors.getAllErrors());
             return registerForm(form);
         }
         try {
             us.createUser(form.getUsername(), form.getEmail(), form.getPassword(), httpServletRequest.getLocale());
-        } catch (EmailAlreadyExistsException e) {
-            errors.rejectValue("email", "error.email.already.exists");
-            return registerForm(form);
-        } catch (UsernameAlreadyExistsException e) {
-            errors.rejectValue("username", "error.username.already.exists");
+        } catch (EmailAlreadyExistsException | UsernameAlreadyExistsException e) {
             return registerForm(form);
         }
 
@@ -109,17 +104,12 @@ public class UserController {
             user = us.validateToken(code);
         } catch (TokenExpiredException e) {
             LOGGER.error("Token expired " + code);
-            us.refreshToken(code);
             return new ModelAndView("user/recovery").addObject("expiredToken", true);
         }
         if (!user.isPresent()) {
             return new ModelAndView("user/recovery").addObject("unknownToken", true);
         }
-        try {
-            authWithoutPassword(user.get());
-        } catch (UserNotFoundException e) {
-            throw new ObjectNotFoundException();
-        }
+        authWithoutPassword(user.get());
         return new ModelAndView("user/validated");
     }
 
@@ -145,9 +135,6 @@ public class UserController {
         } catch (UserAlreadyEnabled e) {
             errors.rejectValue("email", "user.already.exists");
             return resendEmailForm(form, form.getEmail());
-        } catch (UserNotFoundException e) {
-            errors.rejectValue("email", "user.not.exists");
-            return resendEmailForm(form, form.getEmail());
         }
         return new ModelAndView("redirect:/recover?resent=true");
     }
@@ -171,12 +158,7 @@ public class UserController {
         if (errors.hasErrors()) {
             return recoverPasswordForm(emailForm);
         }
-        try {
-            us.sendPasswordResetToken(emailForm.getEmail());
-        } catch (UserNotFoundException e) {
-            errors.rejectValue("email", "user.not.exists");
-            return recoverPasswordForm(emailForm);
-        }
+        us.sendPasswordResetToken(emailForm.getEmail());
         return new ModelAndView("user/resend-recover").addObject("resent", true);
     }
 
@@ -185,10 +167,6 @@ public class UserController {
                                        @Valid @ModelAttribute("passwordForm") ChangePasswordForm passwordForm,
                                        final BindingResult errors) {
         if (errors.hasErrors()) {
-            return changePasswordForm(token, passwordForm);
-        }
-        if (!passwordForm.passwordsMatch()) {
-            errors.rejectValue("repeatPassword", "error.passwords.dont.match");
             return changePasswordForm(token, passwordForm);
         }
         try {

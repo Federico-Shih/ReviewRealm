@@ -57,21 +57,23 @@ public class ReviewController{
     public ModelAndView searchGames(@RequestParam(value = "searchquery", defaultValue = "") String searchquery,
                                     @RequestParam(value = "page", defaultValue = "1") Integer page,
                                     @RequestParam(value = "pagesize", defaultValue = "6") Integer pageSize) {
-
+        User loggedUser = AuthenticationHelper.getLoggedUser(userService);
         ModelAndView mav = new ModelAndView("/review/submit-review-search");
 
         if(pageSize == null || pageSize < 1) {
             pageSize = MAX_SEARCH_RESULTS;
         }
-        //Se supone que solo podes llegar aca si estas loggeado
-        User loggedUser = AuthenticationHelper.getLoggedUser(userService);
 
         if(searchquery.isEmpty()){
             List<Game> list = gameService.getRecommendationsOfGamesForUser(loggedUser.getId());
             mav.addObject("games", list.subList(0, Math.min(list.size(), MAX_SEARCH_RESULTS)));
         } else {
-            GameFilter filter = new GameFilterBuilder().withGameContent(searchquery).build();
-            Paginated<Game> games = gameService.searchGames(Page.with(page, pageSize), filter, new Ordering<>(OrderDirection.ASCENDING, GameOrderCriteria.NAME));
+            Paginated<Game> games = gameService.searchGamesNotReviewedByUser(
+                    Page.with(page, pageSize),
+                    searchquery,
+                    new Ordering<>(OrderDirection.ASCENDING, GameOrderCriteria.NAME),
+                    loggedUser.getId()
+            );
             PaginationHelper.paginate(mav,games);
             mav.addObject("games", games.getList());
         }
@@ -84,25 +86,18 @@ public class ReviewController{
 
         return mav;
     }
+
     @RequestMapping(value = "/review/submit/{gameId:\\d+}", method = RequestMethod.GET)
     public ModelAndView createReviewForm(@PathVariable(value = "gameId") Long gameId,
                                          @ModelAttribute("reviewForm") final SubmitReviewForm form) {
         ModelAndView mav = new ModelAndView("/review/submit-review");
-        if(gameId == 0){
+        if(gameId == 0) { //If gameId not specified
             return new ModelAndView("redirect:/review/submit/search");
         }
-        Optional<Game> reviewedGame = gameService.getGameById(gameId);
-        if (!reviewedGame.isPresent()) {
-            throw new ObjectNotFoundException("game.notfound");
-        }
-        User loggedUser = AuthenticationHelper.getLoggedUser(userService);
-        // Si ya reseñaste este juego
-        Optional<Review> possibleReview = loggedUser.getReviews().stream().filter(r -> r.getReviewedGame().equals(reviewedGame.get())).findFirst();
-        if (possibleReview.isPresent()) {
-            return new ModelAndView("redirect:/review/" + possibleReview.get().getId());
-        }
+        Game reviewedGame = gameService.getGameById(gameId).orElseThrow(ObjectNotFoundException::new);
+
         mav.addObject("edit", false);
-        mav.addObject("game", reviewedGame.get());
+        mav.addObject("game", reviewedGame);
         mav.addObject("selectedGameId", gameId);
         mav.addObject("platforms", Platform.values());
         mav.addObject("difficulties", Difficulty.values());
@@ -115,19 +110,20 @@ public class ReviewController{
     }
 
     @RequestMapping(value = "/review/{id:\\d+}", method = RequestMethod.GET)
-    public ModelAndView reviewDetails(@PathVariable(value = "id") Long reviewId, @RequestParam(value = "created", required = false) Boolean created) {
+    public ModelAndView reviewDetails(
+            @PathVariable(value = "id") Long reviewId,
+            @RequestParam(value = "created", required = false) Boolean created
+    ) {
         User loggedUser = AuthenticationHelper.getLoggedUser(userService);
-        Optional<Review> review = reviewService.getReviewById(reviewId, loggedUser != null ? loggedUser.getId() : null);
-        if (!review.isPresent()) {
-            return new ModelAndView("errors/not-found");
-        }
+        Review review = reviewService.getReviewById(reviewId, loggedUser != null ? loggedUser.getId() : null).orElseThrow(ObjectNotFoundException::new);
+
         Collection<? extends GrantedAuthority> roles = AuthenticationHelper.getAuthorities();
         ModelAndView mav = new ModelAndView("/review/review-details");
-        mav.addObject("review", review.get());
+        mav.addObject("review", review);
         mav.addObject("created", created != null && created);
-        mav.addObject("game", review.get().getReviewedGame());
-        mav.addObject("isModerated", roles.contains(new SimpleGrantedAuthority("ROLE_MODERATOR")));
-        mav.addObject("isOwner", loggedUser != null && Objects.equals(loggedUser.getId(), review.get().getAuthor().getId()));
+        mav.addObject("game", review.getReviewedGame());
+        mav.addObject("isModerated", roles.contains(new SimpleGrantedAuthority(String.format("ROLE_%s", RoleType.MODERATOR.getRole()))));
+        mav.addObject("isOwner", loggedUser != null && loggedUser.getId().equals(review.getAuthor().getId()));
         return mav;
     }
 
@@ -140,9 +136,8 @@ public class ReviewController{
         if (errors.hasErrors()) {
             return createReviewForm(gameId, form);
         }
-        Review createdReview;
         User author = AuthenticationHelper.getLoggedUser(userService);
-        createdReview = reviewService.createReview(
+        Review createdReview = reviewService.createReview(
                 form.getReviewTitle(),
                 form.getReviewContent(),
                 form.getReviewRating(),
@@ -271,15 +266,14 @@ public class ReviewController{
 
     @RequestMapping(value = "/review/delete/{id:\\d+}", method = RequestMethod.POST)
     public ModelAndView deleteReview(@PathVariable(value = "id") Long id) {
-        Optional<Review> review = reviewService.getReviewById(id,null);
-        if (!review.isPresent()) {
-            throw new ObjectNotFoundException();
-        }
+        long gameId = reviewService.getReviewById(id, null)
+                .orElseThrow(ObjectNotFoundException::new)
+                .getReviewedGame().getId();
         boolean deleted = reviewService.deleteReviewById(id);
         if (!deleted) {
             return reviewDetails(id, false);
         }
-        return new ModelAndView("redirect:/game/" + review.get().getReviewedGame().getId());
+        return new ModelAndView("redirect:/game/" + gameId);
     }
 
     @RequestMapping(value = "/review/feedback/{id:\\d+}", method = RequestMethod.POST)
@@ -293,9 +287,7 @@ public class ReviewController{
         } catch (IllegalArgumentException e){
             throw new ObjectNotFoundException();
         }
-
         reviewService.updateOrCreateReviewFeedback(id, loggedUser.getId(), fb);
-
         return new ModelAndView("redirect:" + url);
     }
 
@@ -314,7 +306,6 @@ public class ReviewController{
         return mav;
     }
 
-
     @RequestMapping(value = "/review/{id:\\d+}/edit", method = RequestMethod.POST)
     public ModelAndView editReview(@PathVariable("id") Long reviewId, @Valid @ModelAttribute("reviewForm") EditReviewForm form, final BindingResult errors) {
         if (errors.hasErrors()) {
@@ -328,10 +319,7 @@ public class ReviewController{
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ModelAndView reviewExists(ReviewAlreadyExistsException exception) {
         User user = AuthenticationHelper.getLoggedUser(userService);
-        Optional<Review> review = user.getReviews().stream().filter((r) -> r.getReviewedGame().equals(exception.getReviewedGame())).findFirst();
-        if (!review.isPresent()) {
-            throw new ObjectNotFoundException();
-        }
-        return reviewDetails(review.get().getId(), false);
+        Review review = reviewService.getReviewOfUserForGame(user.getId(), exception.getReviewedGame().getId()).orElseThrow(ObjectNotFoundException::new);
+        return reviewDetails(review.getId(), false);
     }
 }

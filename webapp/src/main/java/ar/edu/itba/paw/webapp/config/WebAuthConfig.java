@@ -52,6 +52,8 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
 
     private static final String ACCESS_CONTROL_CHECK_REVIEW_FEEDBACK = "@accessControl.checkReviewAuthorforFeedback(#id)";
 
+    private static final String ACCESS_CONTROL_CHECK_GAME_REVIEWED = "@accessControl.checkGameAuthorReviewed(#id)";
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -97,6 +99,7 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                 //.antMatchers("/review/edit/").access("@AccessHelper.canEdit") cuando se requiera un acceso especial segun el usuario (Spring Expression Language)
                 .antMatchers("/review/{id:\\d+}/edit").access(ACCESS_CONTROL_CHECK_REVIEW_OWNER)
                 .antMatchers(HttpMethod.POST,"/review/feedback/{id:\\d+}").access(ACCESS_CONTROL_CHECK_REVIEW_FEEDBACK)
+                .antMatchers("/review/submit/{id:\\d+}").access(ACCESS_CONTROL_CHECK_GAME_REVIEWED)
                 /* ACÁ PONEMOS TODOS LOS PATHS QUE REQUIERAN INICIAR SESIÓN Y TENER UN ROL */
                 .antMatchers("/review/delete/{\\d+}", "/game/submissions", "/game/submissions/**", "/game/{\\d+}/edit", "/game/delete/{\\d+}").hasRole(RoleType.MODERATOR.getRole())
                 /* ACÁ PONEMOS TODOS LOS PATHS QUE REQUIERAN INICIAR SESIÓN, PERO NO ROLES */
@@ -111,8 +114,10 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                         "/game/submit",
                         "/profile/missions"
                 ).authenticated()
+                /* ACÁ PONEMOS TODOS LOS PATHS QUE REQUIERAN NO HABER INICIADO SESIÓN */
+                .antMatchers("/login", "/register", "/recover").anonymous()
                 /* POR DEFAULT NO ES NECESARIO INICIAR SESIÓN */
-                .antMatchers("/login", "/register", "/recover", "/**").permitAll()
+                .antMatchers( "/**").permitAll()
             .and().formLogin()
                 .loginPage("/login")
                 .usernameParameter("email")

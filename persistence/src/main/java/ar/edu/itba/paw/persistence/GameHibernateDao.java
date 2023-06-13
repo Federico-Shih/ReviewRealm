@@ -65,8 +65,8 @@ public class GameHibernateDao implements GameDao, PaginationDao<GameFilter> {
         }
         QueryBuilder queryBuilder = getQueryBuilderFromFilter(filter);
         Query nativeQuery = em.createNativeQuery(
-                "SELECT id FROM ("+
-                        "SELECT distinct g.id as gameid, *, g.ratingsum / coalesce(nullif(g.reviewcount, 0), 1) as averageRating  FROM " +
+                "SELECT gameid FROM ("+
+                        "SELECT distinct g.id as gameid, g.publishdate, g.name, g.ratingsum / coalesce(nullif(g.reviewcount, 0), 1) as averageRating  FROM " +
                         toTableString(filter) +
                         queryBuilder.toQuery() +
                         ") as games" +
@@ -202,6 +202,7 @@ public class GameHibernateDao implements GameDao, PaginationDao<GameFilter> {
                 .withList("gg.genreid", filter.getGameGenres())
                 .withExact("g.publisher", filter.getPublisher())
                 .withExact("g.suggestion", filter.getSuggested())
+                .NOT().withList("g.id", filter.getGamesToExclude())
                 .PARENTHESIS_OPEN()
                 .withGreaterOrEqual("CASE WHEN g.reviewcount = 0 THEN -1 ELSE (g.ratingsum/g.reviewcount) END", filter.getMinRating())
                 .withLessOrEqual("CASE WHEN g.reviewcount = 0 THEN -1 ELSE (g.ratingsum/g.reviewcount) END", filter.getMaxRating())

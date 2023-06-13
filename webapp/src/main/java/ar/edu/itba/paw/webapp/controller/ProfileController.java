@@ -355,7 +355,7 @@ public class ProfileController{
         Game game = recommendedGames.get(position);
         mav.addObject("game",game);
         GameReviewData reviewData = gameService.getGameReviewDataByGameId(game.getId());
-        Paginated<Review> reviews = reviewService.getReviewsFromGame(Page.with(page, pageSize), game.getId(), loggedUser.getId());
+        Paginated<Review> reviews = reviewService.getReviewsFromGame(Page.with(page, pageSize), game.getId(), loggedUser.getId(), true);
         PaginationHelper.paginate(mav, reviews);
         mav.addObject("gameReviewData", reviewData);
         mav.addObject("reviews", reviews.getList());
@@ -369,9 +369,6 @@ public class ProfileController{
     public ModelAndView missionsPage() {
         ModelAndView mav = new ModelAndView("profile/missions");
         User loggedUser = AuthenticationHelper.getLoggedUser(userService);
-        if (loggedUser == null) {
-            throw new UserNotFoundException();
-        }
         Map<Mission, MissionProgress> userMissions = loggedUser.getMissions().stream().collect(Collectors.toMap(MissionProgress::getMission, Function.identity()));
         List<MissionProgress> currentProgresses = Arrays.stream(Mission.values())
             .filter(

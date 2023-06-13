@@ -74,14 +74,17 @@ public class GameController{
             mav.addObject("game",game.get());
             GameReviewData reviewData = gs.getGameReviewDataByGameId(gameId);
 
-            Paginated<Review> reviews = rs.getReviewsFromGame(Page.with(page, pageSize), gameId, loggedUser != null ? loggedUser.getId() : null);
-            PaginationHelper.paginate(mav,reviews);
+            if(loggedUser!=null) {
+                rs.getReviewOfUserForGame(loggedUser.getId(), gameId).ifPresent((r) -> mav.addObject("myReview", r));
+            }
+            Paginated<Review> otherReviews = rs.getReviewsFromGame(Page.with(page, pageSize), gameId, loggedUser != null ? loggedUser.getId() : null, true);
+            PaginationHelper.paginate(mav,otherReviews);
             List<Pair<String, Object>> queriesToKeepAtPageChange = new ArrayList<>();
             queriesToKeepAtPageChange.add(new Pair<>("pagesize", pageSize));
             mav.addObject("queriesToKeepAtPageChange", QueryHelper.toQueryString(queriesToKeepAtPageChange));
 
             mav.addObject("gameReviewData", reviewData);
-            mav.addObject("reviews", reviews.getList());
+            mav.addObject("reviews", otherReviews.getList());
             mav.addObject("discoveryQueue",false);
             mav.addObject("queryString", "?" );
         }else{

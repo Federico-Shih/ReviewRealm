@@ -2,6 +2,7 @@ package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.dtos.Page;
 import ar.edu.itba.paw.dtos.filtering.GameFilter;
+import ar.edu.itba.paw.dtos.filtering.GameFilterBuilder;
 import ar.edu.itba.paw.dtos.ordering.GameOrderCriteria;
 import ar.edu.itba.paw.dtos.ordering.Ordering;
 import ar.edu.itba.paw.dtos.saving.SubmitGameDTO;
@@ -116,6 +117,14 @@ public class GameServiceImpl implements GameService {
     public Paginated<Game> searchGames(Page page, GameFilter searchFilter, Ordering<GameOrderCriteria> ordering)
     {
         return gameDao.findAll(page, searchFilter, ordering);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Paginated<Game> searchGamesNotReviewedByUser(Page page, String search, Ordering<GameOrderCriteria> ordering, long userId) {
+        List<Long> gamesReviewed = getGamesReviewedByUser(userId).stream().map(Game::getId).collect(Collectors.toList());
+        GameFilter gameFilter = new GameFilterBuilder().withGameContent(search).withGamesToExclude(gamesReviewed).build();
+        return gameDao.findAll(page, gameFilter, ordering);
     }
 
 

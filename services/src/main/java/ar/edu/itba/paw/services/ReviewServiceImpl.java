@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -59,8 +60,7 @@ public class ReviewServiceImpl implements ReviewService {
         User author = userService.getUserById(authorId).orElseThrow(UserNotFoundException::new);
         Game reviewedGame = gameService.getGameById(gameId).orElseThrow(GameNotFoundException::new);
 
-        List<Review> reviews = author.getReviews();
-        if (reviews.stream().anyMatch((review) -> review.getReviewedGame().equals(reviewedGame))) {
+        if (getReviewOfUserForGame(authorId, gameId).isPresent()) {
             throw new ReviewAlreadyExistsException(reviewedGame);
         }
         Review review = reviewDao.create(title, content, rating, reviewedGame, author, difficulty, gameLength, platform, completed, replayable);
@@ -227,9 +227,11 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Transactional
     @Override
-    public Paginated<Review> getReviewsFromGame(Page page, long gameId, Long activeUserId) {
-        ReviewFilter filter = new ReviewFilterBuilder().withGameId(gameId).build();
-        return reviewDao.findAll(page, filter, Ordering.defaultOrder(ReviewOrderCriteria.REVIEW_DATE), activeUserId);
+    public Paginated<Review> getReviewsFromGame(Page page, long gameId, Long activeUserId, boolean excludeActiveUser) {
+        ReviewFilterBuilder filterBuilder = new ReviewFilterBuilder().withGameId(gameId);
+        if(excludeActiveUser && activeUserId!=null)
+            filterBuilder = filterBuilder.withAuthorsToExclude(Arrays.asList(activeUserId));
+        return reviewDao.findAll(page, filterBuilder.build(), Ordering.defaultOrder(ReviewOrderCriteria.REVIEW_DATE), activeUserId);
     }
 
     @Transactional
@@ -237,5 +239,13 @@ public class ReviewServiceImpl implements ReviewService {
     public List<Review> getAllReviewsFromGame(long gameId, Long activeUserId) {
         ReviewFilter filter = new ReviewFilterBuilder().withGameId(gameId).build();
         return reviewDao.findAll(filter, Ordering.defaultOrder(ReviewOrderCriteria.REVIEW_DATE), activeUserId);
+    }
+
+    @Transactional
+    @Override
+    public Optional<Review> getReviewOfUserForGame(long userId, long gameId) {
+        ReviewFilter filter = new ReviewFilterBuilder().withGameId(gameId).withAuthors(Arrays.asList(userId)).build();
+        Paginated<Review> review = reviewDao.findAll(Page.with(1,1),filter, null, null);
+        return review.getList().stream().findFirst();
     }
 }

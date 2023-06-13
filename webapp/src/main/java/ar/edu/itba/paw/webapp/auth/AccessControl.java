@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.webapp.auth;
 
+import ar.edu.itba.paw.models.Game;
 import ar.edu.itba.paw.models.Review;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.servicesinterfaces.ReviewService;
@@ -20,18 +21,24 @@ public class AccessControl {
         this.reviewService = reviewService;
     }
 
-    public boolean checkReviewAuthorOwner(Long reviewId) {
+    public boolean checkReviewAuthorOwner(long reviewId) {
         User activeUser = AuthenticationHelper.getLoggedUser(userService);
         if(activeUser == null)
             return false;
         Optional<Review> review = reviewService.getReviewById(reviewId, activeUser.getId());
         return review.isPresent() && Objects.equals(review.get().getAuthor().getId(), activeUser.getId());
     }
-    public boolean checkReviewAuthorforFeedback(Long reviewId){
+    public boolean checkReviewAuthorforFeedback(long reviewId){
         User activeUser = AuthenticationHelper.getLoggedUser(userService);
         if(activeUser == null)
             return false;
         Optional<Review> review = reviewService.getReviewById(reviewId, activeUser.getId());
         return review.isPresent() && !Objects.equals(review.get().getAuthor().getId(), activeUser.getId());
+    }
+    public boolean checkGameAuthorReviewed(long gameId) {
+        User activeUser = AuthenticationHelper.getLoggedUser(userService);
+        if(activeUser == null)
+            return false;
+        return !reviewService.getReviewOfUserForGame(activeUser.getId(), gameId).isPresent();
     }
 }

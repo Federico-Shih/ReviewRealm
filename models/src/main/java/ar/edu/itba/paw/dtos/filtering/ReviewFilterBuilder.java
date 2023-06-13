@@ -8,11 +8,8 @@ import java.util.List;
 public class ReviewFilterBuilder {
     private List<Integer> gameGenres = null;
     private List<Integer> authorGenres = null;
-
     private List<Long> gamesToExclude = null;
-
     private List<Long> authorsToExclude = null;
-
     private List<Long> authors = null;
     private String reviewContent = null;
     private Long gameId = null;
@@ -20,9 +17,7 @@ public class ReviewFilterBuilder {
     private List<Platform> platforms = null;
     private List<Difficulty> difficulties = null;
     private Boolean completed = null;
-
     private Boolean replayable = null;
-
     private Boolean orBetweenGenres = null;
 
     public ReviewFilterBuilder withGameGenres(List<Integer> genres) {

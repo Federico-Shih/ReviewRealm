@@ -12,8 +12,9 @@ public class GameFilter {
     private final Float maxRating;
     private final boolean includeNoRating;
     private final Boolean isSuggested;
+    private final List<Long> gamesToExclude;
 
-    public GameFilter(List<Integer> gameGenres, String gameContent, String developer, String publisher, Float minRating, Float maxRating, boolean includeNoRating, Boolean isSuggested) {
+    public GameFilter(List<Integer> gameGenres, String gameContent, String developer, String publisher, Float minRating, Float maxRating, boolean includeNoRating, Boolean isSuggested, List<Long> gamesToExclude) {
         this.gameGenres = gameGenres;
         this.gameContent = gameContent;
         this.developer = developer;
@@ -22,6 +23,7 @@ public class GameFilter {
         this.maxRating = maxRating;
         this.includeNoRating = includeNoRating;
         this.isSuggested = isSuggested;
+        this.gamesToExclude = gamesToExclude;
     }
 
     public List<Integer> getGameGenres() {
@@ -51,4 +53,8 @@ public class GameFilter {
     public boolean getIncludeNoRating() { return includeNoRating; }
 
     public Boolean getSuggested() { return isSuggested; }
+
+    public List<Long> getGamesToExclude() {
+        return gamesToExclude;
+    }
 }

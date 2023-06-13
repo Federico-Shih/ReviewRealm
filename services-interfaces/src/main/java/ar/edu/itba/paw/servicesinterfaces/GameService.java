@@ -22,6 +22,8 @@ public interface GameService {
 
     Paginated<Game> searchGames(Page page, GameFilter filter, Ordering<GameOrderCriteria> ordering);
 
+    Paginated<Game> searchGamesNotReviewedByUser(Page page, String search, Ordering<GameOrderCriteria> ordering, long userId);
+
     GameReviewData getGameReviewDataByGameId(long id);
 
     //TODO: mover estos 4 a UserService
