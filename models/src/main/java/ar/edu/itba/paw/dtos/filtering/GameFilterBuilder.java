@@ -12,6 +12,7 @@ public class GameFilterBuilder {
     private Float maxRating = null;
     private boolean includeNoRating = true;
     private Boolean isSuggested = null;
+    private List<Long> gamesToExclude = null;
 
     public GameFilterBuilder withGameGenres(List<Integer> genres) {
         this.gameGenres = genres;
@@ -45,7 +46,12 @@ public class GameFilterBuilder {
         return this;
     }
 
+    public GameFilterBuilder withGamesToExclude(List<Long> gamesToExclude) {
+        this.gamesToExclude = gamesToExclude;
+        return this;
+    }
+
     public GameFilter build() {
-        return new GameFilter(gameGenres, gameContent, developer, publisher, minRating, maxRating, includeNoRating, isSuggested);
+        return new GameFilter(gameGenres, gameContent, developer, publisher, minRating, maxRating, includeNoRating, isSuggested, gamesToExclude);
     }
 }

@@ -69,10 +69,11 @@ public class ReviewController{
             mav.addObject("games", list.subList(0, Math.min(list.size(), MAX_SEARCH_RESULTS)));
         } else {
             GameFilter filter = new GameFilterBuilder().withGameContent(searchquery).build();
-            Paginated<Game> games = gameService.searchGames(
+            Paginated<Game> games = gameService.searchGamesNotReviewedByUser(
                     Page.with(page, pageSize),
-                    filter,
-                    new Ordering<>(OrderDirection.ASCENDING, GameOrderCriteria.NAME)
+                    searchquery,
+                    new Ordering<>(OrderDirection.ASCENDING, GameOrderCriteria.NAME),
+                    loggedUser.getId()
             );
             PaginationHelper.paginate(mav,games);
             mav.addObject("games", games.getList());

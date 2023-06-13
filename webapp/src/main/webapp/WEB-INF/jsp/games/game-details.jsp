@@ -161,9 +161,27 @@
 </c:if>
 
 <div class="game-review-section">
+    <c:if test="${loggedUser != null && !empty myReview}">
+        <c:url value="/review/${myReview.id}/edit" var="editReview"/>
+        <div class="game-review-header">
+            <span class="game-review-section-header"><spring:message code="game.details.your.review"/></span>
+            <a class="btn waves-effect-light" href="${editReview}"><spring:message code="game.details.edit.your.review"/></a>
+        </div>
+        <div class="game-review-card-list row">
+            <c:set var="hideFooter" value="true" scope="request" />
+            <c:set var="review" value="${myReview}" scope="request" />
+            <c:import url="/WEB-INF/jsp/review/review-card.jsp" />
+        </div>
+    </c:if>
+    <c:if test="${loggedUser == null || empty myReview}">
+        <div class="game-review-header">
+            <span class="game-review-section-header"><spring:message code="game.details.no.own.review"/></span>
+            <a class="btn waves-effect-light" href="${sumbitReview}"><spring:message code="game.details.new.review"/></a>
+        </div>
+    </c:if>
+
     <div class="game-review-header">
         <span class="game-review-section-header"><spring:message code="game.details.other.reviews"/></span>
-        <a class="btn waves-effect-light" href="${sumbitReview}"><spring:message code="game.details.new.review"/></a>
     </div>
     <div class="game-review-card-list row">
         <c:if test="${empty reviews}">

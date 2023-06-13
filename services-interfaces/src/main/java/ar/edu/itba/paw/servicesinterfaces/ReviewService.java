@@ -41,7 +41,7 @@ public interface ReviewService {
 
     Paginated<Review> searchReviews(Page page, ReviewFilter filter, Ordering<ReviewOrderCriteria> ordering, Long activeUserId);
 
-    Paginated<Review> getReviewsFromGame(Page page, long gameId, Long activeUserId);
+    Paginated<Review> getReviewsFromGame(Page page, long gameId, Long activeUserId, boolean excludeActiveUser);
 
     List<Review> getAllReviewsFromGame(long gameId, Long activeUserId);
 

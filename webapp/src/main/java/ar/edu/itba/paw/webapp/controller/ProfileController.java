@@ -355,7 +355,7 @@ public class ProfileController{
         Game game = recommendedGames.get(position);
         mav.addObject("game",game);
         GameReviewData reviewData = gameService.getGameReviewDataByGameId(game.getId());
-        Paginated<Review> reviews = reviewService.getReviewsFromGame(Page.with(page, pageSize), game.getId(), loggedUser.getId());
+        Paginated<Review> reviews = reviewService.getReviewsFromGame(Page.with(page, pageSize), game.getId(), loggedUser.getId(), true);
         PaginationHelper.paginate(mav, reviews);
         mav.addObject("gameReviewData", reviewData);
         mav.addObject("reviews", reviews.getList());

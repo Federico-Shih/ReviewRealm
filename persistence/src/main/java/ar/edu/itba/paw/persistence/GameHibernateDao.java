@@ -202,6 +202,7 @@ public class GameHibernateDao implements GameDao, PaginationDao<GameFilter> {
                 .withList("gg.genreid", filter.getGameGenres())
                 .withExact("g.publisher", filter.getPublisher())
                 .withExact("g.suggestion", filter.getSuggested())
+                .NOT().withList("g.id", filter.getGamesToExclude())
                 .PARENTHESIS_OPEN()
                 .withGreaterOrEqual("CASE WHEN g.reviewcount = 0 THEN -1 ELSE (g.ratingsum/g.reviewcount) END", filter.getMinRating())
                 .withLessOrEqual("CASE WHEN g.reviewcount = 0 THEN -1 ELSE (g.ratingsum/g.reviewcount) END", filter.getMaxRating())
