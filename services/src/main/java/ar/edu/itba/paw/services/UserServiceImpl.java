@@ -39,7 +39,7 @@ public class UserServiceImpl implements UserService {
     private final GameService gameService;
 
     private final MissionService missionService;
-    private static final int EXPIRATION_TIME = 60 * 60 * 24; // 24hs
+    private static final int EXPIRATION_TIME = 24; // 24hs
     private static final int AVATAR_AMOUNT = 6;
 
     @Autowired
