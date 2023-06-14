@@ -43,10 +43,12 @@ public class UserController {
 
     @RequestMapping("/login")
     public ModelAndView loginForm(
-            @RequestParam(value = "error", defaultValue = "") final String error
+            @RequestParam(value = "error", defaultValue = "false") final String error,
+            @RequestParam(value = "disabled", defaultValue = "false") final Boolean disabled
     ) {
         ModelAndView mav = new ModelAndView("user/login");
         mav.addObject("error", error);
+        mav.addObject("disabled", disabled);
         return mav;
     }
 

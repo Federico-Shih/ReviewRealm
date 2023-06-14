@@ -266,10 +266,11 @@ public class ReviewController{
 
     @RequestMapping(value = "/review/delete/{id:\\d+}", method = RequestMethod.POST)
     public ModelAndView deleteReview(@PathVariable(value = "id") Long id) {
+        User loggedUser = AuthenticationHelper.getLoggedUser(userService);
         long gameId = reviewService.getReviewById(id, null)
                 .orElseThrow(ObjectNotFoundException::new)
                 .getReviewedGame().getId();
-        boolean deleted = reviewService.deleteReviewById(id);
+        boolean deleted = reviewService.deleteReviewById(id, loggedUser.getId());
         if (!deleted) {
             return reviewDetails(id, false);
         }

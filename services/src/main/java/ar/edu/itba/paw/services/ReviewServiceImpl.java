@@ -158,7 +158,7 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Transactional
     @Override
-    public boolean deleteReviewById(long id) {
+    public boolean deleteReviewById(long id, long reporterUserId) {
         Optional<Review> review = getReviewById(id, null);
         if(review.isPresent()){
             reviewDao.deleteReview(id);
@@ -169,7 +169,7 @@ public class ReviewServiceImpl implements ReviewService {
             User author = review.get().getAuthor();
             missionService.addMissionProgress(author.getId(), Mission.REVIEWS_GOAL, -1f);
 
-            if(userService.isNotificationEnabled(author.getId(), NotificationType.MY_REVIEW_IS_DELETED)) {
+            if(userService.isNotificationEnabled(author.getId(), NotificationType.MY_REVIEW_IS_DELETED) && author.getId() != reporterUserId) {
                 mailingService.sendReviewDeletedEmail(game, author);
             }
 

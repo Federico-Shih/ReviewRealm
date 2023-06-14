@@ -49,40 +49,42 @@
             <span class="card-title">
                 <spring:message code="missions.card.title" />
             </span>
-            <c:forEach items="${missions}" var="missionProgress">
-                <div class="card">
-                    <div class="card-content mission-card">
+            <div class="row">
+                <c:forEach items="${missions}" var="missionProgress">
+                    <div class="card col s12 m6 l6">
+                        <div class="card-content mission-card">
                         <span class="card-title">
                             <spring:message code="${missionProgress.mission.title}" />
                         </span>
-                        <div>
-                            <spring:message code="${missionProgress.mission.description}" arguments="${missionProgress.mission.target}" />
-                        </div>
-                        <div>
-                            <div class="progress">
-                                <div class="determinate" style="width: ${missionProgress.progress/missionProgress.mission.target * 100}%"></div>
+                            <div>
+                                <spring:message code="${missionProgress.mission.description}" arguments="${missionProgress.mission.target}" />
                             </div>
-                            <div>${missionProgress.progress}/${missionProgress.mission.target}</div>
-                        </div>
-                        <div>
-                            <spring:message code="missions.timescompleted.label" arguments="${missionProgress.times}" />
-                        </div>
-                        <div class="mission-data">
-                            <c:if test="${missionProgress.mission.repeatable}">
+                            <div>
+                                <div class="progress">
+                                    <div class="determinate" style="width: ${missionProgress.progress/missionProgress.mission.target * 100}%"></div>
+                                </div>
+                                <div>${missionProgress.progress}/${missionProgress.mission.target}</div>
+                            </div>
+                            <div>
+                                <spring:message code="missions.timescompleted.label" arguments="${missionProgress.times}" />
+                            </div>
+                            <div class="mission-data">
+                                <c:if test="${missionProgress.mission.repeatable}">
                                 <span class="mission-chip">
                                         <i class="material-icons">repeat</i>
                                     <span>
                                         <spring:message code="${missionProgress.mission.frequency.name}" />
                                     </span>
                                 </span>
-                            </c:if>
-                            <span class="mission-chip ">
+                                </c:if>
+                                <span class="mission-chip ">
                                 <spring:message code="missions.xp.label" arguments="${missionProgress.mission.xp}" />
                             </span>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </c:forEach>
+                </c:forEach>
+            </div>
         </div>
     </div>
 </div>
