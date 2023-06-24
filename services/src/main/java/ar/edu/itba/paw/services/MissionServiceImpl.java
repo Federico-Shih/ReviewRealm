@@ -2,10 +2,12 @@ package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.dtos.saving.SaveUserBuilder;
 import ar.edu.itba.paw.enums.Mission;
+import ar.edu.itba.paw.exceptions.UserNotFoundException;
 import ar.edu.itba.paw.models.MissionProgress;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.persistenceinterfaces.MissionDao;
 import ar.edu.itba.paw.persistenceinterfaces.UserDao;
+import ar.edu.itba.paw.servicesinterfaces.MailingService;
 import ar.edu.itba.paw.servicesinterfaces.MissionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,11 +24,13 @@ public class MissionServiceImpl implements MissionService {
     private static final Logger LOGGER = LoggerFactory.getLogger(MissionServiceImpl.class);
     private final MissionDao missionDao;
     private final UserDao userDao;
+    private final MailingService mailingService;
 
     @Autowired
-    public MissionServiceImpl(MissionDao missionDao, UserDao userDao) {
+    public MissionServiceImpl(MissionDao missionDao, UserDao userDao, MailingService mailingService) {
         this.missionDao = missionDao;
         this.userDao = userDao;
+        this.mailingService = mailingService;
     }
 
     @Transactional
@@ -44,7 +48,15 @@ public class MissionServiceImpl implements MissionService {
             if (missionProgress.isCompleted()) {
                 LOGGER.info("Completed mission {} for user {}, gained {} xp", mission.getTitle(), user.getId(), mission.getXp());
                 missionProgress = missionDao.completeMission(user, mission).orElseThrow(IllegalArgumentException::new);
-                userDao.update(user.getId(), new SaveUserBuilder().withXp(user.getXp() + mission.getXp()).build());
+                int level = user.getLevel();
+                User updatedUser = userDao.update(user.getId(), new SaveUserBuilder().withXp(user.getXp() + mission.getXp()).build()).orElseThrow(() -> {
+                    LOGGER.error("Could not update user {} with {} xp", user.getId(), mission.getXp());
+                    return new UserNotFoundException();
+                });
+                if (updatedUser.getLevel() != level) {
+                    LOGGER.info("User {} leveled up to level {}", user.getId(), updatedUser.getLevel());
+                    this.mailingService.sendLevelUpEmail(updatedUser);
+                }
                 // Automatically reset repeatable and none time frequency missions
                 if (mission.isRepeatable() && mission.getFrequency() == Mission.MissionFrequency.NONE) {
                     missionProgress = missionDao.resetProgress(user, mission).orElseThrow(IllegalArgumentException::new);

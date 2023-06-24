@@ -2,7 +2,7 @@
 <html th:lang="${#locale.language}" th:xmllang="${#locale.language}" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-    <title th:text="#{email.newreview.title (${author},${game})}"></title>
+    <title th:text="#{email.levelup.title (${username})}"></title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <style>
         .body {
@@ -40,6 +40,9 @@
         .container {
             width: 70%;
             margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
         .goto-button {
             color: #fff;
@@ -54,6 +57,19 @@
             padding: 0 16px;
             text-transform: uppercase;
             vertical-align: middle;
+        }
+        .level-container {
+            background-color: #35325e;
+            font-size: 30px;
+            display: flex;
+            justify-content: center;
+            width: 50%;
+            min-width: 300px;
+            padding: 30px 0;
+            border: 2px groove white;
+        }
+        .button-container {
+            padding-top: 1.5em;
         }
     </style>
 </head>
@@ -71,11 +87,15 @@
         </div>
     </div>
     <div class="container">
-        <h3 th:text="#{email.newreview.longtitle (${author}, ${game})}"></h3>
-        <a th:href="@{{base}/review/{id}(base=${webBaseUrl},id=${reviewId})}">
-            <span class="goto-button" th:text="#{email.newreview.checkitout}">
+        <h3 th:text="#{email.levelup.longtitle (${level})}"></h3>
+        <div class="level-container" th:text="#{email.levelup.level (${level})}">
+        </div>
+        <div class="button-container">
+            <a th:href="@{{base}/profile/{id}(base=${webBaseUrl},id=${userid})}">
+            <span class="goto-button" th:text="#{email.levelup.profile}">
             </span>
-        </a>
+            </a>
+        </div>
     </div>
 </div>
 </body>

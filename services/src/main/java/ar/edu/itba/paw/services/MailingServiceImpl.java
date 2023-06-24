@@ -96,6 +96,21 @@ public class MailingServiceImpl implements MailingService {
         sendEmail(follower.getEmail(), subject, "newreview", templateVariables, follower.getLanguage());
     }
 
+    @Async
+    @Override
+    public void sendLevelUpEmail(User user) {
+        Map<String, Object> templateVariables = new HashMap<>();
+        templateVariables.put("username", user.getEmail());
+        templateVariables.put("level", user.getLevel());
+        templateVariables.put("webBaseUrl", env.getProperty("mailing.weburl"));
+        templateVariables.put("userid", user.getId());
+        Object[] stringArgs = {user.getUsername()};
+        String subject = messageSource.getMessage("email.levelup.subject",
+                stringArgs, user.getLanguage());
+        LOGGER.info("Sending level up email to {}", user.getEmail());
+        sendEmail(user.getEmail(), subject, "levelup", templateVariables, user.getLanguage());
+    }
+
     private void sendEmail(String mailTo, String mailSubject, String template, Map<String, Object> templateVariables, Locale userLocale) {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         try {
