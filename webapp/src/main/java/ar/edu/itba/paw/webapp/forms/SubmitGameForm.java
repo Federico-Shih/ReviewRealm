@@ -7,6 +7,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.multipart.MultipartFile;
 import javax.validation.constraints.Size;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
 
 public class SubmitGameForm {
@@ -19,6 +20,7 @@ public class SubmitGameForm {
     @Size(min = 1, max = 50)
     private String publisher;
     private List<Integer> genres;
+    private String releaseDate;
 
     @ValidMediaType(value = {MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE, MediaType.IMAGE_GIF_VALUE}, message = "invalid.mediatype")
     @ValidMediaSize(value = 20 * 1024 * 1024)
@@ -72,7 +74,15 @@ public class SubmitGameForm {
         this.image = image;
     }
 
+    public String getReleaseDate() {
+        return releaseDate;
+    }
+
+    public void setReleaseDate(String releaseDate) {
+        this.releaseDate = releaseDate;
+    }
+
     public SubmitGameDTO toSubmitDTO() throws IOException {
-        return new SubmitGameDTO(name, description, developer, publisher, genres, image.getBytes(), image.getContentType());
+        return new SubmitGameDTO(name, description, developer, publisher, genres, image.getBytes(), image.getContentType(), LocalDate.parse(releaseDate));
     }
 }

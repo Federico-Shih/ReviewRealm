@@ -202,4 +202,8 @@ public class Game {
         this.image = image;
     }
 
+    public void setPublishDate(LocalDate publishDate) {
+        this.publishDate = publishDate;
+    }
+
 }

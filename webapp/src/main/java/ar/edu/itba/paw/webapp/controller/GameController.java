@@ -29,6 +29,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -205,10 +207,12 @@ public class GameController{
             form.setDeveloper(game.getDeveloper());
             form.setPublisher(game.getPublisher());
             form.setGenres(game.getGenres().stream().map(Genre::getId).collect(Collectors.toList()));
+            form.setReleaseDate(game.getPublishDate().format(DateTimeFormatter.ISO_DATE));
             mav.addObject("oldImage", gameOptional.get().getImageUrl());
         }
         mav.addObject("genres", Genre.values());
         mav.addObject("edit", true);
+        mav.addObject("maxDate", LocalDate.now().format(DateTimeFormatter.ISO_DATE));
         return mav;
     }
 
@@ -230,6 +234,7 @@ public class GameController{
         ModelAndView mav = new ModelAndView("games/submit-game");
         mav.addObject("genres", Genre.values());
         mav.addObject("edit", false);
+        mav.addObject("maxDate", LocalDate.now().format(DateTimeFormatter.ISO_DATE));
         return mav;
     }
 

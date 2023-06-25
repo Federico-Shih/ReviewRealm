@@ -96,7 +96,14 @@
                             <spring:message code="game.submit.form.publisher" />
                         </form:label>
                     </div>
-                    <div class="input-field file-field col s12">
+                    <div class="input-field col s6">
+                        <spring:message code="game.submit.placeholder.releasedate" var="placeholderDate" />
+                        <form:input type="date" path="releaseDate" id="date" max="${maxDate}" cssClass="white-text" placeholder="${placeholderDate}" />
+                        <form:label for="date" path="releaseDate" >
+                            <spring:message code="game.submit.form.releasedate" />
+                        </form:label>
+                    </div>
+                    <div class="input-field file-field col s6">
                             <div class="btn" type="">
                                 <span><spring:message code="game.submit.form.image" /></span>
                                 <form:input type="file" alt="image" id="image" accept="image/gif, image/png, image/jpeg"  path="image"/>
@@ -113,14 +120,14 @@
                         <form:errors path="image" cssClass="error" element="p" />
                     </div>
                     <c:if test="${edit}">
-                        <div class="col s6 center" id="old-image-div">
+                        <div class="col s12 center" id="old-image-div">
                             <div class="card-for-preview z-depth-2">
                                 <c:url value="${oldImage}" var="oldImage" />
                                 <img class="preview-image" id="oldImage" src="${oldImage}" alt="Old Image"/>
                             </div>
                         </div>
                     </c:if>
-                    <div class="col s6 center hide" id="preview-div">
+                    <div class="col push s12 center hide" id="preview-div">
                         <div class="card-for-preview z-depth-2">
                             <img class="preview-image" id="imageShow" src="" alt="Preview"/>
                         </div>

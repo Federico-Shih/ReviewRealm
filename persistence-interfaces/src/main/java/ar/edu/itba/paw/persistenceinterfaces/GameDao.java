@@ -18,7 +18,7 @@ public interface GameDao {
 
     Game create(String name,String description,String developer, String publisher, String imageid, List<Genre> genres, LocalDate publishDate, boolean suggested);
 
-    Optional<Game> edit(long gameId, String name, String description, String developer, String publisher, String imageid, List<Genre> genres);
+    Optional<Game> edit(long gameId, String name, String description, String developer, String publisher, String imageid, List<Genre> genres,LocalDate publishDate);
 
     Optional<Game> getById(long id);
 

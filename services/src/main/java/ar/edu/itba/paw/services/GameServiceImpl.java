@@ -64,7 +64,7 @@ public class GameServiceImpl implements GameService {
         LOGGER.info("{} game - name: {}, developer: {}", isModerator ? "Creating" : "Suggesting", gameDTO.getName(), gameDTO.getName());
         List<Genre> genreList = prepareGenres(gameDTO);
 
-        Game toReturn = gameDao.create(gameDTO.getName(), gameDTO.getDescription(), gameDTO.getDeveloper(), gameDTO.getPublisher(), img.getId(), genreList, LocalDate.now(), !isModerator);
+        Game toReturn = gameDao.create(gameDTO.getName(), gameDTO.getDescription(), gameDTO.getDeveloper(), gameDTO.getPublisher(), img.getId(), genreList,gameDTO.getReleaseDate(), !isModerator);
         return (isModerator) ? Optional.of(toReturn) : Optional.empty();
     }
 
@@ -86,7 +86,7 @@ public class GameServiceImpl implements GameService {
 
         List<Genre> genreList = prepareGenres(gameDTO);
         LOGGER.info("Editing game - name: {}, developer: {}", gameDTO.getName(), gameDTO.getName());
-        return gameDao.edit(gameId,gameDTO.getName(),gameDTO.getDescription(),gameDTO.getDeveloper(),gameDTO.getPublisher(), (img!=null)? img.getId() : null, genreList).orElseThrow(GameNotFoundException::new);
+        return gameDao.edit(gameId,gameDTO.getName(),gameDTO.getDescription(),gameDTO.getDeveloper(),gameDTO.getPublisher(), (img!=null)? img.getId() : null, genreList,gameDTO.getReleaseDate()).orElseThrow(GameNotFoundException::new);
     }
 
     private List<Genre> prepareGenres(SubmitGameDTO gameDTO) throws GenreNotFoundException {
