@@ -148,7 +148,7 @@ public class User {
 
     }
 
-    public User(long id, String username, String email, String password, boolean enabled, int userReputation, HashSet<NotificationType> disabledNotifications, String userLanguage, int userXp, List<Game> favoriteGames) {
+    public User(long id, String username, String email, String password, boolean enabled, int userReputation, Set<NotificationType> disabledNotifications, String userLanguage, int userXp, List<Game> favoriteGames) {
         // For testing
         this.id = id;
         this.username = username;
@@ -160,6 +160,23 @@ public class User {
         this.language = new Locale(userLanguage);
         this.xp = (float) userXp;
         this.favoriteGames = favoriteGames;
+    }
+
+    public User(Long id, String username, String email, String password, boolean enabled, int reputation, Set<NotificationType> es, String language, int xp, List<Game> es1, int avatar) {
+        this(
+                id,
+                username,
+                email,
+                password,
+                enabled,
+                reputation,
+                es,
+                language,
+                xp,
+                es1
+        );
+
+        this.avatarId = (long) avatar;
     }
 
     public Long getId() {

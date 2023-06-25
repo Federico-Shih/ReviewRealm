@@ -8,6 +8,8 @@ import ar.edu.itba.paw.models.Review;
 import ar.edu.itba.paw.models.User;
 import org.springframework.jdbc.core.RowMapper;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Optional;
 
 public interface CommonRowMappers{
@@ -41,7 +43,19 @@ public interface CommonRowMappers{
                 resultSet.getLong("dislikes"));
     };
     
-//    RowMapper<User> TEST_USER_MAPPER = ((resultSet, i) -> (
-//
-//    ));
+    RowMapper<User> TEST_USER_MAPPER = ((resultSet, i) -> (
+        new User(
+                resultSet.getLong("id"),
+                resultSet.getString("username"),
+                resultSet.getString("email"),
+                resultSet.getString("password"),
+                resultSet.getBoolean("enabled"),
+                resultSet.getInt("reputation"),
+                new HashSet<>(),
+                resultSet.getString("language"),
+                resultSet.getInt("xp"),
+                new ArrayList<>(),
+                resultSet.getInt("avatar")
+        )
+    ));
 }

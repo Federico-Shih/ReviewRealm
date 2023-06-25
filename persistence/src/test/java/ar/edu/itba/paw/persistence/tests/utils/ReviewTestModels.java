@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.persistence.tests.utils;
 
+import ar.edu.itba.paw.dtos.SaveReviewDTO;
 import ar.edu.itba.paw.enums.Difficulty;
 import ar.edu.itba.paw.enums.Platform;
 import ar.edu.itba.paw.models.Game;
@@ -72,7 +73,18 @@ public class ReviewTestModels {
     private static final int REVIEW_CREATE_DISLIKES = 15;
     private static final Game SUBNAUTICA2= GameTestModels.getSubnautica2();
 
+    private static final String REVIEW_UPDATE_TITLE="Updated Title";
+    private static final String REVIEW_UPDATE_CONTENT = "Updated Content";
+    private static final int REVIEW_UPDATE_RATING = 4;
+    private static final Difficulty REVIEW_UPDATE_DIFF = Difficulty.EASY;
+    private static final double REVIEW_UPDATE_HS= 60.6;
+    private static final Platform REVIEW_UPDATE_PLAT = Platform.PC;
+    private static final boolean REVIEW_UPDATE_COMP = true;
+    private static final boolean REVIEW_UPDATE_REP = false;
 
+    private static final String COMMON_TITLE = "title";
+    private static final String COMMON_CONTENT = "content";
+    private static final LocalTime TIME = LocalTime.now();
     public static Review getReview1(){
         return new Review(REVIEW_SUPERGAMEA_ID,USER1,REVIEW_SUPERGAMEA_TITLE,REVIEW_SUPERGAMEA_CONTENT, LocalDateTime.parse(REVIEW_SUPERGAMEA_CREATED_DATE),REVIEW_SUPERGAMEA_RATING,SUPERGAMEA,REVIEW_SUPERGAMEA_DIFF,REVIEW_SUPERGAMEA_HS,REVIEW_SUPERGAMEA_PLAT,REVIEW_SUPERGAMEA_COMP,REVIEW_SUPERGAMEA_REP,REVIEW_SUPERGAMEA_LIKES,REVIEW_SUPERGAMEA_DISLIKES);
     }
@@ -84,6 +96,18 @@ public class ReviewTestModels {
     }
     public static Review getCreateReview(){
         return new Review(REVIEW_CREATE_ID,USER1,REVIEW_CREATE_TITLE,REVIEW_CREATE_CONTENT, LocalDateTime.parse(REVIEW_CREATE_CREATED_DATE),REVIEW_CREATE_RATING,SUBNAUTICA2,REVIEW_CREATE_DIFF,REVIEW_CREATE_HS,REVIEW_CREATE_PLAT,REVIEW_CREATE_COMP,REVIEW_CREATE_REP,REVIEW_CREATE_LIKES,REVIEW_CREATE_DISLIKES);
+    }
+    public static SaveReviewDTO getUpdateReview(){
+        return new SaveReviewDTO(REVIEW_UPDATE_TITLE,REVIEW_UPDATE_CONTENT,REVIEW_UPDATE_RATING,REVIEW_UPDATE_DIFF,REVIEW_UPDATE_HS,REVIEW_UPDATE_PLAT,REVIEW_UPDATE_COMP,REVIEW_UPDATE_REP);
+    }
+    public static String getCommonTitle(){
+        return COMMON_TITLE;
+    }
+    public static String getCommonContent(){
+        return COMMON_CONTENT;
+    }
+    public static User getCommonAuthor(){
+        return USER3;
     }
 
 

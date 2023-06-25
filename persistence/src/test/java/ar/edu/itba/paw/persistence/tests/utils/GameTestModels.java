@@ -57,7 +57,8 @@ public class GameTestModels {
     private static final boolean CREATE_GAME_SUGGESTED = false;
 
     private static final byte[] image = new byte[0];
-
+    private static final List<Genre> COMMON_GENRES= new ArrayList<>(Collections.singletonList(Genre.ADVENTURE));
+    // Models in Populator
     public static Game getSuperGameA() {
         return new Game(SUPER_GAMEA_ID, SUPER_GAMEA_NAME, SUPER_GAMEA_DESCRIPTION, SUPER_GAMEA_STUDIO, SUPER_GAMEA_PUBLISHER, SUPER_GAMEA_IS_SUGGESTION, IMAGEID, SUPER_GAMEA_RELEASE_DATE, SUPER_GAMEA_RATING, SUPER_GAMEA_RATING_COUNT, SUPER_GAMEA_GENRES);
     }
@@ -74,12 +75,39 @@ public class GameTestModels {
         return new Game(SUBNAUTICA2_ID, SUBNAUTICA2_NAME, SUBNAUTICA2_DESCRIPTION, SUPER_GAMEA_STUDIO, SUPER_GAMEA_PUBLISHER, SUBNAUTICA2_IS_SUGGESTION, IMAGEID, SUBNAUTICA_RELEASE_DATE, SUBNAUTICA2_RATING, SUBNAUTICA2_RATING_COUNT, new ArrayList<>());
     }
 
+    /*
+        long id,
+    String name,
+    String description,
+    String developer,
+    String publisher,
+    LocalDate publishDate,
+    int ratingsum,
+    int reviewcount
+     */
+    // Model for Create
     public static Game getCreateGame() {
-        return new Game(CREATE_GAME_NAME, CREATE_GAME_DESCRIPTION, CREATE_GAME_DEVELOPER, CREATE_GAME_PUBLISHER, new Image(CREATE_GAME_IMAGE_ID, "jpeg", image), CREATE_GAME_GENRES, LocalDate.parse(CREATE_GAME_RELEASE_DATE), CREATE_GAME_SUGGESTED);
+        return new Game(CREATE_GAME_NAME,
+                CREATE_GAME_DESCRIPTION,
+                CREATE_GAME_DEVELOPER,
+                CREATE_GAME_PUBLISHER,
+                new Image(CREATE_GAME_IMAGE_ID, "jpeg", image),
+                CREATE_GAME_GENRES,
+                LocalDate.parse(CREATE_GAME_RELEASE_DATE),
+                CREATE_GAME_SUGGESTED,
+                UserTestModels.getUser1());
     }
 
     public static Game getCreateGameNoGenres() {
-        return new Game(CREATE_GAME_NAME, CREATE_GAME_DESCRIPTION, CREATE_GAME_DEVELOPER, CREATE_GAME_PUBLISHER, new Image(CREATE_GAME_IMAGE_ID, "jpeg", image), new ArrayList<>(), LocalDate.parse(CREATE_GAME_RELEASE_DATE), CREATE_GAME_SUGGESTED);
+        return new Game(CREATE_GAME_NAME,
+                CREATE_GAME_DESCRIPTION,
+                CREATE_GAME_DEVELOPER,
+                CREATE_GAME_PUBLISHER,
+                new Image(CREATE_GAME_IMAGE_ID, "jpeg", image),
+                new ArrayList<>(),
+                LocalDate.parse(CREATE_GAME_RELEASE_DATE),
+                CREATE_GAME_SUGGESTED,
+                UserTestModels.getUser1());
     }
 
     public static Game getGameWithGenres() {

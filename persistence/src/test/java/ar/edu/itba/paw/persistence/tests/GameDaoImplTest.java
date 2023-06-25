@@ -113,7 +113,8 @@ public class GameDaoImplTest {
                 createGame.getImage().getId(),
                 createGame.getGenres(),
                 createGame.getPublishDate(),
-                createGame.getSuggestion());
+                createGame.getSuggestion(),
+                null);
         em.flush();
         Assert.assertNotNull(game);
         Assert.assertEquals(1, JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, "games", String.format("name = '%s'", createGame.getName())));
@@ -141,7 +142,8 @@ public class GameDaoImplTest {
                 createGameNoGenres.getImage().getId(),
                 createGameNoGenres.getGenres(),
                 createGameNoGenres.getPublishDate(),
-                createGameNoGenres.getSuggestion());
+                createGameNoGenres.getSuggestion(),
+                null);
         em.flush();
         Assert.assertNotNull(game);
         Assert.assertEquals(1, JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, "games", String.format("name = '%s'", createGameNoGenres.getName())));
@@ -346,7 +348,7 @@ public class GameDaoImplTest {
         List<Game> games = gameDao.findAll(Page.with(1, 10), filterBuilder.build(), new Ordering<>(OrderDirection.DESCENDING, GameOrderCriteria.AVERAGE_RATING)).getList();
 
         Assert.assertEquals(1, games.size());
-        List<Game> expectedGames = Collections.singletonList(GameTestModels.getCreateGame());
+        List<Game> expectedGames = Collections.singletonList(GameTestModels.getSuperGameB());
         Assert.assertArrayEquals(expectedGames.toArray(), games.toArray());
     }
 
@@ -390,7 +392,7 @@ public class GameDaoImplTest {
 
         Assert.assertTrue(games.isPresent());
         Assert.assertEquals(2,games.get().size());
-        List<Game> expectedGames = Arrays.asList(GameTestModels.getSuperGameA(), GameTestModels.getSuperGameB());
+        List<Game> expectedGames = Arrays.asList(GameTestModels.getSuperGameB(), GameTestModels.getSubnautica());
         Assert.assertArrayEquals(expectedGames.toArray(), games.get().toArray());
     }
 

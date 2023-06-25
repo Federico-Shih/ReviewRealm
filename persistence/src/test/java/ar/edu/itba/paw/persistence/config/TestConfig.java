@@ -93,7 +93,7 @@ public class TestConfig {
         populator.addScript(hsqldbSql);
         // tokens.sql
         populator.addScripts(gamesSql, usersSql, favoriteGamesSql);
-        // populator.addScript(reviewsSql);
+        populator.addScript(reviewsSql);
         // populator.addScript(tokensSql);
         return populator;
     }
