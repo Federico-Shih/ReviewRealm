@@ -170,7 +170,7 @@ public class ReviewServiceImpl implements ReviewService {
             missionService.addMissionProgress(author.getId(), Mission.REVIEWS_GOAL, -1f);
 
             if(userService.isNotificationEnabled(author.getId(), NotificationType.MY_REVIEW_IS_DELETED)) {
-                mailingService.sendReviewDeletedEmail(game, author);
+                mailingService.sendReviewDeletedEmail(game, author); //TODO: delete review y que te diga la razon si alguien te la elimino
             }
 
             if(review.get().getRating() > MINFAVORITEGAMERATING)

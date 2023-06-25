@@ -93,6 +93,15 @@ public class User {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
     private List<MissionProgress> missions;
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "reporter")
+    private List<Report> reportsMade;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "reportedUser")
+    private List<Report> infractions;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "moderator")
+    private List<Report> resolvedReports;
+
     public User(String username,
                 String email,
                 String password) {
@@ -283,6 +292,10 @@ public class User {
 
     public void setRoles(Set<RoleType> objects) {
         this.roles = objects;
+    }
+
+    public List<Report> getReportsMade() {
+        return reportsMade;
     }
 }
 

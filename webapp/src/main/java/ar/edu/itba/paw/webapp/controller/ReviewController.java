@@ -13,6 +13,7 @@ import ar.edu.itba.paw.enums.*;
 import ar.edu.itba.paw.exceptions.ReviewAlreadyExistsException;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.servicesinterfaces.GameService;
+import ar.edu.itba.paw.servicesinterfaces.ReportService;
 import ar.edu.itba.paw.servicesinterfaces.ReviewService;
 import ar.edu.itba.paw.servicesinterfaces.UserService;
 import ar.edu.itba.paw.webapp.auth.AuthenticationHelper;
@@ -43,15 +44,18 @@ public class ReviewController{
     private final GameService gameService;
     private final ReviewService reviewService;
     private final UserService userService;
+    private final ReportService reportService;
     private static final int PAGE_SIZE = 8;
     private static final int INITIAL_PAGE = 1;
     private static final int MAX_SEARCH_RESULTS = 6;
 
     @Autowired
-    public ReviewController(GameService gameService, ReviewService reviewService, UserService userService) {
+    public ReviewController(GameService gameService, ReviewService reviewService, UserService userService, ReportService reportService) {
         this.gameService = gameService;
         this.reviewService = reviewService;
         this.userService = userService;
+        this.reportService = reportService;
+
     }
     @RequestMapping(value = "/review/submit/search")
     public ModelAndView searchGames(@RequestParam(value = "searchquery", defaultValue = "") String searchquery,
@@ -112,7 +116,8 @@ public class ReviewController{
     @RequestMapping(value = "/review/{id:\\d+}", method = RequestMethod.GET)
     public ModelAndView reviewDetails(
             @PathVariable(value = "id") Long reviewId,
-            @RequestParam(value = "created", required = false) Boolean created
+            @RequestParam(value = "created", required = false) Boolean created,
+            @RequestParam(value = "reported", required = false) Boolean reported
     ) {
         User loggedUser = AuthenticationHelper.getLoggedUser(userService);
         Review review = reviewService.getReviewById(reviewId, loggedUser != null ? loggedUser.getId() : null).orElseThrow(ObjectNotFoundException::new);
@@ -121,6 +126,9 @@ public class ReviewController{
         ModelAndView mav = new ModelAndView("/review/review-details");
         mav.addObject("review", review);
         mav.addObject("created", created != null && created);
+        mav.addObject("reported", reported != null && reported);
+        mav.addObject("isReported", (loggedUser != null)? reportService.isReported(reviewId, loggedUser.getId()): true);
+        mav.addObject("reportValues",ReportReason.values());
         mav.addObject("game", review.getReviewedGame());
         mav.addObject("isModerated", roles.contains(new SimpleGrantedAuthority(String.format("ROLE_%s", RoleType.MODERATOR.getRole()))));
         mav.addObject("isOwner", loggedUser != null && loggedUser.getId().equals(review.getAuthor().getId()));
@@ -271,7 +279,7 @@ public class ReviewController{
                 .getReviewedGame().getId();
         boolean deleted = reviewService.deleteReviewById(id);
         if (!deleted) {
-            return reviewDetails(id, false);
+            return reviewDetails(id, false,false);
         }
         return new ModelAndView("redirect:/game/" + gameId);
     }
@@ -320,6 +328,6 @@ public class ReviewController{
     public ModelAndView reviewExists(ReviewAlreadyExistsException exception) {
         User user = AuthenticationHelper.getLoggedUser(userService);
         Review review = reviewService.getReviewOfUserForGame(user.getId(), exception.getReviewedGame().getId()).orElseThrow(ObjectNotFoundException::new);
-        return reviewDetails(review.getId(), false);
+        return reviewDetails(review.getId(), false,false);
     }
 }
