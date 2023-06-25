@@ -20,6 +20,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.jdbc.JdbcTestUtils;
@@ -210,6 +211,7 @@ public class GameDaoImplTest {
         return id;
     }
 
+    @Rollback
     @Test
     public void testFindByIdNoGenres() {
         //Setup game
@@ -224,6 +226,7 @@ public class GameDaoImplTest {
         Assert.assertTrue(game.get().getGenres().isEmpty());
     }
 
+    @Rollback
     @Test
     public void testFindById() {
         //Setup game
@@ -246,6 +249,7 @@ public class GameDaoImplTest {
         Assert.assertTrue(genres.stream().anyMatch(g -> g.getId()==GENRE2.getId()));
     }
 
+    @Rollback
     @Test
     public void testCreateWithGenres() {
 
@@ -263,6 +267,7 @@ public class GameDaoImplTest {
         Assert.assertTrue(genres.stream().anyMatch(g -> g.getId() == GENRE2.getId()));
     }
 
+    @Rollback
     @Test
     public void testCreateNoGenres() {
 
@@ -278,6 +283,7 @@ public class GameDaoImplTest {
 
     }
 
+    @Rollback
     @Test
     public void testAddNewReview() {
         Long gameId = insertGame(1L, SUGGESTED, 10, 2);
@@ -293,6 +299,7 @@ public class GameDaoImplTest {
 
     }
 
+    @Rollback
     @Test
     public void testModifyReview() {
         Long gameId = insertGame(1L, SUGGESTED, 10, 2);
@@ -308,6 +315,7 @@ public class GameDaoImplTest {
 
     }
 
+    @Rollback
     @Test
     public void testDeleteReview() {
         Long gameId = insertGame(1L, SUGGESTED, 15, 3);

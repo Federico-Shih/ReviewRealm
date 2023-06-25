@@ -9,6 +9,7 @@ import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name = "games")
@@ -76,8 +77,31 @@ public class Game {
         this.ratingSum = 0;
     }
 
-    public Game() {
-        // for hibernate
+
+    public Game(long id,
+                String name,
+                String description,
+                String developer,
+                String publisher,
+                boolean suggestion,
+                String imageid,
+                String releaseDate,
+                int ratingSum,
+                int ratingCount,
+                List<Genre> genres) {
+        // For testing
+        this.id = id;
+        this.suggestion = suggestion;
+        this.ratingSum = ratingSum;
+        this.reviewCount = ratingCount;
+        this.name = name;
+        this.description = description;
+        this.developer = developer;
+        this.publisher = publisher;
+        byte[] imageBytes = new byte[0];
+        this.image = new Image(imageid, "jpg", imageBytes);
+        this.publishDate = LocalDate.parse(releaseDate);
+        this.genres = genres;
     }
 
     public Game(long id, String name, String description, String developer, String publisher, LocalDate publishDate, int ratingsum, int reviewcount) {
@@ -90,6 +114,10 @@ public class Game {
         this.publishDate = publishDate;
         this.ratingSum = ratingsum;
         this.reviewCount = reviewcount;
+    }
+
+    protected Game() {
+        // Just for Hibernate
     }
 
     public String getDescription() {
