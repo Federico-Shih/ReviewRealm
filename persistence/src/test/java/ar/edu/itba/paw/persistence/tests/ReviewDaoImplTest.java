@@ -17,6 +17,8 @@ import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.persistence.ReviewHibernateDao;
 import ar.edu.itba.paw.persistence.config.TestConfig;
 import ar.edu.itba.paw.persistence.helpers.CommonRowMappers;
+import ar.edu.itba.paw.persistence.tests.utils.ReviewTestModels;
+import ar.edu.itba.paw.persistence.tests.utils.UserTestModels;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -48,192 +50,59 @@ public class ReviewDaoImplTest {
     @Autowired
     private DataSource ds;
     private JdbcTemplate jdbcTemplate;
-    private SimpleJdbcInsert jdbcInsertForReviews;
-    private SimpleJdbcInsert jdbcInsertForReviewFeedback;
-    private static final FeedbackType REVIEW_FEEDBACK = FeedbackType.LIKE;
 
-    //Review fields
-    private static final String TITLE = "title";
-    private static final String CONTENT = "review text";
-    private static final Timestamp TIMESTAMP = new Timestamp(System.currentTimeMillis());
-    private static final Integer RATING = 10;
-    private static final Difficulty DIFFICULTY = Difficulty.HARD;
-    private static final Platform PLATFORM = Platform.PC;
-    private static final Double GAME_LENGTH = 100.78;
-    private static final Boolean REPLAYABILITY = true;
-    private static final Boolean COMPLETED = false;
-    private static final Long LIKES = 4L;
-    private static final Long DISLIKES = 2L;
     @Autowired
     private ReviewHibernateDao reviewDao;
-    //Game fields
-    private final Number firstGame = 1L;
-    private final Number secondGame = 2L;
-    //User fields
-    private final Number firstUser = 1L;
-    private static final String DESCRIPTION = "game description";
-    private static final String DEVELOPER = "game developer";
-    private static final String PUBLISHER = "game publisher";
-    private static final Boolean SUGGESTED = false;
-    private final Number secondUser = 2L;
+
     @PersistenceContext
     private EntityManager em;
-    private static final String USERNAME1 = "username1";
-    private static final String USERNAME2 = "username2";
-    private static final String PASSWORD = "password";
-    private static final String EMAIL1 = "email";
-    private static final String EMAIL2 = "email2";
-    private static final boolean ENABLED = true;
 
-    //Genres
-    private static final Long GENRE_ID1 = 1L;
-    private static final Long GENRE_ID2 = 2L;
-    private static final Long GENRE_ID3 = 3L;
-
-    //Images
-    private static final String IMAGE_ID = "id1";
-    private static final byte[] IMAGE = "E".getBytes();
-    private static final String MEDIA_TYPE = "image/jpeg";
+    private User testUserReviewed;//2
+    private User testUserNotReviewed;//1
+    private Review testReview;//2
+    private Review createReview;
 
     @Before
     public void setUp(){
         this.jdbcTemplate = new JdbcTemplate(ds);
-        this.jdbcInsertForReviews = new SimpleJdbcInsert(ds).withTableName("reviews");
-        this.jdbcInsertForReviewFeedback = new SimpleJdbcInsert(ds).withTableName("reviewfeedback");
-        JdbcTestUtils.deleteFromTables(jdbcTemplate,"reviews");
-        JdbcTestUtils.deleteFromTables(jdbcTemplate,"reviewfeedback");
+        this.testUserReviewed = UserTestModels.getUser2(); //Review1
+        this.testUserNotReviewed = UserTestModels.getUser1();//Review2
+        this.testReview = ReviewTestModels.getReview1();
+        this.createReview = ReviewTestModels.getCreateReview();
+
     }
 
-    @Before
-    public void globalsetUp() {
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, "users");
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, "games");
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, "images");
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, "genreforusers");
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, "genreforgames");
-
-        SimpleJdbcInsert jdbcInsertForUsers = new SimpleJdbcInsert(ds).withTableName("users");
-        SimpleJdbcInsert jdbcInsertForGames = new SimpleJdbcInsert(ds).withTableName("games");
-        SimpleJdbcInsert jdbcInsertForGameGenres = new SimpleJdbcInsert(ds).withTableName("genreforgames");
-        SimpleJdbcInsert jdbcInsertForImages = new SimpleJdbcInsert(ds).withTableName("images");
-        SimpleJdbcInsert jdbcInsertForUsersGenres = new SimpleJdbcInsert(ds).withTableName("genreforusers");
-        Map<String, Object> args = new HashMap<>();
-
-        //Setup users
-        args.put("username", USERNAME1);
-        args.put("password", PASSWORD);
-        args.put("email", EMAIL1);
-        args.put("enabled", ENABLED);
-        args.put("reputation", 0L);
-        args.put("id", 1L);
-        jdbcInsertForUsers.execute(args);
-        args.put("username", USERNAME2);
-        args.put("email", EMAIL2);
-        args.put("id", 2L);
-
-        jdbcInsertForUsers.execute(args);
-        //Setup images
-        args.clear();
-        args.put("data", IMAGE);
-        args.put("id", IMAGE_ID);
-        args.put("mediaType", MEDIA_TYPE);
-        jdbcInsertForImages.execute(args);
-        //Setup games
-        args.clear();
-        args.put("id", 1L);
-        args.put("name", NAME);
-        args.put("description", DESCRIPTION);
-        args.put("developer", DEVELOPER);
-        args.put("publisher", PUBLISHER);
-        args.put("suggestion", SUGGESTED);
-        args.put("publishDate", LocalDate.now());
-        args.put("image", IMAGE_ID);
-        jdbcInsertForGames.execute(args);
-        args.put("id", 2L);
-        jdbcInsertForGames.execute(args);
-
-        //Setup genres
-        args.clear();
-        args.put("gameid", firstGame);
-        args.put("genreid", GENRE_ID1);
-        jdbcInsertForGameGenres.execute(args);
-
-        args.put("genreid", GENRE_ID2);
-        jdbcInsertForGameGenres.execute(args);
-        args.put("gameid", secondGame);
-        jdbcInsertForGameGenres.execute(args);
-        args.put("genreid", GENRE_ID3);
-        jdbcInsertForGameGenres.execute(args);
-        //Setup user preferences
-        args.clear();
-
-        args.put("userid", firstUser);
-        args.put("genreid", GENRE_ID1);
-        jdbcInsertForUsersGenres.execute(args);
-        args.put("genreid", GENRE_ID2);
-        jdbcInsertForUsersGenres.execute(args);
-        args.put("userid", secondUser);
-        jdbcInsertForUsersGenres.execute(args);
-        args.put("genreid", GENRE_ID3);
-        jdbcInsertForUsersGenres.execute(args);
-    }
-
-    private Number addReviewRow(long id, long authorid, long gameid, String title, String content,
-                                Timestamp createddate, long rating, String difficulty, String platform,
-                                double gamelength, boolean replayability, boolean completed, long likes, long dislikes) {
-        Map<String, Object> args = new HashMap<>();
-        args.put("authorid", authorid);
-        args.put("gameid", gameid);
-        args.put("title", title);
-        args.put("content", content);
-        args.put("rating", rating);
-        args.put("difficulty", difficulty);
-        args.put("platform", platform);
-        args.put("gamelength", gamelength);
-        args.put("createddate", createddate);
-        args.put("replayability", replayability);
-        args.put("completed", completed);
-        args.put("likes", likes);
-        args.put("dislikes", dislikes);
-        args.put("id", id);
-        jdbcInsertForReviews.execute(args);
-        return id;
-    }
 
     private void likeReview(long reviewid, long userid, boolean like) {
         Map<String, Object> args = new HashMap<>();
         args.put("reviewid", reviewid);
         args.put("userid", userid);
         args.put("feedback", like ? "LIKE" : "DISLIKE");
-        jdbcInsertForReviewFeedback.execute(args);
     }
 
     @Rollback
     @Test
     public void testFindByIDNoReviewFeedback() {
         //Test
-        Optional<Review> review = reviewDao.findById(reviewId.longValue(), firstUser.longValue());
+        Optional <Review> review = reviewDao.findById(testReview.getId(),testUserReviewed.getId());
 
         Assert.assertTrue(review.isPresent());
-        Assert.assertEquals(review.get().getId(), Long.valueOf(reviewId.longValue()));
-        Assert.assertEquals(review.get().getAuthor().getUsername(), USERNAME1);
-        Assert.assertEquals(review.get().getGameLength(), GAME_LENGTH);
+        Assert.assertEquals(review.get().getId(), testReview.getId());
+        Assert.assertEquals(review.get().getAuthor().getUsername(), testReview.getAuthor().getUsername());
+        Assert.assertEquals(review.get().getGameLength(), testReview.getGameLength());
         Assert.assertNull(review.get().getFeedback());
     }
 
     @Rollback
     @Test
     public void testFindByIDNoActiveUser() {
-        // Setup
-        Number reviewId = addReviewRow(1L, firstUser.longValue(), firstGame.longValue(), TITLE, CONTENT, TIMESTAMP, RATING, DIFFICULTY.toString(), PLATFORM.toString(), GAME_LENGTH, REPLAYABILITY, COMPLETED, LIKES, DISLIKES);
-        likeReview(reviewId.longValue(), firstUser.longValue(), true);
 
         // Test
-        Optional<Review> review = reviewDao.findById(reviewId.longValue(), null);
+        Optional<Review> review = reviewDao.findById(testReview.getId(), null);
 
         Assert.assertTrue(review.isPresent());
-        Assert.assertEquals(review.get().getId(), Long.valueOf(reviewId.longValue()));
-        Assert.assertEquals(review.get().getAuthor().getUsername(), USERNAME1);
+        Assert.assertEquals(review.get().getId(), testReview.getId());
+        Assert.assertEquals(review.get().getAuthor().getUsername(), testReview.getAuthor().getUsername());
         Assert.assertNull(review.get().getFeedback());
     }
 
@@ -241,7 +110,7 @@ public class ReviewDaoImplTest {
     @Test
     public void testFindByIDNonexistent() {
         // Test
-        Optional<Review> review = reviewDao.findById(999L, firstUser.longValue());
+        Optional<Review> review = reviewDao.findById(999L, null);
 
         Assert.assertFalse(review.isPresent());
     }
@@ -250,43 +119,39 @@ public class ReviewDaoImplTest {
     @Test
     public void testFindByIDWithReviewFeedback() {
         // Setup
-        Number reviewId = addReviewRow(1L, firstUser.longValue(), firstGame.longValue(), TITLE, CONTENT, TIMESTAMP, RATING, DIFFICULTY.toString(), PLATFORM.toString(), GAME_LENGTH, REPLAYABILITY, COMPLETED, LIKES, DISLIKES);
-        likeReview(reviewId.longValue(), firstUser.longValue(), true);
-
         // Test
-        Optional<Review> review = reviewDao.findById(reviewId.longValue(), firstUser.longValue());
+        Optional<Review> review = reviewDao.findById(testReview.getId(), testUserReviewed.getId());
 
         Assert.assertTrue(review.isPresent());
-        Assert.assertEquals(review.get().getId(), Long.valueOf(reviewId.longValue()));
-        Assert.assertEquals(review.get().getAuthor().getId(), Long.valueOf(firstUser.longValue()));
-        Assert.assertEquals(review.get().getFeedback(), FeedbackType.LIKE);
+        Assert.assertEquals(review.get().getId(), testReview.getId());
+        Assert.assertEquals(review.get().getAuthor().getId(), testReview.getAuthor().getId());
+        Assert.assertEquals(review.get().getFeedback(), FeedbackType.DISLIKE);
     }
 
-//    @Rollback
-//    @Transactional
-//    @Test
-//    public void testUpdateReviewSuccess() {
-//        // Setup
-//        Number reviewId = addReviewRow(1L, firstUser.longValue(), firstGame.longValue(), TITLE, CONTENT, TIMESTAMP, RATING, DIFFICULTY.toString(), PLATFORM.toString(), GAME_LENGTH, REPLAYABILITY, COMPLETED, LIKES, DISLIKES);
-//        SaveReviewDTO updatedReviewDTO = new SaveReviewDTO("Updated Title", "Updated Content", 4, Difficulty.EASY, 60.6, Platform.PC, true, false);
-//
-//        // Test
-//        int result = reviewDao.update(reviewId.longValue(), updatedReviewDTO);
-//        em.flush();
-//        Assert.assertEquals(result, 1);
-//
-//        // Verify the updated values
-//        Optional<Review> updatedReview = jdbcTemplate.query("SELECT * FROM reviews WHERE reviews.id = ?", CommonRowMappers.TEST_REVIEW_MAPPER, reviewId.longValue()).stream().findFirst();
-//        Assert.assertTrue(updatedReview.isPresent());
-//        Assert.assertEquals(updatedReview.get().getTitle(), "Updated Title");
-//        Assert.assertEquals(updatedReview.get().getContent(), "Updated Content");
-//        Assert.assertEquals(updatedReview.get().getRating(), Integer.valueOf(4));
-//        Assert.assertEquals(updatedReview.get().getDifficulty(), Difficulty.EASY);
-//        Assert.assertTrue(updatedReview.get().getCompleted());
-//        Assert.assertFalse(updatedReview.get().getReplayability());
-//        Assert.assertEquals(updatedReview.get().getPlatform(), Platform.PC);
-//        Assert.assertEquals(updatedReview.get().getGameLength(), Double.valueOf(60.6));
-//    }
+    @Rollback
+    @Transactional
+    @Test
+    public void testUpdateReviewSuccess() {
+        // Setup
+        SaveReviewDTO updatedReviewDTO = new SaveReviewDTO("Updated Title", "Updated Content", 4, Difficulty.EASY, 60.6, Platform.PC, true, false);
+
+        // Test
+        Optional<Review> review = reviewDao.update(testReview.getId(), updatedReviewDTO);
+        em.flush();
+        Assert.assertTrue(review.isPresent());
+
+        // Verify the updated values
+        Optional<Review> updatedReview = jdbcTemplate.queryForObject("Select * from reviews where id = ?",CommonRowMappers.TEST_REVIEW_MAPPER,testReview.getId());
+        Assert.assertTrue(updatedReview.isPresent());
+        Assert.assertEquals(updatedReview.get().getTitle(), "Updated Title");
+        Assert.assertEquals(updatedReview.get().getContent(), "Updated Content");
+        Assert.assertEquals(updatedReview.get().getRating(), Integer.valueOf(4));
+        Assert.assertEquals(updatedReview.get().getDifficulty(), Difficulty.EASY);
+        Assert.assertTrue(updatedReview.get().getCompleted());
+        Assert.assertFalse(updatedReview.get().getReplayability());
+        Assert.assertEquals(updatedReview.get().getPlatform(), Platform.PC);
+        Assert.assertEquals(updatedReview.get().getGameLength(), Double.valueOf(60.6));
+    }
 
 //    @Rollback
 //    @Transactional
