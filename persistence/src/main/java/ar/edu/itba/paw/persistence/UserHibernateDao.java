@@ -270,6 +270,25 @@ public class UserHibernateDao implements UserDao, PaginationDao<UserFilter> {
         return Optional.of(user);
     }
 
+    @Override
+    public boolean deleteFavoriteGameForUser(long userId, long gameId) {
+        final User user = em.find(User.class, userId);
+        if(user==null) return false;
+        return user.getFavoriteGames().removeIf(game -> game.getId() == gameId);
+    }
+
+    @Override
+    public Optional<User> replaceAllFavoriteGames(long userId, List<Long> gameIds) {
+        User user = em.find(User.class, userId);
+        if (user == null) return Optional.empty();
+        List<Game> favGames = user.getFavoriteGames();
+        favGames.clear();
+        for (Long gameId : gameIds) {
+            favGames.add(em.find(Game.class, gameId));
+        }
+        return Optional.of(user);
+    }
+
     private String toTableString(UserFilter filter) {
         StringBuilder str = new StringBuilder();
         str.append("users as u ");

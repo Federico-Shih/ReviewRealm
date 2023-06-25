@@ -12,6 +12,7 @@ import ar.edu.itba.paw.models.FollowerFollowingCount;
 import ar.edu.itba.paw.models.Paginated;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.persistence.config.TestConfig;
+import ar.edu.itba.paw.persistence.tests.utils.UserTestModels;
 import ar.edu.itba.paw.persistenceinterfaces.UserDao;
 import org.junit.Assert;
 import org.junit.Before;
@@ -30,30 +31,21 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
+@Transactional
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = TestConfig.class)
 public class UserDaoImplTest {
+    private static final String UPDATE_EMAIL = "newemail";
+    private static final String UPDATE_PASSWORD = "newpassword";
+    private static final boolean UPDATE_ENABLED = true;
+    private static final int UPDATE_REPUTATION = 1000;
+    private static final int UPDATE_XP = 20000;
+    private static final int UPDATE_AVATARID = 5;
 
-    private final static Long ID = 1L;
-    private final static String USERNAME = "username";
-    private final static String EMAIL = "email";
-    private final static String PASSWORD = "password";
-    private final static Long ID2 = 2L;
-    private final static String USERNAME2 = "username2";
-    private final static String EMAIL2 = "email2";
-    private final static String PASSWORD2 = "password2";
-    private final static Long ID3 =3L;
-    private final static String TEXT1 = "estoesuntexto";
-    private final static String TEXT2 = "estotambienesuntexto";
-    private final static String EXAMPLE_DATE = "2023-06-08";
-    private final static Integer RATING = 5;
+    private static final Locale UPDATE_LOCALE = Locale.CANADA;
 
-    private final static boolean ENABLED = true;
 
     @Autowired
     private DataSource ds;
@@ -66,92 +58,66 @@ public class UserDaoImplTest {
     @PersistenceContext
     private EntityManager em;
 
+    User testUser;
+
     @Before
     public void setUp() {
         jdbcTemplate = new JdbcTemplate(ds);
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, "users");
+        this.testUser = UserTestModels.getUser1();
     }
 
     @Rollback
-    @Transactional
     @Test
     public void testFindById() throws SQLException {
-        //1.prepare
-        jdbcTemplate.execute("INSERT INTO users (id,username,email,password) VALUES (" + ID + ",'" + USERNAME + "', '" + EMAIL + "','" + PASSWORD + "')");
         //2.execute
-        Optional<User> maybeUser = userDao.findById(ID);
+        Optional<User> maybeUser = userDao.findById(testUser.getId());
 
         //3.assert
         Assert.assertTrue(maybeUser.isPresent());
-        Assert.assertEquals(ID, maybeUser.get().getId());
-        Assert.assertEquals(EMAIL, maybeUser.get().getEmail());
-        Assert.assertEquals(PASSWORD, maybeUser.get().getPassword());
+        Assert.assertEquals(testUser.getId(), maybeUser.get().getId());
+        Assert.assertEquals(testUser.getEmail(), maybeUser.get().getEmail());
+        Assert.assertEquals(testUser.getPassword(), maybeUser.get().getPassword());
     }
 
-    @Transactional
+    @Rollback
     @Test
     public void testFindByIdDoesNotExist() throws SQLException {
-        //1.prepare
 
         //2.execute
-        Optional<User> maybeUser = userDao.findById(ID);
+        Optional<User> maybeUser = userDao.findById(-1L);
 
         //3.assert
         Assert.assertFalse(maybeUser.isPresent());
     }
 
-    @Transactional
+    @Rollback
     @Test
     public void testFindAll() throws SQLException {
-        //1.prepare
-        jdbcTemplate.execute("INSERT INTO users (id,username,email,password) VALUES (" + ID + ",'" + USERNAME + "', '" + EMAIL + "','" + PASSWORD + "')");
 
         //2.execute
-        Paginated<User> userlist = userDao.findAll(Page.with(1, 10), new UserFilterBuilder().build(), new Ordering<>(OrderDirection.DESCENDING, UserOrderCriteria.LEVEL));
+        Paginated<User> userlist = userDao.findAll(Page.with(1, 80), new UserFilterBuilder().build(), new Ordering<>(OrderDirection.DESCENDING, UserOrderCriteria.LEVEL));
 
         Assert.assertEquals(userlist.getTotalPages(), 1);
-        Assert.assertTrue(userlist.getList().contains(new User(ID,USERNAME,EMAIL, PASSWORD)));
+        Assert.assertEquals(userlist.getList().size(), 5);
+        User[] expectedUser = {UserTestModels.getUser5(), UserTestModels.getUser4(), UserTestModels.getUser3(), UserTestModels.getUser2(), UserTestModels.getUser1()};
+        Assert.assertArrayEquals(expectedUser, userlist.getList().toArray());
     }
 
-    @Transactional
-    @Test
-    public void testFindAllMultipleUsers() throws SQLException {
-        //1.prepare
-        jdbcTemplate.execute("INSERT INTO users (id,username,email,password) VALUES (" + ID + ",'" + USERNAME + "', '" + EMAIL + "','" + PASSWORD + "')");
-        jdbcTemplate.execute("INSERT INTO users (id,username,email,password) VALUES (" + ID2 + ",'" + USERNAME2 + "', '" + EMAIL2 + "','" + PASSWORD2 + "')");
-
-        //2.execute
-        Paginated<User> userlist = userDao.findAll(Page.with(1, 10), new UserFilterBuilder().build(), new Ordering<>(OrderDirection.DESCENDING, UserOrderCriteria.LEVEL));
-
-        Assert.assertEquals(userlist.getTotalPages(), 1);
-        Assert.assertTrue(userlist.getList().contains(new User(ID, USERNAME, EMAIL, PASSWORD)));
-        Assert.assertTrue(userlist.getList().contains(new User(ID2, USERNAME2, EMAIL2, PASSWORD2)));
-    }
-
-    @Transactional
+    @Rollback
     @Test
     public void testMultipleFilter() throws SQLException {
-        //1.prepare
-        jdbcTemplate.execute("INSERT INTO users (id,username,email,password) VALUES ("+ID+",'"+USERNAME+"', '"+EMAIL+"','"+PASSWORD+"')");
-
-        jdbcTemplate.execute("INSERT INTO users (id,username,email,password) VALUES (2,'username2', 'email2','password2')");
-        jdbcTemplate.execute("INSERT INTO users (id,username,email,password) VALUES (3,'username3', 'email3','password3')");
-        jdbcTemplate.execute("INSERT INTO users (id,username,email,password) VALUES (4,'username4', 'email4','password4')");
-
         //2.execute
         Paginated<User> userlist = userDao.findAll(Page.with(1, 10), new UserFilterBuilder().withEmail("email2").build(), new Ordering<>(OrderDirection.DESCENDING, UserOrderCriteria.LEVEL));
 
         Assert.assertEquals(userlist.getTotalPages(), 1);
-        Assert.assertTrue(userlist.getList().contains(new User(2L, "username2", "email4", "password4")));
+        Assert.assertEquals(userlist.getList().size(), 1);
+        User[] expectedUsers = {UserTestModels.getUser2()};
+        Assert.assertArrayEquals(expectedUsers, userlist.getList().toArray());
     }
 
-    @Transactional
+    @Rollback
     @Test
     public void wrongPaginationTest() {
-        jdbcTemplate.execute("INSERT INTO users (id,username,email,password) VALUES (" + ID + ",'" + USERNAME + "', '" + EMAIL + "','" + PASSWORD + "')");
-        jdbcTemplate.execute("INSERT INTO users (id,username,email,password) VALUES (2,'username2', 'email2','password2')");
-        jdbcTemplate.execute("INSERT INTO users (id,username,email,password) VALUES (3,'username3', 'email3','password3')");
-        jdbcTemplate.execute("INSERT INTO users (id,username,email,password) VALUES (4,'username4', 'email4','password4')");
         Assert.assertThrows(RuntimeException.class, () -> {
             userDao.findAll(Page.with(0, 0), new UserFilterBuilder().build(), new Ordering<>(OrderDirection.DESCENDING, UserOrderCriteria.LEVEL));
         });
@@ -162,24 +128,32 @@ public class UserDaoImplTest {
     }
 
 
-//    @Transactional
-//    @Test
-//    public void testUpdate() throws SQLException {
-//        jdbcTemplate.execute("INSERT INTO users (id,username,email,password, enabled) VALUES ("+ID+",'"+USERNAME+"', '"+EMAIL+"','"+PASSWORD+"', "+ ENABLED +")");
-//
-//        SaveUserBuilder userBuilder = new SaveUserBuilder();
-//        int update = userDao.update(ID, userBuilder.withEmail("newEmail").withPassword("newPassword").withEnabled(false).withReputation(1000L).build());
-//        em.flush();
-//        Assert.assertEquals(update, 1);
-//        jdbcTemplate.query("SELECT * FROM users WHERE id = ?", new Object[]{ID}, rs -> {
-//            Assert.assertEquals(rs.getString("email"), "newEmail");
-//            Assert.assertEquals(rs.getString("password"), "newPassword");
-//            Assert.assertFalse(rs.getBoolean("enabled"));
-//            Assert.assertEquals(rs.getLong("reputation"), 1000L);
-//        });
-//    }
+    @Rollback
+    @Test
+    public void testUpdate() throws SQLException {
+        User user = UserTestModels.getUser2();
+        SaveUserBuilder userBuilder = new SaveUserBuilder();
+        Optional<User> update = userDao.update(user.getId(),
+                userBuilder
+                        .withEmail(UPDATE_EMAIL)
+                        .withPassword(UPDATE_PASSWORD)
+                        .withEnabled(UPDATE_ENABLED)
+                        .withReputation((long) UPDATE_REPUTATION)
+                        .withXp((float) UPDATE_XP)
+                        .withAvatar((long) UPDATE_AVATARID)
+                        .withLanguage(UPDATE_LOCALE)
+                        .build());
+        em.flush();
+        Assert.assertTrue(update.isPresent());
+        jdbcTemplate.query("SELECT * FROM users WHERE id = ?", new Object[]{user.getId()}, rs -> {
+            Assert.assertEquals(rs.getString("email"), UPDATE_EMAIL);
+            Assert.assertEquals(rs.getString("password"), "newPassword");
+            Assert.assertFalse(rs.getBoolean("enabled"));
+            Assert.assertEquals(rs.getLong("reputation"), 1000L);
+        });
+    }
 
-    @Transactional
+    @Rollback
     @Test
     public void testCreate(){
         //1.prepare
@@ -273,7 +247,51 @@ public class UserDaoImplTest {
         Optional<User> user = userDao.getByUsername(USERNAME);
         Assert.assertFalse(user.isPresent());
     }
+
+//    @Rollback
+//    @Test
+//    public void testReplaceAllFavoriteGames() {
+//        Map<String, Object> args = new HashMap<>();
+//        args.put("userid", userId);
+//        args.put("gameid", gameId1);
+//        insertForFavGames.execute(args);
+//        args.put("gameid", gameId2);
+//        insertForFavGames.execute(args);
 //
+//        List<Long> gameIds = Arrays.asList(gameId3);
+//
+//        gameDao.replaceAllFavoriteGames(userId, gameIds);
+//        em.flush();
+//
+//        List<Long> games = jdbcTemplate.queryForList("Select gameid from favoritegames where userid = ?", Long.class, userId);
+//        Assert.assertEquals(1, games.size());
+//        Assert.assertTrue(games.contains(gameId3));
+//        Assert.assertFalse(games.contains(gameId1));
+//        Assert.assertFalse(games.contains(gameId2));
+//    }
+//
+
+    //    @Test
+//    public void testDeleteFavoriteGameForUser() {
+//        Long userId = userSetUp();
+//        Long gameId1 = insertGame(1L, SUGGESTED, 0, 0);
+//        Long gameId2 = insertGame(2L, SUGGESTED, 0, 0);
+//        Map<String, Object> args = new HashMap<>();
+//        args.put("userid", userId);
+//        args.put("gameid", gameId1);
+//        insertForFavGames.execute(args);
+//
+//        args.put("gameid", gameId2);
+//        insertForFavGames.execute(args);
+//
+//
+//        gameDao.deleteFavoriteGameForUser(userId, gameId1);
+//        em.flush();
+//
+//        List<Long> gameIds = jdbcTemplate.queryForList("Select gameid from favoritegames", Long.class);
+//        Assert.assertEquals(1, gameIds.size());
+//        Assert.assertTrue(gameIds.contains(gameId2));
+//    }
 //    @Transactional
 //    @Test
 //    public void testGetFollowers() {

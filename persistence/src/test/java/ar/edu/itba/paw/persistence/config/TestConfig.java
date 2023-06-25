@@ -38,10 +38,10 @@ public class TestConfig {
     @Value("classpath:/populators/favoritegames.sql")
     private Resource favoriteGamesSql;
 
-    @Value("classpath:/populator/tokens.sql")
+    @Value("classpath:/populators/tokens.sql")
     private Resource tokensSql;
 
-    @Value("classpath:/populator/reviews.sql")
+    @Value("classpath:/populators/reviews.sql")
     private Resource reviewsSql;
 
     @Bean
@@ -91,7 +91,10 @@ public class TestConfig {
     private DatabasePopulator databasePopulator() {
         final ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
         populator.addScript(hsqldbSql);
-        populator.addScript(gamesSql);
+        // tokens.sql
+        populator.addScripts(gamesSql, usersSql, favoriteGamesSql);
+        // populator.addScript(reviewsSql);
+        // populator.addScript(tokensSql);
         return populator;
     }
 }

@@ -40,7 +40,7 @@ public class Review {
     @Column(name = "rating", nullable = false)
     private Integer rating;
 
-    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false, cascade = CascadeType.ALL)
     @JoinColumn(name = "gameid", referencedColumnName = "id", nullable = false)
     private Game reviewedGame;
 

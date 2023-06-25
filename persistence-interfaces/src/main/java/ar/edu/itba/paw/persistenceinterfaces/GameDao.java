@@ -30,8 +30,6 @@ public interface GameDao {
 
     List<Game> getFavoriteGamesCandidates(long userId, int minRating);
 
-    boolean deleteFavoriteGameForUser(long userId, long gameId);
-
     List<Game> getRecommendationsForUser(List<Integer> userPreferences,List<Long> gamesToExclude);
 
     Optional<Set<Game>> getGamesReviewedByUser(long userId);
@@ -45,6 +43,4 @@ public interface GameDao {
     Optional<Game> setSuggestedFalse(long gameId);
 
     boolean deleteGame(long gameId);
-
-    Optional<User> replaceAllFavoriteGames(long userId, List<Long> gameIds);
 }

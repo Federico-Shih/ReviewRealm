@@ -51,4 +51,7 @@ public interface UserDao {
     Optional<User> disableNotification(long userId, String notificationType);
 
     Optional<User> enableNotification(long userId, String notificationType);
+
+    boolean deleteFavoriteGameForUser(long userId, long gameId);
+    Optional<User> replaceAllFavoriteGames(long userId, List<Long> gameIds);
 }

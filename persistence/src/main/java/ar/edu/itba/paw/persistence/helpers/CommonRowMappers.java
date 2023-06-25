@@ -5,6 +5,7 @@ import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.enums.Platform;
 import ar.edu.itba.paw.models.Game;
 import ar.edu.itba.paw.models.Review;
+import ar.edu.itba.paw.models.User;
 import org.springframework.jdbc.core.RowMapper;
 
 import java.util.Optional;
@@ -39,9 +40,8 @@ public interface CommonRowMappers{
                 resultSet.getLong("likes"),
                 resultSet.getLong("dislikes"));
     };
-    RowMapper<Genre> GENRE_ROW_MAPPER = (resultSet, i) -> {
-        Optional<Genre> genre = Genre.getById(resultSet.getInt("genreId"));
-        if (!genre.isPresent()) throw new IllegalStateException();
-        return genre.get();
-    };
+    
+//    RowMapper<User> TEST_USER_MAPPER = ((resultSet, i) -> (
+//
+//    ));
 }

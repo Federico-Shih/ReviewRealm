@@ -38,6 +38,7 @@ import java.time.LocalDate;
 import java.util.*;
 
 
+@Transactional
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = TestConfig.class)
 public class ReviewDaoImplTest {
@@ -208,12 +209,8 @@ public class ReviewDaoImplTest {
     }
 
     @Rollback
-    @Transactional
     @Test
     public void testFindByIDNoReviewFeedback() {
-        //Setup
-        Number reviewId = addReviewRow(1L, firstUser.longValue(), firstGame.longValue(), TITLE, CONTENT, TIMESTAMP, RATING, DIFFICULTY.toString(), PLATFORM.toString(), GAME_LENGTH, REPLAYABILITY, COMPLETED, LIKES, DISLIKES);
-
         //Test
         Optional<Review> review = reviewDao.findById(reviewId.longValue(), firstUser.longValue());
 
@@ -225,7 +222,6 @@ public class ReviewDaoImplTest {
     }
 
     @Rollback
-    @Transactional
     @Test
     public void testFindByIDNoActiveUser() {
         // Setup
@@ -242,7 +238,6 @@ public class ReviewDaoImplTest {
     }
 
     @Rollback
-    @Transactional
     @Test
     public void testFindByIDNonexistent() {
         // Test
@@ -252,7 +247,6 @@ public class ReviewDaoImplTest {
     }
 
     @Rollback
-    @Transactional
     @Test
     public void testFindByIDWithReviewFeedback() {
         // Setup

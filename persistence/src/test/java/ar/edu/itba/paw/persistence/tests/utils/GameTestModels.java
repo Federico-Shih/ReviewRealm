@@ -63,7 +63,7 @@ public class GameTestModels {
     }
 
     public static Game getSuperGameB() {
-        return new Game(SUPER_GAMEB_ID, SUPER_GAMEB_NAME, SUPER_GAMEB_DESCRIPTION, SUPER_GAMEA_STUDIO, SUPER_GAMEA_PUBLISHER, SUPER_GAMEA_IS_SUGGESTION, IMAGEID, SUPER_GAMEA_RELEASE_DATE, SUPER_GAMEA_RATING, SUPER_GAMEA_RATING_COUNT, SUPER_GAMEB_GENRES);
+        return new Game(SUPER_GAMEB_ID, SUPER_GAMEB_NAME, SUPER_GAMEB_DESCRIPTION, SUPER_GAMEA_STUDIO, SUPER_GAMEA_PUBLISHER, SUPER_GAMEA_IS_SUGGESTION, IMAGEID, SUPER_GAMEA_RELEASE_DATE, 10, 1, SUPER_GAMEB_GENRES);
     }
 
     public static Game getSubnautica() {
@@ -80,5 +80,9 @@ public class GameTestModels {
 
     public static Game getCreateGameNoGenres() {
         return new Game(CREATE_GAME_NAME, CREATE_GAME_DESCRIPTION, CREATE_GAME_DEVELOPER, CREATE_GAME_PUBLISHER, new Image(CREATE_GAME_IMAGE_ID, "jpeg", image), new ArrayList<>(), LocalDate.parse(CREATE_GAME_RELEASE_DATE), CREATE_GAME_SUGGESTED);
+    }
+
+    public static Game getGameWithGenres() {
+        return getSuperGameA();
     }
 }

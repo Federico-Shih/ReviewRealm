@@ -71,4 +71,12 @@ public interface UserService {
     User changeUserAvatar(long userId, long imageId) throws InvalidAvatarException;
 
     User changeUserLanguage(long userId, Locale language);
+    //
+    List<Game> getFavoriteGamesFromUser(long userId);
+    //
+    List<Game> getPossibleFavGamesFromUser(long userId);
+    //
+    boolean deleteFavoriteGame(long userId, long gameId);
+    //
+    User setFavoriteGames(long userId, List<Long> gameIds);
 }

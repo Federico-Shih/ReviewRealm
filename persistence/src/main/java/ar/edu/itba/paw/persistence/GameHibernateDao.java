@@ -113,13 +113,6 @@ public class GameHibernateDao implements GameDao, PaginationDao<GameFilter> {
     }
 
     @Override
-    public boolean deleteFavoriteGameForUser(long userId, long gameId) {
-        final User user = em.find(User.class, userId);
-        if(user==null) return false;
-        return user.getFavoriteGames().removeIf(game -> game.getId() == gameId);
-    }
-
-    @Override
     public List<Game> getRecommendationsForUser(List<Integer> userPreferences, List<Long> gamesToExclude) {
         final TypedQuery<Game> query = em.createQuery("select distinct g from Game g inner join g.genres genre " +
                 "where " + (gamesToExclude.size() > 0 ? "g.id not in :exclude and " : "") + (userPreferences.size() > 0 ? "genre in :preferences" : "1 = 2") +
@@ -182,18 +175,6 @@ public class GameHibernateDao implements GameDao, PaginationDao<GameFilter> {
         if(game != null)
             em.remove(game);
         return game!=null;
-    }
-
-    @Override
-    public Optional<User> replaceAllFavoriteGames(long userId, List<Long> gameIds) {
-        User user = em.find(User.class, userId);
-        if (user == null) return Optional.empty();
-        List<Game> favGames = user.getFavoriteGames();
-        favGames.clear();
-        for (Long gameId : gameIds) {
-            favGames.add(em.find(Game.class, gameId));
-        }
-        return Optional.of(user);
     }
 
 

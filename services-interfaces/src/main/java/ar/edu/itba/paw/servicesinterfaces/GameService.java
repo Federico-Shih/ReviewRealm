@@ -25,17 +25,7 @@ public interface GameService {
     Paginated<Game> searchGamesNotReviewedByUser(Page page, String search, Ordering<GameOrderCriteria> ordering, long userId);
 
     GameReviewData getGameReviewDataByGameId(long id);
-
-    //TODO: mover estos 4 a UserService
-    List<Game> getFavoriteGamesFromUser(long userId);
-
-    List<Game> getPossibleFavGamesFromUser(long userId);
-
-    boolean deleteFavoriteGame(long userId, long gameId);
-
-    User setFavoriteGames(long userId, List<Long> gameIds);
-    // ---
-
+    //
     Game addNewReviewToGame(long gameId, int rating);
 
     Game deleteReviewFromGame(long gameId, int rating);

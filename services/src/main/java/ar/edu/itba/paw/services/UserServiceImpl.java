@@ -11,6 +11,7 @@ import ar.edu.itba.paw.enums.NotificationType;
 import ar.edu.itba.paw.enums.RoleType;
 import ar.edu.itba.paw.exceptions.*;
 import ar.edu.itba.paw.models.*;
+import ar.edu.itba.paw.persistenceinterfaces.GameDao;
 import ar.edu.itba.paw.persistenceinterfaces.UserDao;
 import ar.edu.itba.paw.persistenceinterfaces.ValidationTokenDao;
 import ar.edu.itba.paw.servicesinterfaces.GameService;
@@ -36,6 +37,8 @@ public class UserServiceImpl implements UserService {
     private final ValidationTokenDao tokenDao;
     private final MailingService mailingService;
 
+    private final GameDao gameDao;
+
     private final GameService gameService;
 
     private final MissionService missionService;
@@ -47,11 +50,12 @@ public class UserServiceImpl implements UserService {
                            PasswordEncoder passwordEncoder,
                            ValidationTokenDao tokenDao,
                            MailingService mailingService,
-                           GameService gameService, MissionService missionService) {
+                           GameDao gameDao, GameService gameService, MissionService missionService) {
         this.userDao = userDao;
         this.passwordEncoder = passwordEncoder;
         this.tokenDao = tokenDao;
         this.mailingService = mailingService;
+        this.gameDao = gameDao;
         this.gameService = gameService;
         this.missionService = missionService;
     }
@@ -373,5 +377,32 @@ public class UserServiceImpl implements UserService {
         SaveUserBuilder builder = new SaveUserBuilder().withLanguage(language);
         LOGGER.info("User {} changed language to {}", userId, language);
         return userDao.update(user.getId(), builder.build()).orElseThrow(UserNotFoundException::new);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<Game> getFavoriteGamesFromUser(long userId) {
+        return gameDao.getFavoriteGamesFromUser(userId).orElseThrow(UserNotFoundException::new);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<Game> getPossibleFavGamesFromUser(long userId) {
+        if(!getUserById(userId).isPresent())
+            throw new UserNotFoundException();
+        return gameDao.getFavoriteGamesCandidates(userId, 8);
+    }
+
+    @Transactional
+    @Override
+    public boolean deleteFavoriteGame(long userId, long gameId) {
+        LOGGER.info("Possibly deleting gameId: {} from favorite games, for user {}", gameId, userId);
+        return userDao.deleteFavoriteGameForUser(userId, gameId);
+    }
+
+    @Transactional
+    @Override
+    public User setFavoriteGames(long userId, List<Long> gameIds) {
+        return userDao.replaceAllFavoriteGames(userId, gameIds==null? new ArrayList<>(): gameIds).orElseThrow(UserNotFoundException::new);
     }
 }

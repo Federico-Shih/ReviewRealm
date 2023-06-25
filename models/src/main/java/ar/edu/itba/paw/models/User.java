@@ -139,6 +139,20 @@ public class User {
 
     }
 
+    public User(long id, String username, String email, String password, boolean enabled, int userReputation, HashSet<NotificationType> disabledNotifications, String userLanguage, int userXp, List<Game> favoriteGames) {
+        // For testing
+        this.id = id;
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.enabled = enabled;
+        this.reputation = (long) userReputation;
+        this.disabledNotifications = disabledNotifications;
+        this.language = new Locale(userLanguage);
+        this.xp = (float) userXp;
+        this.favoriteGames = favoriteGames;
+    }
+
     public Long getId() {
         return id;
     }

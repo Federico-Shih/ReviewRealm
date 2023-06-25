@@ -7,13 +7,14 @@ import org.hibernate.annotations.Formula;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
 @Entity
 @Table(name = "games")
-public class Game {
+public class Game implements Cloneable {
     @Transient
     private static final String IMAGE_PATH = "/images/";
 
@@ -58,7 +59,7 @@ public class Game {
     @Column(name = "suggestion")
     private Boolean suggestion = false;
 
-    @OneToMany(mappedBy = "reviewedGame", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "reviewedGame", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Review> reviews;
 
     @Formula(value = "case when reviewCount = 0 then 0 else ratingSum/reviewCount end")
@@ -234,4 +235,23 @@ public class Game {
         this.publishDate = publishDate;
     }
 
+    @Override
+    public Game clone() {
+        try {
+            Game clone = (Game) super.clone();
+            clone.setImage(image.clone());
+            clone.setName(this.name);
+            clone.setDescription(this.description);
+            clone.setDeveloper(this.developer);
+            clone.setPublisher(this.publisher);
+            clone.setPublishDate(this.publishDate);
+            clone.setRatingSum(this.ratingSum);
+            clone.setReviewCount(this.reviewCount);
+            clone.setSuggestion(this.suggestion);
+            clone.setGenres(new ArrayList<>(this.genres));
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
+    }
 }

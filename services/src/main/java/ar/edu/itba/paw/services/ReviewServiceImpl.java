@@ -102,7 +102,7 @@ public class ReviewServiceImpl implements ReviewService {
                         replayable)).orElseThrow(ReviewNotFoundException::new);
         gameService.updateReviewFromGame(review.getReviewedGame().getId(), review.getRating(), rating);
         if(rating <= MINFAVORITEGAMERATING)
-            gameService.deleteFavoriteGame(review.getAuthor().getId(), review.getReviewedGame().getId());
+            userService.deleteFavoriteGame(review.getAuthor().getId(), review.getReviewedGame().getId());
         return modifiedReview;
     }
 
@@ -174,7 +174,7 @@ public class ReviewServiceImpl implements ReviewService {
             }
 
             if(review.get().getRating() > MINFAVORITEGAMERATING)
-                gameService.deleteFavoriteGame(review.get().getAuthor().getId(), review.get().getReviewedGame().getId());
+                userService.deleteFavoriteGame(review.get().getAuthor().getId(), review.get().getReviewedGame().getId());
 
             return true;
         }
