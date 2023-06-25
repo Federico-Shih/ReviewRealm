@@ -6,11 +6,10 @@ import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.enums.Platform;
 import ar.edu.itba.paw.enums.RoleType;
 import ar.edu.itba.paw.exceptions.GameNotFoundException;
+import ar.edu.itba.paw.exceptions.UserNotFoundException;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.persistenceinterfaces.GameDao;
-import ar.edu.itba.paw.servicesinterfaces.ImageService;
-import ar.edu.itba.paw.servicesinterfaces.ReviewService;
-import ar.edu.itba.paw.servicesinterfaces.UserService;
+import ar.edu.itba.paw.servicesinterfaces.*;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,8 +23,10 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 import static ar.edu.itba.paw.services.utils.GameTestModels.getSuperGameA;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static ar.edu.itba.paw.services.utils.GameTestModels.getSuperGameB;
+import static ar.edu.itba.paw.services.utils.ReviewTestModels.*;
+import static ar.edu.itba.paw.services.utils.UserTestModels.getUser1;
+import static org.mockito.ArgumentMatchers.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class GameServiceImplTest {
@@ -41,6 +42,10 @@ public class GameServiceImplTest {
 
     @Mock
     private ImageService imgService;
+    @Mock
+    private MailingService mailingService;
+    @Mock
+    private MissionService missionService;
     @Mock
     private User user;
     @InjectMocks
@@ -64,9 +69,9 @@ public class GameServiceImplTest {
 
     @Test
     public void testCantFindGameById() {
-        Mockito.when(gameDao.getById(GAMEID))
+        Mockito.when(gameDao.getById(getSuperGameA().getId()))
                 .thenReturn(Optional.empty());
-        Optional<Game> opt = gs.getGameById(GAMEID);
+        Optional<Game> opt = gs.getGameById(getSuperGameA().getId());
 
         Assert.assertFalse(opt.isPresent());
 
@@ -74,72 +79,124 @@ public class GameServiceImplTest {
 
     @Test
     public void testGameReviewDataByGameId(){
-        Review review1 = new Review(1L,USER,"","", LocalDateTime.now(),8, GAME1,
-                Difficulty.EASY,1.5, Platform.PC,true,false,null,5L);
-        Review review2 =  new Review(2L,USER,"","", LocalDateTime.now(),10, GAME1,
-                Difficulty.EASY,3.0, Platform.PC,true,false,null,10L);
-        Review review3 = new Review(3L,USER,"","", LocalDateTime.now(),5, GAME1,
-                Difficulty.MEDIUM,7.5, Platform.XBOX,false,true,null,15L);
-        Mockito.when(reviewService.getAllReviewsFromGame(GAMEID,null)).thenReturn(Arrays.asList(review1,review2,review3));
+        Mockito.when(gameDao.getById(anyLong())).thenReturn(Optional.of(getSuperGameA()));
+        Mockito.when(reviewService.getAllReviewsFromGame(getSuperGameA().getId(),null)).thenReturn(Arrays.asList(getReview1(),getReview2(),getReview3()));
 
-        GameReviewData data = gs.getGameReviewDataByGameId(GAMEID);
+        GameReviewData data = gs.getGameReviewDataByGameId(getSuperGameA().getId());
 
         Assert.assertEquals(Difficulty.EASY, data.getAverageDifficulty());
-        Assert.assertEquals(Platform.PC, data.getAveragePlatform());
-        Assert.assertEquals(0,Double.compare((1.5+3.0+7.5)/3,data.getAverageGameTime()));
-        Assert.assertEquals(0,Double.compare(GAME1.getAverageRating(),data.getAverageRating()));
-        Assert.assertEquals(0,Double.compare((1/3.0)*100,data.getReplayability()));
-        Assert.assertEquals(0,Double.compare((2/3.0)*100,data.getCompletability()));
+        Assert.assertEquals(Platform.PS, data.getAveragePlatform());
+        Assert.assertEquals((getReview1().getGameLength() + getReview2().getGameLength() + getReview3().getGameLength()) / 3.0, data.getAverageGameTime(), 0.001);
+        double expectedReplayability = 100.0* ((getReview1().getReplayability() ? 1 : 0) + (getReview2().getReplayability() ? 1 : 0) + (getReview3().getReplayability() ? 1 : 0)) / 3;
+        Assert.assertEquals(expectedReplayability,data.getReplayability(), 0.001);
+        double expectedCompletability = 100.0* ((getReview1().getCompleted() ? 1 : 0) + (getReview2().getCompleted() ? 1 : 0) + (getReview3().getCompleted() ? 1 : 0)) / 3;
+        Assert.assertEquals(expectedCompletability,data.getCompletability(), 0.001);
     }
-//    @Test(expected = GameNotFoundException.class)
-//    public void testAcceptGameError(){
-//        Mockito.when(gameDao.setSuggestedFalse(GAME1.getId())).thenReturn(false);
-//        gs.acceptGame(GAME1.getId(), null);
-//    }
-//    @Test(expected = GameNotFoundException.class)
-//    public void testRejectGameError(){
-//        Mockito.when(gameDao.deleteGame(GAME1.getId())).thenReturn(false);
-//        gs.rejectGame(GAME1.getId(), null);
-//    }
-//
-//    @Test
-//    public void testGetRecommendationsOfGamesForUser() {
-//        Mockito.when(user.getPreferences()).thenReturn(new HashSet<>(Arrays.asList(Genre.ACTION, Genre.ADVENTURE)));
-//        Mockito.when(user.hasPreferencesSet()).thenReturn(true);
-//        Mockito.when(gameDao.getGamesReviewedByUser(any())).thenReturn(new HashSet<>(Arrays.asList(GAME1)));
-//        Mockito.when(gameDao.getRecommendationsForUser(any(), any())).thenReturn(Arrays.asList(GAME2));
-//
-//        List<Game> games = gs.getRecommendationsOfGamesForUser(user);
-//
-//        Assert.assertEquals(1, games.size());
-//        Assert.assertEquals(GAME2.getId(), games.get(0).getId());
-//    }
-//    @Test
-//    public void testCreateGame(){
-//        Mockito.when(imgService.uploadImage(any(),any())).thenReturn(new Image("a","jpg",new byte[0]));
-//        Mockito.when(userService.getUserById(any())).thenReturn(Optional.of(user));
-//        Mockito.when(user.getRoles()).thenReturn(new HashSet<>(Collections.singletonList(RoleType.MODERATOR)));
-//        Mockito.when(dto.getGenres()).thenReturn(Arrays.asList(Genre.ACTION.getId(), Genre.ADVENTURE.getId()));
-//
-//        Mockito.when(gameDao.create(any(),any(),any(),any(),any(),any(),any(),eq(false))).thenReturn(GAME1);
-//
-//        Optional<Game> game = gs.createGame(dto,1L);
-//
-//        Assert.assertTrue(game.isPresent());
-//        Assert.assertEquals(GAME1.getId(),game.get().getId());
-//    }
-//    @Test
-//    public void testCreateGameNonModerator(){
-//        Mockito.when(imgService.uploadImage(any(),any())).thenReturn(new Image("a","jpg",new byte[0]));
-//        Mockito.when(userService.getUserById(any())).thenReturn(Optional.of(user));
-//        Mockito.when(user.getRoles()).thenReturn(new HashSet<>(new ArrayList<>()));
-//        Mockito.when(dto.getGenres()).thenReturn(Arrays.asList(Genre.ACTION.getId(), Genre.ADVENTURE.getId()));
-//
-//        Mockito.when(gameDao.create(any(),any(),any(),any(),any(),any(),any(),eq(true))).thenReturn(GAME1);
-//
-//        Optional<Game> game = gs.createGame(dto,1L);
-//
-//        Assert.assertFalse(game.isPresent());
-//    }
+
+    @Test
+    public void testGameReviewDataByGameIdNoReviews(){
+        Mockito.when(gameDao.getById(anyLong())).thenReturn(Optional.of(getSuperGameA()));
+        Mockito.when(reviewService.getAllReviewsFromGame(getSuperGameA().getId(),null)).thenReturn(new ArrayList<>());
+
+        GameReviewData data = gs.getGameReviewDataByGameId(getSuperGameA().getId());
+
+        Assert.assertNull(data.getAverageDifficulty());
+        Assert.assertNull(data.getAveragePlatform());
+        Assert.assertEquals(-1, data.getAverageGameTime(), 0.001);
+        Assert.assertEquals(-1 ,data.getReplayability(), 0.001);
+        Assert.assertEquals(-1 ,data.getCompletability(), 0.001);
+    }
+
+    @Test(expected = GameNotFoundException.class)
+    public void testGameReviewDataByGameIdNoGame(){
+        Mockito.when(gameDao.getById(anyLong())).thenReturn(Optional.empty());
+
+        GameReviewData data = gs.getGameReviewDataByGameId(getSuperGameA().getId());
+    }
+
+    @Test(expected = GameNotFoundException.class)
+    public void testAcceptGameError(){
+        Mockito.when(gameDao.setSuggestedFalse(anyLong())).thenReturn(Optional.empty());
+
+        gs.acceptGame(getSuperGameA().getId(), getUser1().getId());
+    }
+
+
+
+    @Test(expected = GameNotFoundException.class)
+    public void testRejectGameError(){
+        Mockito.when(gameDao.getById(anyLong())).thenReturn(Optional.empty());
+
+        gs.rejectGame(getSuperGameA().getId(), getUser1().getId());
+    }
+
+    @Test
+    public void testGetRecommendationsOfGamesForUser() {
+        Mockito.when(userService.getUserById(anyLong())).thenReturn(Optional.of(user));
+        Mockito.when(user.getPreferences()).thenReturn(new HashSet<>(Arrays.asList(Genre.ACTION, Genre.ADVENTURE)));
+        Mockito.when(user.hasPreferencesSet()).thenReturn(true);
+        Mockito.when(gameDao.getGamesReviewedByUser(anyLong())).thenReturn(Optional.of(new HashSet<>(Arrays.asList(getSuperGameA()))));
+        Mockito.when(gameDao.getRecommendationsForUser(any(), any())).thenReturn(Arrays.asList(getSuperGameB()));
+
+        List<Game> games = gs.getRecommendationsOfGamesForUser(getUser1().getId());
+
+        Assert.assertEquals(1, games.size());
+        Assert.assertEquals(getSuperGameB().getId(), games.get(0).getId());
+    }
+
+    @Test(expected = UserNotFoundException.class)
+    public void testGetRecommendationsOfGamesForUserError() {
+        Mockito.when(userService.getUserById(anyLong())).thenReturn(Optional.empty());
+        gs.getRecommendationsOfGamesForUser(getUser1().getId());
+    }
+
+    @Test
+    public void testCreateGame(){
+        Mockito.when(imgService.uploadImage(any(),any())).thenReturn(new Image("a","jpg",new byte[0]));
+        Mockito.when(userService.getUserById(anyLong())).thenReturn(Optional.of(user));
+        Mockito.when(user.getRoles()).thenReturn(new HashSet<>(Collections.singletonList(RoleType.MODERATOR)));
+        Mockito.when(dto.getGenres()).thenReturn(Arrays.asList(Genre.ACTION.getId(), Genre.ADVENTURE.getId()));
+
+        Mockito.when(gameDao.create(any(),any(),any(),any(),any(),any(),any(),eq(false),any())).thenReturn(getSuperGameA());
+
+        Optional<Game> game = gs.createGame(dto,getUser1().getId());
+
+        Assert.assertTrue(game.isPresent());
+        Assert.assertEquals(getSuperGameA().getId(),game.get().getId());
+    }
+
+    @Test
+    public void testCreateGameNonModerator(){
+        Mockito.when(imgService.uploadImage(any(),any())).thenReturn(new Image("a","jpg",new byte[0]));
+        Mockito.when(userService.getUserById(anyLong())).thenReturn(Optional.of(user));
+        Mockito.when(user.getRoles()).thenReturn(new HashSet<>());
+        Mockito.when(dto.getGenres()).thenReturn(Arrays.asList(Genre.ACTION.getId(), Genre.ADVENTURE.getId()));
+
+        Mockito.when(gameDao.create(any(),any(),any(),any(),any(),any(),any(),eq(true),any())).thenReturn(getSuperGameA());
+
+        Optional<Game> game = gs.createGame(dto,getUser1().getId());
+
+        Assert.assertFalse(game.isPresent());
+    }
+
+    @Test(expected = UserNotFoundException.class)
+    public void testCreateGameError(){
+        Mockito.when(imgService.uploadImage(any(),any())).thenReturn(new Image("a","jpg",new byte[0]));
+        Mockito.when(userService.getUserById(anyLong())).thenReturn(Optional.empty());
+
+        gs.createGame(dto,getUser1().getId());
+    }
+
+    @Test
+    public void testEditGame(){
+        Mockito.when(dto.getGenres()).thenReturn(Arrays.asList(Genre.ACTION.getId(), Genre.ADVENTURE.getId()));
+        Mockito.when(dto.getImageData()).thenReturn(new byte[0]);
+
+        Mockito.when(gameDao.edit(anyLong(),any(),any(),any(),any(),any(),any(),any())).thenReturn(Optional.of(getSuperGameA()));
+
+        Game game = gs.editGame(dto,getUser1().getId());
+
+        Assert.assertEquals(getSuperGameA().getId(),game.getId());
+    }
 
 }
