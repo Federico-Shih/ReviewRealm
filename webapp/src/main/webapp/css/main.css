@@ -582,6 +582,10 @@ input::-webkit-inner-spin-button {
     height: 36px;
 }
 
+.moderator-badge {
+    font-size: 32px;
+}
+
 .wide-selector {
     background: #13112d;
     border-radius: 4px;

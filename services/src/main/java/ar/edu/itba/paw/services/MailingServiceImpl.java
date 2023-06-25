@@ -96,6 +96,64 @@ public class MailingServiceImpl implements MailingService {
         sendEmail(follower.getEmail(), subject, "newreview", templateVariables, follower.getLanguage());
     }
 
+    @Async
+    @Override
+    public void sendSuggestionInReviewEmail(Game suggestedGame, User suggestedBy) {
+        Map<String, Object> templateVariables = new HashMap<>();
+        templateVariables.put("game", suggestedGame.getName());
+        templateVariables.put("webBaseUrl", env.getProperty("mailing.weburl"));
+
+        Object[] stringArgs = {};
+        String subject = messageSource.getMessage("email.suggestion.inreview.subject",
+                stringArgs, suggestedBy.getLanguage());
+        LOGGER.info("Sending submitted suggestion to {} for suggested game id {}", suggestedBy.getEmail(), suggestedGame.getId());
+        sendEmail(suggestedBy.getEmail(), subject, "suggestioninreview", templateVariables, suggestedBy.getLanguage());
+    }
+
+    @Async
+    @Override
+    public void sendAcceptedSuggestionEmail(Game suggestedGame, User suggestedBy) {
+        Map<String, Object> templateVariables = new HashMap<>();
+        templateVariables.put("game", suggestedGame.getName());
+        templateVariables.put("gameId", suggestedGame.getId());
+        templateVariables.put("webBaseUrl", env.getProperty("mailing.weburl"));
+
+        Object[] stringArgs = {};
+        String subject = messageSource.getMessage("email.suggestion.accepted.subject",
+                stringArgs, suggestedBy.getLanguage());
+        LOGGER.info("Sending accepted suggestion to {} for suggested game id {}", suggestedBy.getEmail(), suggestedGame.getId());
+        sendEmail(suggestedBy.getEmail(), subject, "suggestionaccepted", templateVariables, suggestedBy.getLanguage());
+    }
+
+    @Async
+    @Override
+    public void sendDeclinedSuggestionEmail(Game suggestedGame, User suggestedBy) {
+        Map<String, Object> templateVariables = new HashMap<>();
+        templateVariables.put("game", suggestedGame.getName());
+        templateVariables.put("webBaseUrl", env.getProperty("mailing.weburl"));
+
+        Object[] stringArgs = {};
+        String subject = messageSource.getMessage("email.suggestion.rejected.subject",
+                stringArgs, suggestedBy.getLanguage());
+        LOGGER.info("Sending declined suggestion to {} for suggested game id {}", suggestedBy.getEmail(), suggestedGame.getId());
+        sendEmail(suggestedBy.getEmail(), subject, "suggestiondeclined", templateVariables, suggestedBy.getLanguage());
+    }
+
+    @Async
+    @Override
+    public void sendLevelUpEmail(User user) {
+        Map<String, Object> templateVariables = new HashMap<>();
+        templateVariables.put("username", user.getEmail());
+        templateVariables.put("level", user.getLevel());
+        templateVariables.put("webBaseUrl", env.getProperty("mailing.weburl"));
+        templateVariables.put("userid", user.getId());
+        Object[] stringArgs = {user.getUsername()};
+        String subject = messageSource.getMessage("email.levelup.subject",
+                stringArgs, user.getLanguage());
+        LOGGER.info("Sending level up email to {}", user.getEmail());
+        sendEmail(user.getEmail(), subject, "levelup", templateVariables, user.getLanguage());
+    }
+
     private void sendEmail(String mailTo, String mailSubject, String template, Map<String, Object> templateVariables, Locale userLocale) {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         try {

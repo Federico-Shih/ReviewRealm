@@ -13,4 +13,12 @@ public interface MailingService {
     void sendReviewDeletedEmail(Game game, User user);
 
     void sendReviewCreatedEmail(Review createdReview, User author, User follower);
+
+    void sendSuggestionInReviewEmail(Game suggestedGame, User suggestedBy);
+
+    void sendAcceptedSuggestionEmail(Game suggestedGame, User suggestedBy);
+
+    void sendDeclinedSuggestionEmail(Game suggestedGame, User suggestedBy);
+
+    void sendLevelUpEmail(User user);
 }

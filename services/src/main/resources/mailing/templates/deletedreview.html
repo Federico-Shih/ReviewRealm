@@ -44,7 +44,7 @@
         .goto-button {
             color: #fff;
             border: none;
-            background-color: #26a69a;
+            background-color: #D84315;
             font-size: 14px;
             font-weight: 600;
             border-radius: 2px;
@@ -72,7 +72,6 @@
     </div>
     <div class="container">
         <h3 th:text="#{email.deletedreview.longtitle (${game})}"></h3>
-        <!-- TODO: link to community guidelines -->
         <a th:href="@{{base}/review/submit/{id}(base=${webBaseUrl},id=${gameId})}">
             <span class="goto-button" th:text="#{email.deletedreview.tryagain}">
             </span>

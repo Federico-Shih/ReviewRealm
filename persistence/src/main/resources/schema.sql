@@ -158,3 +158,32 @@ ALTER TABLE games ALTER COLUMN suggestion SET NOT NULL;
 
 ALTER TABLE users ADD COLUMN avatar int;
 UPDATE users SET avatar=0 WHERE users.avatar is null;
+
+ALTER TABLE favoritegames DROP CONSTRAINT IF EXISTS favoritegames_pkey;
+ALTER TABLE favoritegames DROP COLUMN IF EXISTS reviewId;
+ALTER TABLE favoritegames ADD CONSTRAINT favoritegames_pkey PRIMARY KEY(userid,gameid);
+
+alter table followers
+    drop constraint followers_pkey;
+
+alter table followers
+    drop column id;
+
+ALTER TABLE tokens
+    DROP CONSTRAINT tokens_pkey;
+ALTER TABLE tokens
+    DROP COLUMN id;
+UPDATE games
+SET ratingsum   = 0,
+    reviewcount = 0
+WHERE ratingsum IS NULL
+   or reviewcount IS NULL;
+UPDATE users SET xp = 0 WHERE xp IS NULL;
+UPDATE user_roles SET role = r.rolename FROM roles r WHERE r.roleid = user_roles.roleid;
+ALTER TABLE user_roles DROP COLUMN roleid;
+
+UPDATE user_disabled_notifications SET notification = n.notificationtype FROM notifications n WHERE n.notificationid = user_disabled_notifications.notificationid;
+ALTER TABLE user_disabled_notifications DROP COLUMN notificationid;
+UPDATE users
+SET reputation = 0
+WHERE reputation IS NULL;

@@ -11,6 +11,7 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 
@@ -76,6 +77,8 @@ public class Review {
     @Formula("likes + dislikes")
     private Integer controversial = 0;
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "reportedReview")
+    private List<Report> reports;
     @Transient
     private FeedbackType feedbackType = null;
 

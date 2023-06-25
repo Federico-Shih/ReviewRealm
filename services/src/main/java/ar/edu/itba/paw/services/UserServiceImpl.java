@@ -78,7 +78,7 @@ public class UserServiceImpl implements UserService {
         ExpirationToken token = this.tokenDao.create(
                 createdUser.getId(),
                 passwordEncoder.encode(password),
-                LocalDateTime.now().plusSeconds(EXPIRATION_TIME));
+                LocalDateTime.now().plusHours(EXPIRATION_TIME));
         mailingService.sendValidationTokenEmail(token, createdUser);
         return createdUser;
     }

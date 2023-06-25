@@ -47,7 +47,7 @@ public class MissionProgress {
     }
 
     public boolean isCompleted() {
-        return Math.abs(progress - mission.getTarget()) < ROUNDING_ERROR;
+        return progress >= getMission().getTarget();
     }
 
     public User getUser() {

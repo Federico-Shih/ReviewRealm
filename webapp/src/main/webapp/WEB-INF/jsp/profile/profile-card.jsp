@@ -50,12 +50,17 @@
                 </div>
             </div>
         </div>
-        <div class="f-column">
+        <div class="f-column f-jc-sbetween f-ai-end">
             <c:set var="level" value="${user.level}"/>
             <div class="level-badge-container">
                 <i class="material-icons level-badge-icon level-${user.levelRange.rangeTitle}">sports_esports</i>
                 <span class="level-badge-text"><c:out value="${level}"/></span>
             </div>
+            <c:if test="${user.moderator}">
+                <i class="material-icons moderator-badge">
+                    engineering
+                </i>
+            </c:if>
         </div>
     </div>
 </div>

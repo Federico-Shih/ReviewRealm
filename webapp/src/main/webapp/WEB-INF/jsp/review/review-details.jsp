@@ -26,8 +26,22 @@
                 M.toast({html: '<spring:message code="review.created" />', classes: 'created-toast'});
             });
         </c:if>
+        <c:if test="${reported}">
+            document.addEventListener('DOMContentLoaded', function () {
+                M.toast({html: '<spring:message code="review.report.submitted" />', classes: 'created-toast'});
+            });
+        </c:if>
         var elemsTooltip = document.querySelectorAll('.tooltipped');
         var instancesTooltip = M.Tooltip.init(elemsTooltip, {});
+        document.addEventListener('DOMContentLoaded', function() {
+            var button = document.querySelector('#submit-report-button');
+            var elems = document.querySelectorAll('.reason-radio');
+            elems.forEach(function (elem) {
+                elem.addEventListener('click', function () {
+                    button.classList.remove('disabled');
+                });
+            });
+        });
     </script>
     <script src="<c:url value="/js/reviewfeedback.js" />"></script>
 
@@ -75,6 +89,14 @@
                                     <c:url value="/review/delete/${review.id}" var="moderateUrl" />
                                     <button data-position="bottom" data-tooltip="<spring:message code="review.delete" />" class="tooltipped waves-effect btn-flat valign-wrapper highlight light-gray-text modal-trigger" data-target="delete-confirmation-modal">
                                         <i class="material-icons">delete</i>
+                                    </button>
+                                </c:if>
+                            </div>
+                            <div>
+                                <c:if test="${not isOwner }">
+                                    <c:url value="/report/review/${review.id}" var="reportSubmitUrl"/>
+                                    <button data-position="bottom" data-tooltip="<spring:message code="review.report" />" class="tooltipped waves-effect btn-flat valign-wrapper highlight light-gray-text modal-trigger ${isReported? 'disabled':''} " data-target="report-form-modal">
+                                        <i class="material-icons ${isReported? 'blue-grey-text':'red-text'}">flag</i>
                                     </button>
                                 </c:if>
                             </div>
@@ -203,6 +225,29 @@
             </form>
         </div>
     </div>
+</div>
+<<div id="report-form-modal" class="modal">
+    <form action="${reportSubmitUrl}" method="post">
+        <div class="modal-content">
+            <h5><spring:message code="review.report.header"/></h5>
+            <c:forEach var="reason" items="${reportValues}">
+                <p>
+                    <label>
+                        <input name="reason" value="${reason}" type="radio" class="with-gap reason-radio" />
+                        <span><spring:message code="${reason.code}"/></span>
+                    </label>
+                </p>
+            </c:forEach>
+        </div>
+        <div class="modal-footer f-row f-jc-end f-gap-2">
+            <a href="#" class="modal-close waves-effect btn-flat white-text"><spring:message code="cancel.button"/></a>
+            <div>
+                <button class="waves-effect btn disabled" id="submit-report-button" type="submit">
+                    <spring:message code="review.report"/>
+                </button>
+            </div>
+        </div>
+    </form>
 </div>
 </body>
 </html>
