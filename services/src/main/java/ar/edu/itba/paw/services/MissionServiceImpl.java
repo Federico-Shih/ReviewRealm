@@ -40,9 +40,29 @@ public class MissionServiceImpl implements MissionService {
         if (mission.getRoleType() != null && !user.getRoles().contains(mission.getRoleType())) {
             return null;
         }
+        User lambdaUser = user;
         MissionProgress missionProgress = this.missionDao
                 .findById(user, mission)
-                .orElseGet(() -> this.missionDao.create(user, mission, 0f, LocalDate.now()));
+                .orElseGet(() -> this.missionDao.create(lambdaUser, mission, 0f, LocalDate.now()));
+        // Completar misiones pendientes en caso de cambios de misiones
+        if (missionProgress.isCompleted() && mission.isRepeatable() && mission.getFrequency().equals(Mission.MissionFrequency.NONE)) {
+            Float currentProgress = missionProgress.getProgress();
+            double completed = Math.floor(currentProgress / mission.getTarget());
+            for (int i = 0; i < completed; i += 1) {
+                missionProgress = missionDao.completeMission(user, mission).orElseThrow(IllegalArgumentException::new);
+            }
+            user = userDao.update(
+                    user.getId(),
+                    new SaveUserBuilder()
+                            .withXp(
+                                    user.getXp() + (int) (completed * mission.getXp()))
+                            .build())
+                    .orElseThrow(() -> {
+                LOGGER.error("Could not update user {} with {} xp", lambdaUser.getId(), mission.getXp());
+                return new UserNotFoundException();
+            });
+            missionProgress = missionDao.updateProgress(user, mission, currentProgress % mission.getTarget()).orElseThrow(IllegalArgumentException::new);
+        }
         if (!missionProgress.isCompleted()) {
             missionProgress = missionDao.updateProgress(user, mission, missionProgress.getProgress() + progress).orElseThrow(IllegalArgumentException::new);
             if (missionProgress.isCompleted()) {
@@ -50,7 +70,7 @@ public class MissionServiceImpl implements MissionService {
                 missionProgress = missionDao.completeMission(user, mission).orElseThrow(IllegalArgumentException::new);
                 int level = user.getLevel();
                 User updatedUser = userDao.update(user.getId(), new SaveUserBuilder().withXp(user.getXp() + mission.getXp()).build()).orElseThrow(() -> {
-                    LOGGER.error("Could not update user {} with {} xp", user.getId(), mission.getXp());
+                    LOGGER.error("Could not update user {} with {} xp", lambdaUser.getId(), mission.getXp());
                     return new UserNotFoundException();
                 });
                 if (updatedUser.getLevel() != level) {
