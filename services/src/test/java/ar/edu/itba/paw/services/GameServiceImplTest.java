@@ -23,13 +23,12 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
+import static ar.edu.itba.paw.services.utils.GameTestModels.getSuperGameA;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 
 @RunWith(MockitoJUnitRunner.class)
 public class GameServiceImplTest {
-
-    private static final long GAMEID = 3;
 
     @Mock
     private GameDao gameDao;
@@ -50,23 +49,17 @@ public class GameServiceImplTest {
     @Mock
     private SubmitGameDTO dto;
 
-    private static final User USER = new User(1L, "", "", "");
-    private static final Game GAME1 = new Game(3L, "Martians Attack"
-            , "", "", "", LocalDate.now(), 30, 3);
-    private static final Game GAME2 = new Game(4L, "Martians Attack"
-            , "", "", "", LocalDate.now(), 30, 3);
-
     @Test
     public void testGetGameById() {
-        Mockito.when(gameDao.getById(GAMEID))
-                .thenReturn(Optional.of(GAME1));
+        Mockito.when(gameDao.getById(getSuperGameA().getId()))
+                .thenReturn(Optional.of(getSuperGameA()));
 
-        Optional<Game> opt = gs.getGameById(GAMEID);
+        Optional<Game> opt = gs.getGameById(getSuperGameA().getId());
 
         Assert.assertTrue(opt.isPresent());
-        long id = opt.get().getId();
-        Assert.assertEquals(GAMEID, id);
-        Assert.assertEquals("Martians Attack", opt.get().getName());
+        Long id = opt.get().getId();
+        Assert.assertEquals(getSuperGameA().getId(), id);
+        Assert.assertEquals(getSuperGameA().getName(), opt.get().getName());
     }
 
     @Test
