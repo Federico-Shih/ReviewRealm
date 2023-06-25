@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.dtos.saving;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public class SubmitGameDTO {
@@ -11,7 +12,9 @@ public class SubmitGameDTO {
     private final byte[] imageData;
     private final String mediatype;
 
-    public SubmitGameDTO(String name, String description, String developer, String publisher, List<Integer> genres, byte[] imageData, String mediatype) {
+    private final LocalDate releaseDate;
+
+    public SubmitGameDTO(String name, String description, String developer, String publisher, List<Integer> genres, byte[] imageData, String mediatype, LocalDate releaseDate) {
         this.name = name;
         this.description = description;
         this.developer = developer;
@@ -19,6 +22,7 @@ public class SubmitGameDTO {
         this.genres = genres;
         this.imageData = imageData;
         this.mediatype = mediatype;
+        this.releaseDate = releaseDate;
     }
 
     public String getDescription() {
@@ -47,5 +51,9 @@ public class SubmitGameDTO {
 
     public String getMediatype() {
         return mediatype;
+    }
+
+    public LocalDate getReleaseDate() {
+        return releaseDate;
     }
 }
