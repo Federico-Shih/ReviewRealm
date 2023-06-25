@@ -2,7 +2,7 @@
 <html th:lang="${#locale.language}" th:xmllang="${#locale.language}" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-    <title th:text="#{email.deletedreview.title (${game})}"></title>
+    <title th:text="#{email.suggestion.inreview.title (${game})}"></title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <style>
         .body {
@@ -44,7 +44,7 @@
         .goto-button {
             color: #fff;
             border: none;
-            background-color: #D84315;
+            background-color: #26a69a;
             font-size: 14px;
             font-weight: 600;
             border-radius: 2px;
@@ -71,11 +71,7 @@
         </div>
     </div>
     <div class="container">
-        <h3 th:text="#{email.deletedreview.longtitle (${game})}"></h3>
-        <a th:href="@{{base}/review/submit/{id}(base=${webBaseUrl},id=${gameId})}">
-            <span class="goto-button" th:text="#{email.deletedreview.tryagain}">
-            </span>
-        </a>
+        <h3 th:text="#{email.suggestion.inreview.longtitle (${game})}"></h3>
     </div>
 </div>
 </body>

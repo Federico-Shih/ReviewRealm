@@ -6,7 +6,6 @@ public enum Mission {
     CHANGE_AVATAR("missions.avatarchange.title", "missions.avatarchange.description", 100f, 1f, true, MissionFrequency.MONTHLY, null),
     SETUP_PREFERENCES("missions.preferences.title", "missions.preferences.description", 100f, 1f, false, MissionFrequency.NONE, null),
     MANAGE_GAME_SUBMISSIONS("missions.accept.title", "missions.accept.description", 50f, 1f, true, MissionFrequency.NONE, RoleType.MODERATOR),
-    // NOT IMPLEMENTED
     RECOMMEND_GAMES("missions.recommend.title", "missions.recommend.description", 20f, 5f, true, MissionFrequency.WEEKLY, RoleType.USER),
     ACCEPTED_GAMES("missions.acceptedgame.title", "missions.acceptedgame.description", 20f, 1f, true, MissionFrequency.NONE, RoleType.USER);
 

@@ -25,9 +25,9 @@ public class GameHibernateDao implements GameDao, PaginationDao<GameFilter> {
     private EntityManager em;
 
     @Override
-    public Game create(String name, String description, String developer, String publisher, String imageid, List<Genre> genres, LocalDate publishDate, boolean suggested) {
+    public Game create(String name, String description, String developer, String publisher, String imageid, List<Genre> genres, LocalDate publishDate, boolean suggested, User suggestedBy) {
         final Image image = em.getReference(Image.class, imageid);
-        final Game game = new Game(name, description, developer, publisher, image, genres, publishDate, suggested);
+        final Game game = new Game(name, description, developer, publisher, image, genres, publishDate, suggested, suggestedBy);
         em.persist(game);
         return game;
     }

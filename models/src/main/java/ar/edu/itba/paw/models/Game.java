@@ -57,13 +57,17 @@ public class Game {
     @Column(name = "suggestion")
     private Boolean suggestion = false;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "suggestedby", referencedColumnName = "id")
+    private User suggestedBy = null;
+
     @OneToMany(mappedBy = "reviewedGame", fetch = FetchType.LAZY)
     private List<Review> reviews;
 
     @Formula(value = "case when reviewCount = 0 then 0 else ratingSum/reviewCount end")
     private Double averageRating;
 
-    public Game(String name, String description, String developer, String publisher, Image image, List<Genre> genres, LocalDate publishDate, Boolean suggestion) {
+    public Game(String name, String description, String developer, String publisher, Image image, List<Genre> genres, LocalDate publishDate, Boolean suggestion, User suggestedBy) {
         this.name = name;
         this.description = description;
         this.developer = developer;
@@ -72,6 +76,7 @@ public class Game {
         this.genres = genres;
         this.publishDate = publishDate;
         this.suggestion = suggestion;
+        this.suggestedBy = suggestedBy;
         this.reviewCount = 0;
         this.ratingSum = 0;
     }
@@ -144,6 +149,9 @@ public class Game {
         return suggestion;
     }
 
+    public User getSuggestedBy() {
+        return suggestedBy;
+    }
 
     public void setReviewCount(Integer reviewCount) {
         this.reviewCount = reviewCount;
@@ -180,6 +188,10 @@ public class Game {
 
     public void setSuggestion(boolean suggestion) {
         this.suggestion = suggestion;
+    }
+
+    public void setSuggestedBy(User suggestedBy) {
+        this.suggestedBy = suggestedBy;
     }
 
     public void setName(String name) {

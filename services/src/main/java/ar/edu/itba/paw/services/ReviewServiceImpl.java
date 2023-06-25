@@ -33,7 +33,6 @@ public class ReviewServiceImpl implements ReviewService {
     private final UserService userService;
     private final GameService gameService;
     private final MailingService mailingService;
-
     private final MissionService missionService;
 
     @Autowired

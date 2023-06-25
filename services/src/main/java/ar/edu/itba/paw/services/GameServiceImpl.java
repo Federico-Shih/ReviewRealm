@@ -36,15 +36,17 @@ public class GameServiceImpl implements GameService {
     private final ImageService imgService;
     private final UserService userService;
     private final MissionService missionService;
+    private final MailingService mailingService;
 
     @Lazy
     @Autowired
-    public GameServiceImpl(GameDao gameDao, ReviewService reviewService, ImageService imgService, UserService userService, MissionService missionService) {
+    public GameServiceImpl(GameDao gameDao, ReviewService reviewService, ImageService imgService, UserService userService, MissionService missionService, MailingService mailingService) {
         this.gameDao = gameDao;
         this.reviewService = reviewService;
         this.imgService = imgService;
         this.userService = userService;
         this.missionService = missionService;
+        this.mailingService = mailingService;
     }
 
     @Transactional
@@ -55,16 +57,23 @@ public class GameServiceImpl implements GameService {
             throw new RuntimeException("Error creating image");
         }
 
-        boolean isModerator = userService
+        User user = userService
                 .getUserById(userId)
-                .orElseThrow(() -> new UserNotFoundException("user.notfound"))
+                .orElseThrow(() -> new UserNotFoundException("user.notfound"));
+
+        boolean isModerator = user
                 .getRoles()
                 .stream().anyMatch(role -> role.equals(RoleType.MODERATOR));
 
         LOGGER.info("{} game - name: {}, developer: {}", isModerator ? "Creating" : "Suggesting", gameDTO.getName(), gameDTO.getName());
         List<Genre> genreList = prepareGenres(gameDTO);
 
-        Game toReturn = gameDao.create(gameDTO.getName(), gameDTO.getDescription(), gameDTO.getDeveloper(), gameDTO.getPublisher(), img.getId(), genreList,gameDTO.getReleaseDate(), !isModerator);
+        Game toReturn = gameDao.create(gameDTO.getName(), gameDTO.getDescription(), gameDTO.getDeveloper(), gameDTO.getPublisher(), img.getId(), genreList, gameDTO.getReleaseDate(), !isModerator, user);
+        if(!isModerator) {
+            mailingService.sendSuggestionInReviewEmail(toReturn, user);
+            //TODO: la misión RECOMMEND_GAMES es para todos o sólo para no moderadores?
+            missionService.addMissionProgress(user.getId(), Mission.RECOMMEND_GAMES, 1f);
+        }
         return (isModerator) ? Optional.of(toReturn) : Optional.empty();
     }
 
@@ -202,6 +211,11 @@ public class GameServiceImpl implements GameService {
     @Override
     public Game acceptGame(long gameId, long approvingUserId) {
         Game game = gameDao.setSuggestedFalse(gameId).orElseThrow(GameNotFoundException::new);
+        User suggester = game.getSuggestedBy();
+        if(suggester != null) {
+            mailingService.sendAcceptedSuggestionEmail(game, suggester);
+            missionService.addMissionProgress(suggester.getId(), Mission.ACCEPTED_GAMES, 1f);
+        }
         missionService.addMissionProgress(approvingUserId, Mission.MANAGE_GAME_SUBMISSIONS, 1f);
         return game;
     }
@@ -209,7 +223,12 @@ public class GameServiceImpl implements GameService {
     @Transactional
     @Override
     public boolean rejectGame(long gameId, long approvingUserId) {
+        Game rejectedGame = gameDao.getById(gameId).orElseThrow(GameNotFoundException::new);
+        User suggester = rejectedGame.getSuggestedBy();
         boolean deleted = gameDao.deleteGame(gameId);
+        if(deleted && rejectedGame.getSuggestedBy() != null) {
+            mailingService.sendDeclinedSuggestionEmail(rejectedGame, suggester);
+        }
         missionService.addMissionProgress(approvingUserId, Mission.MANAGE_GAME_SUBMISSIONS, 1f);
         return deleted;
     }

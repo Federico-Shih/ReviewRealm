@@ -294,6 +294,8 @@ public class User {
         this.roles = objects;
     }
 
+    public boolean isModerator() { return roles.contains(RoleType.MODERATOR); }
+
     public List<Report> getReportsMade() {
         return reportsMade;
     }

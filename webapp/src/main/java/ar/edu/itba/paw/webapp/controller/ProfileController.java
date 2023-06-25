@@ -75,7 +75,6 @@ public class ProfileController{
 
         mav.addObject("games",gameService.getFavoriteGamesFromUser(userId));
         mav.addObject("profile",user.get());
-        mav.addObject("userModerator", user.get().getRoles().contains(RoleType.MODERATOR));
 
         Paginated<Review> userReviews = reviewService.getUserReviews(Page.with(page, pageSize),user.get().getId(), loggedUser != null ? loggedUser.getId() : null);
 

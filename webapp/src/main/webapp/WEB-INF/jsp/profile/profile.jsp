@@ -63,9 +63,9 @@
                             <span class="level-badge-text"><c:out value="${level}"/></span>
                         </div>
                     </div>
-                    <c:if test="${userModerator}">
+                    <c:if test="${profile.moderator}">
                          <span class="tooltipped" data-position="top" data-tooltip="<spring:message code="profile.moderator" />">
-                            <i class="material-icons profile-user-name">
+                            <i class="material-icons moderator-badge">
                                 engineering
                             </i>
                          </span>

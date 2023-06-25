@@ -249,7 +249,7 @@ public class GameDaoImplTest {
     @Test
     public void testCreateWithGenres() {
 
-        Game game = gameDao.create(NAME, DESCRIPTION, DEVELOPER, PUBLISHER, IMAGE_ID, Arrays.asList(GENRE1, GENRE2), LocalDate.now(), SUGGESTED);
+        Game game = gameDao.create(NAME, DESCRIPTION, DEVELOPER, PUBLISHER, IMAGE_ID, Arrays.asList(GENRE1, GENRE2), LocalDate.now(), SUGGESTED, null);
         em.flush();
         List<Game> games = jdbcTemplate.query("SELECT * FROM games", CommonRowMappers.TEST_GAME_ROW_MAPPER);
 
@@ -266,7 +266,7 @@ public class GameDaoImplTest {
     @Test
     public void testCreateNoGenres() {
 
-        Game game = gameDao.create(NAME, DESCRIPTION, DEVELOPER, PUBLISHER, IMAGE_ID, new ArrayList<>(), LocalDate.now(), SUGGESTED);
+        Game game = gameDao.create(NAME, DESCRIPTION, DEVELOPER, PUBLISHER, IMAGE_ID, new ArrayList<>(), LocalDate.now(), SUGGESTED, null);
         em.flush();
         List<Game> games = jdbcTemplate.query("SELECT * FROM games", CommonRowMappers.TEST_GAME_ROW_MAPPER);
 
