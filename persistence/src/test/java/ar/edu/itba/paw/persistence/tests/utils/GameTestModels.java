@@ -74,6 +74,9 @@ public class GameTestModels {
     public static Game getSubnautica2() {
         return new Game(SUBNAUTICA2_ID, SUBNAUTICA2_NAME, SUBNAUTICA2_DESCRIPTION, SUPER_GAMEA_STUDIO, SUPER_GAMEA_PUBLISHER, SUBNAUTICA2_IS_SUGGESTION, IMAGEID, SUBNAUTICA_RELEASE_DATE, SUBNAUTICA2_RATING, SUBNAUTICA2_RATING_COUNT, new ArrayList<>());
     }
+    public static List<Genre> getCommonGenres(){
+        return COMMON_GENRES;
+    }
 
     /*
         long id,
