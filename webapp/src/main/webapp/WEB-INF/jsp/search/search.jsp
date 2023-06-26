@@ -97,7 +97,8 @@
                         <c:forEach items="${games}" var="game">
                             <div class="search-result-background col m6 l6 s12">
                                 <c:set var="game" value="${game}" scope="request" />
-                                <c:set var="gameUrl" value="/game/${game.id}" />
+                                <c:url value="/game/${game.id}" var="url" />
+                                <c:set var="gameUrl" value="${url}" scope="request" />
 
                                 <c:import url="/WEB-INF/jsp/games/short-game-details.jsp" />
                             </div>
