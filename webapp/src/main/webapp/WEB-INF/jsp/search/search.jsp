@@ -7,7 +7,6 @@
 
 <html>
 <head>
-    <link rel="stylesheet" type="text/css" href="../../../css/search.css"/>
     <title><spring:message code="search.page" arguments="PAGE.ARGUMENTS" /></title> <!-- Compiled and minified CSS -->
     <link rel="stylesheet" type="text/css" href="<c:url value="/css/materialize.min.css" />" media="screen,projection"/>
     <link rel="stylesheet" href="<c:url value="/css/main.css" />">
@@ -22,7 +21,7 @@
 <body>
 <jsp:include page="/WEB-INF/jsp/static-components/navbar.jsp"/>
 <div class="row">
-    <div class="col m11 push-m1 s12 xl8 push-xl2">
+    <div class="col m11 push-m1 s12 xl10 push-xl1">
         <c:if test="${fn:length(search) == 0}">
             <h4>
                 <spring:message code="search.noSearch" />
@@ -71,7 +70,7 @@
                     </div>
                     <div class="row">
                         <c:forEach var="user" items="${users}">
-                            <div class="col s12 m12 l6 margin-bottom-2">
+                            <div class="col s12 l6 margin-bottom-2 f-column f-ai-center">
                                 <c:set var="user" value="${user}" scope="request"/>
                                 <c:import url="/WEB-INF/jsp/profile/profile-card.jsp"/>
                             </div>
