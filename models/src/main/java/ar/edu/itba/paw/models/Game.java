@@ -4,6 +4,8 @@ import ar.edu.itba.paw.converters.GenreAttributeConverter;
 import ar.edu.itba.paw.converters.LocalDateConverter;
 import ar.edu.itba.paw.enums.Genre;
 import org.hibernate.annotations.Formula;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -36,7 +38,8 @@ public class Game implements Cloneable {
     @Column(name = "publisher", length = 100, nullable = false)
     private String publisher;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @OneToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "imageid", referencedColumnName = "id")
     private Image image;
 
@@ -66,11 +69,29 @@ public class Game implements Cloneable {
     @OneToMany(mappedBy = "reviewedGame", fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     private List<Review> reviews;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "favoriteGames")
-    private List<User> favoriteUsers;
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {
+            CascadeType.DETACH,
+            CascadeType.MERGE,
+            CascadeType.REFRESH,
+    }, targetEntity = User.class)
+    @JoinTable(
+            name = "favoritegames",
+            joinColumns = @JoinColumn(name = "gameid", referencedColumnName = "id", nullable = false, updatable = false),
+            inverseJoinColumns = @JoinColumn(name = "userid", referencedColumnName = "id", nullable = false, updatable = false),
+            foreignKey = @ForeignKey(ConstraintMode.CONSTRAINT),
+            inverseForeignKey = @ForeignKey(ConstraintMode.CONSTRAINT)
+    )
+    private Set<User> favoriteUsers;
 
     @Formula(value = "case when reviewCount = 0 then 0 else ratingSum/reviewCount end")
     private Double averageRating;
+
+    @PreRemove
+    private void removeFavoriteGamesAssociation() {
+        for (User user : favoriteUsers) {
+            user.getFavoriteGames().remove(this);
+        }
+    }
 
     public Game(String name, String description, String developer, String publisher, Image image, List<Genre> genres, LocalDate publishDate, Boolean suggestion, User suggestedBy) {
         this.name = name;
@@ -268,5 +289,9 @@ public class Game implements Cloneable {
         } catch (CloneNotSupportedException e) {
             throw new AssertionError();
         }
+    }
+
+    public Set<User> getFavoriteUsers() {
+        return favoriteUsers;
     }
 }

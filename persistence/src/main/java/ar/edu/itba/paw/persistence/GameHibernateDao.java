@@ -172,8 +172,10 @@ public class GameHibernateDao implements GameDao, PaginationDao<GameFilter> {
     @Override
     public boolean deleteGame(long gameId) {
         final Game game = em.find(Game.class, gameId);
-        if(game != null)
+
+        if(game != null) {
             em.remove(game);
+        }
         return game!=null;
     }
 

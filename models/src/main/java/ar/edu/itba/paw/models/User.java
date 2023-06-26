@@ -78,11 +78,18 @@ public class User {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "author")
     private List<Review> reviews;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {
+            CascadeType.DETACH,
+            CascadeType.MERGE,
+            CascadeType.REFRESH,
+            CascadeType.PERSIST
+    }, targetEntity = Game.class)
     @JoinTable(
             name = "favoritegames",
-            joinColumns = @JoinColumn(name = "userId", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "gameid", referencedColumnName = "id")
+            joinColumns = @JoinColumn(name = "userId", referencedColumnName = "id", nullable = false, updatable = false),
+            inverseJoinColumns = @JoinColumn(name = "gameid", referencedColumnName = "id", nullable = false, updatable = false),
+            foreignKey = @ForeignKey(ConstraintMode.CONSTRAINT),
+            inverseForeignKey = @ForeignKey(ConstraintMode.CONSTRAINT)
     )
     private List<Game> favoriteGames;
 
