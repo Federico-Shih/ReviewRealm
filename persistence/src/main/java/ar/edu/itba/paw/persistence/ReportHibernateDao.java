@@ -2,10 +2,8 @@ package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.dtos.Page;
 import ar.edu.itba.paw.dtos.filtering.ReportFilter;
-import ar.edu.itba.paw.dtos.filtering.ReportLogFilter;
 import ar.edu.itba.paw.enums.ReportReason;
 import ar.edu.itba.paw.models.*;
-import ar.edu.itba.paw.models.keys.ReportId;
 import ar.edu.itba.paw.persistence.helpers.QueryBuilder;
 import ar.edu.itba.paw.persistenceinterfaces.PaginationDao;
 import ar.edu.itba.paw.persistenceinterfaces.ReportDao;

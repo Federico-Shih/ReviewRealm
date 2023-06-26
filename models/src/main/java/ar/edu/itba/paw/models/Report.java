@@ -2,7 +2,6 @@ package ar.edu.itba.paw.models;
 
 import ar.edu.itba.paw.converters.LocalDateTimeConverter;
 import ar.edu.itba.paw.enums.ReportReason;
-import ar.edu.itba.paw.models.keys.ReportId;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;

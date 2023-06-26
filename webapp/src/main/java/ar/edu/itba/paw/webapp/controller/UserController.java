@@ -5,7 +5,6 @@ import ar.edu.itba.paw.exceptions.*;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.servicesinterfaces.UserService;
 import ar.edu.itba.paw.webapp.auth.PawAuthUserDetails;
-import ar.edu.itba.paw.webapp.exceptions.ObjectNotFoundException;
 import ar.edu.itba.paw.webapp.forms.ChangePasswordForm;
 import ar.edu.itba.paw.webapp.forms.RegisterForm;
 import ar.edu.itba.paw.webapp.forms.ResendEmailForm;

@@ -1,6 +1,5 @@
 package ar.edu.itba.paw.webapp.auth;
 
-import ar.edu.itba.paw.models.Game;
 import ar.edu.itba.paw.models.Review;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.servicesinterfaces.ReviewService;

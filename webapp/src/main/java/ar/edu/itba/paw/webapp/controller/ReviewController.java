@@ -1,8 +1,6 @@
 package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.dtos.Page;
-import ar.edu.itba.paw.dtos.filtering.GameFilter;
-import ar.edu.itba.paw.dtos.filtering.GameFilterBuilder;
 import ar.edu.itba.paw.dtos.filtering.ReviewFilter;
 import ar.edu.itba.paw.dtos.filtering.ReviewFilterBuilder;
 import ar.edu.itba.paw.dtos.ordering.GameOrderCriteria;

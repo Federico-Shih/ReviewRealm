@@ -3,7 +3,6 @@ package ar.edu.itba.paw.servicesinterfaces;
 import ar.edu.itba.paw.dtos.Page;
 import ar.edu.itba.paw.dtos.ordering.Ordering;
 import ar.edu.itba.paw.dtos.ordering.UserOrderCriteria;
-import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.enums.NotificationType;
 import ar.edu.itba.paw.enums.RoleType;
 import ar.edu.itba.paw.exceptions.*;

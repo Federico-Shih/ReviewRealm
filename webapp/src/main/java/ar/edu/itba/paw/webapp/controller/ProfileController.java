@@ -3,7 +3,6 @@ package ar.edu.itba.paw.webapp.controller;
 import ar.edu.itba.paw.dtos.Page;
 import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.enums.Mission;
-import ar.edu.itba.paw.enums.RoleType;
 import ar.edu.itba.paw.exceptions.UserNotFoundException;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.servicesinterfaces.GameService;

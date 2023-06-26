@@ -1,7 +1,6 @@
 package ar.edu.itba.paw.models.keys;
 
 import ar.edu.itba.paw.enums.Mission;
-import ar.edu.itba.paw.models.Review;
 import ar.edu.itba.paw.models.User;
 
 import java.io.Serializable;

@@ -3,8 +3,6 @@ package ar.edu.itba.paw.models;
 import ar.edu.itba.paw.enums.Difficulty;
 import ar.edu.itba.paw.enums.Platform;
 
-import java.util.List;
-
 public class GameReviewData {
     private final double averageRating;
     private final Difficulty averageDifficulty;

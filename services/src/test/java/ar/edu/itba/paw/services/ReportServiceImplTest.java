@@ -12,7 +12,6 @@ import ar.edu.itba.paw.persistenceinterfaces.ReportDao;
 import ar.edu.itba.paw.services.utils.UserTestModels;
 import ar.edu.itba.paw.servicesinterfaces.ReviewService;
 import ar.edu.itba.paw.servicesinterfaces.UserService;
-import org.hibernate.mapping.Any;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;

@@ -1,6 +1,5 @@
 package ar.edu.itba.paw.webapp.annotations;
 
-import ar.edu.itba.paw.webapp.validators.UniqueEmailValidator;
 import ar.edu.itba.paw.webapp.validators.UniqueUsernameValidator;
 
 import javax.validation.Constraint;

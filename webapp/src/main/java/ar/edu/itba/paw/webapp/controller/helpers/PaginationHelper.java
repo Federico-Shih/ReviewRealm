@@ -1,10 +1,7 @@
 package ar.edu.itba.paw.webapp.controller.helpers;
 
 import ar.edu.itba.paw.models.Paginated;
-import ar.edu.itba.paw.models.Pair;
 import org.springframework.web.servlet.ModelAndView;
-
-import java.util.List;
 
 public class PaginationHelper {
     private static final int MAX_PAGES_PAGINATION = 6;

@@ -2,8 +2,6 @@ package ar.edu.itba.paw.dtos.filtering;
 
 import ar.edu.itba.paw.enums.ReportReason;
 
-import java.time.LocalDateTime;
-
 public class ReportFilter {
 
     private final Long reviewId;

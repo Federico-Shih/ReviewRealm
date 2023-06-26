@@ -1,9 +1,7 @@
 package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.dtos.Page;
-import ar.edu.itba.paw.enums.Difficulty;
 import ar.edu.itba.paw.enums.FeedbackType;
-import ar.edu.itba.paw.enums.Platform;
 import ar.edu.itba.paw.exceptions.ReviewNotFoundException;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.persistenceinterfaces.ReviewDao;
@@ -19,7 +17,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Optional;

@@ -1,19 +1,16 @@
 package ar.edu.itba.paw.persistence.helpers;
 
 import ar.edu.itba.paw.enums.Difficulty;
-import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.enums.Platform;
 import ar.edu.itba.paw.enums.ReportReason;
 import ar.edu.itba.paw.models.Game;
 import ar.edu.itba.paw.models.Report;
-import ar.edu.itba.paw.models.MissionProgress;
 import ar.edu.itba.paw.models.Review;
 import ar.edu.itba.paw.models.User;
 import org.springframework.jdbc.core.RowMapper;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Optional;
 
 public interface CommonRowMappers{
     String IMAGE_PREFIX = "/images/";
