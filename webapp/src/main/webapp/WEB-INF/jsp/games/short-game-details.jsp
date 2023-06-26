@@ -21,7 +21,7 @@
         </div>
         <div class="short-game-container-text">
             <a href="${gameUrl}">
-                <span class="white-text search-result-game-title"><c:out value="${game.name}"/></span>
+                <span class="white-text search-result-game-title overflow-ellipsis"><c:out value="${game.name}"/></span>
             </a>
             <div>
                 <span><spring:message code="developer" arguments="${game.developer}"/></span>

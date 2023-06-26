@@ -48,55 +48,61 @@
 
     <div class="f-column">
         <form action="${searchUsers}" id="community-form">
-            <div class="full-width">
-                <div class="f-row">
-                    <input name="search" class="z-depth-1-half search-field" type="search" value="${userSearch}"
-                           placeholder="<spring:message code="community.user.search.placeholder"/>">
-                    <button class="btn-flat button-color white-text" type="submit">
-                        <i class="material-icons">search</i>
-                    </button>
+            <div class="full-width row">
+                <div class="col l6 m4 s12">
+                    <div class="f-row">
+                        <input name="search" class="z-depth-1-half search-field" type="search" value="${userSearch}"
+                               placeholder="<spring:message code="community.user.search.placeholder"/>">
+                        <button class="btn-flat button-color white-text" type="submit">
+                            <i class="material-icons">search</i>
+                        </button>
+                    </div>
+                </div>
+                <div class="col row m8 l6 s12 wide-selector">
+                    <div class="col s10 f-row f-jc-sbetween">
+                        <div class="f-row f-gap-2 f-jc-start f-ai-center">
+                            <span class="no-wrap"><spring:message code="order.by"/></span>
+                            <c:forEach var="criteria" items="${criteriaOptions}">
+                                <a class="criteria-selector selector-option f-row f-ai-center <c:if test="${criteria.value == orderCriteria}"> selected </c:if>" data-criteria-id="${criteria.value}">
+                                    <i class="material-icons selector-option-icon">
+                                        <c:choose>
+                                            <c:when test="${criteria.value == 1}">
+                                                people
+                                            </c:when>
+                                            <c:when test="${criteria.value == 2}">
+                                                thumbs_up_down
+                                            </c:when>
+                                            <c:otherwise>
+                                                sports_esports
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </i>
+                                    <span class="selector-option-text"><spring:message code="${criteria.localizedNameCode}"/></span>
+                                </a>
+                            </c:forEach>
+                        </div>
+                    </div>
+                    <div class="col s2 f-row f-gap-2 f-jc-start f-ai-center">
+                        <c:forEach var="direction" items="${directionOptions}">
+                            <a class="direction-selector selector-option f-row f-ai-center <c:if test="${direction.value == orderDirection}"> selected </c:if>" data-direction-id="${direction.value}">
+                                <i class="material-icons selector-option-icon">
+                                    <c:choose>
+                                        <c:when test="${direction.value == 1}">
+                                            arrow_upward
+                                        </c:when>
+                                        <c:otherwise>
+                                            arrow_downward
+                                        </c:otherwise>
+                                    </c:choose>
+                                </i>
+                            </a>
+                        </c:forEach>
+                    </div>
                 </div>
             </div>
 
-            <div class="f-row wide-selector f-jc-sbetween">
-                <div class="f-row f-gap-2 f-jc-start f-ai-center">
-                    <span class="no-wrap"><spring:message code="order.by"/></span>
-                    <c:forEach var="criteria" items="${criteriaOptions}">
-                        <a class="criteria-selector selector-option f-row f-ai-center <c:if test="${criteria.value == orderCriteria}"> selected </c:if>" data-criteria-id="${criteria.value}">
-                            <i class="material-icons selector-option-icon">
-                                <c:choose>
-                                    <c:when test="${criteria.value == 1}">
-                                        people
-                                    </c:when>
-                                    <c:when test="${criteria.value == 2}">
-                                        thumbs_up_down
-                                    </c:when>
-                                    <c:otherwise>
-                                        sports_esports
-                                    </c:otherwise>
-                                </c:choose>
-                            </i>
-                            <span class="selector-option-text"><spring:message code="${criteria.localizedNameCode}"/></span>
-                        </a>
-                    </c:forEach>
-                </div>
-                <div class="f-row f-gap-2 f-jc-start">
-                    <c:forEach var="direction" items="${directionOptions}">
-                        <a class="direction-selector selector-option f-row f-ai-center <c:if test="${direction.value == orderDirection}"> selected </c:if>" data-direction-id="${direction.value}">
-                            <i class="material-icons selector-option-icon">
-                                <c:choose>
-                                    <c:when test="${direction.value == 1}">
-                                        arrow_upward
-                                    </c:when>
-                                    <c:otherwise>
-                                        arrow_downward
-                                    </c:otherwise>
-                                </c:choose>
-                            </i>
-                        </a>
-                    </c:forEach>
-                </div>
-            </div>
+
+
 
             <div class="input-field hide">
                 <input type="text" id="o-crit" name="o-crit" value="${orderCriteria}" readonly>
