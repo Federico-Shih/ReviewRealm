@@ -22,7 +22,7 @@
 <body>
 <jsp:include page="/WEB-INF/jsp/static-components/navbar.jsp"/>
 <div class="row">
-    <div class="col m10 push-m1 s12 xl8 push-xl2">
+    <div class="col m11 push-m1 s12 xl8 push-xl2">
         <c:if test="${fn:length(search) == 0}">
             <h4>
                 <spring:message code="search.noSearch" />
@@ -71,7 +71,7 @@
                     </div>
                     <div class="row">
                         <c:forEach var="user" items="${users}">
-                            <div class="col s6 margin-bottom-2">
+                            <div class="col s12 m12 l6 margin-bottom-2">
                                 <c:set var="user" value="${user}" scope="request"/>
                                 <c:import url="/WEB-INF/jsp/profile/profile-card.jsp"/>
                             </div>
