@@ -54,7 +54,6 @@ public class ReportController {
         return new ModelAndView("redirect:/review/" + reviewId + "?reported=true");
     }
 
-    //TODO Agregar que es solo para moderators
     @RequestMapping(value = "/report/reviews", method = RequestMethod.GET)
     ModelAndView viewReports(@RequestParam(value = "page", defaultValue = "1") Integer page,
                              @RequestParam(value = "pagesize", defaultValue = "8") Integer pageSize) {
