@@ -78,6 +78,13 @@ public class ReportHibernateDao implements ReportDao, PaginationDao<ReportFilter
                 .withExact("resolved", filter.getResolved())
                 .withExact("moderatorid", filter.getModeratorId())
                 .withSimilar("reason", (filter.getReason() != null )? filter.getReason().toString():null);
+        if(filter.getClosed() != null) {
+            if(filter.getClosed()) {
+                queryBuilder.isNull("reviewid");
+            } else {
+                queryBuilder.NOT().isNull("reviewid");
+            }
+        }
         return queryBuilder;
 
     }
@@ -101,8 +108,6 @@ public class ReportHibernateDao implements ReportDao, PaginationDao<ReportFilter
         }
         final TypedQuery<Report> query = em.createQuery("from Report where id in :ids ORDER BY submissionDate ASC ", Report.class);
         query.setParameter("ids", ids);
-        query.setFirstResult(page.getOffset().intValue());
-        query.setMaxResults(page.getPageSize());
 
         return new Paginated<>(page.getPageNumber(), page.getPageSize(), pages, query.getResultList());
     }

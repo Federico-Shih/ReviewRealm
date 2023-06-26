@@ -56,6 +56,10 @@
     gap: 2% !important;
 }
 
+.t-a-center {
+    text-align: center;
+}
+
 .full-width {
     width: 100% !important;
 }
@@ -633,3 +637,8 @@ input::-webkit-inner-spin-button {
     width: 80%;
     margin: 0 auto;
 }
+
+.padding-for-container {
+    padding: 30px !important;
+}
+

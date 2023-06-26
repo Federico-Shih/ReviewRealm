@@ -22,7 +22,7 @@ public class ReportFilterBuilder {
 
     private Long moderatorId = null;
 
-
+    private Boolean closed = null;
 
     public ReportFilterBuilder withReviewId(Long reviewId) {
         this.reviewId = reviewId;
@@ -51,9 +51,13 @@ public class ReportFilterBuilder {
         this.reportedUserId = reportedUserId;
         return this;
     }
+    public ReportFilterBuilder withClosed(Boolean closed) {
+        this.closed = closed;
+        return this;
+    }
 
 
     public ReportFilter build() {
-        return new ReportFilter(reviewId, reporterId, reason, resolved, moderatorId, reportedUserId);
+        return new ReportFilter(reviewId, reporterId, reason, resolved, moderatorId, reportedUserId,closed);
     }
 }

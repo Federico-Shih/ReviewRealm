@@ -226,7 +226,7 @@
         </div>
     </div>
 </div>
-<<div id="report-form-modal" class="modal">
+<div id="report-form-modal" class="modal">
     <form action="${reportSubmitUrl}" method="post">
         <div class="modal-content">
             <h5><spring:message code="review.report.header"/></h5>

@@ -34,6 +34,9 @@
                     <div class="f-row f-jc-center">
                         <h2 class="white-text"><spring:message code="profile.favgames.selection"/></h2>
                     </div>
+                    <div class="f-row f-jc-center">
+                        <h5 class="white-text t-a-center"><spring:message code="profile.favgames.selection.consideration"/></h5>
+                    </div>
                 </c:if>
                 <div class="f-row f-jc-center">
                     <form:errors path="gameIds" cssClass="error"/>

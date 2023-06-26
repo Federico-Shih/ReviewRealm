@@ -138,6 +138,18 @@ public class QueryBuilder {
         operator = QueryOperator.AND;
         return this;
     }
+    public QueryBuilder isNull(String queryField){
+        if (queryField != null) {
+            str.append(" ");
+            str.append(operator.getOperator());
+            str.append(String.format(" %s IS %s NULL ",queryField,(not)? "NOT" : ""));
+            operator = QueryOperator.AND;
+        }
+        if(not){
+            this.not = false;
+        }
+        return this;
+    }
 
     public String toQuery() {
         if (str.length() > 0) {
@@ -145,6 +157,7 @@ public class QueryBuilder {
         }
         return str.toString();
     }
+
 
     public List<Object> toArguments() {
         return params;

@@ -145,6 +145,18 @@
                                         </div>
                                     </a>
                                 </li>
+                                <li>
+                                    <a href="<c:url value="/report/reviews"/>">
+                                        <div class="valign-wrapper profile-dropdown-link">
+                                                <span class="material-icons">
+                                                    flag
+                                                </span>
+                                            <span class="overflow-ellipsis">
+                                                    <spring:message code="navbar.reports"/>
+                                            </span>
+                                        </div>
+                                    </a>
+                                </li>
                         </c:if>
 
                                 <li>
@@ -181,7 +193,6 @@
                 </ul>
             </div>
         </div>
-
     </nav>
     </form>
 </div>

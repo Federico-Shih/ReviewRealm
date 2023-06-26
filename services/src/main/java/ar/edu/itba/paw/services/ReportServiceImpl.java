@@ -69,29 +69,36 @@ public class ReportServiceImpl implements ReportService {
     @Transactional
     @Override
     public Boolean isReported(long reviewId, long reporterId){
-        ReportFilter filter = new ReportFilterBuilder().withReviewId(reviewId).withReporterId(reporterId).build();
+        ReportFilter filter = new ReportFilterBuilder().withReviewId(reviewId).withReporterId(reporterId).withResolved(false).build();
         return reportDao.findAll(Page.with(1,1),filter).getList().size()>0;
     }
 
 
     @Transactional
     @Override
-    public Report resolveReport(long reportid,long moderatorId) {
-       return updateReportStatus(reportid,moderatorId,true);
+    public Report resolveReport(long reportid, long moderatorId) {
+        Report report = reportDao.get(reportid).orElseThrow(ReportNotFoundException::new);
+        long reviewId = report.getReportedReview().getId();
+        Report toReturn = updateReportStatus(report,moderatorId,true);
+        reviewService.deleteReviewById(reviewId,moderatorId);
+        return toReturn;
     }
+
     @Transactional
     @Override
     public Report rejectReport(long reportid, long moderatorId) {
-        return updateReportStatus(reportid,moderatorId,false);
+        Report report = reportDao.get(reportid).orElseThrow(ReportNotFoundException::new);
+        return updateReportStatus(report,moderatorId,false);
     }
 
-    private Report updateReportStatus(long reportid, long moderatorId, boolean status){
-        Report report = reportDao.get(reportid).orElseThrow(ReportNotFoundException::new);
+    private Report updateReportStatus(Report report, long moderatorId, boolean status){
+
         User moderator = userService.getUserById(moderatorId).orElseThrow(UserNotFoundException::new);
         if(!moderator.getRoles().contains(RoleType.MODERATOR)){
             throw new UserNotAModeratorException();
         }
-        return reportDao.updateStatus(reportid,moderatorId,status);
+
+        return reportDao.updateStatus(report.getId(),moderatorId,status);
     }
 
     @Transactional

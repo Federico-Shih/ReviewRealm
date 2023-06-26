@@ -15,15 +15,17 @@ public class ReportFilter {
 
     private final Long reportedUserId;
 
+    private final Boolean closed;
 
-    public ReportFilter(Long reviewId, Long reporterId, ReportReason reason,Boolean resolved, Long moderatorId, Long reportedUserId) {
+
+    public ReportFilter(Long reviewId, Long reporterId, ReportReason reason,Boolean resolved, Long moderatorId, Long reportedUserId, Boolean closed) {
         this.reviewId = reviewId;
         this.reporterId = reporterId;
         this.reason = reason;
-
         this.resolved = resolved;
         this.moderatorId = moderatorId;
         this.reportedUserId = reportedUserId;
+        this.closed = closed;
     }
 
     public Long getReviewId() {
@@ -47,5 +49,10 @@ public class ReportFilter {
     public Long getReportedUserId() {
         return reportedUserId;
     }
+
+    public Boolean getClosed() {
+        return closed;
+    }
 }
+
 

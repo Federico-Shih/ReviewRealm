@@ -48,6 +48,7 @@ public class GameController{
     private static final int DEFAULT_REVIEW_PAGE_SIZE = 10;
     private static final int PAGE_SIZE = 10;
     private static final int INITIAL_PAGE = 1;
+    private static final int SMALL_LIST_PAGE_SIZE = 2;
 
     @Autowired
     public GameController(GameService gs, UserService us, ReviewService rs) {
@@ -272,22 +273,35 @@ public class GameController{
     }
 
     @RequestMapping(value = "/game/submissions", method = RequestMethod.GET)
-    public ModelAndView checkSubmissions() {
+    public ModelAndView checkSubmissions(@RequestParam(value = "modalSearch", defaultValue = "") String search) {
         ModelAndView mav = new ModelAndView("/games/game-addition");
 
-        GameFilter searchFilter = new GameFilterBuilder()
+        GameFilter filter = new GameFilterBuilder()
                 .withSuggestion(true)
                 .build();
-
-        Paginated<Game> games = gs.searchGames(
+        Paginated<Game> suggestedgames = gs.searchGames(
                 Page.with(INITIAL_PAGE, PAGE_SIZE),
-                searchFilter,
+                filter,
                 new Ordering<>(OrderDirection.fromValue(0), GameOrderCriteria.fromValue(1))
         );
+        PaginationHelper.paginate(mav,suggestedgames);
+        mav.addObject("suggestedgames", suggestedgames.getList());
 
-        PaginationHelper.paginate(mav,games);
 
-        mav.addObject("suggestedgames", games.getList());
+        if(!search.isEmpty()) {
+            GameFilter searchFilter = new GameFilterBuilder()
+                    .withSuggestion(false)
+                    .withGameContent(search)
+                    .build();
+            Paginated<Game> searchedgames = gs.searchGames(
+                    Page.with(INITIAL_PAGE, SMALL_LIST_PAGE_SIZE),
+                    searchFilter,
+                    new Ordering<>(OrderDirection.fromValue(0), GameOrderCriteria.fromValue(1))
+            );
+            mav.addObject("searchedgames", searchedgames.getList());
+        }
+
+        mav.addObject("modalSearch", search);
         return mav;
     }
 }

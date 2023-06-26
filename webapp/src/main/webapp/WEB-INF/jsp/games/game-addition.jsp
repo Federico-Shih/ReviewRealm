@@ -14,6 +14,16 @@
   <script src="<c:url value="/js/reviewfeedback.js"/>"></script>
   <link rel="shortcut icon" type="image/png" href="<c:url value="/static/review_realm_logo_white_32px.png" />">
   <title><spring:message code="game.addition.title"/></title>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var elems = document.querySelector('.modal');
+      var instances = M.Modal.init(elems);
+      var button = document.querySelector('.modal-trigger');
+      <c:if test="${!(empty modalSearch)}">
+        button.click();
+      </c:if>
+    });
+  </script>
 </head>
 
 <body>
@@ -25,6 +35,14 @@
       <c:if test="${empty suggestedgames}">
         <div class="f-row f-jc-center">
           <h4 class="white-text"><spring:message code="game.submission.empty"/></h4>
+        </div>
+      </c:if>
+      <c:if test="${!(empty suggestedgames)}">
+        <div class="f-row f-jc-center f-ai-center">
+          <span class="margin-right-2"><spring:message code="game.addition.question"/></span>
+          <button class="waves-effect btn modal-trigger" data-target="search-modal">
+            <spring:message code="game.addition.search"/>
+          </button>
         </div>
       </c:if>
       <c:forEach var="game" items="${suggestedgames}">
@@ -67,6 +85,53 @@
           </div>
         </div>
       </c:forEach>
+    </div>
+  </div>
+  <div id="search-modal" class="modal">
+    <div class="f-jc-center f-column padding-for-container">
+      <form action="<c:url value="/game/submissions"/>" method="get">
+        <div class="search-list-container full-width">
+            <input name="modalSearch" class="z-depth-1-half search-field" type="search" value="${modalSearch}"
+                   placeholder="<spring:message code="game.list.placeholder.search"/>">
+            <button class="btn-flat button-color white-text" type="submit"><i class="material-icons">search</i>
+            </button>
+        </div>
+      </form>
+
+      <div class="row full-width">
+        <c:if test="${!(empty modalSearch)}">
+          <c:if test="${empty searchedgames}">
+            <div class="f-row f-jc-center">
+              <span><spring:message code="game.addition.no.match"/></span>
+            </div>
+          </c:if>
+          <c:forEach var="game" items="${searchedgames}">
+            <div class="col s6">
+              <div class="game-card-whole-for-list z-depth-2">
+                <div>
+                  <c:url value="${game.imageUrl}" var="imgUrl" />
+                  <img class="game-img-small" src="${imgUrl}"
+                       alt="<c:out value="${game.name}"/>">
+                </div>
+                <div class="game-card-details">
+                  <div class="game-card-whole-details-text">
+                    <div class="game-card-title white-text">
+                      <span class="overflow-ellipsis"><c:out value="${game.name}"/></span>
+                    </div>
+                    <div class="game-genres">
+                      <c:forEach items="${game.genres}" var="genre" end="1">
+                        <span class="chip-small">
+                          <spring:message code="${genre.name}"/>
+                        </span>
+                      </c:forEach>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </c:forEach>
+        </c:if>
+      </div>
     </div>
   </div>
 </body>

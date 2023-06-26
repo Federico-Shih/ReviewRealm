@@ -79,6 +79,7 @@ public class Review {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "reportedReview")
     private List<Report> reports;
+
     @Transient
     private FeedbackType feedbackType = null;
 
