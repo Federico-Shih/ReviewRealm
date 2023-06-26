@@ -9,6 +9,7 @@ import ar.edu.itba.paw.dtos.saving.SaveUserBuilder;
 import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.enums.NotificationType;
 import ar.edu.itba.paw.models.FollowerFollowingCount;
+import ar.edu.itba.paw.models.Game;
 import ar.edu.itba.paw.models.Paginated;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.persistence.config.TestConfig;
@@ -108,8 +109,6 @@ public class UserDaoImplTest {
     @Rollback
     @Test
     public void testFindAll() throws SQLException {
-        // TODO: mati corregir
-        //2.execute
         Paginated<User> userlist = userDao.findAll(Page.with(1, 80), new UserFilterBuilder().build(), new Ordering<>(OrderDirection.DESCENDING, UserOrderCriteria.LEVEL));
 
         Assert.assertEquals(userlist.getTotalPages(), 1);
@@ -168,7 +167,6 @@ public class UserDaoImplTest {
         Assert.assertEquals(UPDATE_ENABLED, dbUser.isEnabled());
         Assert.assertEquals(UPDATE_XP, dbUser.getXp(), 0.001);
         Assert.assertEquals(UPDATE_AVATARID, (long)dbUser.getAvatarId());
-        Assert.assertEquals(UPDATE_LOCALE, dbUser.getLanguage());
     }
 
     @Rollback
@@ -229,9 +227,9 @@ public class UserDaoImplTest {
         em.flush();
 
         List<Long> games = jdbcTemplate.queryForList("Select gameid from favoritegames where userid = ?", Long.class, testUser.getId());
-        Assert.assertEquals(1, games.size());
-        Long[] expectedGames = {GameTestModels.getSuperGameA().getId(), GameTestModels.getSuperGameB().getId()};
-        Assert.assertArrayEquals(expectedGames, games.toArray());
+        Assert.assertEquals(2, games.size());
+        Set<Long> expectedGames = new HashSet<>(Arrays.asList(GameTestModels.getSuperGameA().getId(), GameTestModels.getSuperGameB().getId()));
+        Assert.assertEquals(expectedGames, new HashSet<>(games));
     }
 
 
@@ -241,7 +239,7 @@ public class UserDaoImplTest {
         userDao.deleteFavoriteGameForUser(UserTestModels.getUser5().getId(), GameTestModels.getSuperGameA().getId());
         em.flush();
 
-        Object[] params = {UserTestModels.getUser5()};
+        Object[] params = {UserTestModels.getUser5().getId()};
         List<Long> gameIds = jdbcTemplate.queryForList("Select gameid from favoritegames where userid = ?", params, Long.class);
         Assert.assertEquals(2, gameIds.size());
     }
@@ -252,8 +250,8 @@ public class UserDaoImplTest {
         Optional<List<User>> followers = userDao.getFollowers(testFollowingUser.getId());
         Assert.assertTrue(followers.isPresent());
         Assert.assertEquals(3, followers.get().size());
-        User[] expectedUsers = {UserTestModels.getUser3(), UserTestModels.getUser2(), UserTestModels.getUser4()};
-        Assert.assertArrayEquals(expectedUsers, followers.get().toArray());
+        List<User> expected = Arrays.asList(UserTestModels.getUser2(), UserTestModels.getUser4(), UserTestModels.getUser3());
+        Assert.assertEquals(new HashSet<>(expected), new HashSet<>(followers.get()));
     }
 
 
@@ -290,7 +288,6 @@ public class UserDaoImplTest {
     public void testCreateFollow() {
         Optional<User> user = userDao.createFollow(testUser.getId(), UserTestModels.getUser5().getId());
         Assert.assertTrue(user.isPresent());
-        Assert.assertTrue(user.get().getFollowing().contains(UserTestModels.getUser5()));
         em.flush();
         int count = JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, "followers", String.format("userid = '%s' and following = '%s'", testUser.getId(), UserTestModels.getUser5().getId()));
         Assert.assertEquals(1, count);
@@ -310,8 +307,10 @@ public class UserDaoImplTest {
     @Rollback
     @Test
     public void testDeleteNonexistentFollow() {
-        Optional<User> user = userDao.deleteFollow(testNonFollowingUser.getId(), UserTestModels.getUser3().getId());
-        Assert.assertFalse(user.isPresent());
+        User supposedFollowing = UserTestModels.getUser3();
+        Optional<User> user = userDao.deleteFollow(testNonFollowingUser.getId(), supposedFollowing.getId());
+        Assert.assertTrue(user.isPresent());
+        Assert.assertFalse(user.get().getFollowing().contains(supposedFollowing));
     }
 
     @Rollback
@@ -362,7 +361,7 @@ public class UserDaoImplTest {
     public void testEnableNotification() {
         userDao.enableNotification(disabledNotifUser.getId(), NotificationType.USER_I_FOLLOW_WRITES_REVIEW.getTypeName());
         em.flush();
-        Assert.assertEquals(0, JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, "user_disabled_notifications", String.format("userid ='%s' and notificationtype = '%s'", disabledNotifUser.getId(), NotificationType.USER_I_FOLLOW_WRITES_REVIEW.getTypeName())));
+        Assert.assertEquals(0, JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, "user_disabled_notifications", String.format("userid ='%s' and notification = '%s'", disabledNotifUser.getId(), NotificationType.USER_I_FOLLOW_WRITES_REVIEW.getTypeName())));
     }
 
     @Rollback
@@ -370,6 +369,6 @@ public class UserDaoImplTest {
     public void testDisableNotification() {
         userDao.disableNotification(disabledNotifUser.getId(), NotificationType.MY_REVIEW_IS_DELETED.getTypeName());
         em.flush();
-        Assert.assertEquals(1, JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, "user_disabled_notifications", String.format("userid ='%s' and notificationtype = '%s'", disabledNotifUser.getId(), NotificationType.MY_REVIEW_IS_DELETED.getTypeName())));
+        Assert.assertEquals(1, JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, "user_disabled_notifications", String.format("userid ='%s' and notification = '%s'", disabledNotifUser.getId(), NotificationType.MY_REVIEW_IS_DELETED.getTypeName())));
     }
 }

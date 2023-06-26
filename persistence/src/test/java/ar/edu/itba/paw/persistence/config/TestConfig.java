@@ -44,6 +44,12 @@ public class TestConfig {
     @Value("classpath:/populators/reviews.sql")
     private Resource reviewsSql;
 
+    @Value("classpath:/populators/following.sql")
+    private Resource followingSql;
+
+    @Value("classpath:/populators/missions.sql")
+    private Resource missionSql;
+
     @Value("classpath:/populators/reviewfeedback.sql")
     private Resource reviewFeedbackSql;
 
@@ -98,11 +104,12 @@ public class TestConfig {
         final ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
         populator.addScript(hsqldbSql);
         // tokens.sql
-        populator.addScripts(gamesSql, usersSql, favoriteGamesSql);
+        populator.addScripts(gamesSql, usersSql, favoriteGamesSql, missionSql);
         populator.addScript(reviewsSql);
         populator.addScript(reviewFeedbackSql);
         populator.addScript(reportsSql);
-        // populator.addScript(tokensSql);
+        populator.addScript(followingSql);
+        populator.addScript(tokensSql);
         return populator;
     }
 }

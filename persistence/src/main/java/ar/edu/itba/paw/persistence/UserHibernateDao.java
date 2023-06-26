@@ -313,6 +313,8 @@ public class UserHibernateDao implements UserDao, PaginationDao<UserFilter> {
         if (order.getOrderDirection() != null) {
             orderQuery.append(" ");
             orderQuery.append(order.getOrderDirection().getAltName());
+            orderQuery.append(" ");
+            orderQuery.append("NULLS LAST");
         }
         return orderQuery.toString();
     }

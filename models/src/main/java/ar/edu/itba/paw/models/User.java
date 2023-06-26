@@ -6,6 +6,8 @@ import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.enums.LevelRange;
 import ar.edu.itba.paw.enums.NotificationType;
 import ar.edu.itba.paw.enums.RoleType;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.util.*;
@@ -249,6 +251,11 @@ public class User {
         if (!(o instanceof User)) return false;
         User user = (User) o;
         return this.getId().equals(user.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.getId());
     }
 
     public List<ExpirationToken> getExpirationTokenList() {
