@@ -12,12 +12,6 @@ import java.nio.file.AccessDeniedException;
 
 @Controller
 public class ExceptionController {
-
-    @Autowired
-    public ExceptionController() {
-
-    }
-
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @RequestMapping("errors/404")
     public ModelAndView notFoundException() {
