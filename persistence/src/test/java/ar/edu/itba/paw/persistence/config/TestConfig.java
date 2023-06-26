@@ -47,6 +47,9 @@ public class TestConfig {
     @Value("classpath:/populators/reviewfeedback.sql")
     private Resource reviewFeedbackSql;
 
+    @Value("classpath:/populators/reports.sql")
+    private Resource reportsSql;
+
     @Bean
     public DataSource dataSource() {
         final SimpleDriverDataSource ds = new SimpleDriverDataSource();
@@ -98,6 +101,7 @@ public class TestConfig {
         populator.addScripts(gamesSql, usersSql, favoriteGamesSql);
         populator.addScript(reviewsSql);
         populator.addScript(reviewFeedbackSql);
+        populator.addScript(reportsSql);
         // populator.addScript(tokensSql);
         return populator;
     }

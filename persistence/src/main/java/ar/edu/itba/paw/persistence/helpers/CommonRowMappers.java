@@ -3,7 +3,9 @@ package ar.edu.itba.paw.persistence.helpers;
 import ar.edu.itba.paw.enums.Difficulty;
 import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.enums.Platform;
+import ar.edu.itba.paw.enums.ReportReason;
 import ar.edu.itba.paw.models.Game;
+import ar.edu.itba.paw.models.Report;
 import ar.edu.itba.paw.models.Review;
 import ar.edu.itba.paw.models.User;
 import org.springframework.jdbc.core.RowMapper;
@@ -56,6 +58,12 @@ public interface CommonRowMappers{
                 resultSet.getInt("xp"),
                 new ArrayList<>(),
                 resultSet.getInt("avatar")
+        )
+    ));
+    RowMapper<Report> REPORT_ROW_MAPPER = ((resultSet, i) -> (
+        new Report(
+                resultSet.getLong("id"),
+                ReportReason.valueOf(resultSet.getString("reason"))
         )
     ));
 }
