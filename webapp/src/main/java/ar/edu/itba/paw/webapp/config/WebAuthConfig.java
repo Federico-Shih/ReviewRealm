@@ -2,6 +2,8 @@ package ar.edu.itba.paw.webapp.config;
 
 import ar.edu.itba.paw.enums.RoleType;
 import ar.edu.itba.paw.webapp.auth.AccessControl;
+import ar.edu.itba.paw.webapp.config.filters.AuthenticationPageFilter;
+import ar.edu.itba.paw.webapp.config.handlers.CustomAuthenticationFailureHandler;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -25,6 +27,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 import org.springframework.security.web.access.expression.WebExpressionVoter;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -90,7 +94,10 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.sessionManagement()
+        http
+                .addFilterAfter(new AuthenticationPageFilter(), BasicAuthenticationFilter.class)
+                // redirecciona si uno trata de ir a login o register y ya está conectado
+                .sessionManagement()
                 .invalidSessionUrl("/login")
             .and().authorizeRequests()
                 .accessDecisionManager(accessDecisionManager())
@@ -115,7 +122,7 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                         "/profile/missions"
                 ).authenticated()
                 /* ACÁ PONEMOS TODOS LOS PATHS QUE REQUIERAN NO HABER INICIADO SESIÓN */
-                .antMatchers("/login", "/register", "/recover").anonymous()
+
                 /* POR DEFAULT NO ES NECESARIO INICIAR SESIÓN */
                 .antMatchers( "/**").permitAll()
             .and().formLogin()
@@ -123,7 +130,7 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                 .usernameParameter("email")
                 .passwordParameter("password")
                 .defaultSuccessUrl("/", false)
-                .failureUrl("/login?error=true")
+                .failureHandler(new CustomAuthenticationFailureHandler())
             .and().rememberMe()
                 .rememberMeParameter("remember-me")
                 .userDetailsService(userDetailsService)

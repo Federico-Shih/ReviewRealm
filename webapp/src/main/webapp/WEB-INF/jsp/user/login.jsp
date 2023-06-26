@@ -40,6 +40,9 @@
                 <c:if test="${error}">
                     <span><spring:message code="login.error"/></span>
                 </c:if>
+                <c:if test="${disabled}">
+                    <span><spring:message code="login.disabled" /></span>
+                </c:if>
             </div>
             <div>
                 <spring:message code="login.to.register.link"/>

@@ -156,7 +156,7 @@ public class ReviewServiceImplTest {
     @Test
     public void deleteReviewTestNotFound() {
         Mockito.when(reviewDao.findById(eq(getReview1().getId()), any())).thenReturn(Optional.empty());
-        Assert.assertFalse(rs.deleteReviewById(getReview1().getId()));
+        Assert.assertFalse(rs.deleteReviewById(getReview1().getId(), 1L));
     }
 
     @Test
@@ -165,7 +165,7 @@ public class ReviewServiceImplTest {
         Mockito.when(reviewDao.findById(eq(r1.getId()), any())).thenReturn(Optional.of(r1));
         Mockito.when(reviewDao.deleteReview(eq(r1.getId()))).thenReturn(true);
         Mockito.when(userService.isNotificationEnabled(eq(r1.getAuthor().getId()), any())).thenReturn(true);
-        boolean deleted = rs.deleteReviewById(r1.getId());
+        boolean deleted = rs.deleteReviewById(r1.getId(), 1L);
         Assert.assertTrue(deleted);
     }
 

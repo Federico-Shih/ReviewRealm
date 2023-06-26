@@ -52,7 +52,7 @@ public interface ReviewService {
 
     Paginated<Review> getNewReviewsExcludingActiveUser(Page page, Long activeUserId);
 
-    boolean deleteReviewById(long id);
+    boolean deleteReviewById(long id, long deleteUserId);
 
     ReviewFeedback updateOrCreateReviewFeedback(long reviewId, long userId, FeedbackType feedback);
 
