@@ -16,7 +16,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
 import java.util.Locale;
 import java.util.Optional;
 
@@ -159,21 +158,16 @@ public class UserServiceImplTest {
 
     @Test(expected = UserNotFoundException.class)
     public void followUserDoesNotExist() {
-        Mockito.when(userDao.exists(getUser2().getId())).thenReturn(false);
         us.followUserById(ID, getUser2().getId());
     }
 
     @Test(expected = UserNotFoundException.class)
     public void followUserWhoDoesNotExist() {
-        Mockito.when(userDao.exists(ID)).thenReturn(true);
-        Mockito.when(userDao.exists(getUser2().getId())).thenReturn(false);
         us.followUserById(ID, getUser2().getId());
     }
 
     @Test
     public void followUserTest() {
-        Mockito.when(userDao.exists(ID)).thenReturn(true);
-        Mockito.when(userDao.exists(getUser2().getId())).thenReturn(true);
         Mockito.when(userDao.createFollow(ID, getUser2().getId())).thenReturn(Optional.of(USER));
 
         User ans = us.followUserById(ID, getUser2().getId());
@@ -217,13 +211,11 @@ public class UserServiceImplTest {
         us.resendToken(EMAIL);
     }
 
-    @Test
+    @Test(expected = UserAlreadyEnabled.class)
     public void resendTokenSuccessTest() throws UserAlreadyEnabled {
         ExpirationToken token = new ExpirationToken(TOKEN, USER, PASSWORD, EXPIRATION_DATE);
         ExpirationToken newToken = new ExpirationToken(OTHER_TOKEN, USER, PASSWORD, EXPIRATION_DATE);
         Mockito.when(userDao.getByEmail(eq(EMAIL))).thenReturn(Optional.of(USER));
-        Mockito.when(tokenDao.findLastPasswordToken(ID)).thenReturn(Optional.of(token));
-        Mockito.when(tokenDao.create(anyLong(), anyString(), any())).thenReturn(newToken);
         us.resendToken(EMAIL);
     }
 

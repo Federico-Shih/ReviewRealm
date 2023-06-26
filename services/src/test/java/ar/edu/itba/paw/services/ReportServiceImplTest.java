@@ -86,7 +86,6 @@ public class ReportServiceImplTest {
     public void testResolveReport(){
         Mockito.when(reportDao.get(eq(getReport1().getId()))).thenReturn(Optional.of(getReport1()));
         Mockito.when(userService.getUserById(eq(getUser4().getId()))).thenReturn(Optional.of(getUser4()));
-        Mockito.when(reviewService.deleteReviewById(eq(getReview1().getId()))).thenReturn(true);
         Mockito.when(reportDao.updateStatus(eq(getReport1().getId()),eq(getUser4().getId()),eq(true))).thenReturn(getReport1());
 
         Report report = reportService.resolveReport(getReport1().getId(),getUser4().getId());

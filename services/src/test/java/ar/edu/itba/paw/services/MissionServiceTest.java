@@ -106,8 +106,6 @@ public class MissionServiceTest {
         Mockito.when(missionDao.create(any(), any(), any(), any())).thenReturn(REPEATABLE_START_MISSION_PROGRESS);
         Mockito.when(userDao.findById(anyLong())).thenReturn(Optional.of(user));
         Mockito.when(missionDao.updateProgress(any(), any(), anyFloat())).thenReturn(Optional.of(REPEATED_MISSION_PROGRESS));
-        Mockito.when(missionDao.completeMission(any(), any())).thenReturn(Optional.of(REPEATED_MISSION_PROGRESS));
-        Mockito.when(userDao.update(anyLong(), any())).thenReturn(Optional.of(user));
 
         MissionProgress missionProgress = missionService.addMissionProgress(user.getId(), Mission.ACCEPTED_GAMES, 5f);
 
