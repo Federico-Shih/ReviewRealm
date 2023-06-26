@@ -15,7 +15,7 @@ public class UserTestModels {
         /* For static access */
     }
     private static final int USER_ID = 1;
-    private static final String USER_USERNAME = "username";
+    private static final String USER_USERNAME = "username1";
     private static final String USER_PASSWORD = "password";
     private static final String USER_EMAIL = "email";
 

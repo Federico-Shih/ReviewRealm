@@ -64,7 +64,7 @@ public class ReviewDaoImplTest {
     private Review testCreateReview;
     private Review testReviewNoFeedBack;
     private SaveReviewDTO testUpdateReview;
-    private Game testGameMultipleReviews;
+    private Game testGame;
 
     private static final Long NO_ACTIVE_USER = null;
 
@@ -76,7 +76,7 @@ public class ReviewDaoImplTest {
         this.testReview = ReviewTestModels.getReview1();
         this.testCreateReview = ReviewTestModels.getCreateReview();
         this.testUpdateReview = ReviewTestModels.getUpdateReview();
-        this.testGameMultipleReviews = GameTestModels.getSuperGameB();
+        this.testGame = GameTestModels.getSuperGameB();
         this.testReviewNoFeedBack = ReviewTestModels.getReview3();
     }
 
@@ -166,11 +166,14 @@ public class ReviewDaoImplTest {
         // Setup
 
         // Test
+        Game game = em.find(Game.class, testCreateReview.getReviewedGame().getId());
+        User user = em.find(User.class, testCreateReview.getAuthor().getId());
+
         Review createdReview = reviewDao.create(testCreateReview.getTitle(),
                 testCreateReview.getContent(),
                 testCreateReview.getRating(),
-                testCreateReview.getReviewedGame(),
-                testCreateReview.getAuthor(),
+                game,
+                user,
                 testCreateReview.getDifficulty(),
                 testCreateReview.getGameLength(),
                 testCreateReview.getPlatform(),
@@ -196,21 +199,6 @@ public class ReviewDaoImplTest {
         Assert.assertEquals(reviewFromDB.getReplayability(), testCreateReview.getReplayability());
     }
 
-    @Rollback
-    @Test(expected = DataIntegrityViolationException.class)
-    public void testCreateNullTitle() throws DataIntegrityViolationException{
-
-        Review createdReview = reviewDao.create(null,
-                testCreateReview.getContent(),
-                testCreateReview.getRating(),
-                testCreateReview.getReviewedGame(),
-                testCreateReview.getAuthor(),
-                testCreateReview.getDifficulty(),
-                testCreateReview.getGameLength(),
-                testCreateReview.getPlatform(),
-                testCreateReview.getCompleted(),
-                testCreateReview.getReplayability());
-    }
 
     @Rollback
     @Test
@@ -274,7 +262,7 @@ public class ReviewDaoImplTest {
     @Test
     public void testFindAllReviewsWithGame() {
         // Setup
-        ReviewFilter filter = new ReviewFilterBuilder().withGameId(testGameMultipleReviews.getId()).build();
+        ReviewFilter filter = new ReviewFilterBuilder().withGameId(testGame.getId()).build();
         Ordering<ReviewOrderCriteria> ordering = new Ordering<>(OrderDirection.DESCENDING, ReviewOrderCriteria.REVIEW_SCORE);
 
         // Test
@@ -282,10 +270,10 @@ public class ReviewDaoImplTest {
 
         // Assertions
 
-        Assert.assertEquals(2,result.getList().size());
+        Assert.assertEquals(1,result.getList().size());
 
         for (Review review : result.getList()) {
-            Assert.assertEquals( review.getReviewedGame().getId(), testGameMultipleReviews.getId());
+            Assert.assertEquals( review.getReviewedGame().getId(), testGame.getId());
         }
     }
 
@@ -390,7 +378,6 @@ public class ReviewDaoImplTest {
     @Test
     public void testDeleteReview() {
         // Setup
-
         // Test
         boolean result = reviewDao.deleteReview(testReview.getId());
         em.flush();

@@ -41,7 +41,7 @@ public class Review {
     @Column(name = "rating", nullable = false)
     private Integer rating;
 
-    @ManyToOne(fetch = FetchType.EAGER, optional = false, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "gameid", referencedColumnName = "id", nullable = false)
     private Game reviewedGame;
 
@@ -68,7 +68,7 @@ public class Review {
     @Column(name = "dislikes", nullable = false)
     private Long dislikes = 0L;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "review")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "review", cascade = CascadeType.ALL)
     private Set<ReviewFeedback> feedbacks = new HashSet<>();
 
     @Formula("likes - dislikes")
