@@ -82,6 +82,14 @@ public class Review {
     @Transient
     private FeedbackType feedbackType = null;
 
+    // Used to set existing reports in null
+    @PreRemove
+    private void cleanReports() {
+        for (Report report : reports) {
+            report.setReportedReview(null);
+        }
+    }
+
     protected Review() {
         // For hibernate
     }

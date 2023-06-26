@@ -66,6 +66,9 @@ public class Game implements Cloneable {
     @OneToMany(mappedBy = "reviewedGame", fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     private List<Review> reviews;
 
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "favoriteGames")
+    private List<User> favoriteUsers;
+
     @Formula(value = "case when reviewCount = 0 then 0 else ratingSum/reviewCount end")
     private Double averageRating;
 

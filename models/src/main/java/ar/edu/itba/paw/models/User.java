@@ -78,7 +78,7 @@ public class User {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "author")
     private List<Review> reviews;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(
             name = "favoritegames",
             joinColumns = @JoinColumn(name = "userId", referencedColumnName = "id"),

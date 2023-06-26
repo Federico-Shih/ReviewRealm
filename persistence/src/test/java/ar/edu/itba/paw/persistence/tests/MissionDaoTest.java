@@ -93,7 +93,7 @@ public class MissionDaoTest {
         User user = em.find(User.class, testMission.getUser().getId());
         missionDao.resetProgress(user, testMission.getMission());
         em.flush();
-        jdbcTemplate.query("SELECT * FROM mission_progress", new Object[]{}, (rs, rowNum) -> {
+        jdbcTemplate.query("SELECT * FROM mission_progress WHERE userid = ? and mission = ?", new Object[]{user.getId(), testMission.getMission().name()}, (rs, rowNum) -> {
             Assert.assertEquals(testMission.getMission().name(), rs.getString("mission"));
             Assert.assertEquals((long)user.getId(), rs.getLong("userid"));
             Assert.assertEquals(0f, rs.getFloat("progress"), 0.001);

@@ -191,6 +191,7 @@ public class GameDaoImplTest {
                 games.getAverageRating(), 0.001);
     }
 
+    @Rollback
     @Test
     public void testSetSuggestedFalse(){
         Optional<Game> game = gameDao.setSuggestedFalse(testGameSuggestedTrue.getId());
@@ -201,6 +202,7 @@ public class GameDaoImplTest {
         Assert.assertEquals(false,suggested);
     }
 
+    @Rollback
     @Test
     public void testSetSuggestedFalseNotFound(){
         Optional<Game> gameResult = gameDao.setSuggestedFalse(-1L);
@@ -208,26 +210,24 @@ public class GameDaoImplTest {
         Assert.assertFalse(gameResult.isPresent());
     }
 
-    //TODO: foreign key no action error
-//    @Test
-//    public void testDeleteGame(){
-//        boolean response = gameDao.deleteGame(testGame.getId());
-//        em.flush();
-//        Assert.assertTrue(response);
-//        Assert.assertEquals(0,JdbcTestUtils.countRowsInTableWhere(jdbcTemplate,"games",String.format("id = %d",testGame.getId())));
-//    }
+    @Rollback
+    @Test
+    public void testDeleteGame(){
+        boolean response = gameDao.deleteGame(testGame.getId());
+        em.flush();
+        Assert.assertTrue(response);
+        Assert.assertEquals(0,JdbcTestUtils.countRowsInTableWhere(jdbcTemplate,"games",String.format("id = %d",testGame.getId())));
+    }
 
-//    @Test
-//    public void testDeleteGameNotFound(){
-//        Long gameId = insertGame(1L, true, 15, 3);
-//
-//        boolean response = gameDao.deleteGame(gameId+1);
-//        em.flush();
-//        Assert.assertFalse(response);
-//        List<Game> games = jdbcTemplate.query("Select * from games", CommonRowMappers.TEST_GAME_ROW_MAPPER);
-//        Assert.assertEquals(1,games.size());
-//    }
-//
+    @Rollback
+    @Test
+    public void testDeleteGameNotFound(){
+
+        boolean response = gameDao.deleteGame(-1L);
+        em.flush();
+        Assert.assertFalse(response);
+    }
+
 
 
     @Rollback
