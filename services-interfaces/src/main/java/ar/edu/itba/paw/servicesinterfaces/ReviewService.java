@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ReviewService {
-    //
+
     Review createReview(String title,
                         String content,
                         int rating,
@@ -25,7 +25,7 @@ public interface ReviewService {
                         Platform platform,
                         Boolean completed,
                         Boolean replayable) throws ReviewAlreadyExistsException;
-    //
+
     Review updateReview(long id,
                      String title,
                      String content,
@@ -35,26 +35,26 @@ public interface ReviewService {
                      Platform platform,
                      Boolean completed,
                      Boolean replayable);
-    //
+
     Optional<Review> getReviewById(long id, Long activeUserId);
-    //
+
     Paginated<Review> getUserReviews(Page page, long userId, Long activeUserId);
-    //
+
     Paginated<Review> searchReviews(Page page, ReviewFilter filter, Ordering<ReviewOrderCriteria> ordering, Long activeUserId);
-    //
+
     Paginated<Review> getReviewsFromGame(Page page, long gameId, Long activeUserId, boolean excludeActiveUser);
-    //
+
     List<Review> getAllReviewsFromGame(long gameId, Long activeUserId);
-    //
+
     Paginated<Review> getReviewsFromFollowingByUser(long userId, Page page);
-    //
+
     Paginated<Review> getRecommendedReviewsByUser(long userId, Page page);
-    //
+
     Paginated<Review> getNewReviewsExcludingActiveUser(Page page, Long activeUserId);
-    //
+
     boolean deleteReviewById(long id);
-    //
+
     ReviewFeedback updateOrCreateReviewFeedback(long reviewId, long userId, FeedbackType feedback);
-    //
+
     Optional<Review> getReviewOfUserForGame(long userId, long gameId);
 }

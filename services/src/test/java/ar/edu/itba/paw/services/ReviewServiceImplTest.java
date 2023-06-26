@@ -4,10 +4,12 @@ import ar.edu.itba.paw.dtos.Page;
 import ar.edu.itba.paw.enums.Difficulty;
 import ar.edu.itba.paw.enums.FeedbackType;
 import ar.edu.itba.paw.enums.Platform;
+import ar.edu.itba.paw.exceptions.ReviewNotFoundException;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.persistenceinterfaces.ReviewDao;
 import ar.edu.itba.paw.servicesinterfaces.GameService;
 import ar.edu.itba.paw.servicesinterfaces.MailingService;
+import ar.edu.itba.paw.servicesinterfaces.MissionService;
 import ar.edu.itba.paw.servicesinterfaces.UserService;
 import org.junit.Assert;
 import org.junit.Test;
@@ -17,41 +19,20 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 
+import static ar.edu.itba.paw.services.utils.GameTestModels.getSuperGameA;
+import static ar.edu.itba.paw.services.utils.ReviewTestModels.*;
+import static ar.edu.itba.paw.services.utils.ReviewTestModels.getReview1;
+import static ar.edu.itba.paw.services.utils.UserTestModels.*;
 import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ReviewServiceImplTest {
-
-    private static final long REVIEWID = 23;
-
-    private static final long CURRENTUSERID = 1;
-    private static final String USERNAME = "username";
-    private static final String EMAIL = "email@email.com";
-    private static final String PASSWORD = "password";
-
-    private static final User USER = new User(1L, "InflusearchGames", "email", "password");
-    private static final User USER2 = new User(2L, "InflusearchGames", "email", "password");
-    private static final User USER3 = new User(3L, "InflusearchGames", "email", "password");
-    private static final Game GAME = new Game(3L, "Martians Attack"
-            , "", "", "", LocalDate.now(), 30, 3);
-    private static final Review REVIEW = new Review(23L, USER,
-            "", "", LocalDateTime.now(), 8, GAME, Difficulty.EASY,
-            12.2, Platform.PS, true, true, null, 0L);
-    private static final Review REVIEW2 = new Review(24L, USER2,
-            "", "", LocalDateTime.now(), 8, GAME, Difficulty.EASY,
-            12.2, Platform.PS, true, true, null, 0L);
-    private static final Review REVIEW3 = new Review(25L, USER3, "", "", LocalDateTime.now(), 8, GAME, Difficulty.EASY,
-            12.2, Platform.PS, true, true, null, 0L);
-
-    private static final Review REVIEW4 = new Review(26L, USER3, "", "", LocalDateTime.now(), 5, GAME, Difficulty.EASY,
-            12.2, Platform.PS, true, true, null, 0L);
 
     @Mock
     private ReviewDao reviewDao;
@@ -63,160 +44,163 @@ public class ReviewServiceImplTest {
     @Mock
     private MailingService mailingService;
 
+    @Mock
+    private MissionService missionService;
+
     @InjectMocks
     private ReviewServiceImpl rs;
 
     @Test
-    public void testGetReviewById() {
-        Mockito.when(reviewDao.findById(REVIEWID, null))
-                .thenReturn(Optional.of(new Review(REVIEWID, "", "", 10, GAME, USER,
-                        Difficulty.EASY, 30.2, Platform.PS, true, true)));
+    public void testGetNonexistentReview() {
+        Mockito.when(reviewDao.findById(anyLong(),anyLong())).thenReturn(Optional.empty());
 
-        Optional<Review> optReview = rs.getReviewById(REVIEWID, null);
-
-        Assert.assertTrue(optReview.isPresent());
-        long id = optReview.get().getId();
-        Assert.assertEquals(REVIEWID, id);
-    }
-
-    @Test
-    public void testGetUnexistentReview() {
-        Mockito.when(reviewDao.findById(REVIEWID,CURRENTUSERID)).thenReturn(Optional.empty());
-        Optional<Review> optReview = rs.getReviewById(REVIEWID,CURRENTUSERID);
-        Assert.assertFalse(optReview.isPresent());
-    }
-    @Test
-    public void testGetReviewByIdNotFound() {
-        Mockito.when(reviewDao.findById(REVIEWID,null))
-                .thenReturn(Optional.empty());
-
-        Optional<Review> optReview = rs.getReviewById(REVIEWID,null);
+        Optional<Review> optReview = rs.getReviewById(getReview1().getId(),getUser1().getId());
 
         Assert.assertFalse(optReview.isPresent());
     }
 
     @Test
     public void testCreateReview() {
-        Mockito.when(reviewDao.create("title", "content", 8, GAME, USER, Difficulty.EASY, 12.2, Platform.PS, true, true))
-                .thenReturn(new Review(REVIEWID, USER,
-                        "", "", LocalDateTime.now(), 8, GAME, Difficulty.EASY,
-                        12.2, Platform.PS, true, true, null, 0L));
-        Mockito.when(userService.getFollowers(anyLong())).thenReturn(Arrays.asList(USER2, USER3));
-        Mockito.when(userService.isNotificationEnabled(eq(USER2.getId()), any())).thenReturn(true);
-        Mockito.when(userService.isNotificationEnabled(eq(USER3.getId()), any())).thenReturn(false);
+        Mockito.when(reviewDao.create(any(), any(), anyInt(), any(), any(), any(), anyDouble(), any(), anyBoolean(), anyBoolean())).thenReturn(getReview1());
+        Mockito.when(userService.getFollowers(anyLong())).thenReturn(Arrays.asList(getUser2(), getUser3()));
+        Mockito.when(userService.isNotificationEnabled(eq(getUser2().getId()), any())).thenReturn(true);
+        Mockito.when(userService.isNotificationEnabled(eq(getUser3().getId()), any())).thenReturn(false);
+        Mockito.when(gameService.getGameById(anyLong())).thenReturn(Optional.of(getSuperGameA()));
+        Mockito.when(userService.getUserById(anyLong())).thenReturn(Optional.of(getUser1()));
+        Mockito.when(reviewDao.findAll(any(), any(), any(), any())).thenReturn(new Paginated<>(1,1,1, new ArrayList<>()));
 
-        Review review = rs.createReview("title", "content", 8, USER.getId(), GAME.getId(), Difficulty.EASY, 12.2, Platform.PS, true, true);
+        Review review = rs.createReview(
+                getReview1().getTitle(),
+                getReview1().getContent(),
+                getReview1().getRating(),
+                getReview1().getId(),
+                getReview1().getReviewedGame().getId(),
+                getReview1().getDifficulty(),
+                getReview1().getGameLength(),
+                getReview1().getPlatform(),
+                getReview1().getCompleted(),
+                getReview1().getReplayability());
+
         Assert.assertNotNull(review);
-        Assert.assertEquals(USER, review.getAuthor());
-        Assert.assertEquals(GAME, review.getReviewedGame());
-        Assert.assertEquals(REVIEWID, (long) review.getId());
+        Assert.assertEquals(getUser1(), review.getAuthor());
+        Assert.assertEquals(getSuperGameA(), review.getReviewedGame());
+        Assert.assertEquals(getReview1().getId(), review.getId());
     }
 
-    @Test
+    @Test(expected = ReviewNotFoundException.class)
     public void testUpdateReviewDoesntExist() {
-        Mockito.when(reviewDao.findById(eq(REVIEWID), any()))
-                .thenReturn(Optional.empty());
-        Review reviewResult = rs.updateReview(REVIEWID, "title", "content", 8, Difficulty.EASY, 12.2, Platform.PS, true, true);
-//        Assert.assertEquals(, 0);
+        Mockito.when(reviewDao.findById(eq(getReview1().getId()), any())).thenReturn(Optional.empty());
+
+        Review reviewResult = rs.updateReview(
+                getReview1().getId(),
+                getReview1().getTitle(),
+                getReview1().getContent(),
+                getReview1().getRating(),
+                getReview1().getDifficulty(),
+                getReview1().getGameLength(),
+                getReview1().getPlatform(),
+                getReview1().getCompleted(),
+                getReview1().getReplayability());
     }
 
     @Test
     public void testUpdateReview() {
-        Mockito.when(reviewDao.findById(eq(REVIEWID), any())).thenReturn(Optional.of(new Review(REVIEWID, USER,
-                "", "", LocalDateTime.now(), 8, GAME, Difficulty.EASY,
-                12.2, Platform.PS, true, true, null, 0L)));
-//        Mockito.when(reviewDao.update(eq(REVIEWID), any())).thenReturn();
-        Review res = rs.updateReview(REVIEWID, "title", "content", 10, Difficulty.EASY, 12.2, Platform.PS, true, true);
-//        Assert.assertEquals(res, 1);
+        Mockito.when(reviewDao.findById(eq(getReview1().getId()), any())).thenReturn(Optional.of(getReview1()));
+        Mockito.when(reviewDao.update(eq(getReview1().getId()), any())).thenReturn(Optional.of(getReview1()));
+
+        Review reviewResult = rs.updateReview(
+                getReview1().getId(),
+                getReview1().getTitle(),
+                getReview1().getContent(),
+                getReview1().getRating(),
+                getReview1().getDifficulty(),
+                getReview1().getGameLength(),
+                getReview1().getPlatform(),
+                getReview1().getCompleted(),
+                getReview1().getReplayability());
+
+        Assert.assertEquals(getReview1().getId(), reviewResult.getId());
+        Assert.assertEquals(getReview1().getContent(), reviewResult.getContent());
+        Assert.assertEquals(getReview1().getRating(), reviewResult.getRating());
+        Assert.assertEquals(getReview1().getPlatform(), reviewResult.getPlatform());
+        Assert.assertEquals(getReview1().getReplayability(), reviewResult.getReplayability());
     }
 
-    // todo fix
-//    @Test
-//    public void testUpdateReviewWasFavorite() {
-//        Mockito.when(reviewDao.findById(eq(REVIEWID), any())).thenReturn(Optional.of(new Review(REVIEWID, USER,
-//                "", "", LocalDateTime.now(), 8, GAME, Difficulty.EASY,
-//                12.2, Platform.PS, true, true, null, 0L)));
-//
-//        Mockito.when(reviewDao.update(eq(REVIEWID), any())).thenReturn(1);
-//        int res = rs.updateReview(REVIEWID, "title", "content", 5, Difficulty.EASY, 12.2, Platform.PS, true, true);
-//        Assert.assertEquals(res, 1);
-//    }
 
     @Test
     public void testGetUserReviews() {
         Mockito.when(reviewDao.findAll(any(), any(), any(), any()))
                 .thenReturn(new Paginated<>(1, 1, 1, new ArrayList<>()));
 
-        Paginated<Review> reviews = rs.getUserReviews(Page.with(1, 1), 1L, null);
-        Assert.assertEquals(reviews.getTotalPages(), 1);
-        Assert.assertEquals(reviews.getList().size(), 0);
+        Paginated<Review> reviews = rs.getUserReviews(Page.with(1, 1), getUser1().getId(), null);
+        Assert.assertEquals(1, reviews.getTotalPages());
+        Assert.assertEquals(0, reviews.getList().size());
     }
 
     @Test
     public void testGetFollowingReviews() {
+        Review r1 = getReview1();
+        Review r2 = getReview2();
+        Review r3 = getReview3();
+        Mockito.when(userService.getFollowing(anyLong())).thenReturn(Arrays.asList(getUser2(), getUser3()));
         Mockito.when(reviewDao.findAll(any(), any(), any(), any()))
-                .thenReturn(new Paginated<>(1, 1, 1, new ArrayList<>()));
-        Mockito.when(userService.getFollowing(anyLong())).thenReturn(Arrays.asList(USER2, USER3));
-        Mockito.when(reviewDao.findAll(any(), any(), any(), any()))
-                .thenReturn(new Paginated<>(1, 1, 1, Arrays.asList(REVIEW, REVIEW2, REVIEW3)));
-        Paginated<Review> reviews = rs.getReviewsFromFollowingByUser(1L, Page.with(1, 10));
-        Assert.assertTrue(reviews.getList().contains(REVIEW));
-        Assert.assertTrue(reviews.getList().contains(REVIEW2));
-        Assert.assertTrue(reviews.getList().contains(REVIEW3));
+                .thenReturn(new Paginated<>(1, 3, 1, Arrays.asList(r1, r2, r3)));
+
+        Paginated<Review> reviews = rs.getReviewsFromFollowingByUser(getUser1().getId(), Page.with(1, 10));
+        Assert.assertEquals(3, reviews.getList().size());
+        Assert.assertTrue(reviews.getList().contains(r1));
+        Assert.assertTrue(reviews.getList().contains(r2));
+        Assert.assertTrue(reviews.getList().contains(r3));
     }
 
     @Test
     public void deleteReviewTestNotFound() {
-        Mockito.when(reviewDao.findById(eq(REVIEWID), any())).thenReturn(Optional.empty());
-        Assert.assertFalse(rs.deleteReviewById(REVIEWID));
+        Mockito.when(reviewDao.findById(eq(getReview1().getId()), any())).thenReturn(Optional.empty());
+        Assert.assertFalse(rs.deleteReviewById(getReview1().getId()));
     }
 
     @Test
     public void deleteReviewSuccessTest() {
-        Mockito.when(reviewDao.findById(eq(REVIEWID), any())).thenReturn(Optional.of(REVIEW));
-        Mockito.when(reviewDao.deleteReview(eq(REVIEWID))).thenReturn(true);
-        Mockito.when(userService.isNotificationEnabled(eq(REVIEW.getAuthor().getId()), any())).thenReturn(true);
-        boolean deleted = rs.deleteReviewById(REVIEWID);
+        Review r1 = getReview1();
+        Mockito.when(reviewDao.findById(eq(r1.getId()), any())).thenReturn(Optional.of(r1));
+        Mockito.when(reviewDao.deleteReview(eq(r1.getId()))).thenReturn(true);
+        Mockito.when(userService.isNotificationEnabled(eq(r1.getAuthor().getId()), any())).thenReturn(true);
+        boolean deleted = rs.deleteReviewById(r1.getId());
         Assert.assertTrue(deleted);
     }
 
     @Test
-    public void deleteReviewSuccessTestWithoutFavoriteGameDeletion() {
-        Mockito.when(reviewDao.findById(eq(REVIEW4.getId()), any())).thenReturn(Optional.of(REVIEW4));
-        Mockito.when(reviewDao.deleteReview(eq(REVIEW4.getId()))).thenReturn(true);
-        Mockito.when(userService.isNotificationEnabled(eq(REVIEW4.getAuthor().getId()), any())).thenReturn(true);
-        boolean deleted = rs.deleteReviewById(REVIEW4.getId());
-        Assert.assertTrue(deleted);
+    public void feedbackUpdateNoChangeTest() {
+        Mockito.when(reviewDao.getReviewFeedback(eq(getReview1().getId()), eq(getUser1().getId()))).thenReturn(Optional.empty());
+        Mockito.when(userService.getUserById(anyLong())).thenReturn(Optional.of(getUser1()));
+        Mockito.when(reviewDao.findById(anyLong(), nullable(Long.class))).thenReturn(Optional.of(getReview1()));
+
+        ReviewFeedback result = rs.updateOrCreateReviewFeedback(getReview1().getId(), getUser1().getId(), null);
+        Assert.assertNull(result);
     }
 
-//    @Test
-//    public void feedbackUpdateNoChangeTest() {
-//        Mockito.when(reviewDao.getReviewFeedback(eq(REVIEWID), eq(USER.getId()))).thenReturn(null);
-//        boolean result = rs.updateOrCreateReviewFeedback(REVIEW, USER, null);
-//        Assert.assertFalse(result);
-//    }
+    @Test
+    public void feedbackUpdateRemoveFeedbackTest() {
+        Mockito.when(userService.getUserById(anyLong())).thenReturn(Optional.of(getUser1()));
+        Mockito.when(reviewDao.findById(anyLong(), nullable(Long.class))).thenReturn(Optional.of(getReview1()));
+        Mockito.when(reviewDao.getReviewFeedback(eq(getReview1().getId()), eq(getUser1().getId()))).thenReturn(Optional.of(FeedbackType.LIKE));
+        Mockito.when(reviewDao.editReviewFeedback(eq(getReview1().getId()), eq(getUser1().getId()), eq(FeedbackType.LIKE), eq(FeedbackType.DISLIKE))).thenReturn(Optional.of(new ReviewFeedback(getUser1(), getReview1(), FeedbackType.DISLIKE)));
 
-//    @Test
-//    public void feedbackUpdateRemoveFeedbackTest() {
-//        Mockito.when(reviewDao.getReviewFeedback(eq(REVIEWID), eq(USER.getId()))).thenReturn(FeedbackType.LIKE);
-//        Mockito.when(reviewDao.deleteReviewFeedback(eq(REVIEWID), eq(USER.getId()), eq(FeedbackType.LIKE))).thenReturn(true);
-//        boolean result = rs.updateOrCreateReviewFeedback(REVIEW, USER, FeedbackType.LIKE);
-//        Assert.assertTrue(result);
-//    }
+        ReviewFeedback result = rs.updateOrCreateReviewFeedback(getReview1().getId(), getUser1().getId(), FeedbackType.DISLIKE);
+        Assert.assertNotNull(result);
+        Assert.assertEquals(FeedbackType.DISLIKE, result.getFeedback());
+    }
 
-//    @Test
-//    public void feedbackUpdateNoPreviousFeedback() {
-//        Mockito.when(reviewDao.getReviewFeedback(eq(REVIEWID), eq(USER.getId()))).thenReturn(null);
-//        Mockito.when(reviewDao.addReviewFeedback(eq(REVIEWID), eq(USER.getId()), eq(FeedbackType.LIKE))).thenReturn(true);
-//        boolean result = rs.updateOrCreateReviewFeedback(REVIEW, USER, FeedbackType.LIKE);
-//        Assert.assertTrue(result);
-//    }
+    @Test
+    public void feedbackUpdateNoPreviousFeedback() {
+        Mockito.when(userService.getUserById(anyLong())).thenReturn(Optional.of(getUser1()));
+        Mockito.when(reviewDao.findById(anyLong(), nullable(Long.class))).thenReturn(Optional.of(getReview1()));
+        Mockito.when(reviewDao.getReviewFeedback(eq(getReview1().getId()), eq(getUser1().getId()))).thenReturn(Optional.empty());
+        Mockito.when(reviewDao.addReviewFeedback(eq(getReview1().getId()), eq(getUser1().getId()), eq(FeedbackType.LIKE))).thenReturn(Optional.of(new ReviewFeedback(getUser1(), getReview1(), FeedbackType.LIKE)));
 
-//    @Test
-//    public void feedbackUpdateChangeFeedbackTest() {
-//        Mockito.when(reviewDao.getReviewFeedback(eq(REVIEWID), eq(USER.getId()))).thenReturn(FeedbackType.DISLIKE);
-//        Mockito.when(reviewDao.editReviewFeedback(eq(REVIEWID), eq(USER.getId()), eq(FeedbackType.DISLIKE), eq(FeedbackType.LIKE))).thenReturn(true);
-//        boolean result = rs.updateOrCreateReviewFeedback(REVIEW, USER, FeedbackType.LIKE);
-//        Assert.assertTrue(result);
-//    }
+        ReviewFeedback result = rs.updateOrCreateReviewFeedback(getReview1().getId(), getUser1().getId(), FeedbackType.LIKE);
+        Assert.assertNotNull(result);
+        Assert.assertEquals(FeedbackType.LIKE, result.getFeedback());
+    }
+
 }
