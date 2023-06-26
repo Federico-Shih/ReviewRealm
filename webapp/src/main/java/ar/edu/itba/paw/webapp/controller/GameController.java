@@ -189,7 +189,6 @@ public class GameController{
         try {
             gs.deleteGame(gameId);
         } catch (GameNotFoundException e) {
-            // TODO: Poner mensaje de error
             return new ModelAndView("redirect:/game/list");
         }
         return new ModelAndView("redirect:/game/list" + "?deleted=true");

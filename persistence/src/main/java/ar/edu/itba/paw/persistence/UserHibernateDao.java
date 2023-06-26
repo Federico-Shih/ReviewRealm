@@ -1,20 +1,17 @@
 package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.dtos.Page;
-import ar.edu.itba.paw.dtos.filtering.ReviewFilter;
 import ar.edu.itba.paw.dtos.filtering.UserFilter;
 import ar.edu.itba.paw.dtos.ordering.Ordering;
-import ar.edu.itba.paw.dtos.ordering.ReviewOrderCriteria;
 import ar.edu.itba.paw.dtos.ordering.UserOrderCriteria;
 import ar.edu.itba.paw.dtos.saving.SaveUserDTO;
-import ar.edu.itba.paw.enums.Difficulty;
 import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.enums.NotificationType;
-import ar.edu.itba.paw.enums.Platform;
 import ar.edu.itba.paw.models.FollowerFollowingCount;
 import ar.edu.itba.paw.models.Game;
 import ar.edu.itba.paw.models.Paginated;
 import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.persistence.helpers.DaoUtils;
 import ar.edu.itba.paw.persistence.helpers.QueryBuilder;
 import ar.edu.itba.paw.persistenceinterfaces.PaginationDao;
 import ar.edu.itba.paw.persistenceinterfaces.UserDao;
@@ -129,8 +126,12 @@ public class UserHibernateDao implements UserDao, PaginationDao<UserFilter> {
         }
 
         QueryBuilder queryBuilder = getQueryBuilderFromFilter(userFilter);
-        Query nativeQuery = em.createNativeQuery("SELECT mainuserid FROM ("+ "SELECT distinct u.id as mainuserid,u.xp,u.reputation, coalesce((SELECT count(distinct f.userid) FROM followers as f WHERE f.following=u.id GROUP BY f.following), 0) as follower_count FROM " + toTableString(userFilter) + queryBuilder.toQuery()  + ") as users" + toOrderString(ordering, true));
-        prepareParametersForNativeQuery(queryBuilder, nativeQuery);
+        Query nativeQuery = em.createNativeQuery(
+                "SELECT mainuserid FROM " +
+                        "("+
+                        "SELECT distinct u.id as mainuserid,u.xp,u.reputation, coalesce((SELECT count(distinct f.userid) FROM followers as f WHERE f.following=u.id GROUP BY f.following), 0) as follower_count FROM " + toTableString(userFilter) + queryBuilder.toQuery()  + ") as users"
+                        + DaoUtils.toOrderString(ordering, true));
+        DaoUtils.setNativeParameters(queryBuilder, nativeQuery);
         nativeQuery.setMaxResults(page.getPageSize());
         nativeQuery.setFirstResult(page.getOffset().intValue());
 
@@ -141,7 +142,7 @@ public class UserHibernateDao implements UserDao, PaginationDao<UserFilter> {
             return new Paginated<>(page.getPageNumber(), page.getPageSize(), pages, new ArrayList<>());
         }
 
-        final TypedQuery<User> userQuery = em.createQuery("from User where id IN :ids"+ toOrderString(ordering, false), User.class);
+        final TypedQuery<User> userQuery = em.createQuery("from User where id IN :ids"+ DaoUtils.toOrderString(ordering, false), User.class);
         userQuery.setParameter("ids", idlist);
 
         return new Paginated<>(page.getPageNumber(), page.getPageSize(), pages, userQuery.getResultList());
@@ -299,31 +300,5 @@ public class UserHibernateDao implements UserDao, PaginationDao<UserFilter> {
             str.append("JOIN reviews as r ON u.id = r.authorid ");
         }
         return str.toString();
-    }
-
-    //TODO: estos dos métodos están repetidos en User, Game y ReviewDao
-
-    private String toOrderString(Ordering<UserOrderCriteria> order, boolean isNative) {
-        if (order == null || order.getOrderCriteria() == null) {
-            return "";
-        }
-        StringBuilder orderQuery = new StringBuilder();
-        orderQuery.append(" ORDER BY ");
-        orderQuery.append(isNative ? order.getOrderCriteria().getTableName() : order.getOrderCriteria().getAltName());
-        if (order.getOrderDirection() != null) {
-            orderQuery.append(" ");
-            orderQuery.append(order.getOrderDirection().getAltName());
-            orderQuery.append(" ");
-            orderQuery.append("NULLS LAST");
-        }
-        return orderQuery.toString();
-    }
-
-    private void prepareParametersForNativeQuery(QueryBuilder queryBuilder, Query nativeQuery) {
-        int length = queryBuilder.toArguments().size();
-        ArrayList<Object> array = new ArrayList<>(queryBuilder.toArguments());
-        for (int i = 0; i < length; i += 1) {
-            nativeQuery.setParameter(i + 1, array.get(i));
-        }
     }
 }

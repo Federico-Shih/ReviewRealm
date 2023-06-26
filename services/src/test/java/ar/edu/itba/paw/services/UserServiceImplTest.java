@@ -6,6 +6,7 @@ import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.persistenceinterfaces.UserDao;
 import ar.edu.itba.paw.persistenceinterfaces.ValidationTokenDao;
 import ar.edu.itba.paw.servicesinterfaces.MailingService;
+import ar.edu.itba.paw.servicesinterfaces.MissionService;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -52,6 +53,9 @@ public class UserServiceImplTest {
 
     @Mock
     private MailingService mailingService;
+
+    @Mock
+    private MissionService missionService;
 
     @InjectMocks
     private UserServiceImpl us;
@@ -168,7 +172,7 @@ public class UserServiceImplTest {
 
     @Test
     public void followUserTest() {
-        Mockito.when(userDao.createFollow(ID, getUser2().getId())).thenReturn(Optional.of(USER));
+        Mockito.when(userDao.createFollow(anyLong(), anyLong())).thenReturn(Optional.of(USER));
 
         User ans = us.followUserById(ID, getUser2().getId());
 

@@ -81,7 +81,7 @@ public class ReportServiceImplTest {
 
         reportService.createReport(getUser2().getId(),getReview1().getId(),ReportReason.SPAM);
     }
-    //TODO:Check ok
+
     @Test
     public void testResolveReport(){
         Mockito.when(reportDao.get(eq(getReport1().getId()))).thenReturn(Optional.of(getReport1()));

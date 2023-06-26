@@ -6,6 +6,7 @@ import ar.edu.itba.paw.dtos.ordering.GameOrderCriteria;
 import ar.edu.itba.paw.dtos.ordering.Ordering;
 import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.models.*;
+import ar.edu.itba.paw.persistence.helpers.DaoUtils;
 import ar.edu.itba.paw.persistence.helpers.QueryBuilder;
 import ar.edu.itba.paw.persistenceinterfaces.GameDao;
 import ar.edu.itba.paw.persistenceinterfaces.PaginationDao;
@@ -71,15 +72,16 @@ public class GameHibernateDao implements GameDao, PaginationDao<GameFilter> {
                         toTableString(filter) +
                         queryBuilder.toQuery() +
                         ") as games" +
-                        toOrderString(ordering));
-        prepareParametersForNativeQuery(queryBuilder, nativeQuery);
+                        DaoUtils.toOrderString(ordering, true));
+        DaoUtils.setNativeParameters(queryBuilder, nativeQuery);
+
         nativeQuery.setMaxResults(page.getPageSize());
         nativeQuery.setFirstResult(page.getOffset().intValue());
 
         @SuppressWarnings("unchecked")
         final List<Long> idlist = (List<Long>) nativeQuery.getResultList().stream().map(n -> ((Number) n).longValue()).collect(Collectors.toList());
 
-        final TypedQuery<Game> query = em.createQuery("from Game WHERE id IN :ids " + toOrderString(ordering), Game.class);
+        final TypedQuery<Game> query = em.createQuery("from Game WHERE id IN :ids " + DaoUtils.toOrderString(ordering, true), Game.class);
         query.setParameter("ids", idlist);
         return new Paginated<>(page.getPageNumber(), page.getPageSize(), totalPages, query.getResultList());
     }
@@ -205,35 +207,12 @@ public class GameHibernateDao implements GameDao, PaginationDao<GameFilter> {
         return str.toString();
     }
 
-    private String toOrderString(Ordering<GameOrderCriteria> order) {
-        if (order == null || order.getOrderCriteria() == null) {
-            return "";
-        }
-        StringBuilder str = new StringBuilder();
-        str.append(" ORDER BY ");
-        str.append(order.getOrderCriteria().getAltName());
-        if (order.getOrderDirection() != null) {
-            str.append(" ");
-            str.append(order.getOrderDirection().getAltName());
-        }
-        str.append(" NULLS LAST ");
-        return str.toString();
-    }
-
     @Override
     public Long count(GameFilter filter) {
         QueryBuilder queryBuilder = getQueryBuilderFromFilter(filter);
         Query nativeQuery = em.createNativeQuery("SELECT count(distinct g.id) FROM " + toTableString(filter) + queryBuilder.toQuery());
-        prepareParametersForNativeQuery(queryBuilder, nativeQuery);
+        DaoUtils.setNativeParameters(queryBuilder, nativeQuery);
 
         return ((Number) nativeQuery.getSingleResult()).longValue();
-    }
-
-    private void prepareParametersForNativeQuery(QueryBuilder queryBuilder, Query nativeQuery) {
-        int length = queryBuilder.toArguments().size();
-        ArrayList<Object> array = new ArrayList<>(queryBuilder.toArguments());
-        for (int i = 0; i < length; i += 1) {
-            nativeQuery.setParameter(i + 1, array.get(i));
-        }
     }
 }
