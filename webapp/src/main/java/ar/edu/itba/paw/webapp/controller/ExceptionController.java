@@ -13,11 +13,9 @@ import java.nio.file.AccessDeniedException;
 @Controller
 public class ExceptionController {
 
-    private final UserService us;
-
     @Autowired
-    public ExceptionController(UserService us) {
-        this.us = us;
+    public ExceptionController() {
+
     }
 
     @ResponseStatus(HttpStatus.NOT_FOUND)

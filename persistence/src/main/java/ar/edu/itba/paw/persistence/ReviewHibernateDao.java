@@ -10,6 +10,7 @@ import ar.edu.itba.paw.enums.FeedbackType;
 import ar.edu.itba.paw.enums.Platform;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.models.keys.ReviewFeedbackId;
+import ar.edu.itba.paw.persistence.helpers.DaoUtils;
 import ar.edu.itba.paw.persistence.helpers.QueryBuilder;
 import ar.edu.itba.paw.persistenceinterfaces.PaginationDao;
 import ar.edu.itba.paw.persistenceinterfaces.ReviewDao;
@@ -57,7 +58,6 @@ public class ReviewHibernateDao implements ReviewDao, PaginationDao<ReviewFilter
         }
         return Optional.ofNullable(review);
     }
-
 
     @Override
     public Optional<Review> update(long id, SaveReviewDTO reviewDTO) {
@@ -132,15 +132,20 @@ public class ReviewHibernateDao implements ReviewDao, PaginationDao<ReviewFilter
             return new Paginated<>(pagination.getPageNumber(), pagination.getPageSize(), totalPages, new ArrayList<>());
         }
         QueryBuilder queryBuilder = getQueryBuilderFromFilter(filter);
-        Query nativeQuery = em.createNativeQuery("SELECT reviewid FROM ("+ "SELECT distinct r.id as reviewid, r.createddate, r.rating, r.likes + r.dislikes as controversial, r.likes - r.dislikes as popularity FROM " + toTableString(filter) + queryBuilder.toQuery() + ") as review"+ toOrderString(ordering, true));
-        prepareParametersForNativeQuery(queryBuilder, nativeQuery);
+        Query nativeQuery = em.createNativeQuery(
+                "SELECT reviewid FROM ("+ "SELECT distinct r.id as reviewid, r.createddate, r.rating, r.likes + r.dislikes as controversial, r.likes - r.dislikes as popularity FROM "
+                        + toTableString(filter)
+                        + queryBuilder.toQuery() + ") as review"
+                        + DaoUtils.toOrderString(ordering, true));
+
+        DaoUtils.setNativeParameters(queryBuilder, nativeQuery);
         nativeQuery.setMaxResults(pagination.getPageSize());
         nativeQuery.setFirstResult(pagination.getOffset().intValue());
 
         @SuppressWarnings("unchecked")
-        final List<Long> idlist = (List<Long>) nativeQuery.getResultList().stream().map(n -> (Long)((Number) n).longValue()).collect(Collectors.toList());
+        final List<Long> idlist = (List<Long>) nativeQuery.getResultList().stream().map(n -> ((Number) n).longValue()).collect(Collectors.toList());
 
-        final TypedQuery<Review> query = em.createQuery("from Review WHERE id IN :ids " + toOrderString(ordering, false), Review.class);
+        final TypedQuery<Review> query = em.createQuery("from Review WHERE id IN :ids " + DaoUtils.toOrderString(ordering, false), Review.class);
         query.setParameter("ids", idlist);
         User currentUser = em.find(User.class, activeUserId != null ? activeUserId : -1);
         List<Review> reviewList = query.getResultList();
@@ -163,19 +168,12 @@ public class ReviewHibernateDao implements ReviewDao, PaginationDao<ReviewFilter
         }
         return findAll(page, filter, ordering, activeUserId).getList();
     }
-    private void prepareParametersForNativeQuery(QueryBuilder queryBuilder, Query nativeQuery) {
-        int length = queryBuilder.toArguments().size();
-        ArrayList<Object> array = new ArrayList<>(queryBuilder.toArguments());
-        for (int i = 0; i < length; i += 1) {
-            nativeQuery.setParameter(i + 1, array.get(i));
-        }
-    }
 
     @Override
     public Long count(ReviewFilter filter) {
         QueryBuilder queryBuilder = getQueryBuilderFromFilter(filter);
         Query nativeQuery = em.createNativeQuery("SELECT count(distinct r.id) FROM " + toTableString(filter) + queryBuilder.toQuery());
-        prepareParametersForNativeQuery(queryBuilder, nativeQuery);
+        DaoUtils.setNativeParameters(queryBuilder, nativeQuery);
 
         return ((Number)nativeQuery.getSingleResult()).longValue();
     }
@@ -257,19 +255,5 @@ public class ReviewHibernateDao implements ReviewDao, PaginationDao<ReviewFilter
             str.append("JOIN genreforusers as ap ON ap.userid = r.authorid ");
         }
         return str.toString();
-    }
-
-    private String toOrderString(Ordering<ReviewOrderCriteria> order, boolean isNative) {
-        if (order == null || order.getOrderCriteria() == null) {
-            return "";
-        }
-        StringBuilder orderQuery = new StringBuilder();
-        orderQuery.append(" ORDER BY ");
-        orderQuery.append(isNative ? order.getOrderCriteria().getTableName() : order.getOrderCriteria().getAltName());
-        if (order.getOrderDirection() != null) {
-            orderQuery.append(" ");
-            orderQuery.append(order.getOrderDirection().getAltName());
-        }
-        return orderQuery.toString();
     }
 }

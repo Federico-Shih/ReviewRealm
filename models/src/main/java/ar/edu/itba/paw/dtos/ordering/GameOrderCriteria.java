@@ -15,7 +15,13 @@ public enum GameOrderCriteria implements OrderCriteria {
         return value;
     }
 
+    @Override
     public String getAltName() {
+        return altName;
+    }
+
+    @Override
+    public String getTableName() {
         return altName;
     }
 

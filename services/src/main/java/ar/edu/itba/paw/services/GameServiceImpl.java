@@ -71,7 +71,6 @@ public class GameServiceImpl implements GameService {
         Game toReturn = gameDao.create(gameDTO.getName(), gameDTO.getDescription(), gameDTO.getDeveloper(), gameDTO.getPublisher(), img.getId(), genreList, gameDTO.getReleaseDate(), !isModerator, user);
         if(!isModerator) {
             mailingService.sendSuggestionInReviewEmail(toReturn, user);
-            //TODO: la misión RECOMMEND_GAMES es para todos o sólo para no moderadores?
             missionService.addMissionProgress(user.getId(), Mission.RECOMMEND_GAMES, 1f);
         }
         return (isModerator) ? Optional.of(toReturn) : Optional.empty();
