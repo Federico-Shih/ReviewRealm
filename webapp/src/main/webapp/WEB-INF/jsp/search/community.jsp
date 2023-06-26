@@ -35,6 +35,13 @@
             }
         });
     </script>
+    <style>
+        .search-size {
+            min-width: 500px;
+            width: 60%;
+            margin-top: 20px;
+        }
+    </style>
 </head>
 
 <body class="background has-background-black">
@@ -48,8 +55,8 @@
 
     <div class="f-column">
         <form action="${searchUsers}" id="community-form">
-            <div class="full-width row">
-                <div class="col l6 m4 s12">
+            <div class="search-size row">
+                <div class="col s12">
                     <div class="f-row">
                         <input name="search" class="z-depth-1-half search-field" type="search" value="${userSearch}"
                                placeholder="<spring:message code="community.user.search.placeholder"/>">
@@ -58,7 +65,7 @@
                         </button>
                     </div>
                 </div>
-                <div class="col row m8 l6 s12 wide-selector">
+                <div class="col s12 wide-selector">
                     <div class="col s10 f-row f-jc-sbetween">
                         <div class="f-row f-gap-2 f-jc-start f-ai-center">
                             <span class="no-wrap"><spring:message code="order.by"/></span>
