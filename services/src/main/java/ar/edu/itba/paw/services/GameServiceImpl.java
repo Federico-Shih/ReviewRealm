@@ -232,32 +232,4 @@ public class GameServiceImpl implements GameService {
         missionService.addMissionProgress(approvingUserId, Mission.MANAGE_GAME_SUBMISSIONS, 1f);
         return deleted;
     }
-
-    @Transactional(readOnly = true)
-    @Override
-    public List<Game> getFavoriteGamesFromUser(long userId) {
-        return gameDao.getFavoriteGamesFromUser(userId).orElseThrow(UserNotFoundException::new);
-    }
-
-    @Transactional(readOnly = true)
-    @Override
-    public List<Game> getPossibleFavGamesFromUser(long userId) {
-        if(!userService.getUserById(userId).isPresent())
-            throw new UserNotFoundException();
-        return gameDao.getFavoriteGamesCandidates(userId, 8);
-    }
-
-    @Override
-    public boolean deleteFavoriteGame(long userId, long gameId) {
-        LOGGER.info("Possibly deleting gameId: {} from favorite games, for user {}", gameId, userId);
-        return gameDao.deleteFavoriteGameForUser(userId, gameId);
-    }
-
-    @Transactional
-    @Override
-    public User setFavoriteGames(long userId, List<Long> gameIds) {
-        //TODO: mover en el dao tambien
-        return gameDao.replaceAllFavoriteGames(userId, gameIds==null? new ArrayList<>(): gameIds).orElseThrow(UserNotFoundException::new);
-    }
-
 }

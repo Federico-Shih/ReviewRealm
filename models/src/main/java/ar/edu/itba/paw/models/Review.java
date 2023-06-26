@@ -68,7 +68,7 @@ public class Review {
     @Column(name = "dislikes", nullable = false)
     private Long dislikes = 0L;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "review")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "review", cascade = CascadeType.ALL)
     private Set<ReviewFeedback> feedbacks = new HashSet<>();
 
     @Formula("likes - dislikes")
@@ -81,6 +81,14 @@ public class Review {
     private List<Report> reports;
     @Transient
     private FeedbackType feedbackType = null;
+
+    // Used to set existing reports in null
+    @PreRemove
+    private void cleanReports() {
+        for (Report report : reports) {
+            report.setReportedReview(null);
+        }
+    }
 
     protected Review() {
         // For hibernate

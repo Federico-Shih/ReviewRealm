@@ -17,10 +17,18 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.HashSet;
 import java.util.Optional;
 
-import static org.mockito.ArgumentMatchers.any;
+import static ar.edu.itba.paw.services.utils.UserTestModels.getUser1;
+import static org.mockito.ArgumentMatchers.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MissionServiceTest {
+
+    private final static MissionProgress STARTING_MISSION_PROGRESS = new MissionProgress(getUser1(), Mission.RECOMMEND_GAMES, 0f, null, 0);
+    private final static MissionProgress ADVANCED_MISSION_PROGRESS = new MissionProgress(getUser1(), Mission.RECOMMEND_GAMES, 1f, null, 0);
+    private final static MissionProgress MORE_ADVANCED_MISSION_PROGRESS = new MissionProgress(getUser1(), Mission.RECOMMEND_GAMES, 3f, null, 0);
+    private final static MissionProgress COMPLETED_MISSION_PROGRESS = new MissionProgress(getUser1(), Mission.RECOMMEND_GAMES, 5f, null, 0);
+    private final static MissionProgress REPEATABLE_START_MISSION_PROGRESS = new MissionProgress(getUser1(), Mission.ACCEPTED_GAMES, 0f, null, 0);
+    private final static MissionProgress REPEATED_MISSION_PROGRESS = new MissionProgress(getUser1(), Mission.ACCEPTED_GAMES, 0f, null, 5);
 
     @Mock
     private MissionDao missionDao;
@@ -33,49 +41,77 @@ public class MissionServiceTest {
 
     @Test
     public void testNewMissionProgress() {
-        Mockito.when(missionDao.findById(any(), any())).thenReturn(Optional.empty());
-        User user = new User("", "", "");
-        Mockito.when(missionDao.create(any(), any(), any(), any())).thenReturn(new MissionProgress(user, Mission.ACCEPTED_GAMES, 1f, null, 0));
+        User user = getUser1();
         user.setRoles(new HashSet<>());
-        MissionProgress missionProgress = missionService.addMissionProgress(user.getId(), Mission.ACCEPTED_GAMES, 1f);
-        Assert.assertEquals(Mission.ACCEPTED_GAMES, missionProgress.getMission());
+        Mockito.when(missionDao.findById(any(), any())).thenReturn(Optional.empty());
+        Mockito.when(userDao.findById(anyLong())).thenReturn(Optional.of(user));
+        Mockito.when(missionDao.create(any(), any(), any(), any())).thenReturn(STARTING_MISSION_PROGRESS);
+        Mockito.when(missionDao.updateProgress(any(), any(), anyFloat())).thenReturn(Optional.of(ADVANCED_MISSION_PROGRESS));
+
+        MissionProgress missionProgress = missionService.addMissionProgress(user.getId(), Mission.RECOMMEND_GAMES, 1f);
+
+        Assert.assertEquals(Mission.RECOMMEND_GAMES, missionProgress.getMission());
         Assert.assertEquals(1f, missionProgress.getProgress(), 0.001);
     }
 
     @Test
+    public void testAdvanceMissionProgress() {
+        User user = getUser1();
+        user.setRoles(new HashSet<>());
+        Mockito.when(missionDao.findById(any(), any())).thenReturn(Optional.of(ADVANCED_MISSION_PROGRESS));
+        Mockito.when(userDao.findById(anyLong())).thenReturn(Optional.of(user));
+        Mockito.when(missionDao.updateProgress(any(), any(), anyFloat())).thenReturn(Optional.of(MORE_ADVANCED_MISSION_PROGRESS));
+
+        MissionProgress missionProgress = missionService.addMissionProgress(user.getId(), Mission.RECOMMEND_GAMES, 2f);
+
+        Assert.assertEquals(Mission.RECOMMEND_GAMES, missionProgress.getMission());
+        Assert.assertEquals(3f, missionProgress.getProgress(), 0.001);
+        Assert.assertFalse(missionProgress.isCompleted());
+    }
+
+    @Test
+    public void testCompleteMissionProgress() {
+        User user = getUser1();
+        user.setRoles(new HashSet<>());
+        Mockito.when(missionDao.findById(any(), any())).thenReturn(Optional.of(ADVANCED_MISSION_PROGRESS));
+        Mockito.when(userDao.findById(anyLong())).thenReturn(Optional.of(user));
+        Mockito.when(missionDao.updateProgress(any(), any(), anyFloat())).thenReturn(Optional.of(COMPLETED_MISSION_PROGRESS));
+        Mockito.when(missionDao.completeMission(any(), any())).thenReturn(Optional.of(COMPLETED_MISSION_PROGRESS));
+        Mockito.when(userDao.update(anyLong(), any())).thenReturn(Optional.of(user));
+
+        MissionProgress missionProgress = missionService.addMissionProgress(user.getId(), Mission.RECOMMEND_GAMES, 4f);
+
+        Assert.assertEquals(Mission.RECOMMEND_GAMES, missionProgress.getMission());
+        Assert.assertTrue(missionProgress.isCompleted());
+    }
+
+    @Test
     public void testIncompatibleRoleMissionProgress() {
-        User user = new User("", "", "");
+        User user = getUser1();
         HashSet<RoleType> roles = new HashSet<>();
         roles.add(RoleType.MODERATOR);
         user.setRoles(roles);
+        Mockito.when(userDao.findById(anyLong())).thenReturn(Optional.of(user));
+
         MissionProgress missionProgress = missionService.addMissionProgress(user.getId(), Mission.RECOMMEND_GAMES, 1f);
+
         Assert.assertNull(missionProgress);
     }
 
-//    @Test
-//    public void missionCompletedNewProgress() {
-//        User user = new User(1L,"", "", "");
-//        user.setRoles(new HashSet<>());
-//        Mockito.when(missionDao.findById(any(), any())).thenReturn(Optional.of(new MissionProgress(user, Mission.SETUP_PREFERENCES, 0f, null, 0)));
-//        Mockito.when(missionDao.updateProgress(any(), any(), any())).thenReturn(new MissionProgress(user, Mission.SETUP_PREFERENCES, 1f, null, 0));
-//        Mockito.when(missionDao.completeMission(any(), any())).thenReturn(new MissionProgress(user, Mission.SETUP_PREFERENCES, 1f, null, 1));
-//        MissionProgress missionProgress = missionService.addMissionProgress(user.getId(), Mission.SETUP_PREFERENCES, 1f);
-//        Assert.assertEquals(Mission.SETUP_PREFERENCES, missionProgress.getMission());
-//        Assert.assertEquals(1f, missionProgress.getProgress(), 0.001);
-//        Assert.assertEquals(1, (int)missionProgress.getTimes());
-//    }
+    @Test
+    public void testRepeatableMissionProgress() {
+        User user = getUser1();
+        user.setRoles(new HashSet<>());
+        Mockito.when(missionDao.findById(any(), any())).thenReturn(Optional.empty());
+        Mockito.when(missionDao.create(any(), any(), any(), any())).thenReturn(REPEATABLE_START_MISSION_PROGRESS);
+        Mockito.when(userDao.findById(anyLong())).thenReturn(Optional.of(user));
+        Mockito.when(missionDao.updateProgress(any(), any(), anyFloat())).thenReturn(Optional.of(REPEATED_MISSION_PROGRESS));
 
-//    @Test
-//    public void missionCompletedResetedProgress() {
-//        User user = new User(1L,"", "", "");
-//        user.setRoles(new HashSet<>());
-//        Mockito.when(missionDao.findById(any(), any())).thenReturn(Optional.of(new MissionProgress(user, Mission.REVIEWS_GOAL, 0f, null, 0)));
-//        Mockito.when(missionDao.updateProgress(any(), any(), any())).thenReturn(new MissionProgress(user, Mission.REVIEWS_GOAL, 5f, null, 0));
-//        Mockito.when(missionDao.completeMission(any(), any())).thenReturn(new MissionProgress(user, Mission.REVIEWS_GOAL, 5f, null, 1));
-//        Mockito.when(missionDao.resetProgress(any(), any())).thenReturn(new MissionProgress(user, Mission.REVIEWS_GOAL, 0f, null, 1));
-//        MissionProgress missionProgress = missionService.addMissionProgress(user.getId(), Mission.REVIEWS_GOAL, 1f);
-//        Assert.assertEquals(Mission.REVIEWS_GOAL, missionProgress.getMission());
-//        Assert.assertEquals(0f, missionProgress.getProgress(), 0.001);
-//        Assert.assertEquals(1, (int)missionProgress.getTimes());
-//    }
+        MissionProgress missionProgress = missionService.addMissionProgress(user.getId(), Mission.ACCEPTED_GAMES, 5f);
+
+        Assert.assertEquals(Mission.ACCEPTED_GAMES, missionProgress.getMission());
+        Assert.assertFalse(missionProgress.isCompleted());
+        Assert.assertEquals(5, (int) missionProgress.getTimes());
+    }
+
 }

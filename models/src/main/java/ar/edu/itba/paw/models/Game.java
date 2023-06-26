@@ -4,15 +4,19 @@ import ar.edu.itba.paw.converters.GenreAttributeConverter;
 import ar.edu.itba.paw.converters.LocalDateConverter;
 import ar.edu.itba.paw.enums.Genre;
 import org.hibernate.annotations.Formula;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name = "games")
-public class Game {
+public class Game implements Cloneable {
     @Transient
     private static final String IMAGE_PATH = "/images/";
 
@@ -34,7 +38,8 @@ public class Game {
     @Column(name = "publisher", length = 100, nullable = false)
     private String publisher;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @OneToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "imageid", referencedColumnName = "id")
     private Image image;
 
@@ -61,11 +66,21 @@ public class Game {
     @JoinColumn(name = "suggestedby", referencedColumnName = "id")
     private User suggestedBy = null;
 
-    @OneToMany(mappedBy = "reviewedGame", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "reviewedGame", fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     private List<Review> reviews;
+
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "favoriteGames",targetEntity = User.class)
+    private Set<User> favoriteUsers;
 
     @Formula(value = "case when reviewCount = 0 then 0 else ratingSum/reviewCount end")
     private Double averageRating;
+
+    @PreRemove
+    private void removeFavoriteGames() {
+        for (User user : favoriteUsers) {
+            user.getFavoriteGames().remove(this);
+        }
+    }
 
     public Game(String name, String description, String developer, String publisher, Image image, List<Genre> genres, LocalDate publishDate, Boolean suggestion, User suggestedBy) {
         this.name = name;
@@ -81,8 +96,31 @@ public class Game {
         this.ratingSum = 0;
     }
 
-    public Game() {
-        // for hibernate
+
+    public Game(long id,
+                String name,
+                String description,
+                String developer,
+                String publisher,
+                boolean suggestion,
+                String imageid,
+                String releaseDate,
+                int ratingSum,
+                int ratingCount,
+                List<Genre> genres) {
+        // For testing
+        this.id = id;
+        this.suggestion = suggestion;
+        this.ratingSum = ratingSum;
+        this.reviewCount = ratingCount;
+        this.name = name;
+        this.description = description;
+        this.developer = developer;
+        this.publisher = publisher;
+        byte[] imageBytes = new byte[0];
+        this.image = new Image(imageid, "jpg", imageBytes);
+        this.publishDate = LocalDate.parse(releaseDate);
+        this.genres = genres;
     }
 
     public Game(long id, String name, String description, String developer, String publisher, LocalDate publishDate, int ratingsum, int reviewcount) {
@@ -95,6 +133,10 @@ public class Game {
         this.publishDate = publishDate;
         this.ratingSum = ratingsum;
         this.reviewCount = reviewcount;
+    }
+
+    protected Game() {
+        // Just for Hibernate
     }
 
     public String getDescription() {
@@ -218,4 +260,27 @@ public class Game {
         this.publishDate = publishDate;
     }
 
+    @Override
+    public Game clone() {
+        try {
+            Game clone = (Game) super.clone();
+            clone.setImage(image.clone());
+            clone.setName(this.name);
+            clone.setDescription(this.description);
+            clone.setDeveloper(this.developer);
+            clone.setPublisher(this.publisher);
+            clone.setPublishDate(this.publishDate);
+            clone.setRatingSum(this.ratingSum);
+            clone.setReviewCount(this.reviewCount);
+            clone.setSuggestion(this.suggestion);
+            clone.setGenres(new ArrayList<>(this.genres));
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
+    }
+
+    public Set<User> getFavoriteUsers() {
+        return favoriteUsers;
+    }
 }

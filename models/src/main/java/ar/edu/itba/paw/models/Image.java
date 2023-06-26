@@ -7,7 +7,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "images")
-public class Image {
+public class Image implements Cloneable {
     @Id
     @Column(name = "id")
     private String id;
@@ -43,5 +43,14 @@ public class Image {
 
     public byte[] getImage() {
         return image;
+    }
+
+    @Override
+    public Image clone() {
+        try {
+            return (Image) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
     }
 }

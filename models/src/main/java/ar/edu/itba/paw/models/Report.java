@@ -60,6 +60,15 @@ public class Report {
         this.reportedUser = reportedReview.getAuthor();
         this.submissionDate = submissionDate;
     }
+    public Report(Long id, User reporter, Review reportedReview, ReportReason reason, LocalDateTime submissionDate,boolean resolved) {
+        this(reporter, reportedReview, reason, submissionDate);
+        this.id = id;
+        this.resolved = resolved;
+    }
+    public Report(Long id,ReportReason reason){//Testing use only
+        this.id = id;
+        this.reason = reason;
+    }
 
     public User getReporter() {
         return reporter;

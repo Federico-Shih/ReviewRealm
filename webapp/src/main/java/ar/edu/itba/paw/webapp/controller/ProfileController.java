@@ -73,7 +73,7 @@ public class ProfileController{
         mav.addObject("notificationsChanged", notificationsChanged != null && notificationsChanged);
         mav.addObject("favoriteGamesChanged", favoriteGamesChanged != null && favoriteGamesChanged);
 
-        mav.addObject("games",gameService.getFavoriteGamesFromUser(userId));
+        mav.addObject("games",userService.getFavoriteGamesFromUser(userId));
         mav.addObject("profile",user.get());
 
         Paginated<Review> userReviews = reviewService.getUserReviews(Page.with(page, pageSize),user.get().getId(), loggedUser != null ? loggedUser.getId() : null);
@@ -219,8 +219,8 @@ public class ProfileController{
     public ModelAndView favgamesSetting(@Valid @ModelAttribute("favgamesForm") final FavoriteGamesForm Form) {
         ModelAndView mav = new ModelAndView("profile/choose-favgames");
         long id = AuthenticationHelper.getLoggedUser(userService).getId();
-        List<Game> favgames = gameService.getFavoriteGamesFromUser(id);
-        List<Game> favgamesCandidate = gameService.getPossibleFavGamesFromUser(id).stream()
+        List<Game> favgames = userService.getFavoriteGamesFromUser(id);
+        List<Game> favgamesCandidate = userService.getPossibleFavGamesFromUser(id).stream()
                 .filter(game -> !favgames.contains(game)).collect(Collectors.toList());
         mav.addObject("favgamescandidates", favgamesCandidate);
         mav.addObject("favgames", favgames);
@@ -235,7 +235,7 @@ public class ProfileController{
         }
         long userId = AuthenticationHelper.getLoggedUser(userService).getId();
         try {
-            gameService.setFavoriteGames(userId, form.getGameIds());
+            userService.setFavoriteGames(userId, form.getGameIds());
         } catch (Exception err) {
             LOGGER.error("Unexpected error: {}", err.getMessage());
             return favgamesSetting(form);

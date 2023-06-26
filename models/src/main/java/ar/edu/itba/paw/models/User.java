@@ -6,6 +6,8 @@ import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.enums.LevelRange;
 import ar.edu.itba.paw.enums.NotificationType;
 import ar.edu.itba.paw.enums.RoleType;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.util.*;
@@ -76,11 +78,19 @@ public class User {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "author")
     private List<Review> reviews;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {
+            CascadeType.DETACH,
+            CascadeType.MERGE,
+            CascadeType.REFRESH,
+            CascadeType.PERSIST,
+            CascadeType.REMOVE,
+    }, targetEntity = Game.class)
     @JoinTable(
             name = "favoritegames",
-            joinColumns = @JoinColumn(name = "userId", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "gameid", referencedColumnName = "id")
+            joinColumns = @JoinColumn(name = "userId", referencedColumnName = "id", nullable = false, updatable = false),
+            inverseJoinColumns = @JoinColumn(name = "gameid", referencedColumnName = "id", nullable = false, updatable = false),
+            foreignKey = @ForeignKey(value = ConstraintMode.CONSTRAINT, foreignKeyDefinition = "FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE"),
+            inverseForeignKey = @ForeignKey(value = ConstraintMode.CONSTRAINT, foreignKeyDefinition = "FOREIGN KEY (gameid) REFERENCES games(id) ON DELETE CASCADE")
     )
     private List<Game> favoriteGames;
 
@@ -146,6 +156,37 @@ public class User {
 
     protected User() {
 
+    }
+
+    public User(long id, String username, String email, String password, boolean enabled, int userReputation, Set<NotificationType> disabledNotifications, String userLanguage, int userXp, List<Game> favoriteGames) {
+        // For testing
+        this.id = id;
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.enabled = enabled;
+        this.reputation = (long) userReputation;
+        this.disabledNotifications = disabledNotifications;
+        this.language = new Locale(userLanguage);
+        this.xp = (float) userXp;
+        this.favoriteGames = favoriteGames;
+    }
+
+    public User(Long id, String username, String email, String password, boolean enabled, int reputation, Set<NotificationType> es, String language, int xp, List<Game> es1, int avatar) {
+        this(
+                id,
+                username,
+                email,
+                password,
+                enabled,
+                reputation,
+                es,
+                language,
+                xp,
+                es1
+        );
+
+        this.avatarId = (long) avatar;
     }
 
     public Long getId() {
@@ -218,6 +259,11 @@ public class User {
         if (!(o instanceof User)) return false;
         User user = (User) o;
         return this.getId().equals(user.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.getId());
     }
 
     public List<ExpirationToken> getExpirationTokenList() {

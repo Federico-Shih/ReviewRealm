@@ -9,6 +9,7 @@ import ar.edu.itba.paw.models.Report;
 import ar.edu.itba.paw.models.Review;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.persistenceinterfaces.ReportDao;
+import ar.edu.itba.paw.services.utils.UserTestModels;
 import ar.edu.itba.paw.servicesinterfaces.ReviewService;
 import ar.edu.itba.paw.servicesinterfaces.UserService;
 import org.hibernate.mapping.Any;
@@ -20,115 +21,104 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.HashSet;
+
 import java.util.Optional;
 
+import static ar.edu.itba.paw.services.utils.ReportTestModels.getReport1;
+import static ar.edu.itba.paw.services.utils.UserTestModels.*;
 import static org.mockito.ArgumentMatchers.any;
+import static ar.edu.itba.paw.services.utils.ReviewTestModels.*;
+import static ar.edu.itba.paw.services.utils.ReportTestModels.*;
+import static org.mockito.ArgumentMatchers.eq;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ReportServiceImplTest {
 
     @Mock
     private ReportDao reportDao;
-
-
     @Mock
     private ReviewService reviewService;
 
     @Mock
     private UserService userService;
 
-    private static final User mockUser = new User(1L,"username","email","password");
-
-    private static final Review mockReview = new Review(1,mockUser,"title","content", LocalDateTime.now(),10,null, Difficulty.HARD,10.0, Platform.PC,true,false,10,21);
-
-    private static final User mockUserModerator = new User(2L,"username2","email2","password2",new HashSet<>(),true,10L,new HashSet<>(),new HashSet<>(Arrays.asList(RoleType.MODERATOR,RoleType.USER)),1L,new HashSet<>(),new HashSet<>());
-
-    private static final User mockUserNotModerator = new User(2L,"username2","email2","password2",new HashSet<>(),true,10L,new HashSet<>(),new HashSet<>(Arrays.asList(RoleType.USER)),1L,new HashSet<>(),new HashSet<>());
-    private static final Report mockReport = new Report(mockUser,mockReview, ReportReason.DISRESPECTFUL,LocalDateTime.now());
     @InjectMocks
     private ReportServiceImpl reportService;
 
     @Test
     public void testCreateReport(){
-        Mockito.when(userService.getUserById(mockUser.getId())).thenReturn(Optional.of(mockUser));
-        Mockito.when(reviewService.getReviewById(mockReview.getId(),null)).thenReturn(Optional.of(mockReview));
-        Mockito.when(reportDao.create(mockUser.getId(),mockReview.getId(),ReportReason.DISRESPECTFUL)).thenReturn(mockReport);
+        Mockito.when(userService.getUserById(eq(getUser2().getId()))).thenReturn(Optional.of(getUser2()));
+        Mockito.when(reviewService.getReviewById(eq(getReview1().getId()), any())).thenReturn(Optional.of(getReview1()));
+        Mockito.when(reportDao.create(eq(getUser2().getId()),eq(getReview1().getId()),eq(ReportReason.SPAM))).thenReturn(getReport1());
 
-        Report report = reportService.createReport(mockUser.getId(),mockReview.getId(),ReportReason.DISRESPECTFUL);
+        Report report = reportService.createReport(getUser2().getId(),getReview1().getId(),ReportReason.SPAM);
 
-        Assert.assertEquals(mockReport.getReportedReview().getId(),report.getReportedReview().getId());
-        Assert.assertEquals(mockReport.getReporter().getId(),report.getReporter().getId());
-        Assert.assertEquals(mockReport.getReason(),report.getReason());
+        Assert.assertEquals(getReport1().getReportedReview().getId(),report.getReportedReview().getId());
+        Assert.assertEquals(getReport1().getReporter().getId(),report.getReporter().getId());
+        Assert.assertEquals(getReport1().getReason(),report.getReason());
     }
+
     @Test(expected = UserNotFoundException.class)
     public void testCreateReportUserNotExists() throws UserNotFoundException {
-       Mockito.when(userService.getUserById(mockUser.getId())).thenReturn(Optional.empty());
-       //Mockito.when(reviewService.getReviewById(mockReview.getId(),null)).thenReturn(Optional.of(mockReview));
+        Mockito.when(userService.getUserById(eq(getUser5().getId()))).thenReturn(Optional.empty());
 
-       reportService.createReport(mockUser.getId(),mockReview.getId(),ReportReason.DISRESPECTFUL);
+        reportService.createReport(getUser5().getId(),getReview1().getId(),ReportReason.SPAM);
 
     }
     @Test(expected = ReviewNotFoundException.class)
     public void testCreateReportReviewNotExists() throws ReviewNotFoundException {
-        Mockito.when(userService.getUserById(mockUser.getId())).thenReturn(Optional.of(mockUser));
-        Mockito.when(reviewService.getReviewById(mockReview.getId(),null)).thenReturn(Optional.empty());
+        Mockito.when(userService.getUserById(eq(getUser2().getId()))).thenReturn(Optional.of(getUser2()));
+        Mockito.when(reviewService.getReviewById(eq(getReview2().getId()), any())).thenReturn(Optional.empty());
 
-        reportService.createReport(mockUser.getId(),mockReview.getId(),ReportReason.DISRESPECTFUL);
+        reportService.createReport(getUser2().getId(),getReview2().getId(),ReportReason.DISRESPECTFUL);
 
     }
     @Test(expected = ReportAlreadyExistsException.class)
     public void testCreateReportAlreadyExists() throws ReportAlreadyExistsException{
-        Mockito.when(userService.getUserById(mockUser.getId())).thenReturn(Optional.of(mockUser));
-        Mockito.when(reviewService.getReviewById(mockReview.getId(),null)).thenReturn(Optional.of(mockReview));
-        Mockito.when(reportDao.create(mockUser.getId(),mockReview.getId(),ReportReason.DISRESPECTFUL)).thenReturn(null);
+        Mockito.when(userService.getUserById(eq(getUser2().getId()))).thenReturn(Optional.of(getUser2()));
+        Mockito.when(reviewService.getReviewById(eq(getReview1().getId()), any())).thenReturn(Optional.of(getReview1()));
+        Mockito.when(reportDao.create(eq(getUser2().getId()),eq(getReview1().getId()),eq(ReportReason.SPAM))).thenReturn(null);
 
-        reportService.createReport(mockUser.getId(),mockReview.getId(),ReportReason.DISRESPECTFUL);
+        reportService.createReport(getUser2().getId(),getReview1().getId(),ReportReason.SPAM);
     }
+    //TODO:Check ok
     @Test
     public void testResolveReport(){
-        Mockito.when(reportDao.get(mockReport.getId())).thenReturn(Optional.of(mockReport));
-        Mockito.when(userService.getUserById(mockUserModerator.getId())).thenReturn(Optional.of(mockUserModerator));
-        Mockito.when(reviewService.deleteReviewById(mockReview.getId())).thenReturn(true);
+        Mockito.when(reportDao.get(eq(getReport1().getId()))).thenReturn(Optional.of(getReport1()));
+        Mockito.when(userService.getUserById(eq(getUser4().getId()))).thenReturn(Optional.of(getUser4()));
+        Mockito.when(reportDao.updateStatus(eq(getReport1().getId()),eq(getUser4().getId()),eq(true))).thenReturn(getReport1());
 
-        Report report = reportService.resolveReport(mockReport.getId(),mockUserModerator.getId());
+        Report report = reportService.resolveReport(getReport1().getId(),getUser4().getId());
 
-        Assert.assertEquals(mockUserModerator.getId(),report.getModerator().getId());
-        Assert.assertEquals(mockReport.getReason(),report.getReason());
-        Assert.assertEquals(mockReport.getReportedReview().getAuthor().getId(),report.getReportedUser().getId());
+        Assert.assertEquals(getReport1().getReason(),report.getReason());
+        Assert.assertEquals(getReport1().getReportedReview().getAuthor().getId(),report.getReportedUser().getId());
     }
 
     @Test(expected = UserNotAModeratorException.class)
     public void testResolveNotModerator() throws UserNotAModeratorException{
-        Mockito.when(reportDao.get(mockReport.getId())).thenReturn(Optional.of(mockReport));
-        Mockito.when(userService.getUserById(mockUserNotModerator.getId())).thenReturn(Optional.of(mockUserNotModerator));
-
-        reportService.resolveReport(mockReport.getId(),mockUserNotModerator.getId());
+        Mockito.when(reportDao.get(eq(getReport1().getId()))).thenReturn(Optional.of(getReport1()));
+        Mockito.when(userService.getUserById(eq(getUser1().getId()))).thenReturn(Optional.of(getUser1()));
+        reportService.resolveReport(getReport1().getId(),getUser1().getId());
     }
     @Test(expected = ReportNotFoundException.class)
     public void testResolveReportNotExists() throws ReportNotFoundException{
-        Mockito.when(reportDao.get(mockReport.getId())).thenReturn(Optional.empty());
+        Mockito.when(reportDao.get(eq(getReport1().getId()))).thenReturn(Optional.empty());
 
-        Report report = reportService.resolveReport(mockReport.getId(),mockUserModerator.getId());
-
-        Assert.assertNull(report);
+        reportService.resolveReport(getReport1().getId(),getUser1().getId());
     }
     @Test(expected = UserNotFoundException.class)
     public void testResolveReportModeratorNotExists() throws UserNotFoundException{
-        Mockito.when(reportDao.get(mockReport.getId())).thenReturn(Optional.of(mockReport));
-        Mockito.when(userService.getUserById(mockUserModerator.getId())).thenReturn(Optional.empty());
+        Mockito.when(reportDao.get(eq(getReport1().getId()))).thenReturn(Optional.of(getReport1()));
+        Mockito.when(userService.getUserById(eq(getUser4().getId()))).thenReturn(Optional.empty());
 
-        Report report = reportService.resolveReport(mockReport.getId(),mockUserModerator.getId());
+        Report report = reportService.resolveReport(getReport1().getId(),getUser4().getId());
 
         Assert.assertNull(report);
     }
-    @Test(expected = ReportNotFoundException.class)
-    public void testDeleteReportNotFound() throws ReportNotFoundException{
-        Mockito.when(reportDao.get(mockReport.getId())).thenReturn(Optional.empty());
-
-        reportService.deleteReport(mockReport.getId());
+    @Test()
+    public void testDeleteReportNotFound(){
+        Mockito.when(reportDao.delete(getReport1().getId())).thenReturn(false);
+        Assert.assertFalse(reportService.deleteReport(getReport1().getId()));
     }
 
 

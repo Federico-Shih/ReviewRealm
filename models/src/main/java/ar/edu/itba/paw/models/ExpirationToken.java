@@ -35,6 +35,13 @@ public class ExpirationToken {
         // Just for Hibernate
     }
 
+    public ExpirationToken(User createUser, String createPassword, LocalDateTime createExpiration) {
+        // For testing
+        this.user = createUser;
+        this.password = createPassword;
+        this.expiration = createExpiration;
+    }
+
     public String getToken() {
         return token;
     }
