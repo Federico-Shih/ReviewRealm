@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.webapp.forms;
 
+import ar.edu.itba.paw.webapp.annotations.CheckDateFormat;
 import ar.edu.itba.paw.webapp.annotations.ValidMediaSize;
 import ar.edu.itba.paw.webapp.annotations.ValidMediaType;
 import ar.edu.itba.paw.dtos.saving.SubmitGameDTO;
@@ -20,6 +21,7 @@ public class SubmitGameForm {
     @Size(min = 1, max = 50)
     private String publisher;
     private List<Integer> genres;
+    @CheckDateFormat(pattern = "yyyy-mm-dd")
     private String releaseDate;
 
     @ValidMediaType(value = {MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE, MediaType.IMAGE_GIF_VALUE}, message = "invalid.mediatype")

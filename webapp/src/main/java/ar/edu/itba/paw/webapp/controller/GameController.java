@@ -208,7 +208,6 @@ public class GameController{
             form.setPublisher(game.getPublisher());
             form.setGenres(game.getGenres().stream().map(Genre::getId).collect(Collectors.toList()));
             form.setReleaseDate(game.getPublishDate().format(DateTimeFormatter.ISO_DATE));
-            mav.addObject("oldImage", gameOptional.get().getImageUrl());
         }
         mav.addObject("genres", Genre.values());
         mav.addObject("edit", true);
@@ -217,7 +216,7 @@ public class GameController{
     }
 
     @RequestMapping(value = "/game/{gameId:\\d+}/edit", method = RequestMethod.POST)
-    public ModelAndView editGame(@PathVariable("gameId") final Long gameId, @ModelAttribute("gameForm") SubmitGameForm form, final BindingResult errors) {
+    public ModelAndView editGame(@PathVariable("gameId") final Long gameId,@Valid() @ModelAttribute("gameForm") SubmitGameForm form, final BindingResult errors) {
         if(errors.hasErrors())
             return editGameForm(gameId, form);
         try {

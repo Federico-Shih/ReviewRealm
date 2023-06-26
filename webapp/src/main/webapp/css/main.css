@@ -125,7 +125,6 @@
 }
 
 .overflow-ellipsis {
-    display: inline-flex;
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;

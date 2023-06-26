@@ -49,7 +49,7 @@ public class SearchController {
                 search,
                 new Ordering<>(OrderDirection.DESCENDING, UserOrderCriteria.LEVEL)
         );
-        GameFilter gameSearchFilter = new GameFilterBuilder().withGameContent(search).build();
+        GameFilter gameSearchFilter = new GameFilterBuilder().withGameContent(search).withSuggestion(false).build();
         Paginated<Game> games = gameService.searchGames(Page.with(1, MAX_RESULTS),
                 gameSearchFilter,
                 new Ordering<>(OrderDirection.ASCENDING, GameOrderCriteria.NAME));

@@ -30,7 +30,6 @@
             document.getElementById('image').onchange = function () {
                 document.getElementById('imageShow').src = URL.createObjectURL(this.files[0]);
                 document.getElementById('preview-div').classList.remove('hide');
-                document.getElementById('old-image-div').classList.add('hide');
             }
         });
     </script>
@@ -99,6 +98,7 @@
                     <div class="input-field col s6">
                         <spring:message code="game.submit.placeholder.releasedate" var="placeholderDate" />
                         <form:input type="date" path="releaseDate" id="date" max="${maxDate}" cssClass="white-text" placeholder="${placeholderDate}" />
+                        <form:errors path="releaseDate" cssClass="error" element="p" />
                         <form:label for="date" path="releaseDate" >
                             <spring:message code="game.submit.form.releasedate" />
                         </form:label>
@@ -119,14 +119,6 @@
                             </div>
                         <form:errors path="image" cssClass="error" element="p" />
                     </div>
-                    <c:if test="${edit}">
-                        <div class="col s12 center" id="old-image-div">
-                            <div class="card-for-preview z-depth-2">
-                                <c:url value="${oldImage}" var="oldImage" />
-                                <img class="preview-image" id="oldImage" src="${oldImage}" alt="Old Image"/>
-                            </div>
-                        </div>
-                    </c:if>
                     <div class="col push s12 center hide" id="preview-div">
                         <div class="card-for-preview z-depth-2">
                             <img class="preview-image" id="imageShow" src="" alt="Preview"/>
