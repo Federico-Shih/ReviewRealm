@@ -6,6 +6,8 @@ import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.enums.LevelRange;
 import ar.edu.itba.paw.enums.NotificationType;
 import ar.edu.itba.paw.enums.RoleType;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.util.*;
@@ -148,7 +150,7 @@ public class User {
 
     }
 
-    public User(long id, String username, String email, String password, boolean enabled, int userReputation, HashSet<NotificationType> disabledNotifications, String userLanguage, int userXp, List<Game> favoriteGames) {
+    public User(long id, String username, String email, String password, boolean enabled, int userReputation, Set<NotificationType> disabledNotifications, String userLanguage, int userXp, List<Game> favoriteGames) {
         // For testing
         this.id = id;
         this.username = username;
@@ -160,6 +162,23 @@ public class User {
         this.language = new Locale(userLanguage);
         this.xp = (float) userXp;
         this.favoriteGames = favoriteGames;
+    }
+
+    public User(Long id, String username, String email, String password, boolean enabled, int reputation, Set<NotificationType> es, String language, int xp, List<Game> es1, int avatar) {
+        this(
+                id,
+                username,
+                email,
+                password,
+                enabled,
+                reputation,
+                es,
+                language,
+                xp,
+                es1
+        );
+
+        this.avatarId = (long) avatar;
     }
 
     public Long getId() {
@@ -232,6 +251,11 @@ public class User {
         if (!(o instanceof User)) return false;
         User user = (User) o;
         return this.getId().equals(user.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.getId());
     }
 
     public List<ExpirationToken> getExpirationTokenList() {

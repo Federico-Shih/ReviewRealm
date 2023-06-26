@@ -9,9 +9,12 @@ import ar.edu.itba.paw.dtos.saving.SaveUserBuilder;
 import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.enums.NotificationType;
 import ar.edu.itba.paw.models.FollowerFollowingCount;
+import ar.edu.itba.paw.models.Game;
 import ar.edu.itba.paw.models.Paginated;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.persistence.config.TestConfig;
+import ar.edu.itba.paw.persistence.helpers.CommonRowMappers;
+import ar.edu.itba.paw.persistence.tests.utils.GameTestModels;
 import ar.edu.itba.paw.persistence.tests.utils.UserTestModels;
 import ar.edu.itba.paw.persistenceinterfaces.UserDao;
 import org.junit.Assert;
@@ -28,7 +31,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.PersistenceException;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.*;
@@ -43,9 +45,11 @@ public class UserDaoImplTest {
     private static final int UPDATE_REPUTATION = 1000;
     private static final int UPDATE_XP = 20000;
     private static final int UPDATE_AVATARID = 5;
-
     private static final Locale UPDATE_LOCALE = Locale.CANADA;
 
+    private static final String WRONG_EMAIL = "aaaaaaaaaaaaaaa";
+
+    private static final String WRONG_USERNAME = "somebody";
 
     @Autowired
     private DataSource ds;
@@ -58,12 +62,24 @@ public class UserDaoImplTest {
     @PersistenceContext
     private EntityManager em;
 
-    User testUser;
+    private User testUser;
+    private User testCreateUser;
+    private User testFollowingUser;
+    private User testNonFollowingUser;
+    private User testUserWithPref;
+    private User testUserWithoutPref;
+    private User disabledNotifUser;
 
     @Before
     public void setUp() {
         jdbcTemplate = new JdbcTemplate(ds);
         this.testUser = UserTestModels.getUser1();
+        this.testCreateUser = UserTestModels.getCreateUser();
+        this.testFollowingUser = UserTestModels.getUser1();
+        this.testNonFollowingUser = UserTestModels.getUser5();
+        this.testUserWithPref = UserTestModels.getUser1();
+        this.testUserWithoutPref = UserTestModels.getUser5();
+        this.disabledNotifUser = UserTestModels.getUser5();
     }
 
     @Rollback
@@ -93,13 +109,11 @@ public class UserDaoImplTest {
     @Rollback
     @Test
     public void testFindAll() throws SQLException {
-
-        //2.execute
         Paginated<User> userlist = userDao.findAll(Page.with(1, 80), new UserFilterBuilder().build(), new Ordering<>(OrderDirection.DESCENDING, UserOrderCriteria.LEVEL));
 
         Assert.assertEquals(userlist.getTotalPages(), 1);
         Assert.assertEquals(userlist.getList().size(), 5);
-        User[] expectedUser = {UserTestModels.getUser5(), UserTestModels.getUser4(), UserTestModels.getUser3(), UserTestModels.getUser2(), UserTestModels.getUser1()};
+        User[] expectedUser = {UserTestModels.getUser5(), UserTestModels.getUser1(), UserTestModels.getUser2(), UserTestModels.getUser3(), UserTestModels.getUser4()};
         Assert.assertArrayEquals(expectedUser, userlist.getList().toArray());
     }
 
@@ -145,74 +159,39 @@ public class UserDaoImplTest {
                         .build());
         em.flush();
         Assert.assertTrue(update.isPresent());
-        jdbcTemplate.query("SELECT * FROM users WHERE id = ?", new Object[]{user.getId()}, rs -> {
-            Assert.assertEquals(rs.getString("email"), UPDATE_EMAIL);
-            Assert.assertEquals(rs.getString("password"), "newPassword");
-            Assert.assertFalse(rs.getBoolean("enabled"));
-            Assert.assertEquals(rs.getLong("reputation"), 1000L);
-        });
+        User dbUser = jdbcTemplate.queryForObject("SELECT * FROM users WHERE id = ?", new Object[]{user.getId()}, CommonRowMappers.TEST_USER_MAPPER);
+        Assert.assertNotNull(dbUser);
+        Assert.assertEquals(UPDATE_EMAIL, dbUser.getEmail());
+        Assert.assertEquals(UPDATE_PASSWORD, dbUser.getPassword());
+        Assert.assertEquals(UPDATE_REPUTATION, dbUser.getReputation(), 0.001);
+        Assert.assertEquals(UPDATE_ENABLED, dbUser.isEnabled());
+        Assert.assertEquals(UPDATE_XP, dbUser.getXp(), 0.001);
+        Assert.assertEquals(UPDATE_AVATARID, (long)dbUser.getAvatarId());
     }
 
     @Rollback
     @Test
     public void testCreate(){
-        //1.prepare
-
-        //2.execute
-        User user = userDao.create(USERNAME, EMAIL, PASSWORD);
+        User user = userDao.create(testCreateUser.getUsername(),
+                testCreateUser.getEmail(),
+                testCreateUser.getPassword());
 
         //3.assert
         Assert.assertNotNull(user);
-        Assert.assertEquals(EMAIL, user.getEmail());
-        Assert.assertEquals(PASSWORD, user.getPassword());
         em.flush();
-        Assert.assertEquals(1, JdbcTestUtils.countRowsInTable(jdbcTemplate, "users"));
+        Assert.assertEquals(1, JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, "users", String.format("id = '%s'", user.getId())));
     }
 
-    @Transactional
-    @Test(expected = RuntimeException.class)
-    public void testWrongCreate() {
-        //2.execute
-        User user = userDao.create(USERNAME, EMAIL, null);
-        em.flush();
-    }
-
-    @Transactional
-    @Test(expected = PersistenceException.class)
-    public void testWrongCreateRepeatUsername() {
-        //2.execute
-        jdbcTemplate.execute("INSERT INTO users (id,username,email,password) VALUES (" + ID + ",'" + USERNAME + "', '" + EMAIL + "','" + PASSWORD + "')");
-        User user = userDao.create(USERNAME, EMAIL, PASSWORD);
-        em.flush();
-    }
-
-    @Transactional
-    @Test
-    public void testExist() {
-        jdbcTemplate.execute("INSERT INTO users (id,username,email,password) VALUES ("+ID+",'"+USERNAME+"', '"+EMAIL+"','"+PASSWORD+"')");
-        boolean value = userDao.exists(ID);
-        Assert.assertTrue(value);
-    }
-
-    @Transactional
-    @Test
-    public void testDoesNotExist() {
-        boolean value = userDao.exists(ID);
-        Assert.assertFalse(value);
-    }
-
-    @Transactional
+    @Rollback
     @Test
     public void testFindByEmail() {
-        jdbcTemplate.execute("INSERT INTO users (id,username,email,password) VALUES ("+ID+",'"+USERNAME+"', '"+EMAIL+"','"+PASSWORD+"')");
-        Optional<User> user = userDao.getByEmail(EMAIL);
+        Optional<User> user = userDao.getByEmail(testUser.getEmail());
         Assert.assertTrue(user.isPresent());
     }
 
     @Transactional
     @Test
     public void testFindByWrongEmail() {
-        jdbcTemplate.execute("INSERT INTO users (id,username,email,password) VALUES ("+ID+",'"+USERNAME+"', '"+EMAIL+"','"+PASSWORD+"')");
         Optional<User> user = userDao.getByEmail("Another Email");
         Assert.assertFalse(user.isPresent());
     }
@@ -220,308 +199,176 @@ public class UserDaoImplTest {
     @Transactional
     @Test
     public void testFindByEmailWithEmptyTable() {
-        Optional<User> user = userDao.getByEmail(EMAIL);
+        Optional<User> user = userDao.getByEmail(WRONG_EMAIL);
         Assert.assertFalse(user.isPresent());
     }
 
     @Transactional
     @Test
     public void testFindByUsername() {
-        jdbcTemplate.execute("INSERT INTO users (id, username, email, password) VALUES (" + ID + ", '" + USERNAME + "', '" + EMAIL + "','" + PASSWORD + "')");
-        Optional<User> user = userDao.getByUsername(USERNAME);
+        Optional<User> user = userDao.getByUsername(testUser.getUsername());
         Assert.assertTrue(user.isPresent());
-        Assert.assertEquals(USERNAME, user.get().getUsername());
+        Assert.assertEquals(testUser.getUsername(), user.get().getUsername());
     }
 
     @Transactional
     @Test
     public void testFindByWrongUsername() {
-        jdbcTemplate.execute("INSERT INTO users (id, username, email, password) VALUES (" + ID + ", '" + USERNAME + "', '" + EMAIL + "','" + PASSWORD + "')");
-        Optional<User> user = userDao.getByUsername("AnotherUsername");
+        Optional<User> user = userDao.getByUsername(WRONG_USERNAME);
         Assert.assertFalse(user.isPresent());
     }
 
-    @Transactional
+    @Rollback
     @Test
-    public void testFindByUsernameWithEmptyTable() {
-        Optional<User> user = userDao.getByUsername(USERNAME);
-        Assert.assertFalse(user.isPresent());
+    public void testReplaceAllFavoriteGames() {
+        List<Long> gameIds = Arrays.asList(GameTestModels.getSuperGameA().getId(), GameTestModels.getSuperGameB().getId());
+
+        userDao.replaceAllFavoriteGames(testUser.getId(), gameIds);
+        em.flush();
+
+        List<Long> games = jdbcTemplate.queryForList("Select gameid from favoritegames where userid = ?", Long.class, testUser.getId());
+        Assert.assertEquals(2, games.size());
+        Set<Long> expectedGames = new HashSet<>(Arrays.asList(GameTestModels.getSuperGameA().getId(), GameTestModels.getSuperGameB().getId()));
+        Assert.assertEquals(expectedGames, new HashSet<>(games));
     }
 
-//    @Rollback
-//    @Test
-//    public void testReplaceAllFavoriteGames() {
-//        Map<String, Object> args = new HashMap<>();
-//        args.put("userid", userId);
-//        args.put("gameid", gameId1);
-//        insertForFavGames.execute(args);
-//        args.put("gameid", gameId2);
-//        insertForFavGames.execute(args);
-//
-//        List<Long> gameIds = Arrays.asList(gameId3);
-//
-//        gameDao.replaceAllFavoriteGames(userId, gameIds);
-//        em.flush();
-//
-//        List<Long> games = jdbcTemplate.queryForList("Select gameid from favoritegames where userid = ?", Long.class, userId);
-//        Assert.assertEquals(1, games.size());
-//        Assert.assertTrue(games.contains(gameId3));
-//        Assert.assertFalse(games.contains(gameId1));
-//        Assert.assertFalse(games.contains(gameId2));
-//    }
-//
 
-    //    @Test
-//    public void testDeleteFavoriteGameForUser() {
-//        Long userId = userSetUp();
-//        Long gameId1 = insertGame(1L, SUGGESTED, 0, 0);
-//        Long gameId2 = insertGame(2L, SUGGESTED, 0, 0);
-//        Map<String, Object> args = new HashMap<>();
-//        args.put("userid", userId);
-//        args.put("gameid", gameId1);
-//        insertForFavGames.execute(args);
-//
-//        args.put("gameid", gameId2);
-//        insertForFavGames.execute(args);
-//
-//
-//        gameDao.deleteFavoriteGameForUser(userId, gameId1);
-//        em.flush();
-//
-//        List<Long> gameIds = jdbcTemplate.queryForList("Select gameid from favoritegames", Long.class);
-//        Assert.assertEquals(1, gameIds.size());
-//        Assert.assertTrue(gameIds.contains(gameId2));
-//    }
-//    @Transactional
-//    @Test
-//    public void testGetFollowers() {
-//        jdbcTemplate.execute("INSERT INTO users (id, username, email, password) VALUES (" + ID + ", '" + USERNAME + "', '" + EMAIL + "','" + PASSWORD + "')");
-//        jdbcTemplate.execute("INSERT INTO users (id, username, email, password) VALUES (" + ID2 + ", '" + USERNAME2 + "', '" + EMAIL2 + "','" + PASSWORD2 + "')");
-//        // ID2 follows ID
-//        jdbcTemplate.execute("INSERT INTO followers(userid, following) VALUES ("+ ID2 +", "+ ID +")");
-//
-//        List<User> followers = userDao.getFollowers(ID);
-//        Assert.assertEquals(1, followers.size());
-//        Assert.assertEquals(ID2, followers.get(0).getId());
-//    }
-//
-//    @Transactional
-//    @Test
-//    public void testGetMultipleFollowers() {
-//        jdbcTemplate.execute("INSERT INTO users (id, username, email, password) VALUES (" + ID + ", '" + USERNAME + "', '" + EMAIL + "','" + PASSWORD + "')");
-//        jdbcTemplate.execute("INSERT INTO users (id, username, email, password) VALUES (" + ID2 + ", '" + USERNAME2 + "', '" + EMAIL2 + "','" + PASSWORD2 + "')");
-//        jdbcTemplate.execute("INSERT INTO users (id, username, email, password) VALUES (" + ID3 + ", '" + "USERNAME3" + "', '" + "EMAIL3" + "','" + "PASSWORD3" + "')");
-//
-//        // ID2 and ID3 follow ID
-//        jdbcTemplate.execute("INSERT INTO followers(userid, following) VALUES ("+ ID2 +", "+ ID +")");
-//        jdbcTemplate.execute("INSERT INTO followers(userid, following) VALUES ("+ ID3 +", "+ ID +")");
-//
-//        List<User> followers = userDao.getFollowers(ID);
-//        Assert.assertEquals(2, followers.size());
-//        Assert.assertTrue(followers.stream().allMatch(user -> user.getId().equals(ID2) || user.getId().equals(ID3)));
-//    }
-//
-//    @Transactional
-//    @Test
-//    public void testGetFollowing() {
-//        jdbcTemplate.execute("INSERT INTO users (id, username, email, password) VALUES (" + ID + ", '" + USERNAME + "', '" + EMAIL + "','" + PASSWORD + "')");
-//        jdbcTemplate.execute("INSERT INTO users (id, username, email, password) VALUES (" + ID2 + ", '" + USERNAME2 + "', '" + EMAIL2 + "','" + PASSWORD2 + "')");
-//        // ID follows ID2
-//        jdbcTemplate.execute("INSERT INTO followers(userid, following) VALUES (" + ID + ", " + ID2 + ")");
-//
-//        List<User> following = userDao.getFollowing(ID);
-//        Assert.assertEquals(1, following.size());
-//        Assert.assertEquals(ID2, following.get(0).getId());
-//    }
-//
-//    @Transactional
-//    @Test
-//    public void testGetMultipleFollowing() {
-//        jdbcTemplate.execute("INSERT INTO users (id, username, email, password) VALUES (" + ID + ", '" + USERNAME + "', '" + EMAIL + "','" + PASSWORD + "')");
-//        jdbcTemplate.execute("INSERT INTO users (id, username, email, password) VALUES (" + ID2 + ", '" + USERNAME2 + "', '" + EMAIL2 + "','" + PASSWORD2 + "')");
-//        jdbcTemplate.execute("INSERT INTO users (id, username, email, password) VALUES (" + ID3 + ", '" + "USERNAME3" + "', '" + "EMAIL3" + "','" + "PASSWORD3" + "')");
-//
-//        // ID follows ID2 and ID3
-//        jdbcTemplate.execute("INSERT INTO followers(userid, following) VALUES (" + ID + ", " + ID2 + ")");
-//        jdbcTemplate.execute("INSERT INTO followers(userid, following) VALUES (" + ID + ", " + ID3 + ")");
-//
-//        List<User> following = userDao.getFollowing(ID);
-//        Assert.assertEquals(2, following.size());
-//        Assert.assertTrue(following.stream().allMatch(user -> user.getId().equals(ID2) || user.getId().equals(ID3)));
-//    }
-//
-//    @Transactional
-//    @Test
-//    public void testGetFollowingCount() {
-//        jdbcTemplate.execute("INSERT INTO users (id, username, email, password) VALUES (" + ID + ", '" + USERNAME + "', '" + EMAIL + "','" + PASSWORD + "')");
-//        jdbcTemplate.execute("INSERT INTO users (id, username, email, password) VALUES (" + ID2 + ", '" + USERNAME2 + "', '" + EMAIL2 + "','" + PASSWORD2 + "')");
-//        jdbcTemplate.execute("INSERT INTO users (id, username, email, password) VALUES (" + ID3 + ", '" + "USERNAME3" + "', '" + "EMAIL3" + "','" + "PASSWORD3" + "')");
-//
-//        // ID2 and ID3 follow ID
-//        jdbcTemplate.execute("INSERT INTO followers(userid, following) VALUES ("+ ID2 +", "+ ID +")");
-//        jdbcTemplate.execute("INSERT INTO followers(userid, following) VALUES ("+ ID3 +", "+ ID +")");
-//
-//        FollowerFollowingCount ffcount = userDao.getFollowerFollowingCount(ID);
-//
-//        Assert.assertEquals(2, ffcount.getFollowerCount());
-//        Assert.assertEquals(0, ffcount.getFollowingCount());
-//    }
-//
-//    @Transactional
-//    @Test
-//    public void testGetFollowingCountEmpty() {
-//        jdbcTemplate.execute("INSERT INTO users (id, username, email, password) VALUES (" + ID + ", '" + USERNAME + "', '" + EMAIL + "','" + PASSWORD + "')");
-//        jdbcTemplate.execute("INSERT INTO users (id, username, email, password) VALUES (" + ID2 + ", '" + USERNAME2 + "', '" + EMAIL2 + "','" + PASSWORD2 + "')");
-//        jdbcTemplate.execute("INSERT INTO users (id, username, email, password) VALUES (" + ID3 + ", '" + "USERNAME3" + "', '" + "EMAIL3" + "','" + "PASSWORD3" + "')");
-//
-//        FollowerFollowingCount ffcount = userDao.getFollowerFollowingCount(ID);
-//
-//        Assert.assertEquals(0, ffcount.getFollowerCount());
-//        Assert.assertEquals(0, ffcount.getFollowingCount());
-//    }
-//
-//    @Transactional
-//    @Test
-//    public void testCreateFollow() {
-//        jdbcTemplate.execute("INSERT INTO users (id, username, email, password) VALUES (" + ID + ", '" + USERNAME + "', '" + EMAIL + "','" + PASSWORD + "')");
-//        jdbcTemplate.execute("INSERT INTO users (id, username, email, password) VALUES (" + ID2 + ", '" + USERNAME2 + "', '" + EMAIL2 + "','" + PASSWORD2 + "')");
-//
-//        boolean follow = userDao.createFollow(ID2, ID);
-//        Assert.assertTrue(follow);
-//        em.flush();
-//        int count = jdbcTemplate.query("select count(*) as count from followers", (rs, rowNum) -> rs.getInt("count")).stream().findFirst().orElse(0);
-//        Assert.assertEquals(1, count);
-//    }
-//
-//    @Transactional
-//    @Test
-//    public void testDeleteFollow() {
-//        jdbcTemplate.execute("INSERT INTO users (id, username, email, password) VALUES (" + ID + ", '" + USERNAME + "', '" + EMAIL + "','" + PASSWORD + "')");
-//        jdbcTemplate.execute("INSERT INTO users (id, username, email, password) VALUES (" + ID2 + ", '" + USERNAME2 + "', '" + EMAIL2 + "','" + PASSWORD2 + "')");
-//
-//        // ID2 follow ID
-//        jdbcTemplate.execute("INSERT INTO followers(userid, following) VALUES (" + ID2 + ", " + ID + ")");
-//
-//        Assert.assertTrue(userDao.deleteFollow(ID2, ID));
-//
-//    }
-//
-//    @Transactional
-//    @Test
-//    public void testDeleteNonexistentFollow() {
-//        jdbcTemplate.execute("INSERT INTO users (id, username, email, password) VALUES (" + ID + ", '" + USERNAME + "', '" + EMAIL + "','" + PASSWORD + "')");
-//        jdbcTemplate.execute("INSERT INTO users (id, username, email, password) VALUES (" + ID2 + ", '" + USERNAME2 + "', '" + EMAIL2 + "','" + PASSWORD2 + "')");
-//
-//        // ID2 follow ID
-//        jdbcTemplate.execute("INSERT INTO followers(userid, following) VALUES ("+ ID2 +", "+ ID +")");
-//
-//        Assert.assertFalse(userDao.deleteFollow(ID,ID2));
-//
-//    }
+    @Rollback
+    @Test
+    public void testDeleteFavoriteGameForUser() {
+        userDao.deleteFavoriteGameForUser(UserTestModels.getUser5().getId(), GameTestModels.getSuperGameA().getId());
+        em.flush();
 
-    @Transactional
+        Object[] params = {UserTestModels.getUser5().getId()};
+        List<Long> gameIds = jdbcTemplate.queryForList("Select gameid from favoritegames where userid = ?", params, Long.class);
+        Assert.assertEquals(2, gameIds.size());
+    }
+
+    @Rollback
+    @Test
+    public void testGetFollowers() {
+        Optional<List<User>> followers = userDao.getFollowers(testFollowingUser.getId());
+        Assert.assertTrue(followers.isPresent());
+        Assert.assertEquals(3, followers.get().size());
+        List<User> expected = Arrays.asList(UserTestModels.getUser2(), UserTestModels.getUser4(), UserTestModels.getUser3());
+        Assert.assertEquals(new HashSet<>(expected), new HashSet<>(followers.get()));
+    }
+
+
+    @Rollback
+    @Test
+    public void testGetFollowing() {
+        Optional<List<User>> following = userDao.getFollowing(testFollowingUser.getId());
+        Assert.assertTrue(following.isPresent());
+        Assert.assertEquals(1, following.get().size());
+        User[] expectedUsers = {UserTestModels.getUser3()};
+        Assert.assertArrayEquals(expectedUsers, following.get().toArray());
+    }
+
+    @Rollback
+    @Test
+    public void testGetFollowingCount() {
+        Optional<FollowerFollowingCount> ffcount = userDao.getFollowerFollowingCount(testFollowingUser.getId());
+        Assert.assertTrue(ffcount.isPresent());
+        Assert.assertEquals(3, ffcount.get().getFollowerCount());
+        Assert.assertEquals(1, ffcount.get().getFollowingCount());
+    }
+
+    @Rollback
+    @Test
+    public void testGetFollowingCountEmpty() {
+        Optional<FollowerFollowingCount> ffcount = userDao.getFollowerFollowingCount(testNonFollowingUser.getId());
+        Assert.assertTrue(ffcount.isPresent());
+        Assert.assertEquals(0, ffcount.get().getFollowerCount());
+        Assert.assertEquals(0, ffcount.get().getFollowingCount());
+    }
+
+    @Rollback
+    @Test
+    public void testCreateFollow() {
+        Optional<User> user = userDao.createFollow(testUser.getId(), UserTestModels.getUser5().getId());
+        Assert.assertTrue(user.isPresent());
+        em.flush();
+        int count = JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, "followers", String.format("userid = '%s' and following = '%s'", testUser.getId(), UserTestModels.getUser5().getId()));
+        Assert.assertEquals(1, count);
+    }
+
+    @Rollback
+    @Test
+    public void testDeleteFollow() {
+        Optional<User> user = userDao.deleteFollow(testFollowingUser.getId(), UserTestModels.getUser3().getId());
+        Assert.assertTrue(user.isPresent());
+        Assert.assertFalse(user.get().getFollowing().contains(UserTestModels.getUser3()));
+        em.flush();
+        int count = JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, "followers", String.format("userid = '%s' and following = '%s'", testFollowingUser.getId(), UserTestModels.getUser3().getId()));
+        Assert.assertEquals(0, count);
+    }
+
+    @Rollback
+    @Test
+    public void testDeleteNonexistentFollow() {
+        User supposedFollowing = UserTestModels.getUser3();
+        Optional<User> user = userDao.deleteFollow(testNonFollowingUser.getId(), supposedFollowing.getId());
+        Assert.assertTrue(user.isPresent());
+        Assert.assertFalse(user.get().getFollowing().contains(supposedFollowing));
+    }
+
+    @Rollback
     @Test
     public void testFollows() {
-        jdbcTemplate.execute("INSERT INTO users (id, username, email, password) VALUES (" + ID + ", '" + USERNAME + "', '" + EMAIL + "','" + PASSWORD + "')");
-        jdbcTemplate.execute("INSERT INTO users (id, username, email, password) VALUES (" + ID2 + ", '" + USERNAME2 + "', '" + EMAIL2 + "','" + PASSWORD2 + "')");
-
-        // ID2 follows ID
-        jdbcTemplate.execute("INSERT INTO followers(userid, following) VALUES (" + ID2 + ", " + ID + ")");
-
-        Assert.assertTrue(userDao.follows(ID2, ID));
+        boolean user = userDao.follows(testFollowingUser.getId(), UserTestModels.getUser3().getId());
+        Assert.assertTrue(user);
     }
 
-    @Transactional
+    @Rollback
     @Test
     public void testDoesNotFollow() {
-        jdbcTemplate.execute("INSERT INTO users (id, username, email, password) VALUES (" + ID + ", '" + USERNAME + "', '" + EMAIL + "','" + PASSWORD + "')");
-        jdbcTemplate.execute("INSERT INTO users (id, username, email, password) VALUES (" + ID2 + ", '" + USERNAME2 + "', '" + EMAIL2 + "','" + PASSWORD2 + "')");
-
-        // ID2 follows ID
-        jdbcTemplate.execute("INSERT INTO followers(userid, following) VALUES (" + ID2 + ", " + ID + ")");
-
-        Assert.assertFalse(userDao.follows(ID, ID2));
+        Assert.assertFalse(userDao.follows(testNonFollowingUser.getId(), testUser.getId()));
     }
 
-    @Transactional
-    @Test
-    public void testFollowsNonexistent() {
-        jdbcTemplate.execute("INSERT INTO users (id, username, email, password) VALUES (" + ID + ", '" + USERNAME + "', '" + EMAIL + "','" + PASSWORD + "')");
-        jdbcTemplate.execute("INSERT INTO users (id, username, email, password) VALUES (" + ID2 + ", '" + USERNAME2 + "', '" + EMAIL2 + "','" + PASSWORD2 + "')");
-
-        Assert.assertFalse(userDao.follows(ID, ID2));
-        Assert.assertFalse(userDao.follows(ID2, ID));
-    }
-
-    @Transactional
+    @Rollback
     @Test
     public void testGetPreferencesWithExistingGenres() {
-        jdbcTemplate.execute("INSERT INTO users (id, username, email, password) VALUES (" + ID + ", '" + USERNAME + "', '" + EMAIL + "','" + PASSWORD + "')");
-
-        jdbcTemplate.execute("INSERT INTO genreforusers (userId, genreId) VALUES (" + ID + ", 1)");
-        jdbcTemplate.execute("INSERT INTO genreforusers (userId, genreId) VALUES (" + ID + ", 2)");
-        jdbcTemplate.execute("INSERT INTO genreforusers (userId, genreId) VALUES (" + ID + ", 3)");
-
-        Set<Genre> preferences = userDao.getPreferences(ID);
-        Assert.assertEquals(3, preferences.size());
+        Set<Genre> preferences = userDao.getPreferences(testUserWithPref.getId());
+        Assert.assertEquals(2, preferences.size());
         Assert.assertTrue(preferences.contains(Genre.ACTION));
         Assert.assertTrue(preferences.contains(Genre.ADVENTURE));
-        Assert.assertTrue(preferences.contains(Genre.CASUAL));
     }
 
-    @Transactional
+    @Rollback
     @Test
     public void testGetPreferencesWithNoGenres() {
-        jdbcTemplate.execute("INSERT INTO users (id, username, email, password) VALUES (" + ID + ", '" + USERNAME + "', '" + EMAIL + "','" + PASSWORD + "')");
-
-        Set<Genre> preferences = userDao.getPreferences(ID);
+        Set<Genre> preferences = userDao.getPreferences(testUserWithoutPref.getId());
         Assert.assertTrue(preferences.isEmpty());
     }
 
-    @Transactional
+    @Rollback
     @Test
     public void testGetPreferencesNonexistentUser() {
-        jdbcTemplate.execute("INSERT INTO users (id, username, email, password) VALUES (" + ID + ", '" + USERNAME + "', '" + EMAIL + "','" + PASSWORD + "')");
-
-        Set<Genre> preferences = userDao.getPreferences(ID2);
+        Set<Genre> preferences = userDao.getPreferences(-1L);
         Assert.assertTrue(preferences.isEmpty());
     }
 
-    @Transactional
+    @Rollback
     @Test
     public void testGetTotalAmountOfUsers() {
-        jdbcTemplate.execute("INSERT INTO users (id, username, email, password) VALUES (" + ID + ", '" + USERNAME + "', '" + EMAIL + "','" + PASSWORD + "')");
-        jdbcTemplate.execute("INSERT INTO users (id, username, email, password) VALUES (" + ID2 + ", '" + USERNAME2 + "', '" + EMAIL2 + "','" + PASSWORD2 + "')");
-        jdbcTemplate.execute("INSERT INTO users (id, username, email, password) VALUES (" + ID3 + ", '" + "USERNAME3" + "', '" + "EMAIL3" + "','" + "PASSWORD3" + "')");
         long amount = userDao.getTotalAmountOfUsers();
-        Assert.assertEquals(3L, amount);
+        Assert.assertEquals(5L, amount);
     }
 
-    @Transactional
-    @Test
-    public void testGetTotalAmountOfUsersEmptyTable() {
-        long amount = userDao.getTotalAmountOfUsers();
-        Assert.assertEquals(0L, amount);
-    }
-
-    @Transactional
+    @Rollback
     @Test
     public void testEnableNotification() {
-        jdbcTemplate.execute("INSERT INTO users (id, username, email, password) VALUES (" + ID + ", '" + USERNAME + "', '" + EMAIL + "','" + PASSWORD + "')");
-        jdbcTemplate.execute("INSERT INTO user_disabled_notifications (userid, notification) VALUES (" + ID + ",'"+ NotificationType.MY_REVIEW_IS_DELETED.getTypeName() +"')");
-
-        userDao.enableNotification(ID, NotificationType.MY_REVIEW_IS_DELETED.getTypeName());
+        userDao.enableNotification(disabledNotifUser.getId(), NotificationType.USER_I_FOLLOW_WRITES_REVIEW.getTypeName());
         em.flush();
-        Assert.assertEquals(0, JdbcTestUtils.countRowsInTable(jdbcTemplate, "user_disabled_notifications"));
+        Assert.assertEquals(0, JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, "user_disabled_notifications", String.format("userid ='%s' and notification = '%s'", disabledNotifUser.getId(), NotificationType.USER_I_FOLLOW_WRITES_REVIEW.getTypeName())));
     }
 
-    @Transactional
+    @Rollback
     @Test
     public void testDisableNotification() {
-        jdbcTemplate.execute("INSERT INTO users (id, username, email, password) VALUES (" + ID + ", '" + USERNAME + "', '" + EMAIL + "','" + PASSWORD + "')");
-
-        userDao.disableNotification(ID, NotificationType.MY_REVIEW_IS_DELETED.getTypeName());
+        userDao.disableNotification(disabledNotifUser.getId(), NotificationType.MY_REVIEW_IS_DELETED.getTypeName());
         em.flush();
-        Assert.assertEquals(1, JdbcTestUtils.countRowsInTable(jdbcTemplate, "user_disabled_notifications"));
+        Assert.assertEquals(1, JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, "user_disabled_notifications", String.format("userid ='%s' and notification = '%s'", disabledNotifUser.getId(), NotificationType.MY_REVIEW_IS_DELETED.getTypeName())));
     }
 }

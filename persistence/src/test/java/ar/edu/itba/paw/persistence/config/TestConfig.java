@@ -44,6 +44,18 @@ public class TestConfig {
     @Value("classpath:/populators/reviews.sql")
     private Resource reviewsSql;
 
+    @Value("classpath:/populators/following.sql")
+    private Resource followingSql;
+
+    @Value("classpath:/populators/missions.sql")
+    private Resource missionSql;
+
+    @Value("classpath:/populators/reviewfeedback.sql")
+    private Resource reviewFeedbackSql;
+
+    @Value("classpath:/populators/reports.sql")
+    private Resource reportsSql;
+
     @Bean
     public DataSource dataSource() {
         final SimpleDriverDataSource ds = new SimpleDriverDataSource();
@@ -92,9 +104,12 @@ public class TestConfig {
         final ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
         populator.addScript(hsqldbSql);
         // tokens.sql
-        populator.addScripts(gamesSql, usersSql, favoriteGamesSql);
-        // populator.addScript(reviewsSql);
-        // populator.addScript(tokensSql);
+        populator.addScripts(gamesSql, usersSql, favoriteGamesSql, missionSql);
+        populator.addScript(reviewsSql);
+        populator.addScript(reviewFeedbackSql);
+        populator.addScript(reportsSql);
+        populator.addScript(followingSql);
+        populator.addScript(tokensSql);
         return populator;
     }
 }

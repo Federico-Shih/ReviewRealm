@@ -15,7 +15,7 @@ public class UserTestModels {
         /* For static access */
     }
     private static final int USER_ID = 1;
-    private static final String USER_USERNAME = "username";
+    private static final String USER_USERNAME = "username1";
     private static final String USER_PASSWORD = "password";
     private static final String USER_EMAIL = "email";
 
@@ -39,6 +39,10 @@ public class UserTestModels {
     private static final int USER_REPUTATION = 100;
     private static final String USER_LANGUAGE = "en";
     private static final int USER_XP = 100;
+
+    private static final String CREATE_USERNAME = "NEW USERNAME";
+    private static final String CREATE_EMAIL = "NEW EMAIL";
+    private static final String CREATE_PASSWORD = "NEW PASSWORD";
 
     public static User getUser1() {
         User u1 = new User((long)USER_ID, USER_USERNAME, USER_EMAIL, USER_PASSWORD);
@@ -64,5 +68,9 @@ public class UserTestModels {
 
     public static User getUser5() {
         return new User(USER_ID5, USER_USERNAME5, USER_EMAIL5, USER_PASSWORD,true, USER_REPUTATION, new HashSet<>(Collections.singletonList(NotificationType.USER_I_FOLLOW_WRITES_REVIEW)), USER_LANGUAGE, USER_XP, Arrays.asList(GameTestModels.getSuperGameA(), GameTestModels.getSuperGameB(), GameTestModels.getSubnautica()));
+    }
+
+    public static User getCreateUser() {
+        return new User(CREATE_USERNAME, CREATE_EMAIL, CREATE_PASSWORD);
     }
 }

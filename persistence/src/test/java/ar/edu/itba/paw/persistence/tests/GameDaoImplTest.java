@@ -63,6 +63,7 @@ public class GameDaoImplTest {
     private User withFavoriteGamesUser;
 
     private User withNoReviewsCandidatesUser;
+    private User withReviewsCandidatesUser;
 
     @Before
     public void setUp() {
@@ -75,6 +76,7 @@ public class GameDaoImplTest {
         testGameSuggestedTrue = GameTestModels.getSubnautica();
         withFavoriteGamesUser = UserTestModels.getUser5();
         withNoReviewsCandidatesUser = UserTestModels.getUser4();
+        withReviewsCandidatesUser = UserTestModels.getUser2();
     }
 
     @Rollback
@@ -113,7 +115,8 @@ public class GameDaoImplTest {
                 createGame.getImage().getId(),
                 createGame.getGenres(),
                 createGame.getPublishDate(),
-                createGame.getSuggestion());
+                createGame.getSuggestion(),
+                null);
         em.flush();
         Assert.assertNotNull(game);
         Assert.assertEquals(1, JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, "games", String.format("name = '%s'", createGame.getName())));
@@ -141,7 +144,8 @@ public class GameDaoImplTest {
                 createGameNoGenres.getImage().getId(),
                 createGameNoGenres.getGenres(),
                 createGameNoGenres.getPublishDate(),
-                createGameNoGenres.getSuggestion());
+                createGameNoGenres.getSuggestion(),
+                null);
         em.flush();
         Assert.assertNotNull(game);
         Assert.assertEquals(1, JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, "games", String.format("name = '%s'", createGameNoGenres.getName())));
@@ -239,16 +243,15 @@ public class GameDaoImplTest {
     }
 
 
-//  TODO: WHEN REVIEW SCRIPT IS ONLINE
-//    @Rollback
-//    @Test
-//    public void testGetFavoriteGamesCandidates() {
-//        List<Game> games = gameDao.getFavoriteGamesCandidates(userId, 7);
-//
-//        Assert.assertEquals(1, games.size());
-//        Assert.assertTrue(games.stream().anyMatch(g -> g.getId().equals(gameId1)));
-//        Assert.assertFalse(games.stream().anyMatch(g -> g.getId().equals(gameId2)));
-//    }
+    @Rollback
+    @Test
+    public void testGetFavoriteGamesCandidates() {
+
+        List<Game> games = gameDao.getFavoriteGamesCandidates(withReviewsCandidatesUser.getId(), 7);
+
+        Assert.assertEquals(1, games.size());
+        Assert.assertTrue(games.stream().anyMatch(g -> g.getId().equals(GameTestModels.getSuperGameB().getId())));
+    }
 
     @Rollback
     @Test
@@ -306,10 +309,12 @@ public class GameDaoImplTest {
     @Test
     public void testFindAllSearch() {
         GameFilterBuilder filterBuilder = new GameFilterBuilder().withGameContent(SEARCH_VALUE);
-        List<Game> games = gameDao.findAll(Page.with(1, 10), filterBuilder.build(), new Ordering<>(OrderDirection.DESCENDING, GameOrderCriteria.NAME)).getList();
+        List<Game> games = gameDao.findAll(Page.with(1, 10),
+                filterBuilder.build(),
+                new Ordering<>(OrderDirection.DESCENDING, GameOrderCriteria.NAME)).getList();
 
         Assert.assertEquals(3, games.size());
-        List<Game> expectedGames = Arrays.asList(GameTestModels.getSubnautica(), GameTestModels.getSubnautica2(), GameTestModels.getSuperGameB());
+        List<Game> expectedGames = Arrays.asList(GameTestModels.getSuperGameB(), GameTestModels.getSubnautica2(), GameTestModels.getSubnautica());
         Assert.assertArrayEquals(expectedGames.toArray(), games.toArray());
     }
 
@@ -346,7 +351,7 @@ public class GameDaoImplTest {
         List<Game> games = gameDao.findAll(Page.with(1, 10), filterBuilder.build(), new Ordering<>(OrderDirection.DESCENDING, GameOrderCriteria.AVERAGE_RATING)).getList();
 
         Assert.assertEquals(1, games.size());
-        List<Game> expectedGames = Collections.singletonList(GameTestModels.getCreateGame());
+        List<Game> expectedGames = Collections.singletonList(GameTestModels.getSuperGameB());
         Assert.assertArrayEquals(expectedGames.toArray(), games.toArray());
     }
 
@@ -390,7 +395,7 @@ public class GameDaoImplTest {
 
         Assert.assertTrue(games.isPresent());
         Assert.assertEquals(2,games.get().size());
-        List<Game> expectedGames = Arrays.asList(GameTestModels.getSuperGameA(), GameTestModels.getSuperGameB());
+        List<Game> expectedGames = Arrays.asList(GameTestModels.getSuperGameB(), GameTestModels.getSubnautica());
         Assert.assertArrayEquals(expectedGames.toArray(), games.get().toArray());
     }
 

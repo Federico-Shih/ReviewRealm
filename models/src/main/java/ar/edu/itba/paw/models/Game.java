@@ -63,7 +63,7 @@ public class Game implements Cloneable {
     @JoinColumn(name = "suggestedby", referencedColumnName = "id")
     private User suggestedBy = null;
 
-    @OneToMany(mappedBy = "reviewedGame", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "reviewedGame", fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     private List<Review> reviews;
 
     @Formula(value = "case when reviewCount = 0 then 0 else ratingSum/reviewCount end")

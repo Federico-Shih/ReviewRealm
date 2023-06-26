@@ -2,6 +2,7 @@ package ar.edu.itba.paw.persistence.tests;
 
 import ar.edu.itba.paw.models.ExpirationToken;
 import ar.edu.itba.paw.persistence.config.TestConfig;
+import ar.edu.itba.paw.persistence.tests.utils.TokenTestModels;
 import ar.edu.itba.paw.persistenceinterfaces.ValidationTokenDao;
 import org.junit.Assert;
 import org.junit.Before;
@@ -10,11 +11,14 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.jdbc.JdbcTestUtils;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.sql.DataSource;
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -31,114 +35,81 @@ public class TokenDaoImplTest {
 
     private JdbcTemplate jdbcTemplate;
 
-    private SimpleJdbcInsert userTemplate;
-
-    private SimpleJdbcInsert tokenTemplate;
-
     @Autowired
     private ValidationTokenDao tokenDao;
+    private ExpirationToken createToken;
 
-    private final String TOKEN = "token";
-    private long userId;
-    private final String PASSWORD = "password";
-    private final LocalDateTime EXPIRATION = LocalDateTime.now();
+    @PersistenceContext
+    private EntityManager em;
+
+    private ExpirationToken passwordToken;
+
+    private final static String INEXISTENT_TOKEN = "aaaa";
 
     @Before
     public void setUp() {
         jdbcTemplate = new JdbcTemplate(ds);
-        tokenTemplate = new SimpleJdbcInsert(ds).withTableName("tokens");
-        userTemplate = new SimpleJdbcInsert(ds).withTableName("users");
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, "tokens");
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, "users");
-
-        Map<String, Object> userParams = new HashMap<>();
-        userParams.put("username", "username");
-        userParams.put("password", PASSWORD);
-        userParams.put("email", "email");
-        userParams.put("id", 1L);
-        userTemplate.execute(userParams);
-        this.userId = 1L;
+        createToken = TokenTestModels.getCreateToken();
+        passwordToken = TokenTestModels.getToken2();
     }
 
+    @Rollback
     @Test
     public void createExpirationTokenTest() {
-        ExpirationToken token = tokenDao.create(userId, PASSWORD, EXPIRATION);
+        ExpirationToken token = tokenDao.create(createToken.getUser().getId(), createToken.getPassword(), createToken.getExpiration());
         Assert.assertNotNull(token);
-        Assert.assertEquals(userId, (long) token.getUser().getId());
-        Assert.assertEquals(PASSWORD, token.getPassword());
-        Assert.assertEquals(EXPIRATION, token.getExpiration());
+        em.flush();
+
+        int count = JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, "tokens", "token = '" + token.getToken() + "'");
+        Assert.assertEquals(1, count);
     }
 
+    @Rollback
     @Test
     public void findLastPasswordTokenTest() {
-        tokenTemplate.execute(new HashMap<String, Object>() {{
-            put("token", TOKEN);
-            put("userid", userId);
-            put("password", PASSWORD);
-            put("expiration", EXPIRATION);
-        }});
-
-        ExpirationToken token = tokenDao.findLastPasswordToken(userId).orElse(null);
+        ExpirationToken token = tokenDao.findLastPasswordToken(passwordToken.getUser().getId()).orElse(null);
         Assert.assertNotNull(token);
-        Assert.assertEquals(TOKEN, token.getToken());
-        Assert.assertEquals(userId, (long) token.getUser().getId());
-        Assert.assertEquals(PASSWORD, token.getPassword());
-        Assert.assertEquals(EXPIRATION, token.getExpiration());
+        Assert.assertEquals(passwordToken.getToken(), token.getToken());
+        Assert.assertEquals(passwordToken.getUser(), token.getUser());
+        Assert.assertEquals(passwordToken.getPassword(), token.getPassword());
+        Assert.assertEquals(passwordToken.getExpiration(), token.getExpiration());
     }
 
+    @Rollback
     @Test
     public void noLastTokenFoundTest() {
-        ExpirationToken token = tokenDao.findLastPasswordToken(userId).orElse(null);
+        ExpirationToken token = tokenDao.findLastPasswordToken(-1L).orElse(null);
         Assert.assertNull(token);
     }
 
     // findLastPasswordToken only returns the last token with password creation
+    @Rollback
     @Test
     public void noValidateUserTokenTest() {
-        tokenTemplate.execute(new HashMap<String, Object>() {{
-            put("token", TOKEN);
-            put("userid", userId);
-            put("password", "");
-            put("expiration", EXPIRATION);
-        }});
-
-        ExpirationToken token = tokenDao.findLastPasswordToken(userId).orElse(null);
+        ExpirationToken token = tokenDao.findLastPasswordToken(TokenTestModels.getToken1().getUser().getId()).orElse(null);
         Assert.assertNull(token);
     }
 
+    @Rollback
     @Test
     public void deleteTokenByIdTest() {
-        tokenTemplate.execute(new HashMap<String, Object>() {{
-            put("token", TOKEN);
-            put("userid", userId);
-            put("password", PASSWORD);
-            put("expiration", EXPIRATION);
-        }});
-
-        Assert.assertTrue(tokenDao.delete(TOKEN));
-        Assert.assertFalse(tokenDao.delete(TOKEN));
+        Assert.assertTrue(tokenDao.delete(passwordToken.getToken()));
+        Assert.assertFalse(tokenDao.delete(passwordToken.getToken()));
+        em.flush();
+        Assert.assertEquals(0, JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, "tokens", "token = '" + passwordToken.getToken() + "'"));
     }
 
+    @Rollback
     @Test
     public void getExpirationTokenByTokenString() {
-        tokenTemplate.execute(new HashMap<String, Object>() {{
-            put("token", TOKEN);
-            put("userid", userId);
-            put("password", PASSWORD);
-            put("expiration", EXPIRATION);
-        }});
-
-        Optional<ExpirationToken> token = tokenDao.getByToken(TOKEN);
+        Optional<ExpirationToken> token = tokenDao.getByToken(passwordToken.getToken());
         Assert.assertTrue(token.isPresent());
-        Assert.assertEquals(TOKEN, token.get().getToken());
-        Assert.assertEquals(userId, (long) token.get().getUser().getId());
-        Assert.assertEquals(PASSWORD, token.get().getPassword());
-        Assert.assertEquals(EXPIRATION, token.get().getExpiration());
     }
 
+    @Rollback
     @Test
     public void noTokenFoundByTokenString() {
-        Optional<ExpirationToken> token = tokenDao.getByToken(TOKEN);
+        Optional<ExpirationToken> token = tokenDao.getByToken(INEXISTENT_TOKEN);
         Assert.assertFalse(token.isPresent());
     }
 }
