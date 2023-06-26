@@ -10,6 +10,7 @@
 .game-image {
     width: 100%;
     object-fit: contain;
+    height: 150px;
 }
 
 .search-result {

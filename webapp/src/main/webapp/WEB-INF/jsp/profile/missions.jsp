@@ -3,6 +3,8 @@
 <%@ page pageEncoding="UTF-8" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+
 <html>
 <head>
     <title><spring:message code="missions.title" arguments="PAGE.ARGUMENTS" /></title> <!-- Compiled and minified CSS -->
@@ -15,6 +17,12 @@
     <script src="<c:url value="/js/materialize.min.js" />"></script>
     <link rel="shortcut icon" type="image/png" href="<c:url value="/static/review_realm_logo_white_32px.png" />">
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var elems = document.querySelectorAll('.tooltipped');
+            var instances = M.Tooltip.init(elems, {});
+        });
+    </script>
 </head>
 <!-- general variables
 <%--<spring:message code="reviewForm.title.placeholder" var="titlePlaceholder"/>--%>
@@ -26,22 +34,27 @@
 <jsp:include page="/WEB-INF/jsp/static-components/navbar.jsp"/>
 <div class="container">
     <div class="card">
-        <div class="card-content">
-            <span class="card-title">
-                <spring:message code="missions.currentxp.title" />
-            </span>
-            <div class="progress-fontsize">
-                <spring:message code="missions.currentlevel.label" arguments="${level}" />
-            </div>
-            <div class="progress-fontsize">
-                <spring:message code="missions.totalxp.label" arguments="${xp}" />
-            </div>
-            <div>
-                <span class="progress custom-progress" style="height: 5px;">
+        <div class="card-content row">
+            <section class="col m10">
+                <span class="card-title">
+                    <spring:message code="missions.currentxp.title" />
+                </span>
+                <div class="progress-fontsize">
+                    <spring:message code="missions.totalxp.label" arguments="${xp}" />
+                </div>
+                <div>
+                <fmt:formatNumber value="${currentLevelXp}" maxFractionDigits="0" var="currentxp" />
+                <span class="progress custom-progress tooltipped" data-position="bottom" data-tooltip="${currentxp}/100" style="height: 5px;">
                     <div class="determinate custom-progress" style="width: ${currentLevelXp}%;"></div>
                 </span>
-                <span>${currentLevelXp}/${100}</span>
-            </div>
+                    <span>${currentxp}/${100}</span>
+                </div>
+            </section>
+            <section class="col m2">
+                <div class="level-container">
+                    <spring:message code="profile.level" arguments="${level}" />
+                </div>
+            </section>
         </div>
     </div>
     <div class="card">
@@ -49,40 +62,44 @@
             <span class="card-title">
                 <spring:message code="missions.card.title" />
             </span>
-            <c:forEach items="${missions}" var="missionProgress">
-                <div class="card">
-                    <div class="card-content mission-card">
+            <div class="row ">
+                <c:forEach items="${missions}" var="missionProgress">
+                    <div class="card col m6 l6 s12 mission-card-container">
+                        <div class="card-content mission-card">
                         <span class="card-title">
                             <spring:message code="${missionProgress.mission.title}" />
                         </span>
-                        <div>
-                            <spring:message code="${missionProgress.mission.description}" arguments="${missionProgress.mission.target}" />
-                        </div>
-                        <div>
-                            <div class="progress">
-                                <div class="determinate" style="width: ${missionProgress.progress/missionProgress.mission.target * 100}%"></div>
+                            <div>
+                                <spring:message code="${missionProgress.mission.description}" arguments="${missionProgress.mission.target}" />
                             </div>
-                            <div>${missionProgress.progress}/${missionProgress.mission.target}</div>
-                        </div>
-                        <div>
-                            <spring:message code="missions.timescompleted.label" arguments="${missionProgress.times}" />
-                        </div>
-                        <div class="mission-data">
-                            <c:if test="${missionProgress.mission.repeatable}">
+                            <div>
+                                <div class="progress">
+                                    <div class="determinate" style="width: ${missionProgress.progress/missionProgress.mission.target * 100}%"></div>
+                                </div>
+                                <div>
+                                    <fmt:formatNumber value="${missionProgress.progress}" maxFractionDigits="0" />/<fmt:formatNumber value="${missionProgress.mission.target}" maxFractionDigits="0" />
+                                </div>
+                            </div>
+                            <div>
+                                <spring:message code="missions.timescompleted.label" arguments="${missionProgress.times}" />
+                            </div>
+                            <div class="mission-data">
+                                <c:if test="${missionProgress.mission.repeatable}">
                                 <span class="mission-chip">
                                         <i class="material-icons">repeat</i>
                                     <span>
                                         <spring:message code="${missionProgress.mission.frequency.name}" />
                                     </span>
                                 </span>
-                            </c:if>
-                            <span class="mission-chip ">
+                                </c:if>
+                                <span class="mission-chip ">
                                 <spring:message code="missions.xp.label" arguments="${missionProgress.mission.xp}" />
                             </span>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </c:forEach>
+                </c:forEach>
+            </div>
         </div>
     </div>
 </div>

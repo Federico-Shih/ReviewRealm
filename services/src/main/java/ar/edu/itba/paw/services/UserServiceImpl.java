@@ -104,7 +104,7 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     @Override
     public Optional<User> getUserByToken(String token) {
-        ExpirationToken expirationToken = tokenDao.getByToken(token).orElseThrow(() -> new UserNotFoundException("user.notfound"));
+        ExpirationToken expirationToken = tokenDao.getByToken(token).orElseThrow(UserNotFoundException::new);
         return getUserById(expirationToken.getUser().getId());
     }
 
@@ -112,7 +112,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User changeUserPassword(String email, String password) {
         LOGGER.info("Changing password: {}", email);
-        User user = getUserByEmail(email).orElseThrow(() -> new UserNotFoundException("notfound.user"));
+        User user = getUserByEmail(email).orElseThrow(UserNotFoundException::new);
         SaveUserBuilder saveUserBuilder = new SaveUserBuilder().withPassword(passwordEncoder.encode(password));
         return userDao.update(user.getId(), saveUserBuilder.build()).orElse(null);
     }
@@ -120,40 +120,44 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     @Override
     public List<User> getFollowers(long id) {
-        return userDao.getFollowers(id).orElseThrow(() -> new UserNotFoundException("notfound.user"));
+        return userDao.getFollowers(id).orElseThrow(UserNotFoundException::new);
     }
 
     @Transactional(readOnly = true)
     @Override
     public List<User> getFollowing(long id) {
-        return userDao.getFollowing(id).orElseThrow(() -> new UserNotFoundException("notfound.user"));
+        return userDao.getFollowing(id).orElseThrow(UserNotFoundException::new);
     }
 
     @Transactional(readOnly = true)
     @Override
     public FollowerFollowingCount getFollowerFollowingCount(long id) {
-        return userDao.getFollowerFollowingCount(id).orElseThrow(() -> new UserNotFoundException("notfound.user"));
+        return userDao.getFollowerFollowingCount(id).orElseThrow(UserNotFoundException::new);
     }
 
     @Transactional(readOnly = true)
     @Override
     public Set<RoleType> getUserRoles(long id) {
-        return userDao.findById(id).orElseThrow(() -> new UserNotFoundException("notfound.user")).getRoles();
+        return userDao.findById(id).orElseThrow(UserNotFoundException::new).getRoles();
     }
 
     @Transactional
     @Override
     public User followUserById(long userId, long otherId) {
-        User toReturn = userDao.createFollow(userId, otherId).orElseThrow(() -> new UserNotFoundException("notfound.user"));
+        User toReturn = userDao.createFollow(userId, otherId).orElseThrow(UserNotFoundException::new);
         LOGGER.info("User {} followed user {}", userId, otherId);
+        missionService.addMissionProgress(userId, Mission.FOLLOWING_GOAL, 1);
+        missionService.addMissionProgress(otherId, Mission.FOLLOWERS_GOAL, 1);
         return toReturn;
     }
 
     @Transactional
     @Override
     public User unfollowUserById(long userId, long otherId) {
-        User toReturn = userDao.deleteFollow(userId, otherId).orElseThrow(() -> new UserNotFoundException("notfound.user"));
+        User toReturn = userDao.deleteFollow(userId, otherId).orElseThrow(UserNotFoundException::new);
         LOGGER.info("User {} possibly unfollowed user {}", userId, otherId);
+        missionService.addMissionProgress(userId, Mission.FOLLOWING_GOAL, -1);
+        missionService.addMissionProgress(otherId, Mission.FOLLOWERS_GOAL, -1);
         return toReturn;
     }
 
@@ -161,10 +165,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean userFollowsId(long userId, long otherId) {
         if (!userDao.exists(userId)) {
-            throw new UserNotFoundException("notfound.currentuser");
+            throw new UserNotFoundException();
         }
         if (!userDao.exists(otherId)) {
-            throw new UserNotFoundException("notfound.otheruser");
+            throw new UserNotFoundException();
         }
         return userDao.follows(userId, otherId);
     }

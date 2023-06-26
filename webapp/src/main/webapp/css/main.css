@@ -121,8 +121,10 @@
 }
 
 .overflow-ellipsis {
+    display: inline-flex;
     text-overflow: ellipsis;
     overflow: hidden;
+    white-space: nowrap;
 }
 
 .no-wrap {
@@ -589,9 +591,8 @@ input::-webkit-inner-spin-button {
 .wide-selector {
     background: #13112d;
     border-radius: 4px;
-    box-shadow: 3px 3px 6px 4px rgb(0 0 0 / 0.2);
-    margin: 8px 4px;
-    padding: 8px 12px;
+    box-shadow: 3px 3px 6px 4px rgb(0 0 0 / 0.2) !important;
+    padding: 8px 12px !important;
 }
 
 .selector-option {
@@ -629,6 +630,6 @@ input::-webkit-inner-spin-button {
 }
 
 .community-container {
-    width: 90%;
+    width: 80%;
     margin: 0 auto;
 }

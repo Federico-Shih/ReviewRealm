@@ -3,6 +3,8 @@ package ar.edu.itba.paw.enums;
 public enum Mission {
     REPUTATION_GOAL("missions.reputationgoal.title", "missions.reputationgoal.description", 20f, 5f, true, MissionFrequency.NONE, null),
     REVIEWS_GOAL("missions.reviewsgoal.title", "missions.reviewsgoal.description", 50f, 3f, true, MissionFrequency.NONE, null),
+    FOLLOWERS_GOAL("missions.followersgoal.title", "missions.followersgoal.description", 100f, 3f, true, MissionFrequency.NONE, null),
+    FOLLOWING_GOAL("missions.followinggoal.title", "missions.followinggoal.description", 80f, 5f, true, MissionFrequency.NONE, null),
     CHANGE_AVATAR("missions.avatarchange.title", "missions.avatarchange.description", 100f, 1f, true, MissionFrequency.MONTHLY, null),
     SETUP_PREFERENCES("missions.preferences.title", "missions.preferences.description", 100f, 1f, false, MissionFrequency.NONE, null),
     MANAGE_GAME_SUBMISSIONS("missions.accept.title", "missions.accept.description", 50f, 1f, true, MissionFrequency.NONE, RoleType.MODERATOR),

@@ -71,7 +71,7 @@
                     </div>
                     <div class="row">
                         <c:forEach var="user" items="${users}">
-                            <div class="col s12 margin-bottom-2">
+                            <div class="col s6 margin-bottom-2">
                                 <c:set var="user" value="${user}" scope="request"/>
                                 <c:import url="/WEB-INF/jsp/profile/profile-card.jsp"/>
                             </div>
@@ -93,27 +93,16 @@
                             </a>
                         </div>
                     </div>
-                    <c:forEach items="${games}" var="game">
-                        <c:url var="gameUrl" value="/game/${game.id}" />
-                        <div class="search-result-background">
-                            <a href="${gameUrl}" id="${game.id}" class="no-a-decoration search-result">
-                                <div class="search-game-container">
-                                    <div>
-                                        <c:url value="${game.imageUrl}" var="imgUrl" />
-                                        <img src="${imgUrl}" alt="game-image" class="search-result-image"/>
-                                    </div>
-                                    <div class="search-result-container-text">
-                                        <h6><c:out value="${game.name}"/></h6>
-                                        <div>
-                                            <c:forEach var="genre" items="${game.genres}" end="1">
-                                                <span class="chip-small"><spring:message code="${genre.name}"/> </span>
-                                            </c:forEach>
-                                        </div>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-                    </c:forEach>
+                    <div class="row">
+                        <c:forEach items="${games}" var="game">
+                            <div class="search-result-background col m6 l6 s12">
+                                <c:set var="game" value="${game}" scope="request" />
+                                <c:set var="gameUrl" value="/game/${game.id}" />
+
+                                <c:import url="/WEB-INF/jsp/games/short-game-details.jsp" />
+                            </div>
+                        </c:forEach>
+                    </div>
                 </div>
             </div>
         </c:if>
