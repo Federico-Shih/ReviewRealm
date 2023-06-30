@@ -10,15 +10,15 @@ import java.nio.file.AccessDeniedException;
 
 @Controller
 public class ExceptionController {
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    @RequestMapping("errors/404")
-    public ModelAndView notFoundException() {
-        throw new ObjectNotFoundException();
-    }
-
-    @ResponseStatus(HttpStatus.FORBIDDEN)
-    @RequestMapping("errors/403")
-    public ModelAndView wrongAccessException() throws AccessDeniedException {
-        throw new AccessDeniedException("access-denied");
-    }
+//    @ResponseStatus(HttpStatus.NOT_FOUND)
+//    @RequestMapping("errors/404")
+//    public ModelAndView notFoundException() {
+//        throw new ObjectNotFoundException();
+//    }
+//
+//    @ResponseStatus(HttpStatus.FORBIDDEN)
+//    @RequestMapping("errors/403")
+//    public ModelAndView wrongAccessException() throws AccessDeniedException {
+//        throw new AccessDeniedException("access-denied");
+//    }
 }
