@@ -7,6 +7,7 @@ import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.servicesinterfaces.UserService;
 import ar.edu.itba.paw.webapp.auth.PawAuthUserDetails;
 import ar.edu.itba.paw.webapp.controller.querycontainers.UserSearchQuery;
+import ar.edu.itba.paw.webapp.controller.responses.PaginatedResponse;
 import ar.edu.itba.paw.webapp.controller.responses.UserResponse;
 import ar.edu.itba.paw.webapp.forms.ChangePasswordForm;
 import ar.edu.itba.paw.webapp.forms.RegisterForm;
@@ -60,17 +61,25 @@ public class UserController {
         if (!user.isPresent()) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
-        return Response.ok(UserResponse.fromUser(uriInfo, user.get())).build();
+        return Response.ok((new UserResponse()).fromEntity(uriInfo, user.get())).build();
     }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON_VALUE)
     public Response getUsers(@Valid @BeanParam UserSearchQuery userSearchQuery) {
         final Paginated<User> users = us.getUsers(userSearchQuery.getPage(), userSearchQuery.getFilter(), userSearchQuery.getOrdering());
-        /*
-        users.getList().stream().map(u -> UserResponse.fromUser(uriInfo, u)).collect(Collectors.toList())
-         */
-        return null;
+        if (users.getList().isEmpty()) {
+            return Response.noContent().build();
+        }
+        List<UserResponse> userResponseList = users.getList().stream().map(u -> (new UserResponse()).fromEntity(uriInfo, u)).collect(Collectors.toList());
+        Response.ResponseBuilder response = Response.ok(new GenericEntity<List<UserResponse>>(userResponseList){});
+        if (users.getPage() > 1) {
+            response = response.link(uriInfo.getRequestUriBuilder().replaceQueryParam("page", users.getPage() - 1).build(), "prev");
+        }
+        if (users.getPage() < (users.getTotalPages() - 1)) {
+            response = response.link(uriInfo.getRequestUriBuilder().replaceQueryParam("page", users.getPage() + 1).build(), "next");
+        }
+        return response.build();
     }
 
 //    @RequestMapping("/login")

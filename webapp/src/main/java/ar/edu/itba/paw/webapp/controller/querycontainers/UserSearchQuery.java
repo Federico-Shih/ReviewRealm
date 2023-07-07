@@ -20,17 +20,19 @@ import javax.validation.constraints.Min;
 import javax.ws.rs.QueryParam;
 
 public class UserSearchQuery {
+    private static final int DEFAULT_PAGE_SIZE = 10;
+    private static final int DEFAULT_PAGE = 1;
 
     @QueryParam("search")
     private String search;
 
     @Min(1)
     @QueryParam("page")
-    private Integer page = 1;
+    private Integer page;
 
     @Min(1)
     @QueryParam("pageSize")
-    private Integer pageSize = 10;
+    private Integer pageSize ;
 
     @QueryParam("sort")
     private UserOrderCriteria orderCriteria = UserOrderCriteria.LEVEL;
@@ -42,7 +44,7 @@ public class UserSearchQuery {
     }
 
     public Page getPage() {
-        return Page.with(page, pageSize);
+        return Page.with(page != null ? page : DEFAULT_PAGE , pageSize != null ? pageSize : DEFAULT_PAGE_SIZE);
     }
 
     public String getSearch() {

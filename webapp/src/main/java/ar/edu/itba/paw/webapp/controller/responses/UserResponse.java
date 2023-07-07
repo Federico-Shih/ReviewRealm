@@ -6,8 +6,7 @@ import java.net.URI;
 import java.util.Locale;
 import java.util.Map;
 
-
-public class UserResponse extends BaseResponse {
+public class UserResponse extends BaseResponse<UserResponse, User> {
     private long id;
     private String username;
     private String email;
@@ -17,7 +16,7 @@ public class UserResponse extends BaseResponse {
     private Locale language;
     private Float xp;
 
-    public static UserResponse fromUser(final UriInfo uri, User user) {
+    public UserResponse fromEntity(final UriInfo uri, User user) {
         UserResponse response = new UserResponse();
         response.setId(user.getId());
         response.setUsername(user.getUsername());

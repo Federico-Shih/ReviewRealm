@@ -1,15 +1,11 @@
 package ar.edu.itba.paw.webapp.controller.responses;
 
-import com.fasterxml.jackson.annotation.JsonValue;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-
+import javax.ws.rs.core.UriInfo;
 import java.net.URI;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
-public class BaseResponse {
+public abstract class BaseResponse<T, U> {
     private final Map<String, URI> _links = new HashMap<>();
 
     public void add(String key, URI uriInfo) {
@@ -23,4 +19,6 @@ public class BaseResponse {
     public void setLinks(Map<String, URI> links) {
         _links.putAll(links);
     }
+
+    public abstract T fromEntity(UriInfo uri, U entity);
 }
