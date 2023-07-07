@@ -2,9 +2,11 @@ package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.enums.RoleType;
 import ar.edu.itba.paw.exceptions.*;
+import ar.edu.itba.paw.models.Paginated;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.servicesinterfaces.UserService;
 import ar.edu.itba.paw.webapp.auth.PawAuthUserDetails;
+import ar.edu.itba.paw.webapp.controller.querycontainers.UserSearchQuery;
 import ar.edu.itba.paw.webapp.controller.responses.UserResponse;
 import ar.edu.itba.paw.webapp.forms.ChangePasswordForm;
 import ar.edu.itba.paw.webapp.forms.RegisterForm;
@@ -26,11 +28,9 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.util.List;
@@ -39,7 +39,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Path("/users")
-@Component
+@Controller
 public class UserController {
     private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
     private final UserService us;
@@ -47,8 +47,6 @@ public class UserController {
     @Context
     private UriInfo uriInfo;
 
-    @Autowired
-    private HttpServletRequest httpServletRequest;
     @Autowired
     public UserController(UserService us) {
         this.us = us;
@@ -59,10 +57,20 @@ public class UserController {
     @Produces(value = { MediaType.APPLICATION_JSON_VALUE })
     public Response getById(@PathParam("id") final long id) {
         final Optional<User> user = us.getUserById(id);
-        if (user.isPresent()) {
-            return Response.ok(UserResponse.fromUser(uriInfo, user.get())).build();
+        if (!user.isPresent()) {
+            return Response.status(Response.Status.NOT_FOUND).build();
         }
-        return Response.status(Response.Status.NOT_FOUND).build();
+        return Response.ok(UserResponse.fromUser(uriInfo, user.get())).build();
+    }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON_VALUE)
+    public Response getUsers(@Valid @BeanParam UserSearchQuery userSearchQuery) {
+        final Paginated<User> users = us.getUsers(userSearchQuery.getPage(), userSearchQuery.getFilter(), userSearchQuery.getOrdering());
+        /*
+        users.getList().stream().map(u -> UserResponse.fromUser(uriInfo, u)).collect(Collectors.toList())
+         */
+        return null;
     }
 
 //    @RequestMapping("/login")

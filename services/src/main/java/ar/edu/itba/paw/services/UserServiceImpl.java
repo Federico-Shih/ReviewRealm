@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.dtos.Page;
+import ar.edu.itba.paw.dtos.filtering.UserFilter;
 import ar.edu.itba.paw.dtos.filtering.UserFilterBuilder;
 import ar.edu.itba.paw.dtos.ordering.Ordering;
 import ar.edu.itba.paw.dtos.ordering.UserOrderCriteria;
@@ -408,5 +409,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public User setFavoriteGames(long userId, List<Long> gameIds) {
         return userDao.replaceAllFavoriteGames(userId, gameIds==null? new ArrayList<>(): gameIds).orElseThrow(UserNotFoundException::new);
+    }
+
+    @Override
+    public Paginated<User> getUsers(Page page, UserFilter filter, Ordering<UserOrderCriteria> ordering) {
+        return userDao.findAll(page, filter, ordering);
     }
 }

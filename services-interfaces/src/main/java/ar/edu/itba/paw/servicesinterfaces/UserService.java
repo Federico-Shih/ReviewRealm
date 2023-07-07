@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.servicesinterfaces;
 
 import ar.edu.itba.paw.dtos.Page;
+import ar.edu.itba.paw.dtos.filtering.UserFilter;
 import ar.edu.itba.paw.dtos.ordering.Ordering;
 import ar.edu.itba.paw.dtos.ordering.UserOrderCriteria;
 import ar.edu.itba.paw.enums.NotificationType;
@@ -79,4 +80,6 @@ public interface UserService {
     boolean deleteFavoriteGame(long userId, long gameId);
     
     User setFavoriteGames(long userId, List<Long> gameIds);
+
+    Paginated<User> getUsers(Page page, UserFilter filter, Ordering<UserOrderCriteria> ordering);
 }

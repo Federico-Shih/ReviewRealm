@@ -1,17 +1,13 @@
 package ar.edu.itba.paw.webapp.controller.responses;
 
-import ar.edu.itba.paw.converters.GenreAttributeConverter;
-import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.models.User;
-
-import javax.persistence.*;
 import javax.ws.rs.core.UriInfo;
 import java.net.URI;
-import java.util.HashSet;
 import java.util.Locale;
-import java.util.Set;
+import java.util.Map;
 
-public class UserResponse {
+
+public class UserResponse extends BaseResponse {
     private long id;
     private String username;
     private String email;
@@ -20,7 +16,6 @@ public class UserResponse {
     private Long avatarId;
     private Locale language;
     private Float xp;
-    private URI self;
 
     public static UserResponse fromUser(final UriInfo uri, User user) {
         UserResponse response = new UserResponse();
@@ -32,7 +27,9 @@ public class UserResponse {
         response.setLanguage(user.getLanguage());
         response.setXp(user.getXp());
         response.setAvatarId(user.getAvatarId());
-        response.setSelf(uri.getBaseUriBuilder().path("/users").path(String.valueOf(user.getId())).build());
+
+        response.add("self", uri.getBaseUriBuilder().path("/users").path(String.valueOf(user.getId())).build());
+        // TODO: rest of paths
         return response;
     }
 
@@ -46,6 +43,10 @@ public class UserResponse {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public Map<String, URI> getLinks() {
+        return super.getLinks();
     }
 
     public void setEnabled(Boolean enabled) {
@@ -66,10 +67,6 @@ public class UserResponse {
 
     public void setXp(Float xp) {
         this.xp = xp;
-    }
-
-    public void setSelf(URI self) {
-        this.self = self;
     }
 
     public long getId() {
@@ -102,9 +99,5 @@ public class UserResponse {
 
     public Float getXp() {
         return xp;
-    }
-
-    public URI getSelf() {
-        return self;
     }
 }
