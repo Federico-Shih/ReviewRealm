@@ -10,23 +10,27 @@ import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-// TODO: ver si es necesario esto.
-public class PaginatedResponse<T, V extends BaseResponse<V, T>> {
+public class PaginatedResponse<T, V extends BaseResponse> extends BaseResponse {
     private List<V> data;
     private long page;
     private long pageSize;
     private long totalPages;
-    private URI prev;
-    private URI next;
-    private URI curr;
 
-//    public PaginatedResponse<T, V> fromPaginated(UriInfo info, Paginated<T> paginated, Supplier<? extends V> ctor) {
-//        this.data = paginated.getList().stream().map((value) -> ctor.get().fromEntity(info, value)).collect(Collectors.toList());
-//        this.page = paginated.getPage();
-//        this.pageSize = paginated.getPageSize();
-//        this.totalPages = paginated.getTotalPages();
-//        return this;
-//    }
+    public static <T, V extends BaseResponse> PaginatedResponse<T, V> fromPaginated(UriInfo info, List<V> values, Paginated<T> pagination) {
+        PaginatedResponse<T, V> response = new PaginatedResponse<>();
+        response.data = values;
+        response.page = pagination.getPage();
+        response.pageSize = pagination.getPageSize();
+        response.totalPages = pagination.getTotalPages();
+        response.add("self", info.getRequestUri());
+        if (pagination.getPage() > 1) {
+            response.add("prev", info.getRequestUriBuilder().replaceQueryParam("page", pagination.getPage() - 1).build());
+        }
+        if (pagination.getPage() < pagination.getTotalPages()) {
+            response.add("next", info.getRequestUriBuilder().replaceQueryParam("page", pagination.getPage() + 1).build());
+        }
+        return response;
+    }
 
     public void setData(List<V> data) {
         this.data = data;

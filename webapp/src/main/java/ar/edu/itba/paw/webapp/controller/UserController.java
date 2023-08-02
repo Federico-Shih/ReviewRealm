@@ -72,13 +72,7 @@ public class UserController extends UriInfoController {
             return Response.noContent().build();
         }
         List<UserResponse> userResponseList = users.getList().stream().map(this.currifyUriInfo(UserResponse::fromEntity)).collect(Collectors.toList());
-        Response.ResponseBuilder response = Response.ok(new GenericEntity<List<UserResponse>>(userResponseList){});
-        if (users.getPage() > 1) {
-            response = response.link(uriInfo.getRequestUriBuilder().replaceQueryParam("page", users.getPage() - 1).build(), "prev");
-        }
-        if (users.getPage() < (users.getTotalPages() - 1)) {
-            response = response.link(uriInfo.getRequestUriBuilder().replaceQueryParam("page", users.getPage() + 1).build(), "next");
-        }
+        Response.ResponseBuilder response = Response.ok(PaginatedResponse.fromPaginated(uriInfo, userResponseList, users));
         return response.build();
     }
 

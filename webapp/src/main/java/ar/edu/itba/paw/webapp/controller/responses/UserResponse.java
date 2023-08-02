@@ -6,7 +6,7 @@ import java.net.URI;
 import java.util.Locale;
 import java.util.Map;
 
-public class UserResponse extends BaseResponse<UserResponse, User> {
+public class UserResponse extends BaseResponse {
     private long id;
     private String username;
     private String email;
