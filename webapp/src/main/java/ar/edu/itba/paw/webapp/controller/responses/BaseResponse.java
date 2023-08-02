@@ -19,6 +19,4 @@ public abstract class BaseResponse<T, U> {
     public void setLinks(Map<String, URI> links) {
         _links.putAll(links);
     }
-
-    public abstract T fromEntity(UriInfo uri, U entity);
 }

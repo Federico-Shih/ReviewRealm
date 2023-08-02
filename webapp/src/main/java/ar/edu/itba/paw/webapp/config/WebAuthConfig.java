@@ -22,6 +22,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -98,7 +99,7 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                 .addFilterAfter(new AuthenticationPageFilter(), BasicAuthenticationFilter.class)
                 // redirecciona si uno trata de ir a login o register y ya está conectado
                 .sessionManagement()
-                .invalidSessionUrl("/login")
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             .and().authorizeRequests()
                 .accessDecisionManager(accessDecisionManager())
 
@@ -125,30 +126,10 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
 
                 /* POR DEFAULT NO ES NECESARIO INICIAR SESIÓN */
                 .antMatchers( "/**").permitAll()
-            .and().formLogin()
-                .loginPage("/login")
-                .usernameParameter("email")
-                .passwordParameter("password")
-                .defaultSuccessUrl("/", false)
-                .failureHandler(new CustomAuthenticationFailureHandler())
-            .and().rememberMe()
-                .rememberMeParameter("remember-me")
-                .userDetailsService(userDetailsService)
-                .key(getRememberMeKey())
-                .tokenValiditySeconds((int) TimeUnit.DAYS.toSeconds(30))
-            .and().logout()
-                .logoutUrl("/logout")
-                .logoutSuccessUrl("/login")
             .and().exceptionHandling()
+                // TODO Sacar page y agregar handler
                 .accessDeniedPage("/errors/403")
             .and().csrf().disable();
-    }
-
-
-    private String getRememberMeKey() throws IOException {
-        ClassPathResource resource = new ClassPathResource("keys/rememberme_key.pem");
-        byte[] bytes = IOUtils.toByteArray(resource.getInputStream());
-        return new String(Base64.getEncoder().encode(bytes), StandardCharsets.UTF_8);
     }
 
 }

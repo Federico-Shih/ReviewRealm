@@ -40,8 +40,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Path("/users")
-@Controller
-public class UserController {
+@Component
+public class UserController extends UriInfoController {
     private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
     private final UserService us;
 
@@ -61,7 +61,7 @@ public class UserController {
         if (!user.isPresent()) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
-        return Response.ok((new UserResponse()).fromEntity(uriInfo, user.get())).build();
+        return Response.ok(UserResponse.fromEntity(uriInfo, user.get())).build();
     }
 
     @GET
@@ -71,7 +71,7 @@ public class UserController {
         if (users.getList().isEmpty()) {
             return Response.noContent().build();
         }
-        List<UserResponse> userResponseList = users.getList().stream().map(u -> (new UserResponse()).fromEntity(uriInfo, u)).collect(Collectors.toList());
+        List<UserResponse> userResponseList = users.getList().stream().map(this.currifyUriInfo(UserResponse::fromEntity)).collect(Collectors.toList());
         Response.ResponseBuilder response = Response.ok(new GenericEntity<List<UserResponse>>(userResponseList){});
         if (users.getPage() > 1) {
             response = response.link(uriInfo.getRequestUriBuilder().replaceQueryParam("page", users.getPage() - 1).build(), "prev");
@@ -226,3 +226,13 @@ public class UserController {
 //    }
 
 }
+
+/*
+POST /recovertoken email
+PUT /users/1/password
+POST /validatetoken email
+PUT /users/1/enabled ???
+POST /users
+PUT /users/1
+PUT /users/1/preferences
+ */

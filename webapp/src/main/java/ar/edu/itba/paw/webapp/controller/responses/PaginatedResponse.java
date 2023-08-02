@@ -20,13 +20,13 @@ public class PaginatedResponse<T, V extends BaseResponse<V, T>> {
     private URI next;
     private URI curr;
 
-    public PaginatedResponse<T, V> fromPaginated(UriInfo info, Paginated<T> paginated, Supplier<? extends V> ctor) {
-        this.data = paginated.getList().stream().map((value) -> ctor.get().fromEntity(info, value)).collect(Collectors.toList());
-        this.page = paginated.getPage();
-        this.pageSize = paginated.getPageSize();
-        this.totalPages = paginated.getTotalPages();
-        return this;
-    }
+//    public PaginatedResponse<T, V> fromPaginated(UriInfo info, Paginated<T> paginated, Supplier<? extends V> ctor) {
+//        this.data = paginated.getList().stream().map((value) -> ctor.get().fromEntity(info, value)).collect(Collectors.toList());
+//        this.page = paginated.getPage();
+//        this.pageSize = paginated.getPageSize();
+//        this.totalPages = paginated.getTotalPages();
+//        return this;
+//    }
 
     public void setData(List<V> data) {
         this.data = data;

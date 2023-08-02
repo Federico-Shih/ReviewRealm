@@ -16,7 +16,7 @@ public class UserResponse extends BaseResponse<UserResponse, User> {
     private Locale language;
     private Float xp;
 
-    public UserResponse fromEntity(final UriInfo uri, User user) {
+    public static UserResponse fromEntity(final UriInfo uri, User user) {
         UserResponse response = new UserResponse();
         response.setId(user.getId());
         response.setUsername(user.getUsername());
