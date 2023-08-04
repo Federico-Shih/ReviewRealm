@@ -11,7 +11,6 @@ public class UserFilter {
     private final Long id;
     private final Long notId;
     private final String search;
-
     private final List<Integer> preferences;
 
     private final List<Long> gamesPlayed;

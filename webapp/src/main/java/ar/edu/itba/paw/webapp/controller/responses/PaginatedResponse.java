@@ -2,13 +2,8 @@ package ar.edu.itba.paw.webapp.controller.responses;
 
 import ar.edu.itba.paw.models.Paginated;
 
-import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.UriInfo;
-import java.net.URI;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 public class PaginatedResponse<T, V extends BaseResponse> extends BaseResponse {
     private List<V> data;
@@ -22,12 +17,12 @@ public class PaginatedResponse<T, V extends BaseResponse> extends BaseResponse {
         response.page = pagination.getPage();
         response.pageSize = pagination.getPageSize();
         response.totalPages = pagination.getTotalPages();
-        response.add("self", info.getRequestUri());
+        response.link("self", info.getRequestUri());
         if (pagination.getPage() > 1) {
-            response.add("prev", info.getRequestUriBuilder().replaceQueryParam("page", pagination.getPage() - 1).build());
+            response.link("prev", info.getRequestUriBuilder().replaceQueryParam("page", pagination.getPage() - 1).build());
         }
         if (pagination.getPage() < pagination.getTotalPages()) {
-            response.add("next", info.getRequestUriBuilder().replaceQueryParam("page", pagination.getPage() + 1).build());
+            response.link("next", info.getRequestUriBuilder().replaceQueryParam("page", pagination.getPage() + 1).build());
         }
         return response;
     }

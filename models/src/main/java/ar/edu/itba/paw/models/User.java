@@ -30,7 +30,7 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-    @ElementCollection(targetClass = Genre.class, fetch = FetchType.LAZY)
+    @ElementCollection(targetClass = Genre.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "genreforusers", joinColumns = @JoinColumn(name = "userid", referencedColumnName = "id"))
     @Column(name = "genreid")
     @Convert(converter = GenreAttributeConverter.class)

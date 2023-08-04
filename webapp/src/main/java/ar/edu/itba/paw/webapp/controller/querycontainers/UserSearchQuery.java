@@ -17,34 +17,39 @@ import ar.edu.itba.paw.dtos.ordering.UserOrderCriteria;
 import org.springframework.security.access.method.P;
 
 import javax.validation.constraints.Min;
+import javax.validation.constraints.Pattern;
 import javax.ws.rs.QueryParam;
+import java.util.List;
 
-public class UserSearchQuery {
-    private static final int DEFAULT_PAGE_SIZE = 10;
-    private static final int DEFAULT_PAGE = 1;
+public class UserSearchQuery extends PaginatedQuery {
 
     @QueryParam("search")
     private String search;
 
-    @Min(1)
-    @QueryParam("page")
-    private Integer page;
-
-    @Min(1)
-    @QueryParam("pageSize")
-    private Integer pageSize ;
-
+    @Pattern(regexp ="^(level|followers|reputation)$", flags = Pattern.Flag.CASE_INSENSITIVE)
     @QueryParam("sort")
-    private UserOrderCriteria orderCriteria = UserOrderCriteria.LEVEL;
+    private String orderCriteria;
 
+    @Pattern(regexp ="^(asc|desc)$", flags = Pattern.Flag.CASE_INSENSITIVE)
     @QueryParam("direction")
-    private OrderDirection orderDirection = OrderDirection.DESCENDING;
+    private String orderDirection;
+
+    @QueryParam("username")
+    private String username;
+
+    @QueryParam("email")
+    private String email;
+
+    @QueryParam("id")
+    private Long id;
+
+    @QueryParam("preferences")
+    private List<Integer> preferences;
+
+    @QueryParam("gamesPlayed")
+    private List<Long> gamesPlayed;
 
     public UserSearchQuery() {
-    }
-
-    public Page getPage() {
-        return Page.with(page != null ? page : DEFAULT_PAGE , pageSize != null ? pageSize : DEFAULT_PAGE_SIZE);
     }
 
     public String getSearch() {
@@ -54,10 +59,20 @@ public class UserSearchQuery {
     public UserFilter getFilter() {
         return new UserFilterBuilder()
                 .withSearch(search)
+                .withEmail(email)
+                .withGamesPlayed(gamesPlayed)
+                .withPreferences(preferences)
+                .withId(id)
+                .withUsername(username)
                 .build();
     }
 
     public Ordering<UserOrderCriteria> getOrdering() {
-        return new Ordering<>(orderDirection, orderCriteria);
+        OrderDirection direction = OrderDirection.fromString(orderDirection != null ? orderDirection : "");
+        UserOrderCriteria criteria = UserOrderCriteria.fromString(orderCriteria != null ? orderCriteria : "");
+        return new Ordering<>(
+                direction != null ? direction : OrderDirection.DESCENDING,
+                criteria != null ? criteria : UserOrderCriteria.REPUTATION
+            );
     }
 }

@@ -30,6 +30,7 @@ public enum UserOrderCriteria implements OrderCriteria {
         return tableName;
     }
 
+    // TODO: consider removing value
     UserOrderCriteria(Integer value, String localizedNameCode, String altName, String tableName) {
         this.value = value;
         this.localizedNameCode = localizedNameCode;
@@ -40,6 +41,15 @@ public enum UserOrderCriteria implements OrderCriteria {
     public static UserOrderCriteria fromValue(Integer value) {
         for (UserOrderCriteria orderCriteria : values()) {
             if (Objects.equals(orderCriteria.getValue(), value)){
+                return orderCriteria;
+            }
+        }
+        return null;
+    }
+
+    public static UserOrderCriteria fromString(String string) {
+        for (UserOrderCriteria orderCriteria : values()) {
+            if (orderCriteria.name().equals(string.toUpperCase())){
                 return orderCriteria;
             }
         }

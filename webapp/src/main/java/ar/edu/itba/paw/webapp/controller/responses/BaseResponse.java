@@ -7,7 +7,7 @@ import java.util.Map;
 public abstract class BaseResponse {
     private final Map<String, URI> links = new HashMap<>();
 
-    public void add(String key, URI uriInfo) {
+    public void link(String key, URI uriInfo) {
         links.put(key, uriInfo);
     }
 

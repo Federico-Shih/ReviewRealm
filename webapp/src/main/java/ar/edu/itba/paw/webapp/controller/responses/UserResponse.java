@@ -1,12 +1,15 @@
 package ar.edu.itba.paw.webapp.controller.responses;
 
+import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.models.User;
 import javax.ws.rs.core.UriInfo;
 import java.net.URI;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 public class UserResponse extends BaseResponse {
+    private static String BASE_PATH = "/users";
     private long id;
     private String username;
     private String email;
@@ -15,6 +18,9 @@ public class UserResponse extends BaseResponse {
     private Long avatarId;
     private Locale language;
     private Float xp;
+
+    private Set<Genre> preferences;
+
 
     public static UserResponse fromEntity(final UriInfo uri, User user) {
         UserResponse response = new UserResponse();
@@ -26,8 +32,11 @@ public class UserResponse extends BaseResponse {
         response.setLanguage(user.getLanguage());
         response.setXp(user.getXp());
         response.setAvatarId(user.getAvatarId());
+        response.setPreferences(user.getPreferences());
 
-        response.add("self", uri.getBaseUriBuilder().path("/users").path(String.valueOf(user.getId())).build());
+        response.link("self", uri.getBaseUriBuilder().path(BASE_PATH).path(String.valueOf(user.getId())).build());
+        response.link("followers", uri.getBaseUriBuilder().path(BASE_PATH).path(String.valueOf(user.getId())).path("followers").build());
+        response.link("following", uri.getBaseUriBuilder().path(BASE_PATH).path(String.valueOf(user.getId())).path("following").build());
         // TODO: rest of paths
         return response;
     }
@@ -98,5 +107,13 @@ public class UserResponse extends BaseResponse {
 
     public Float getXp() {
         return xp;
+    }
+
+    public void setPreferences(Set<Genre> preferences) {
+        this.preferences = preferences;
+    }
+
+    public Set<Genre> getPreferences() {
+        return preferences;
     }
 }

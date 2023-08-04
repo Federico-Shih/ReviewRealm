@@ -6,16 +6,17 @@ import ar.edu.itba.paw.models.Paginated;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.servicesinterfaces.UserService;
 import ar.edu.itba.paw.webapp.auth.PawAuthUserDetails;
+import ar.edu.itba.paw.webapp.controller.helpers.LocaleHelper;
 import ar.edu.itba.paw.webapp.controller.querycontainers.UserSearchQuery;
 import ar.edu.itba.paw.webapp.controller.responses.PaginatedResponse;
 import ar.edu.itba.paw.webapp.controller.responses.UserResponse;
 import ar.edu.itba.paw.webapp.forms.ChangePasswordForm;
+import ar.edu.itba.paw.webapp.forms.EnableUserForm;
 import ar.edu.itba.paw.webapp.forms.RegisterForm;
 import ar.edu.itba.paw.webapp.forms.ResendEmailForm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -30,10 +31,8 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.GenericEntity;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.core.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -55,7 +54,7 @@ public class UserController extends UriInfoController {
 
     @GET
     @Path("{id}")
-    @Produces(value = { MediaType.APPLICATION_JSON_VALUE })
+    @Produces(value = {MediaType.APPLICATION_JSON})
     public Response getById(@PathParam("id") final long id) {
         final Optional<User> user = us.getUserById(id);
         if (!user.isPresent()) {
@@ -65,15 +64,67 @@ public class UserController extends UriInfoController {
     }
 
     @GET
-    @Produces(MediaType.APPLICATION_JSON_VALUE)
+    @Produces(MediaType.APPLICATION_JSON)
     public Response getUsers(@Valid @BeanParam UserSearchQuery userSearchQuery) {
         final Paginated<User> users = us.getUsers(userSearchQuery.getPage(), userSearchQuery.getFilter(), userSearchQuery.getOrdering());
-        if (users.getList().isEmpty()) {
-            return Response.noContent().build();
-        }
         List<UserResponse> userResponseList = users.getList().stream().map(this.currifyUriInfo(UserResponse::fromEntity)).collect(Collectors.toList());
         Response.ResponseBuilder response = Response.ok(PaginatedResponse.fromPaginated(uriInfo, userResponseList, users));
         return response.build();
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response createUser(@Valid @BeanParam RegisterForm registerForm) throws UsernameAlreadyExistsException, EmailAlreadyExistsException {
+        final User user = us.createUser(registerForm.getUsername(), registerForm.getEmail(), registerForm.getPassword(), LocaleHelper.getLocale());
+        return Response
+                .created(uriInfo.getAbsolutePathBuilder().path("/users").path(user.getId().toString()).build())
+                .entity(UserResponse.fromEntity(uriInfo, user))
+                .build();
+    }
+
+    @PUT
+    @Path("password")
+    public Response changePasswordRequest(@Valid @BeanParam ResendEmailForm emailForm) {
+        us.sendPasswordResetToken(emailForm.getEmail());
+        return Response.accepted().build();
+    }
+
+    @POST
+    @Path("password")
+    public Response changePassword(@Valid @BeanParam ChangePasswordForm changePasswordForm) throws TokenExpiredException, TokenNotFoundException {
+        us.resetPassword(changePasswordForm.getToken(), changePasswordForm.getPassword());
+        return Response.noContent().build();
+    }
+
+    @PUT
+    @Path("enabled")
+    public Response validateUserRequest(@Valid @BeanParam ResendEmailForm emailForm) throws UserAlreadyEnabled {
+        us.resendToken(emailForm.getEmail());
+        return Response.accepted().build();
+    }
+
+    @POST
+    @Path("enabled")
+    public Response validateUser(@Valid @BeanParam EnableUserForm userForm) throws TokenExpiredException {
+        us.validateToken(userForm.getToken());
+        return Response.noContent().build();
+    }
+
+    // TODO: paginate
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("{id}/followers")
+    public Response getFollowers(@PathParam("id") final long id) {
+        List<User> followers = us.getFollowers(id);
+        return Response.ok(new GenericEntity<List<UserResponse>>(followers.stream().map(this.currifyUriInfo(UserResponse::fromEntity)).collect(Collectors.toList())){}).build();
+    }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("{id}/following")
+    public Response getFollowing(@PathParam("id") final long id) {
+        List<User> followers = us.getFollowing(id);
+        return Response.ok(new GenericEntity<List<UserResponse>>(followers.stream().map(this.currifyUriInfo(UserResponse::fromEntity)).collect(Collectors.toList())){}).build();
     }
 
 //    @RequestMapping("/login")
