@@ -21,6 +21,7 @@ import ar.edu.itba.paw.webapp.forms.SubmitGameForm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
@@ -28,6 +29,11 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -37,8 +43,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@Controller
-public class GameController{
+@Path("/games")
+@Component
+public class GameController {
     private static final Logger LOGGER = LoggerFactory.getLogger(GameController.class);
 
     private final GameService gs;
@@ -57,6 +64,26 @@ public class GameController{
         this.rs = rs;
     }
 
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("{id:\\d+}")
+    public Response getGameById(final Long gameId) {
+        Optional<Game> game = gs.getGameById(gameId);
+        if (game.isPresent()) {
+            return Response.ok(game.get()).build();
+        } else {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+    }
+
+    /*
+        TODO:
+        GET /games/{id:\\d+}
+        DELETE /games/{id:\\d+}
+        GET /games{?page, pagesize, search, sort, direction, created, deleted, ... }
+        PUT /games/{id:\\d+}
+        POST /games
+     */
 
 
 //    @RequestMapping("/game/{id:\\d+}")

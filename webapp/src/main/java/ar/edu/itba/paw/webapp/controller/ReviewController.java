@@ -55,6 +55,16 @@ public class ReviewController{
         this.reportService = reportService;
 
     }
+
+    /*
+      TODO:
+       GET /reviews
+       POST /reviews
+       DELETE /reviews/{reviewid}
+       GET /reviews/{reviewid}
+       PATCH /reviews/{reviewid}
+    */
+
 //    @RequestMapping(value = "/review/submit/search")
 //    public ModelAndView searchGames(@RequestParam(value = "searchquery", defaultValue = "") String searchquery,
 //                                    @RequestParam(value = "page", defaultValue = "1") Integer page,

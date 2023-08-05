@@ -52,6 +52,22 @@ public class UserController extends UriInfoController {
         this.us = us;
     }
 
+    /*
+        PUT /users/following/{id}
+        DELETE /users/following/{id}
+        GET /users/{id}/preferences
+        PUT /users/{id}/preferences
+        GET /users/{id}/avatar
+        PUT /users/{id}/avatar
+        GET /users/{id}/favoritegames
+        PUT /users/{id}/favoritegames/{gameid}
+        DELETE /users/{id}/favoritegames/{gameid}
+        GET /users/{id}/notifications
+        PUT /users/{id}/notifications/{notificationId}
+        DELETE /users/{id}/notifications/{notificationId}
+        GET /users/{id}/missions
+     */
+
     @GET
     @Path("{id}")
     @Produces(value = {MediaType.APPLICATION_JSON})

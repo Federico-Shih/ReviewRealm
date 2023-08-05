@@ -39,6 +39,14 @@ public class ReportController {
         this.reportService = reportService;
         this.userService = userService;
     }
+
+    /*
+    TODO:
+       GET /reports <pagination>
+       POST /reports
+       DELETE /reports/{id}
+     */
+
 //    @RequestMapping(value = "/report/review/{id:\\d+}", method = RequestMethod.POST)
 //    ModelAndView reviewReportSubmit(@PathVariable(value = "id") Long reviewId,
 //                                    @RequestParam(value = "reason") String reason) {
