@@ -33,6 +33,7 @@
         <org.hibernate.jpa.version>1.0.0.Final</org.hibernate.jpa.version>
         <jersey.version>3.0-SNAPSHOT</jersey.version>
         <javax.ws.rs.version>2.1</javax.ws.rs.version>
+        <jjwt.version>0.11.5</jjwt.version>
     </properties>
     <modules>
         <module>webapp</module>
@@ -323,6 +324,13 @@
                 <groupId>org.glassfish.jersey.media</groupId>
                 <artifactId>jersey-media-json-jackson</artifactId>
                 <version>2.13</version>
+            </dependency>
+
+            <!-- JWT -->
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-api</artifactId>
+                <version>${jjwt.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
