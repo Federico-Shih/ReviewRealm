@@ -2,6 +2,7 @@ package ar.edu.itba.paw.webapp.config;
 
 import ar.edu.itba.paw.enums.RoleType;
 import ar.edu.itba.paw.webapp.auth.AccessControl;
+import ar.edu.itba.paw.webapp.auth.JwtTokenFilter;
 import ar.edu.itba.paw.webapp.config.filters.AuthenticationPageFilter;
 import ar.edu.itba.paw.webapp.config.handlers.CustomAuthenticationFailureHandler;
 import org.apache.commons.io.IOUtils;
@@ -32,6 +33,8 @@ import org.springframework.security.web.access.expression.WebExpressionVoter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -53,6 +56,9 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private AccessControl accessControl;
+
+    @Autowired
+    private JwtTokenFilter jwtTokenFilter;
 
     private static final String ACCESS_CONTROL_CHECK_REVIEW_OWNER = "@accessControl.checkReviewAuthorOwner(#id)";
 
@@ -97,7 +103,6 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-                .addFilterAfter(new AuthenticationPageFilter(), BasicAuthenticationFilter.class)
                 // redirecciona si uno trata de ir a login o register y ya está conectado
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -128,9 +133,15 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                 /* POR DEFAULT NO ES NECESARIO INICIAR SESIÓN */
                 .antMatchers( "/**").permitAll()
             .and().exceptionHandling()
+                .authenticationEntryPoint((req, res, ex) -> {
+                    res.sendError(HttpServletResponse.SC_UNAUTHORIZED, ex.getLocalizedMessage());
+                })
                 // TODO Sacar page y agregar handler
                 .accessDeniedPage("/errors/403")
             .and().csrf().disable();
+
+        // Parser Jwt Token and adds context
+        http.addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class);
     }
 
     @Bean

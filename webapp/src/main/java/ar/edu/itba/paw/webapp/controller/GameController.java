@@ -78,11 +78,11 @@ public class GameController {
 
     /*
         TODO:
-        GET /games/{id:\\d+}
-        DELETE /games/{id:\\d+}
-        GET /games{?page, pagesize, search, sort, direction, created, deleted, ... }
-        PUT /games/{id:\\d+}
-        POST /games
+            GET /games/{id:\\d+}
+            DELETE /games/{id:\\d+}
+            GET /games{?page, pagesize, search, sort, direction, created, deleted, ... }
+            PUT /games/{id:\\d+}
+            POST /games
      */
 
 

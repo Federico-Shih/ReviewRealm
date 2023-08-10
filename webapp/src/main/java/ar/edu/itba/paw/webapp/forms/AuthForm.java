@@ -1,5 +1,7 @@
 package ar.edu.itba.paw.webapp.forms;
 
+import org.springframework.web.bind.annotation.RequestBody;
+
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
@@ -10,7 +12,6 @@ public class AuthForm {
 
     @NotNull
     private String password;
-
 
     public String getPassword() {
         return password;
