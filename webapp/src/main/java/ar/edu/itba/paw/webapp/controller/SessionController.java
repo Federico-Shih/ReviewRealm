@@ -43,11 +43,7 @@ public class SessionController {
         ));
         User user = (User) auth.getPrincipal();
 
-        try {
-            String token = jwtTokenUtil.generateAccessToken(userService.getUserByEmail(user.getUsername()).orElseThrow(UserNotFoundException::new));
-            return Response.ok(new AuthResponse(token)).build();
-        } catch (JsonProcessingException e) {
-            return Response.status(500).build();
-        }
+        String token = jwtTokenUtil.generateAccessToken(userService.getUserByEmail(user.getUsername()).orElseThrow(UserNotFoundException::new));
+        return Response.ok(new AuthResponse(token)).build();
     }
 }

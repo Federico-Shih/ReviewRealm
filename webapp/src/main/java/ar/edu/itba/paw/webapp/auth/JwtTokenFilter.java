@@ -4,9 +4,12 @@ import ar.edu.itba.paw.exceptions.UserNotFoundException;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.servicesinterfaces.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
@@ -28,6 +31,9 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
 
+    @Autowired
+    private UserDetailsService userDetailsService;
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         if (!hasAuthorizationBearer(request)) {
@@ -42,9 +48,10 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             return;
         }
 
-        setAuthenticationContext(token, request);
+        setAuthenticationContext(token, request, response);
         filterChain.doFilter(request, response);
     }
+
 
     private boolean hasAuthorizationBearer(HttpServletRequest request) {
         String header = request.getHeader("Authorization");
@@ -56,23 +63,27 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         return header.split(" ")[1].trim();
     }
 
-    private void setAuthenticationContext(String token, HttpServletRequest request) {
-        User userDetails = getUserDetails(token);
-        UsernamePasswordAuthenticationToken auth =
-                new UsernamePasswordAuthenticationToken(
-                        userDetails,
-                        null,
-                        userDetails
-                                .getRoles()
-                                .stream()
-                                .map((role) -> new SimpleGrantedAuthority(String.format("ROLE_%s", role.getRole()))).collect(Collectors.toList())
-                );
+    private void setAuthenticationContext(String token, HttpServletRequest request, HttpServletResponse response) {
+        UserDetails userDetails;
+        try {
+            userDetails = userDetailsService.loadUserByUsername(jwtTokenUtil.getUsernameFromToken(token));
+        } catch (UserNotFoundException e) {
+            userDetails = null;
+        }
+        if (jwtTokenUtil.isTokenRefresh(token) && userDetails != null) {
+            User user = userService.getUserByUsername(userDetails.getUsername()).orElse(null);
+            if (user == null) {
+                return;
+            }
+            response.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + jwtTokenUtil.generateAccessToken(user));
+        }
+        UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
+                userDetails, null,
+                userDetails == null ? null : userDetails.getAuthorities()
+        );
+
         auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
         SecurityContextHolder.getContext().setAuthentication(auth);
     }
 
-    private User getUserDetails(String token) {
-        long userId = Long.parseLong(jwtTokenUtil.getTokenUserId(token));
-        return userService.getUserById(userId).orElseThrow(UserNotFoundException::new);
-    }
 }

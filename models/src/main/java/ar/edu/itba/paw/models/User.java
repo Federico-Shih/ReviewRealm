@@ -48,7 +48,7 @@ public class User {
     @Convert(converter = NotificationTypeAttributeConverter.class)
     private Set<NotificationType> disabledNotifications = new HashSet<>();
 
-    @ElementCollection(targetClass = RoleType.class, fetch = FetchType.LAZY)
+    @ElementCollection(targetClass = RoleType.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "userid", referencedColumnName = "id"))
     @Column(name = "role")
     @Enumerated(EnumType.STRING)

@@ -2,6 +2,7 @@ package ar.edu.itba.paw.webapp.config;
 
 import ar.edu.itba.paw.enums.RoleType;
 import ar.edu.itba.paw.webapp.auth.AccessControl;
+import ar.edu.itba.paw.webapp.auth.BasicAuthFilter;
 import ar.edu.itba.paw.webapp.auth.JwtTokenFilter;
 import ar.edu.itba.paw.webapp.config.filters.AuthenticationPageFilter;
 import ar.edu.itba.paw.webapp.config.handlers.CustomAuthenticationFailureHandler;
@@ -20,6 +21,7 @@ import org.springframework.security.access.vote.RoleVoter;
 import org.springframework.security.access.vote.UnanimousBased;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -44,6 +46,7 @@ import java.util.concurrent.TimeUnit;
 
 
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 @ComponentScan({"ar.edu.itba.paw.webapp.auth"})
 @Configuration
 public class WebAuthConfig extends WebSecurityConfigurerAdapter {
@@ -56,6 +59,9 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private AccessControl accessControl;
+
+    @Autowired
+    private BasicAuthFilter basicAuthFilter;
 
     @Autowired
     private JwtTokenFilter jwtTokenFilter;
@@ -117,6 +123,7 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                 /* ACÁ PONEMOS TODOS LOS PATHS QUE REQUIERAN INICIAR SESIÓN Y TENER UN ROL */
                 .antMatchers("/review/delete/{\\d+}", "/game/submissions", "/game/submissions/**", "/game/{\\d+}/edit", "/game/delete/{\\d+}", "/report/reviews/**", "/report/reviews").hasRole(RoleType.MODERATOR.getRole())
                 /* ACÁ PONEMOS TODOS LOS PATHS QUE REQUIERAN INICIAR SESIÓN, PERO NO ROLES */
+                .antMatchers(HttpMethod.GET, "/users").authenticated()
                 .antMatchers("/review/submit/**",
                         "/profile/following",
                         "/profile/followers",
@@ -131,17 +138,18 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                 /* ACÁ PONEMOS TODOS LOS PATHS QUE REQUIERAN NO HABER INICIADO SESIÓN */
 
                 /* POR DEFAULT NO ES NECESARIO INICIAR SESIÓN */
-                .antMatchers( "/**").permitAll()
-            .and().exceptionHandling()
+                .and().exceptionHandling()
                 .authenticationEntryPoint((req, res, ex) -> {
                     res.sendError(HttpServletResponse.SC_UNAUTHORIZED, ex.getLocalizedMessage());
                 })
                 // TODO Sacar page y agregar handler
                 .accessDeniedPage("/errors/403")
-            .and().csrf().disable();
+                .and().headers().cacheControl().disable()
+                .and().csrf().disable()
+                .addFilterBefore(basicAuthFilter, BasicAuthenticationFilter.class)
+                .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class);
 
         // Parser Jwt Token and adds context
-        http.addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class);
     }
 
     @Bean

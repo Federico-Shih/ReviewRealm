@@ -14,26 +14,63 @@ import org.springframework.stereotype.Component;
 import javax.crypto.SecretKey;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.Date;
+import java.util.function.Function;
 
 @Component
 public class JwtTokenUtil {
     private static final Logger LOGGER = LoggerFactory.getLogger(JwtTokenUtil.class);
     private static final long EXPIRE_DURATION = 24 * 60 * 60 * 1000;
+
+    private static final long REFRESH_EXPIRATION_TIME = 1000 * 60 * 60 * 24 * 7;
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final SecretKey secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256);
 
     @Context
     private UriInfo uriInfo;
 
-    public String generateAccessToken(User user) throws JsonProcessingException {
+    public String getUsernameFromToken(String token) {
+        try {
+            return URLDecoder.decode(getClaimFromToken(token, Claims::getSubject), "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new IllegalStateException();
+        }
+    }
+
+    public boolean isTokenRefresh(String token) {
+        return getClaimFromToken(token, c -> c.get("refresh", Boolean.class) != null);
+    }
+
+    public String generateAccessToken(User user) {
+        final Claims claims = Jwts.claims();
+        claims.setSubject(getUserEncodedUrl(user));
+        claims.setExpiration(new Date(System.currentTimeMillis() + EXPIRE_DURATION));
+        claims.put("username", user.getUsername());
+        claims.put("role", user.getRoles().toString());
+        claims.put("email", user.getEmail());
+        claims.put("id", user.getId());
+
         return Jwts.builder()
                 .serializeToJsonWith(new JacksonSerializer<>(objectMapper))
-                .setSubject(String.format("%s,%s", user.getId(), user.getEmail()))
-//                .setPayload(objectMapper.writeValueAsString(UserResponse.fromEntity(uriInfo, user)))
+                .setClaims(claims)
                 .setIssuer("paw-2023a-04")
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + EXPIRE_DURATION))
+                .signWith(secretKey)
+                .compact();
+    }
+
+    public String generateRefreshToken(User user) {
+        final Claims claims = Jwts.claims();
+        claims.setSubject(getUserEncodedUrl(user));
+        claims.setExpiration(new Date(System.currentTimeMillis() + REFRESH_EXPIRATION_TIME));
+        claims.put("refresh", true);
+        return Jwts.builder()
+                .serializeToJsonWith(new JacksonSerializer<>(objectMapper))
+                .setClaims(claims)
+                .setIssuedAt(new Date())
                 .signWith(secretKey)
                 .compact();
     }
@@ -42,29 +79,25 @@ public class JwtTokenUtil {
         try {
             parseClaims(token);
             return true;
-        } catch (ExpiredJwtException ex) {
-            LOGGER.error("JWT expired", ex.getMessage());
-        } catch (IllegalArgumentException ex) {
-            LOGGER.error("Token is null, empty or only whitespace", ex.getMessage());
-        } catch (MalformedJwtException ex) {
-            LOGGER.error("JWT is invalid", ex);
-        } catch (UnsupportedJwtException ex) {
-            LOGGER.error("JWT is not supported", ex);
-        } catch (SignatureException ex) {
-            LOGGER.error("Signature validation failed");
+        } catch (JwtException e) {
+            return false;
         }
-        return false;
     }
 
-    public String getSubject(String token) {
-        return parseClaims(token).getSubject();
-    }
-
-    public String getTokenUserId(String token) {
-        return getSubject(token).split(",")[0];
+    public <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
+        final Claims claims = parseClaims(token);
+        return claimsResolver.apply(claims);
     }
 
     private Claims parseClaims(String token) {
         return Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).getBody();
+    }
+
+    private String getUserEncodedUrl(User user) {
+        try {
+            return URLEncoder.encode(user.getUsername(), "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new IllegalStateException("Unsupported encoding");
+        }
     }
 }
