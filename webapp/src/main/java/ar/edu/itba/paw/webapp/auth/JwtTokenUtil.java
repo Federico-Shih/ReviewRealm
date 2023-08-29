@@ -95,7 +95,7 @@ public class JwtTokenUtil {
 
     private String getUserEncodedUrl(User user) {
         try {
-            return URLEncoder.encode(user.getUsername(), "UTF-8");
+            return URLEncoder.encode(user.getEmail(), "UTF-8");
         } catch (UnsupportedEncodingException e) {
             throw new IllegalStateException("Unsupported encoding");
         }
