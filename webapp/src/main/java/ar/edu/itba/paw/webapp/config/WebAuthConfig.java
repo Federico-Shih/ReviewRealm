@@ -114,27 +114,28 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             .and().authorizeRequests()
                 .accessDecisionManager(accessDecisionManager())
-
+// todo: agregar rutas a medida que se van haciendo las APIs
                 //.antMatchers("/admin/**").hasRole("ADMIN")  lo que requiera un rol especial
                 //.antMatchers("/review/edit/").access("@AccessHelper.canEdit") cuando se requiera un acceso especial segun el usuario (Spring Expression Language)
-                .antMatchers("/review/{id:\\d+}/edit").access(ACCESS_CONTROL_CHECK_REVIEW_OWNER)
-                .antMatchers(HttpMethod.POST,"/review/feedback/{id:\\d+}").access(ACCESS_CONTROL_CHECK_REVIEW_FEEDBACK)
-                .antMatchers("/review/submit/{id:\\d+}").access(ACCESS_CONTROL_CHECK_GAME_REVIEWED)
-                /* ACÁ PONEMOS TODOS LOS PATHS QUE REQUIERAN INICIAR SESIÓN Y TENER UN ROL */
-                .antMatchers("/review/delete/{\\d+}", "/game/submissions", "/game/submissions/**", "/game/{\\d+}/edit", "/game/delete/{\\d+}", "/report/reviews/**", "/report/reviews").hasRole(RoleType.MODERATOR.getRole())
-                /* ACÁ PONEMOS TODOS LOS PATHS QUE REQUIERAN INICIAR SESIÓN, PERO NO ROLES */
-                .antMatchers(HttpMethod.GET, "/users").authenticated()
-                .antMatchers("/review/submit/**",
-                        "/profile/following",
-                        "/profile/followers",
-                        "/profile/follow/{\\d+}",
-                        "/profile/unfollow/{\\d+}",
-                        "/for-you/**",
-                        "/profile/settings/**",
-                        "/profile/settings/**",
-                        "/game/submit",
-                        "/profile/missions"
-                ).authenticated()
+//                .antMatchers("/review/{id:\\d+}/edit").access(ACCESS_CONTROL_CHECK_REVIEW_OWNER)
+//                .antMatchers(HttpMethod.POST,"/review/feedback/{id:\\d+}").access(ACCESS_CONTROL_CHECK_REVIEW_FEEDBACK)
+//                .antMatchers("/review/submit/{id:\\d+}").access(ACCESS_CONTROL_CHECK_GAME_REVIEWED)
+//                /* ACÁ PONEMOS TODOS LOS PATHS QUE REQUIERAN INICIAR SESIÓN Y TENER UN ROL */
+//                .antMatchers("/review/delete/{\\d+}", "/game/submissions", "/game/submissions/**", "/game/{\\d+}/edit", "/game/delete/{\\d+}", "/report/reviews/**", "/report/reviews").hasRole(RoleType.MODERATOR.getRole())
+//                /* ACÁ PONEMOS TODOS LOS PATHS QUE REQUIERAN INICIAR SESIÓN, PERO NO ROLES */
+//                .antMatchers(HttpMethod.GET, "/api/users").authenticated()
+//                .antMatchers("/review/submit/**",
+//                        "/profile/following",
+//                        "/profile/followers",
+//                        "/profile/follow/{\\d+}",
+//                        "/profile/unfollow/{\\d+}",
+//                        "/for-you/**",
+//                        "/profile/settings/**",
+//                        "/profile/settings/**",
+//                        "/game/submit",
+//                        "/profile/missions"
+//                ).authenticated()
+                .antMatchers("/api/**").permitAll()
                 /* ACÁ PONEMOS TODOS LOS PATHS QUE REQUIERAN NO HABER INICIADO SESIÓN */
 
                 /* POR DEFAULT NO ES NECESARIO INICIAR SESIÓN */
@@ -142,14 +143,10 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                 .authenticationEntryPoint((req, res, ex) -> {
                     res.sendError(HttpServletResponse.SC_UNAUTHORIZED, ex.getLocalizedMessage());
                 })
-                // TODO Sacar page y agregar handler
-                .accessDeniedPage("/errors/403")
                 .and().headers().cacheControl().disable()
                 .and().csrf().disable()
-                .addFilterBefore(basicAuthFilter, BasicAuthenticationFilter.class)
+                .addFilterBefore(basicAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class);
-
-        // Parser Jwt Token and adds context
     }
 
     @Bean

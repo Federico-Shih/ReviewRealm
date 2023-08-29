@@ -4,7 +4,6 @@ import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.servicesinterfaces.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -60,7 +59,7 @@ public class BasicAuthFilter extends OncePerRequestFilter {
             Authentication authenticate = authenticationManager.authenticate(authentication);
 
             UserDetails user = (UserDetails) authenticate.getPrincipal();
-            User fullUser = userService.getUserByUsername(user.getUsername()).orElse(null);
+            User fullUser = userService.getUserByEmail(user.getUsername()).orElse(null);
             if (fullUser == null)
                 return;
 
@@ -71,7 +70,8 @@ public class BasicAuthFilter extends OncePerRequestFilter {
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        } catch (BadCredentialsException | IllegalArgumentException ignored) {
+        } catch (IllegalArgumentException ignored) {
+
         }
     }
 }

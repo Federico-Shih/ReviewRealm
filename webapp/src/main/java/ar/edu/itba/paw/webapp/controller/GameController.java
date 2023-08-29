@@ -84,38 +84,38 @@ public class GameController extends UriInfoController {
     }
 
 
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response getGames(@Valid @BeanParam GameSearchQuery gameSearchQuery){
-        final Paginated<Game> games = gs.searchGames(gameSearchQuery.getPage(), gameSearchQuery.getFilter(),gameSearchQuery.getOrdering());
-        List<GameResponse> gameResponseList = games.getList().stream().map(this.currifyUriInfo(GameResponse::fromEntity)).collect(Collectors.toList();
-        Response.ResponseBuilder response = Response.ok(PaginatedResponse.fromPaginated(uriInfo,gameResponseList,games));
-        return response.build();
-    }
-
-    @POST
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response postGame(@Valid @BeanParam SubmitGameForm submitGameForm, BindingResult bindingResult) throws IOException {
-        if(bindingResult.hasErrors()){
-            return Response.status(Response.Status.BAD_REQUEST).build();
-        }
-        //TODO:Try catch???
-        Game game = gs.createGame(submitGameForm.toSubmitDTO(),id);//TODO: id de usuario que lo crea
-        //Que hago aca con el suggest, que devuelvo???
-        return Response.created(uriInfo.getAbsolutePathBuilder().path(String.valueOf(game.getId())).build()).build();
-    }
-
-    @PUT
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response putGame(@Valid @BeanParam SubmitGameForm submitGameForm, BindingResult bindingResult) throws IOException {
-        if (bindingResult.hasErrors()) {
-            return Response.status(Response.Status.BAD_REQUEST).build();
-        }
-        //TODO:Try catch???
-        Game game = gs.editGame(submitGameForm.toSubmitDTO(), id);//TODO: id de usuario que lo crea
-
-        return Response.ok(uriInfo.getAbsolutePathBuilder().path(String.valueOf(game.getId())).build()).build();
-    }
+//    @GET
+//    @Produces(MediaType.APPLICATION_JSON)
+//    public Response getGames(@Valid @BeanParam GameSearchQuery gameSearchQuery){
+//        final Paginated<Game> games = gs.searchGames(gameSearchQuery.getPage(), gameSearchQuery.getFilter(),gameSearchQuery.getOrdering());
+//        List<GameResponse> gameResponseList = games.getList().stream().map(this.currifyUriInfo(GameResponse::fromEntity)).collect(Collectors.toList();
+//        Response.ResponseBuilder response = Response.ok(PaginatedResponse.fromPaginated(uriInfo,gameResponseList,games));
+//        return response.build();
+//    }
+//
+//    @POST
+//    @Produces(MediaType.APPLICATION_JSON)
+//    public Response postGame(@Valid @BeanParam SubmitGameForm submitGameForm, BindingResult bindingResult) throws IOException {
+//        if(bindingResult.hasErrors()){
+//            return Response.status(Response.Status.BAD_REQUEST).build();
+//        }
+//        //TODO:Try catch???
+//        Game game = gs.createGame(submitGameForm.toSubmitDTO(),id);//TODO: id de usuario que lo crea
+//        //Que hago aca con el suggest, que devuelvo???
+//        return Response.created(uriInfo.getAbsolutePathBuilder().path(String.valueOf(game.getId())).build()).build();
+//    }
+//
+//    @PUT
+//    @Produces(MediaType.APPLICATION_JSON)
+//    public Response putGame(@Valid @BeanParam SubmitGameForm submitGameForm, BindingResult bindingResult) throws IOException {
+//        if (bindingResult.hasErrors()) {
+//            return Response.status(Response.Status.BAD_REQUEST).build();
+//        }
+//        //TODO:Try catch???
+//        Game game = gs.editGame(submitGameForm.toSubmitDTO(), id);//TODO: id de usuario que lo crea
+//
+//        return Response.ok(uriInfo.getAbsolutePathBuilder().path(String.valueOf(game.getId())).build()).build();
+//    }
 
     /*
         TODO:
