@@ -16,6 +16,9 @@ import ar.edu.itba.paw.webapp.auth.AuthenticationHelper;
 import ar.edu.itba.paw.webapp.controller.datacontainers.FilteredList;
 import ar.edu.itba.paw.webapp.controller.helpers.PaginationHelper;
 import ar.edu.itba.paw.webapp.controller.helpers.QueryHelper;
+import ar.edu.itba.paw.webapp.controller.querycontainers.GameSearchQuery;
+import ar.edu.itba.paw.webapp.controller.responses.GameResponse;
+import ar.edu.itba.paw.webapp.controller.responses.PaginatedResponse;
 import ar.edu.itba.paw.webapp.exceptions.ObjectNotFoundException;
 import ar.edu.itba.paw.webapp.forms.SubmitGameForm;
 import org.slf4j.Logger;
@@ -29,11 +32,11 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -45,7 +48,7 @@ import java.util.stream.Collectors;
 
 @Path("/games")
 @Component
-public class GameController {
+public class GameController extends UriInfoController {
     private static final Logger LOGGER = LoggerFactory.getLogger(GameController.class);
 
     private final GameService gs;
@@ -57,6 +60,10 @@ public class GameController {
     private static final int INITIAL_PAGE = 1;
     private static final int SMALL_LIST_PAGE_SIZE = 2;
 
+    @Context
+    private UriInfo uriInfo;
+
+
     @Autowired
     public GameController(GameService gs, UserService us, ReviewService rs) {
         this.gs = gs;
@@ -65,24 +72,59 @@ public class GameController {
     }
 
     @GET
-    @Produces(MediaType.APPLICATION_JSON)
     @Path("{id:\\d+}")
+    @Produces(MediaType.APPLICATION_JSON)
     public Response getGameById(final Long gameId) {
         Optional<Game> game = gs.getGameById(gameId);
         if (game.isPresent()) {
-            return Response.ok(game.get()).build();
+            return Response.ok(GameResponse.fromEntity(uriInfo,game.get(),gs.getGameReviewDataByGameId(gameId))).build();
         } else {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
     }
 
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getGames(@Valid @BeanParam GameSearchQuery gameSearchQuery){
+        final Paginated<Game> games = gs.searchGames(gameSearchQuery.getPage(), gameSearchQuery.getFilter(),gameSearchQuery.getOrdering());
+        List<GameResponse> gameResponseList = games.getList().stream().map(this.currifyUriInfo(GameResponse::fromEntity)).collect(Collectors.toList();
+        Response.ResponseBuilder response = Response.ok(PaginatedResponse.fromPaginated(uriInfo,gameResponseList,games));
+        return response.build();
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response postGame(@Valid @BeanParam SubmitGameForm submitGameForm, BindingResult bindingResult) throws IOException {
+        if(bindingResult.hasErrors()){
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+        //TODO:Try catch???
+        Game game = gs.createGame(submitGameForm.toSubmitDTO(),id);//TODO: id de usuario que lo crea
+        //Que hago aca con el suggest, que devuelvo???
+        return Response.created(uriInfo.getAbsolutePathBuilder().path(String.valueOf(game.getId())).build()).build();
+    }
+
+    @PUT
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response putGame(@Valid @BeanParam SubmitGameForm submitGameForm, BindingResult bindingResult) throws IOException {
+        if (bindingResult.hasErrors()) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+        //TODO:Try catch???
+        Game game = gs.editGame(submitGameForm.toSubmitDTO(), id);//TODO: id de usuario que lo crea
+
+        return Response.ok(uriInfo.getAbsolutePathBuilder().path(String.valueOf(game.getId())).build()).build();
+    }
+
     /*
         TODO:
-            GET /games/{id:\\d+}
-            DELETE /games/{id:\\d+}
-            GET /games{?page, pagesize, search, sort, direction, created, deleted, ... }
-            PUT /games/{id:\\d+}
-            POST /games
+            - GET /games/{id:\\d+}
+            - DELETE /games/{id:\\d+}
+            - GET /games{?page, pagesize, search, sort, direction, favouriteFor, recommendedFor, genres, minRating, maxRating, suggestion=false}
+            - PUT /games/{id:\\d+}
+            - PATCH /games/{id:\\d+} → para marcar suggestion=false al aceptar un juego sugerido. Hay que limitarlo a que no se puedan cambiar otras cosas, aparte del suggestion? (por ejemplo que title=algo tire bad request o algo asi)
+            - POST /games
      */
 
 
