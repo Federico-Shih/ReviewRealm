@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.services;
 
+import ar.edu.itba.paw.dtos.Page;
 import ar.edu.itba.paw.dtos.saving.SubmitGameDTO;
 import ar.edu.itba.paw.enums.Difficulty;
 import ar.edu.itba.paw.enums.Genre;
@@ -135,7 +136,7 @@ public class GameServiceImplTest {
         Mockito.when(gameDao.getGamesReviewedByUser(anyLong())).thenReturn(Optional.of(new HashSet<>(Arrays.asList(getSuperGameA()))));
         Mockito.when(gameDao.getRecommendationsForUser(any(), any())).thenReturn(Arrays.asList(getSuperGameB()));
 
-        List<Game> games = gs.getRecommendationsOfGamesForUser(getUser1().getId());
+        List<Game> games = gs.getRecommendationsOfGamesForUser(Page.with(1,10),getUser1().getId()).getList();
 
         Assert.assertEquals(1, games.size());
         Assert.assertEquals(getSuperGameB().getId(), games.get(0).getId());
@@ -144,7 +145,7 @@ public class GameServiceImplTest {
     @Test(expected = UserNotFoundException.class)
     public void testGetRecommendationsOfGamesForUserError() {
         Mockito.when(userService.getUserById(anyLong())).thenReturn(Optional.empty());
-        gs.getRecommendationsOfGamesForUser(getUser1().getId());
+        gs.getRecommendationsOfGamesForUser(Page.with(1,10),getUser1().getId());
     }
 
     @Test

@@ -36,7 +36,7 @@ public interface GameService {
 
     boolean rejectGame(long gameId, long rejectingUserId);
 
-    List<Game> getRecommendationsOfGamesForUser(long userId);
+    Paginated<Game> getRecommendationsOfGamesForUser(Page page, long userId);
 
     Set<Game> getGamesReviewedByUser(long userId);
 }
