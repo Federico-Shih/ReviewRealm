@@ -1,44 +1,28 @@
 package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.dtos.Page;
-import ar.edu.itba.paw.enums.RoleType;
 import ar.edu.itba.paw.exceptions.*;
 import ar.edu.itba.paw.models.Paginated;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.servicesinterfaces.UserService;
-import ar.edu.itba.paw.webapp.annotations.ExistentUserId;
 import ar.edu.itba.paw.webapp.auth.AccessControl;
-import ar.edu.itba.paw.webapp.auth.AuthenticationHelper;
-import ar.edu.itba.paw.webapp.auth.PawAuthUserDetails;
+import ar.edu.itba.paw.webapp.controller.annotations.ExistentUserId;
+import ar.edu.itba.paw.webapp.controller.forms.*;
 import ar.edu.itba.paw.webapp.controller.helpers.LocaleHelper;
 import ar.edu.itba.paw.webapp.controller.querycontainers.UserSearchQuery;
 import ar.edu.itba.paw.webapp.controller.responses.PaginatedResponse;
 import ar.edu.itba.paw.webapp.controller.responses.UserResponse;
-import ar.edu.itba.paw.webapp.forms.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Controller;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
-import java.net.URI;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Path("/users")
@@ -105,7 +89,7 @@ public class UserController {
 
     @PUT
     @Path("password")
-    public Response changePasswordRequest(@Valid  ResendEmailForm emailForm) {
+    public Response changePasswordRequest(@Valid ResendEmailForm emailForm) {
         us.sendPasswordResetToken(emailForm.getEmail());
         return Response.accepted().build();
     }
@@ -153,7 +137,7 @@ public class UserController {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{id}/following")
     public Response getFollowing(
-            @PathParam("id") final long id,
+            @Valid @ExistentUserId @PathParam("id") final long id,
             @QueryParam("page") @DefaultValue("1") final Integer page,
             @QueryParam("pageSize") @DefaultValue("10") final Integer pageSize
     ) {

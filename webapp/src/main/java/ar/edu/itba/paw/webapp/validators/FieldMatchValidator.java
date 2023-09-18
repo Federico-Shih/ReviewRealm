@@ -1,6 +1,6 @@
 package ar.edu.itba.paw.webapp.validators;
 
-import ar.edu.itba.paw.webapp.annotations.FieldMatch;
+import ar.edu.itba.paw.webapp.controller.annotations.FieldMatch;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;

@@ -1,7 +1,7 @@
 package ar.edu.itba.paw.webapp.validators;
 
 import ar.edu.itba.paw.servicesinterfaces.UserService;
-import ar.edu.itba.paw.webapp.annotations.UniqueUsername;
+import ar.edu.itba.paw.webapp.controller.annotations.UniqueUsername;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.validation.ConstraintValidator;

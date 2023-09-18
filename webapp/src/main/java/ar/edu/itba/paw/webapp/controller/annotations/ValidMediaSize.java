@@ -1,4 +1,4 @@
-package ar.edu.itba.paw.webapp.annotations;
+package ar.edu.itba.paw.webapp.controller.annotations;
 
 import ar.edu.itba.paw.webapp.validators.MediaTypeSizeValidator;
 
@@ -13,7 +13,7 @@ public @interface ValidMediaSize {
 
     long value() default 128 * 1024 * 1024 ;
 
-    String message() default "{javax.validation.constraints.ValidMediaSize.message}";
+    String message() default "javax.validation.constraints.ValidMediaSize.message";
 
     Class<?>[] groups() default {};
 

@@ -1,4 +1,4 @@
-package ar.edu.itba.paw.webapp.forms;
+package ar.edu.itba.paw.webapp.controller.forms;
 
 import ar.edu.itba.paw.enums.GamelengthUnit;
 import ar.edu.itba.paw.models.Review;

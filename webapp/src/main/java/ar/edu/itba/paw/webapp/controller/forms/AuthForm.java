@@ -1,4 +1,4 @@
-package ar.edu.itba.paw.webapp.forms;
+package ar.edu.itba.paw.webapp.controller.forms;
 
 import org.springframework.web.bind.annotation.RequestBody;
 

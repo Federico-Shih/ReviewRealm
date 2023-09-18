@@ -1,40 +1,13 @@
 package ar.edu.itba.paw.webapp.controller;
 
-import ar.edu.itba.paw.dtos.Page;
-import ar.edu.itba.paw.dtos.filtering.ReviewFilter;
-import ar.edu.itba.paw.dtos.filtering.ReviewFilterBuilder;
-import ar.edu.itba.paw.dtos.ordering.GameOrderCriteria;
-import ar.edu.itba.paw.dtos.ordering.OrderDirection;
-import ar.edu.itba.paw.dtos.ordering.Ordering;
-import ar.edu.itba.paw.dtos.ordering.ReviewOrderCriteria;
-import ar.edu.itba.paw.enums.*;
-import ar.edu.itba.paw.exceptions.ReviewAlreadyExistsException;
-import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.servicesinterfaces.GameService;
 import ar.edu.itba.paw.servicesinterfaces.ReportService;
 import ar.edu.itba.paw.servicesinterfaces.ReviewService;
 import ar.edu.itba.paw.servicesinterfaces.UserService;
-import ar.edu.itba.paw.webapp.auth.AuthenticationHelper;
-import ar.edu.itba.paw.webapp.controller.datacontainers.FilteredList;
-import ar.edu.itba.paw.webapp.controller.helpers.PaginationHelper;
-import ar.edu.itba.paw.webapp.controller.helpers.QueryHelper;
-import ar.edu.itba.paw.webapp.exceptions.ObjectNotFoundException;
-import ar.edu.itba.paw.webapp.forms.EditReviewForm;
-import ar.edu.itba.paw.webapp.forms.SubmitReviewForm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Controller;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
-
-import javax.validation.Valid;
-import java.util.*;
-import java.util.stream.Collectors;
 
 @Controller
 public class ReviewController{

@@ -6,8 +6,11 @@ import ar.edu.itba.paw.webapp.auth.BasicAuthFilter;
 import ar.edu.itba.paw.webapp.auth.JwtTokenFilter;
 import ar.edu.itba.paw.webapp.config.filters.AuthenticationPageFilter;
 import ar.edu.itba.paw.webapp.config.handlers.CustomAuthenticationFailureHandler;
+import ar.edu.itba.paw.webapp.mappers.ForbiddenRequestHandler;
+import ar.edu.itba.paw.webapp.mappers.UnauthorizedRequestHandler;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -50,6 +53,8 @@ import java.util.concurrent.TimeUnit;
 @ComponentScan({"ar.edu.itba.paw.webapp.auth"})
 @Configuration
 public class WebAuthConfig extends WebSecurityConfigurerAdapter {
+    @Autowired
+    private MessageSource messageSource;
 
     @Autowired
     private UserDetailsService userDetailsService;
@@ -140,9 +145,8 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
 
                 /* POR DEFAULT NO ES NECESARIO INICIAR SESIÓN */
                 .and().exceptionHandling()
-                .authenticationEntryPoint((req, res, ex) -> {
-                    res.sendError(HttpServletResponse.SC_UNAUTHORIZED, ex.getLocalizedMessage());
-                })
+                .authenticationEntryPoint(new UnauthorizedRequestHandler(messageSource))
+                .accessDeniedHandler(new ForbiddenRequestHandler(messageSource))
                 .and().headers().cacheControl().disable()
                 .and().csrf().disable()
                 .addFilterBefore(basicAuthFilter, UsernamePasswordAuthenticationFilter.class)

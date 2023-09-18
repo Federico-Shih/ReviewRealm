@@ -1,6 +1,6 @@
-package ar.edu.itba.paw.webapp.forms;
+package ar.edu.itba.paw.webapp.controller.forms;
 
-import ar.edu.itba.paw.webapp.annotations.ExistentEmail;
+import ar.edu.itba.paw.webapp.controller.annotations.ExistentEmail;
 
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;

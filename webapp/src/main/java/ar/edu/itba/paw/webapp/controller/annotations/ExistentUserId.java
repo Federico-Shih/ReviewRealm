@@ -1,4 +1,4 @@
-package ar.edu.itba.paw.webapp.annotations;
+package ar.edu.itba.paw.webapp.controller.annotations;
 
 import ar.edu.itba.paw.webapp.validators.ExistentEmailValidator;
 import ar.edu.itba.paw.webapp.validators.ExistentUserIdValidator;
@@ -14,7 +14,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = ExistentUserIdValidator.class)
 public @interface ExistentUserId {
-    String message() default "{javax.validation.constraints.ExistentUserId.message}";
+    String message() default "javax.validation.constraints.ExistentUserId.message";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }

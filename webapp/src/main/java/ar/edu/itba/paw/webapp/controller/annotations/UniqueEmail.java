@@ -1,6 +1,6 @@
-package ar.edu.itba.paw.webapp.annotations;
+package ar.edu.itba.paw.webapp.controller.annotations;
 
-import ar.edu.itba.paw.webapp.validators.UniqueUsernameValidator;
+import ar.edu.itba.paw.webapp.validators.UniqueEmailValidator;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;
@@ -11,9 +11,9 @@ import java.lang.annotation.Target;
 
 @Target({ ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = UniqueUsernameValidator.class)
-public @interface UniqueUsername {
-    String message() default "{javax.validation.constraints.UniqueUsername.message}";
+@Constraint(validatedBy = UniqueEmailValidator.class)
+public @interface UniqueEmail {
+    String message() default "javax.validation.constraints.UniqueEmail.message";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }

@@ -1,8 +1,8 @@
-package ar.edu.itba.paw.webapp.forms;
+package ar.edu.itba.paw.webapp.controller.forms;
 
-import ar.edu.itba.paw.webapp.annotations.FieldMatch;
-import ar.edu.itba.paw.webapp.annotations.UniqueEmail;
-import ar.edu.itba.paw.webapp.annotations.UniqueUsername;
+import ar.edu.itba.paw.webapp.controller.annotations.FieldMatch;
+import ar.edu.itba.paw.webapp.controller.annotations.UniqueEmail;
+import ar.edu.itba.paw.webapp.controller.annotations.UniqueUsername;
 
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;

@@ -1,6 +1,6 @@
-package ar.edu.itba.paw.webapp.forms;
+package ar.edu.itba.paw.webapp.controller.forms;
 
-import ar.edu.itba.paw.webapp.annotations.ExistentUserId;
+import ar.edu.itba.paw.webapp.controller.annotations.ExistentUserId;
 
 import javax.validation.constraints.NotNull;
 

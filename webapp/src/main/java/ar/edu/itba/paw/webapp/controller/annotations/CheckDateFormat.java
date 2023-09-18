@@ -1,4 +1,4 @@
-package ar.edu.itba.paw.webapp.annotations;
+package ar.edu.itba.paw.webapp.controller.annotations;
 
 import ar.edu.itba.paw.webapp.validators.CheckDateValidator;
 
@@ -17,7 +17,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Documented
 public @interface CheckDateFormat {
 
-    String message() default "{javax.validation.constraints.CheckDateFormat.messagey}";
+    String message() default "javax.validation.constraints.CheckDateFormat.message";
 
     Class<?>[] groups() default { };
 

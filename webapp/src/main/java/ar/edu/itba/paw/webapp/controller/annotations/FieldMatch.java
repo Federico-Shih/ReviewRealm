@@ -1,4 +1,4 @@
-package ar.edu.itba.paw.webapp.annotations;
+package ar.edu.itba.paw.webapp.controller.annotations;
 
 import ar.edu.itba.paw.webapp.validators.FieldMatchValidator;
 
@@ -12,7 +12,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = FieldMatchValidator.class)
 public @interface FieldMatch {
-    String message() default "{javax.validation.constraints.FieldMatchValidator.message}";
+    String message() default "javax.validation.constraints.FieldMatchValidator.message";
     Class<?>[] groups() default {};
     Class<?>[] payload() default {};
     String first();

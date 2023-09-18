@@ -1,8 +1,8 @@
-package ar.edu.itba.paw.webapp.forms;
+package ar.edu.itba.paw.webapp.controller.forms;
 
-import ar.edu.itba.paw.webapp.annotations.CheckDateFormat;
-import ar.edu.itba.paw.webapp.annotations.ValidMediaSize;
-import ar.edu.itba.paw.webapp.annotations.ValidMediaType;
+import ar.edu.itba.paw.webapp.controller.annotations.CheckDateFormat;
+import ar.edu.itba.paw.webapp.controller.annotations.ValidMediaSize;
+import ar.edu.itba.paw.webapp.controller.annotations.ValidMediaType;
 import ar.edu.itba.paw.dtos.saving.SubmitGameDTO;
 import org.springframework.http.MediaType;
 import org.springframework.web.multipart.MultipartFile;
