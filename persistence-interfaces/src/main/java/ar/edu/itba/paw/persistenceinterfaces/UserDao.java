@@ -30,9 +30,9 @@ public interface UserDao {
 
     Optional<User> findById(final long id);
 
-    Optional<List<User>> getFollowers(final long id);
+    Optional<Paginated<User>> getFollowers(long id, Page page);
 
-    Optional<List<User>> getFollowing(final long id);
+    Optional<Paginated<User>> getFollowing(final long id, Page page);
 
     Optional<FollowerFollowingCount> getFollowerFollowingCount(final long id);
 

@@ -5,14 +5,14 @@ import ar.edu.itba.paw.models.Paginated;
 import javax.ws.rs.core.UriInfo;
 import java.util.List;
 
-public class PaginatedResponse<T, V extends BaseResponse> extends BaseResponse {
+public class PaginatedResponse<V> extends BaseResponse {
     private List<V> data;
     private long page;
     private long pageSize;
     private long totalPages;
 
-    public static <T, V extends BaseResponse> PaginatedResponse<T, V> fromPaginated(UriInfo info, List<V> values, Paginated<T> pagination) {
-        PaginatedResponse<T, V> response = new PaginatedResponse<>();
+    public static <V> PaginatedResponse<V> fromPaginated(UriInfo info, List<V> values, Paginated<?> pagination) {
+        PaginatedResponse<V> response = new PaginatedResponse<>();
         response.data = values;
         response.page = pagination.getPage();
         response.pageSize = pagination.getPageSize();

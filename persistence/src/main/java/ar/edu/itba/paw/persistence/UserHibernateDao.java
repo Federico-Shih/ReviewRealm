@@ -159,27 +159,6 @@ public class UserHibernateDao implements UserDao, PaginationDao<UserFilter> {
         return query.getSingleResult();
     }
 
-    private <T> void addUserFilterQuery(UserFilter userFilter, CriteriaQuery<T> criteriaQuery, CriteriaBuilder criteriaBuilder, Root<User> root) {
-        if (userFilter.getUsername() != null) {
-            criteriaQuery.where(criteriaBuilder.equal(root.get("username"), userFilter.getUsername()));
-        }
-        if (userFilter.getEmail() != null) {
-            criteriaQuery.where(criteriaBuilder.equal(root.get("email"), userFilter.getEmail()));
-        }
-        if (userFilter.isEnabled() != null) {
-            criteriaQuery.where(criteriaBuilder.equal(root.get("enabled"), userFilter.isEnabled()));
-        }
-        if (userFilter.getReputation() != null) {
-            criteriaQuery.where(criteriaBuilder.equal(root.get("reputation"), userFilter.getReputation()));
-        }
-        if (userFilter.getId() != null) {
-            criteriaQuery.where(criteriaBuilder.equal(root.get("id"), userFilter.getId()));
-        }
-        if (userFilter.getSearch() != null) {
-            String escapedSearch = userFilter.getSearch().replace("%","\\%").replace("_", "\\_");
-            criteriaQuery.where(criteriaBuilder.like(root.get("username"), "%" + escapedSearch + "%"));
-        }
-    }
 
     @Override
     public Optional<User> findById(long id) {
@@ -187,17 +166,51 @@ public class UserHibernateDao implements UserDao, PaginationDao<UserFilter> {
     }
 
     @Override
-    public Optional<List<User>> getFollowers(long id) {
+    public Optional<Paginated<User>> getFollowers(long id, Page page) {
         User user = em.find(User.class, id);
         if (user == null) return Optional.empty();
-        return Optional.of(new ArrayList<>(user.getFollowers()));
+
+        int pages = (int) Math.ceil((float)(em.createQuery("select count(f) from User u join u.followers f where u.id = :id", Long.class)
+                .setParameter("id", id)
+                .getSingleResult()) / page.getPageSize());
+        if (pages < page.getPageNumber() || page.getPageNumber() <= 0) {
+            return Optional.of(new Paginated<>(page.getPageNumber(), page.getPageSize(), pages, new ArrayList<>()));
+        }
+        Query nativeQuery = em.createNativeQuery("SELECT f.userid FROM followers as f WHERE f.following = :id")
+                .setParameter("id", id)
+                .setMaxResults(page.getPageSize())
+                .setFirstResult(page.getOffset().intValue());
+        @SuppressWarnings("unchecked") final List<Long> idlist = (List<Long>) nativeQuery.getResultList().stream().map(n -> ((Number) n).longValue()).collect(Collectors.toList());
+        if (idlist.isEmpty()) {
+            return Optional.of(new Paginated<>(page.getPageNumber(), page.getPageSize(), pages, new ArrayList<>()));
+        }
+        TypedQuery<User> userQuery = em.createQuery("from User where id IN :ids", User.class);
+        userQuery.setParameter("ids", idlist);
+        return Optional.of(new Paginated<>(page.getPageNumber(), page.getPageSize(), pages, userQuery.getResultList()));
     }
 
     @Override
-    public Optional<List<User>> getFollowing(long id) {
+    public Optional<Paginated<User>> getFollowing(long id, Page page) {
         User user = em.find(User.class, id);
         if (user == null) return Optional.empty();
-        return Optional.of(new ArrayList<>(user.getFollowing()));
+
+        int pages = (int) Math.ceil((float)(em.createQuery("select count(f) from User u join u.following f where u.id = :id", Long.class)
+                .setParameter("id", id)
+                .getSingleResult()) / page.getPageSize());
+        if (pages < page.getPageNumber() || page.getPageNumber() <= 0) {
+            return Optional.of(new Paginated<>(page.getPageNumber(), page.getPageSize(), pages, new ArrayList<>()));
+        }
+        Query nativeQuery = em.createNativeQuery("SELECT f.following FROM followers as f WHERE f.userid = :id")
+                .setParameter("id", id)
+                .setMaxResults(page.getPageSize())
+                .setFirstResult(page.getOffset().intValue());
+        @SuppressWarnings("unchecked") final List<Long> idlist = (List<Long>) nativeQuery.getResultList().stream().map(n -> ((Number) n).longValue()).collect(Collectors.toList());
+        if (idlist.isEmpty()) {
+            return Optional.of(new Paginated<>(page.getPageNumber(), page.getPageSize(), pages, new ArrayList<>()));
+        }
+        TypedQuery<User> userQuery = em.createQuery("from User where id IN :ids", User.class);
+        userQuery.setParameter("ids", idlist);
+        return Optional.of(new Paginated<>(page.getPageNumber(), page.getPageSize(), pages, userQuery.getResultList()));
     }
 
     @Override
@@ -300,5 +313,27 @@ public class UserHibernateDao implements UserDao, PaginationDao<UserFilter> {
             str.append("JOIN reviews as r ON u.id = r.authorid ");
         }
         return str.toString();
+    }
+
+    private <T> void addUserFilterQuery(UserFilter userFilter, CriteriaQuery<T> criteriaQuery, CriteriaBuilder criteriaBuilder, Root<User> root) {
+        if (userFilter.getUsername() != null) {
+            criteriaQuery.where(criteriaBuilder.equal(root.get("username"), userFilter.getUsername()));
+        }
+        if (userFilter.getEmail() != null) {
+            criteriaQuery.where(criteriaBuilder.equal(root.get("email"), userFilter.getEmail()));
+        }
+        if (userFilter.isEnabled() != null) {
+            criteriaQuery.where(criteriaBuilder.equal(root.get("enabled"), userFilter.isEnabled()));
+        }
+        if (userFilter.getReputation() != null) {
+            criteriaQuery.where(criteriaBuilder.equal(root.get("reputation"), userFilter.getReputation()));
+        }
+        if (userFilter.getId() != null) {
+            criteriaQuery.where(criteriaBuilder.equal(root.get("id"), userFilter.getId()));
+        }
+        if (userFilter.getSearch() != null) {
+            String escapedSearch = userFilter.getSearch().replace("%","\\%").replace("_", "\\_");
+            criteriaQuery.where(criteriaBuilder.like(root.get("username"), "%" + escapedSearch + "%"));
+        }
     }
 }

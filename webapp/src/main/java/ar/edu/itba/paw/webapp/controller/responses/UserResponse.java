@@ -34,11 +34,15 @@ public class UserResponse extends BaseResponse {
         response.setAvatarId(user.getAvatarId());
         response.setPreferences(user.getPreferences());
 
-        response.link("self", uri.getBaseUriBuilder().path(BASE_PATH).path(String.valueOf(user.getId())).build());
+        response.link("self", createUserLink(uri, user));
         response.link("followers", uri.getBaseUriBuilder().path(BASE_PATH).path(String.valueOf(user.getId())).path("followers").build());
         response.link("following", uri.getBaseUriBuilder().path(BASE_PATH).path(String.valueOf(user.getId())).path("following").build());
         // TODO: rest of paths
         return response;
+    }
+
+    public static URI createUserLink(final UriInfo uri, User user) {
+        return uri.getBaseUriBuilder().path(BASE_PATH).path(String.valueOf(user.getId())).build();
     }
 
     public void setId(long id) {

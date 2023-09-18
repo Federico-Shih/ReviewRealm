@@ -247,22 +247,22 @@ public class UserDaoImplTest {
     @Rollback
     @Test
     public void testGetFollowers() {
-        Optional<List<User>> followers = userDao.getFollowers(testFollowingUser.getId());
+        Optional<Paginated<User>> followers = userDao.getFollowers(testFollowingUser.getId(), Page.with(1, 100));
         Assert.assertTrue(followers.isPresent());
-        Assert.assertEquals(3, followers.get().size());
+        Assert.assertEquals(3, followers.get().getList().size());
         List<User> expected = Arrays.asList(UserTestModels.getUser2(), UserTestModels.getUser4(), UserTestModels.getUser3());
-        Assert.assertEquals(new HashSet<>(expected), new HashSet<>(followers.get()));
+        Assert.assertEquals(new HashSet<>(expected), new HashSet<>(followers.get().getList()));
     }
 
 
     @Rollback
     @Test
     public void testGetFollowing() {
-        Optional<List<User>> following = userDao.getFollowing(testFollowingUser.getId());
+        Optional<Paginated<User>> following = userDao.getFollowing(testFollowingUser.getId(), Page.with(1, 20));
         Assert.assertTrue(following.isPresent());
-        Assert.assertEquals(1, following.get().size());
+        Assert.assertEquals(1, following.get().getList().size());
         User[] expectedUsers = {UserTestModels.getUser3()};
-        Assert.assertArrayEquals(expectedUsers, following.get().toArray());
+        Assert.assertArrayEquals(expectedUsers, following.get().getList().toArray());
     }
 
     @Rollback

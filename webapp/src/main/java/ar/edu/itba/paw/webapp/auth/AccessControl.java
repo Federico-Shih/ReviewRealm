@@ -40,4 +40,11 @@ public class AccessControl {
             return false;
         return !reviewService.getReviewOfUserForGame(activeUser.getId(), gameId).isPresent();
     }
+
+    public boolean checkAccessedUserIdIsUser(long id) {
+        User activeUser = AuthenticationHelper.getLoggedUser(userService);
+        if(activeUser == null)
+            return false;
+        return Objects.equals(activeUser.getId(), id);
+    }
 }

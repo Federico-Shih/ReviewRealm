@@ -27,9 +27,9 @@ public interface UserService {
     
     User setPreferences(Set<Integer> genres, long userId);
     
-    List<User> getFollowers(long id);
+    Paginated<User> getFollowers(long id, Page page);
     
-    List<User> getFollowing(long id);
+    Paginated<User> getFollowing(long id, Page page);
     
     FollowerFollowingCount getFollowerFollowingCount(long id);
     

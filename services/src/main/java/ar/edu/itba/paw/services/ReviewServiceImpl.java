@@ -35,6 +35,7 @@ public class ReviewServiceImpl implements ReviewService {
     private final MailingService mailingService;
     private final MissionService missionService;
 
+
     @Autowired
     public ReviewServiceImpl(ReviewDao reviewDao, UserService userService, GameService gameService, MailingService mailingService, MissionService missionService) {
         this.reviewDao = reviewDao;
@@ -67,9 +68,10 @@ public class ReviewServiceImpl implements ReviewService {
         gameService.addNewReviewToGame(reviewedGame.getId(), rating);
 
         missionService.addMissionProgress(author.getId(), Mission.REVIEWS_GOAL, 1f);
-        List<User> authorFollowers = userService.getFollowers(author.getId());
+        // TODO: convert into task to email all followers
+        Paginated<User> authorFollowers = userService.getFollowers(author.getId(), Page.with(1, 1000));
 
-        for (User follower : authorFollowers) {
+        for (User follower : authorFollowers.getList()) {
             if(userService.isNotificationEnabled(follower.getId(), NotificationType.USER_I_FOLLOW_WRITES_REVIEW)) {
                 mailingService.sendReviewCreatedEmail(review, author, follower);
             }
@@ -121,7 +123,8 @@ public class ReviewServiceImpl implements ReviewService {
     @Transactional(readOnly = true)
     @Override
     public Paginated<Review> getReviewsFromFollowingByUser(long userId, Page page) {
-        List<User> followingUsers = userService.getFollowing(userId);
+        // TODO: cuantos usuarios traer? 10? 100? 1000?
+        List<User> followingUsers = userService.getFollowing(userId, Page.with(1, 20)).getList();
         if(followingUsers.isEmpty()){
             return new Paginated<>(page.getPageNumber(),page.getPageSize(),0, new ArrayList<>());
         }

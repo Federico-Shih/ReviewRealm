@@ -120,14 +120,14 @@ public class UserServiceImpl implements UserService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<User> getFollowers(long id) {
-        return userDao.getFollowers(id).orElseThrow(UserNotFoundException::new);
+    public Paginated<User> getFollowers(long id, Page page) {
+        return userDao.getFollowers(id, page).orElseThrow(UserNotFoundException::new);
     }
 
     @Transactional(readOnly = true)
     @Override
-    public List<User> getFollowing(long id) {
-        return userDao.getFollowing(id).orElseThrow(UserNotFoundException::new);
+    public Paginated<User> getFollowing(long id, Page page) {
+        return userDao.getFollowing(id, page).orElseThrow(UserNotFoundException::new);
     }
 
     @Transactional(readOnly = true)
@@ -155,11 +155,14 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public User unfollowUserById(long userId, long otherId) {
-        User toReturn = userDao.deleteFollow(userId, otherId).orElseThrow(UserNotFoundException::new);
-        LOGGER.info("User {} possibly unfollowed user {}", userId, otherId);
-        missionService.addMissionProgress(userId, Mission.FOLLOWING_GOAL, -1);
-        missionService.addMissionProgress(otherId, Mission.FOLLOWERS_GOAL, -1);
-        return toReturn;
+        if (!userDao.follows(userId, otherId)) return null;
+        Optional<User> toReturn = userDao.deleteFollow(userId, otherId);
+        LOGGER.info("User {} unfollowed user {}", userId, otherId);
+        if (toReturn.isPresent()) {
+            missionService.addMissionProgress(userId, Mission.FOLLOWING_GOAL, -1);
+            missionService.addMissionProgress(otherId, Mission.FOLLOWERS_GOAL, -1);
+        }
+        return toReturn.orElse(null);
     }
 
     @Transactional(readOnly = true)

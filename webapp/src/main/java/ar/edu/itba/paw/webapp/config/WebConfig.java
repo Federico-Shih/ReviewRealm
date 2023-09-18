@@ -20,6 +20,7 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.context.request.RequestContextListener;
@@ -43,6 +44,7 @@ import java.util.concurrent.TimeUnit;
 @EnableTransactionManagement
 @ComponentScan({"ar.edu.itba.paw.webapp.controller","ar.edu.itba.paw.services","ar.edu.itba.paw.persistence"})
 @Configuration
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 @PropertySource("classpath:application.properties")
 public class WebConfig extends WebMvcConfigurerAdapter {
     @Autowired

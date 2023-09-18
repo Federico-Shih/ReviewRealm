@@ -59,7 +59,7 @@ public class ReviewServiceImplTest {
     @Test
     public void testCreateReview() {
         Mockito.when(reviewDao.create(any(), any(), anyInt(), any(), any(), any(), anyDouble(), any(), anyBoolean(), anyBoolean())).thenReturn(getReview1());
-        Mockito.when(userService.getFollowers(anyLong())).thenReturn(Arrays.asList(getUser2(), getUser3()));
+        Mockito.when(userService.getFollowers(anyLong(), any())).thenReturn(new Paginated<>(1,1,1, Arrays.asList(getUser2(), getUser3())));
         Mockito.when(userService.isNotificationEnabled(eq(getUser2().getId()), any())).thenReturn(true);
         Mockito.when(userService.isNotificationEnabled(eq(getUser3().getId()), any())).thenReturn(false);
         Mockito.when(gameService.getGameById(anyLong())).thenReturn(Optional.of(getSuperGameA()));
@@ -139,7 +139,7 @@ public class ReviewServiceImplTest {
         Review r1 = getReview1();
         Review r2 = getReview2();
         Review r3 = getReview3();
-        Mockito.when(userService.getFollowing(anyLong())).thenReturn(Arrays.asList(getUser2(), getUser3()));
+        Mockito.when(userService.getFollowing(anyLong(), any())).thenReturn(new Paginated<>(1, 3, 1, Arrays.asList(getUser2(), getUser3())));
         Mockito.when(reviewDao.findAll(any(), any(), any(), any()))
                 .thenReturn(new Paginated<>(1, 3, 1, Arrays.asList(r1, r2, r3)));
 
