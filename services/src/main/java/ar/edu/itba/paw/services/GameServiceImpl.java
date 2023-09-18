@@ -4,6 +4,7 @@ import ar.edu.itba.paw.dtos.Page;
 import ar.edu.itba.paw.dtos.filtering.GameFilter;
 import ar.edu.itba.paw.dtos.filtering.GameFilterBuilder;
 import ar.edu.itba.paw.dtos.ordering.GameOrderCriteria;
+import ar.edu.itba.paw.dtos.ordering.OrderDirection;
 import ar.edu.itba.paw.dtos.ordering.Ordering;
 import ar.edu.itba.paw.dtos.saving.SubmitGameDTO;
 import ar.edu.itba.paw.enums.Difficulty;
@@ -141,7 +142,7 @@ public class GameServiceImpl implements GameService {
         if(!getGameById(id).isPresent())
             throw new GameNotFoundException();
         List<Review> reviews = reviewService.getAllReviewsFromGame(id,null);
-        if(reviews.size() > 0) {
+        if(!reviews.isEmpty()) {
             HashMap<Difficulty, Integer> difficultyCount = new HashMap<>();
             HashMap<Platform, Integer> platformCount = new HashMap<>();
 
@@ -186,17 +187,18 @@ public class GameServiceImpl implements GameService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<Game> getRecommendationsOfGamesForUser(long userId) {
+    public Paginated<Game> getRecommendationsOfGamesForUser(Page page,long userId) {
         User user = userService.getUserById(userId).orElseThrow(UserNotFoundException::new);
         if(!user.hasPreferencesSet()){
-            return new ArrayList<>();
+            return new Paginated<>(1,0,0,new ArrayList<>());
         }
         Set <Genre> userPreferences = user.getPreferences();
         List<Integer> preferencesIds = userPreferences.stream().map(Genre::getId).collect(Collectors.toList());
         Set<Game> userReviewedGames = getGamesReviewedByUser(user.getId());
         List<Long> idsToExclude = userReviewedGames.stream().map(Game::getId).collect(Collectors.toList());
-
-        return gameDao.getRecommendationsForUser(preferencesIds,idsToExclude);
+        GameFilter filter = new GameFilterBuilder().withGameGenres(preferencesIds).withGamesToExclude(idsToExclude).build();
+        Ordering<GameOrderCriteria> ordering = new Ordering<>(OrderDirection.DESCENDING, GameOrderCriteria.AVERAGE_RATING);
+        return gameDao.findAll(page,filter,ordering);
     }
 
     @Transactional(readOnly = true)
