@@ -7,23 +7,19 @@ import ar.edu.itba.paw.webapp.controller.annotations.UniqueUsername;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
-@FieldMatch(first = "repeatPassword", second = "password", message="FieldMatch.registerForm.repeatPassword")
 public class RegisterForm {
 
-    @UniqueUsername
+    @UniqueUsername(message = "UniqueUsername.registerForm.username")
     @Size(min=4, max = 24)
     private String username;
 
-    @UniqueEmail
+    @UniqueEmail(message = "UniqueEmail.registerForm.email")
     @Pattern(regexp = "^[a-zA-Z0-9]+(?:\\.[a-zA-Z0-9]+)*(\\+[1-9][0-9]*)?@[a-zA-Z0-9]+(?:\\.[a-zA-Z0-9]+)*$")
     @Size(max = 100)
     private String email;
 
-    @Size(min = 8, max = 100)
+    @Size(min = 8, max = 100, message = "Size.registerForm.password")
     private String password;
-
-    @Size(min = 8, max = 100)
-    private String repeatPassword;
 
     public String getUsername() {
         return username;
@@ -47,13 +43,5 @@ public class RegisterForm {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public String getRepeatPassword() {
-        return repeatPassword;
-    }
-
-    public void setRepeatPassword(String repeatPassword) {
-        this.repeatPassword = repeatPassword;
     }
 }

@@ -9,6 +9,7 @@ import ar.edu.itba.paw.webapp.auth.AccessControl;
 import ar.edu.itba.paw.webapp.controller.annotations.ExistentUserId;
 import ar.edu.itba.paw.webapp.controller.forms.*;
 import ar.edu.itba.paw.webapp.controller.helpers.LocaleHelper;
+import ar.edu.itba.paw.webapp.controller.mediatypes.VndType;
 import ar.edu.itba.paw.webapp.controller.querycontainers.UserSearchQuery;
 import ar.edu.itba.paw.webapp.controller.responses.PaginatedResponse;
 import ar.edu.itba.paw.webapp.controller.responses.UserResponse;
@@ -78,6 +79,7 @@ public class UserController {
     }
 
     @POST
+    @Consumes(VndType.APPLICATION_USER)
     @Produces(MediaType.APPLICATION_JSON)
     public Response createUser(@Valid RegisterForm registerForm) throws UsernameAlreadyExistsException, EmailAlreadyExistsException {
         final User user = us.createUser(registerForm.getUsername(), registerForm.getEmail(), registerForm.getPassword(), LocaleHelper.getLocale());
@@ -87,8 +89,9 @@ public class UserController {
                 .build();
     }
 
-    @PUT
-    @Path("password")
+    @POST
+    @Consumes(VndType.APPLICATION_PASSWORD_RESET)
+    @Produces(MediaType.APPLICATION_JSON)
     public Response changePasswordRequest(@Valid ResendEmailForm emailForm) {
         us.sendPasswordResetToken(emailForm.getEmail());
         return Response.accepted().build();
