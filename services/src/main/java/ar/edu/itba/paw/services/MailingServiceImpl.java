@@ -171,6 +171,7 @@ public class MailingServiceImpl implements MailingService {
             LOGGER.info("Email sent to {} with subject {}", mailTo, mailSubject);
         } catch (MessagingException | RuntimeException exception) {
             LOGGER.error("Error while sending email to {} with subject {}", mailTo, mailSubject, exception);
+//            System.out.println("Error while sending email" + exception.getMessage());
         }
     }
 }

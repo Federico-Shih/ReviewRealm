@@ -24,7 +24,7 @@ public interface UserService {
     Optional<User> getUserByToken(String token);
     
     User changeUserPassword(String email, String password);
-    
+
     User setPreferences(Set<Integer> genres, long userId);
     
     Paginated<User> getFollowers(long id, Page page);
@@ -38,13 +38,17 @@ public interface UserService {
     User followUserById(long userId, long otherId);
     
     User unfollowUserById(long userId, long otherId);
-    
+
+    User patchUser(long id, String password, Boolean enabled);
+
     boolean userFollowsId(long userId, long otherId);
     
     Optional<User> validateToken(String token) throws TokenExpiredException;
     
     ExpirationToken resendToken(String email) throws UserAlreadyEnabled;
-    
+
+    boolean deleteToken(String token);
+
     ExpirationToken refreshToken(String token);
     
     Paginated<User> searchUsers(Page page, String search, Ordering<UserOrderCriteria> ordering);
@@ -59,7 +63,7 @@ public interface UserService {
     
     ExpirationToken sendPasswordResetToken(String email) throws UserNotFoundException;
     
-    User resetPassword(String token, String password) throws TokenExpiredException, TokenNotFoundException;
+    User resetPassword(int id, String password) throws UserNotFoundException;
     
     Map<NotificationType, Boolean> getUserNotificationSettings(long userId);
     
@@ -82,4 +86,6 @@ public interface UserService {
     User setFavoriteGames(long userId, List<Long> gameIds);
 
     Paginated<User> getUsers(Page page, UserFilter filter, Ordering<UserOrderCriteria> ordering);
+
+    Optional<ExpirationToken> getExpirationToken(String token);
 }

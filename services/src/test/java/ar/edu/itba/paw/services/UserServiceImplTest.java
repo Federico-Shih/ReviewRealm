@@ -64,7 +64,7 @@ public class UserServiceImplTest {
     public void testCreate() throws UsernameAlreadyExistsException, EmailAlreadyExistsException {
         //1.prepare
         Mockito.when(passwordEncoder.encode(PASSWORD)).thenReturn(PASSWORD);
-        Mockito.when(userDao.create(eq(USERNAME), eq(EMAIL), eq("")))
+        Mockito.when(userDao.create(eq(USERNAME), eq(EMAIL), anyString()))
                 .thenReturn(new User(ID, USERNAME, EMAIL, PASSWORD));
         Mockito.when(userDao.findById(eq(ID))).thenReturn(Optional.of(USER));
         Mockito.when(userDao.update(eq(ID), any())).thenReturn(Optional.of(USER));
@@ -181,7 +181,7 @@ public class UserServiceImplTest {
 
     @Test(expected = TokenExpiredException.class)
     public void validateTokenExpired() throws TokenExpiredException {
-        Mockito.when(tokenDao.create(anyLong(), any(), any())).thenReturn(new ExpirationToken(TOKEN, USER, PASSWORD, EXPIRED_DATE));
+        Mockito.when(tokenDao.create(anyLong(), any())).thenReturn(new ExpirationToken(TOKEN, USER, PASSWORD, EXPIRED_DATE));
         Mockito.when(tokenDao.getByToken(any())).thenReturn(Optional.of(new ExpirationToken(TOKEN, USER, PASSWORD, EXPIRED_DATE)));
 
         us.validateToken(PASSWORD);
@@ -223,5 +223,17 @@ public class UserServiceImplTest {
         us.resendToken(EMAIL);
     }
 
+    @Test
+    public void patchUser() {
+        User user = USER;
+        Mockito.when(userDao.update(eq(ID), any())).thenReturn(Optional.of(user));
+        Assert.assertEquals(user, us.patchUser(user.getId(), OTHER_PASSWORD, true));
+    }
 
+    @Test(expected = UserNotFoundException.class)
+    public void patchUserNotFound() {
+        User user = USER;
+        Mockito.when(userDao.update(eq(ID), any())).thenReturn(Optional.empty());
+        us.patchUser(user.getId(), OTHER_PASSWORD, true);
+    }
 }

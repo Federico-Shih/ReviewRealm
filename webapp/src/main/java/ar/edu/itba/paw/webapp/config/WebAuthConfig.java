@@ -119,6 +119,7 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             .and().authorizeRequests()
                 .accessDecisionManager(accessDecisionManager())
+                .antMatchers(HttpMethod.PATCH, "/api/users/{id:\\d+}").authenticated()
 // todo: agregar rutas a medida que se van haciendo las APIs
                 //.antMatchers("/admin/**").hasRole("ADMIN")  lo que requiera un rol especial
                 //.antMatchers("/review/edit/").access("@AccessHelper.canEdit") cuando se requiera un acceso especial segun el usuario (Spring Expression Language)

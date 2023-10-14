@@ -72,6 +72,7 @@ public class UserHibernateDao implements UserDao, PaginationDao<UserFilter> {
         if (saveUserDTO.getXp() != null) {
             user.setXp(saveUserDTO.getXp());
         }
+        em.persist(user);
         return Optional.of(user);
     }
 

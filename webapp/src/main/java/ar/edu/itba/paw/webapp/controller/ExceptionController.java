@@ -1,6 +1,5 @@
 package ar.edu.itba.paw.webapp.controller;
 
-import ar.edu.itba.paw.webapp.exceptions.ObjectNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;

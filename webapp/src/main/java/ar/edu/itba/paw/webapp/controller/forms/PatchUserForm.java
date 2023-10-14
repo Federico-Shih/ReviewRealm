@@ -3,29 +3,24 @@ package ar.edu.itba.paw.webapp.controller.forms;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-public class ChangePasswordForm {
-    @NotNull
-    private String token;
-
-    @NotNull
-    @Size(min = 8, max = 100)
+public class PatchUserForm {
+    @Size(min = 8, max = 100, message = "Size.passwordForm.password")
     private String password;
-
+    private Boolean enabled;
 
     public String getPassword() {
         return password;
     }
 
-
     public void setPassword(String password) {
         this.password = password;
     }
 
-    public String getToken() {
-        return token;
+    public Boolean getEnabled() {
+        return enabled;
     }
 
-    public void setToken(String token) {
-        this.token = token;
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
     }
 }

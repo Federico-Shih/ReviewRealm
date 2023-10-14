@@ -94,14 +94,14 @@ http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
         <filter-name>springSecurityFilterChain</filter-name>
         <url-pattern>/api/*</url-pattern>
     </filter-mapping>
-    <filter>
-        <filter-name>openEntityManagerInViewFilter</filter-name>
-        <filter-class>org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter</filter-class>
-    </filter>
-    <filter-mapping>
-        <filter-name>openEntityManagerInViewFilter</filter-name>
-        <url-pattern>/api/*</url-pattern>
-    </filter-mapping>
+<!--    <filter>-->
+<!--        <filter-name>openEntityManagerInViewFilter</filter-name>-->
+<!--        <filter-class>org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter</filter-class>-->
+<!--    </filter>-->
+<!--    <filter-mapping>-->
+<!--        <filter-name>openEntityManagerInViewFilter</filter-name>-->
+<!--        <url-pattern>/api/*</url-pattern>-->
+<!--    </filter-mapping>-->
     <filter>
         <filter-name>encoding-filter</filter-name>
         <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>

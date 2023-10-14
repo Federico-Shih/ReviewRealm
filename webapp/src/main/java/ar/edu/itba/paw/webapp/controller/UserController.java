@@ -20,6 +20,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 import java.util.List;
@@ -97,28 +98,22 @@ public class UserController {
         return Response.accepted().build();
     }
 
-    @POST
-    @Path("password")
-    public Response changePassword(@Valid ChangePasswordForm changePasswordForm) throws TokenExpiredException, TokenNotFoundException {
-        us.resetPassword(changePasswordForm.getToken(), changePasswordForm.getPassword());
+    @PATCH
+    @PreAuthorize("@accessControl.checkAccessedUserIdIsUser(#id)")
+    @Path("{id:\\d+}")
+    public Response patchUser(@Valid @NotNull(message = "error.body.empty") PatchUserForm patchUserForm, @PathParam("id") Integer id) {
+        us.patchUser(id, patchUserForm.getPassword(), patchUserForm.getEnabled());
         return Response.noContent().build();
     }
 
-    @PUT
-    @Path("enabled")
-    public Response validateUserRequest(@Valid ResendEmailForm emailForm) throws UserAlreadyEnabled {
+    @POST
+    @Consumes(VndType.APPLICATION_ENABLE_USER)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response validateUser(@Valid @NotNull(message = "error.body.empty") ResendEmailForm emailForm) throws UserAlreadyEnabled {
         us.resendToken(emailForm.getEmail());
-        return Response.accepted().build();
-    }
-
-    @POST
-    @Path("enabled")
-    public Response validateUser(@Valid EnableUserForm userForm) throws TokenExpiredException {
-        us.validateToken(userForm.getToken());
         return Response.noContent().build();
     }
 
-    // TODO: paginate
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{id}/followers")
@@ -255,12 +250,7 @@ public class UserController {
 //        return new ModelAndView("user/validated");
 //    }
 //
-//    private void authWithoutPassword(User user) {
-//         Set<RoleType> roles = us.getUserRoles(user.getId());
-//         List<GrantedAuthority> authorities = roles.stream().map(roleType -> new SimpleGrantedAuthority("ROLE_" + roleType.getRole())).collect(Collectors.toList());
-//         Authentication result = new UsernamePasswordAuthenticationToken(new PawAuthUserDetails(user.getEmail(), user.getPassword(), authorities), null, authorities);
-//         SecurityContextHolder.getContext().setAuthentication(result);
-//    }
+
 //
 //    @RequestMapping(value = "/validate/{token}", method = RequestMethod.GET)
 //    public ModelAndView validateByPath(@PathVariable("token") String token) {

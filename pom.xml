@@ -350,6 +350,13 @@
                 <version>${jjwt.version}</version>
                 <scope>compile</scope>
             </dependency>
+
+            <!-- @PATCH -->
+            <dependency>
+                <groupId>javax.ws.rs</groupId>
+                <artifactId>javax.ws.rs-api</artifactId>
+                <version>${javax.ws.rs.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
     <build>

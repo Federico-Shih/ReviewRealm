@@ -1,6 +1,8 @@
 package ar.edu.itba.paw.webapp.controller.mediatypes;
 
 public class VndType {
+    public static final String APPLICATION_ENABLE_USER = "application/vnd.enable-user.v1+json";
+
     private VndType() {}
 
     public static final String APPLICATION_USER = "application/vnd.users.v1+json";
