@@ -17,7 +17,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class MissionServiceImpl implements MissionService {
@@ -84,6 +87,21 @@ public class MissionServiceImpl implements MissionService {
             }
         }
         return missionProgress;
+    }
+
+    @Override
+    public Optional<Mission> getMissionById(String missionName) {
+        for (Mission mission : Mission.values()) {
+            if (mission.name().equals(missionName)) {
+                return Optional.of(mission);
+            }
+        }
+        return Optional.empty();
+    }
+
+    @Override
+    public List<Mission> getMissions(User user) {
+        return Arrays.stream(Mission.values()).filter((mission -> mission.getRoleType() == null || (user != null && user.getRoles().stream().anyMatch((roleType -> roleType.equals(mission.getRoleType())))))).collect(Collectors.toList());
     }
 
     @Scheduled(cron = "0 0 0 * * 0")

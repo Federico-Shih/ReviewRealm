@@ -74,6 +74,9 @@ public class UserController {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getUsers(@Valid @BeanParam UserSearchQuery userSearchQuery) {
         final Paginated<User> users = us.getUsers(userSearchQuery.getPage(), userSearchQuery.getFilter(), userSearchQuery.getOrdering());
+        if (users.getTotalPages() == 0 || users.getList().isEmpty()) {
+            return Response.noContent().build();
+        }
         List<UserResponse> userResponseList = users.getList().stream().map((user) -> UserResponse.fromEntity(uriInfo, user)).collect(Collectors.toList());
         Response.ResponseBuilder response = Response.ok(PaginatedResponse.fromPaginated(uriInfo, userResponseList, users));
         return response.build();
