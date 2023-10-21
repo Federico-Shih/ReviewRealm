@@ -78,21 +78,21 @@ public class GameController extends UriInfoController {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getGames(@Valid @BeanParam GameSearchQuery gameSearchQuery){
         User loggedUser = AuthenticationHelper.getLoggedUser(us);
+        Paginated<Game> games;
         if(gameSearchQuery.isRecommendedFor()){
             if(!gameSearchQuery.isProperRecommendedFor()){
+                return Response.status(Response.Status.BAD_REQUEST).build(); //todo: capaz aca habria que poner porque tira bad request
+            }
+            games = gs.getRecommendationsOfGamesForUser(gameSearchQuery.getPage(),gameSearchQuery.getRecommendedFor());
+        }else if(gameSearchQuery.isFavoriteOf()){
+            if(!gameSearchQuery.isProperFavoriteOf()){
                 return Response.status(Response.Status.BAD_REQUEST).build();
             }
-            final Paginated<Game> recommended = gs.getRecommendationsOfGamesForUser(gameSearchQuery.getPage(),gameSearchQuery.getRecommendedFor());
-            if(recommended.getTotalPages() == 0 || recommended.getList().isEmpty()){
-                return Response.noContent().build();
-            }
-            List<GameResponse> gameResponseList = recommended.getList().stream().map(
-                    (game) -> GameResponse.fromEntity(uriInfo,game,gs.getGameReviewDataByGameId(game.getId()),loggedUser)
-            ).collect(Collectors.toList());
-            return Response.ok(PaginatedResponse.fromPaginated(uriInfo,gameResponseList,recommended)).build();
+            games = us.getFavoriteGamesFromUser(gameSearchQuery.getPage(),gameSearchQuery.getFavoriteOf());
+        }else{
+            games = gs.searchGames(gameSearchQuery.getPage(), gameSearchQuery.getFilter(),gameSearchQuery.getOrdering());
         }
 
-        final Paginated<Game> games = gs.searchGames(gameSearchQuery.getPage(), gameSearchQuery.getFilter(),gameSearchQuery.getOrdering());
         if(games.getTotalPages() == 0 || games.getList().isEmpty()){
             return Response.noContent().build();
         }

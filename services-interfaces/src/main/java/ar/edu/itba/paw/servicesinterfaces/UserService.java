@@ -77,7 +77,7 @@ public interface UserService {
     
     User changeUserLanguage(long userId, Locale language);
     
-    List<Game> getFavoriteGamesFromUser(long userId);
+    Paginated<Game> getFavoriteGamesFromUser(Page page,long userId);
     
     List<Game> getPossibleFavGamesFromUser(long userId);
     

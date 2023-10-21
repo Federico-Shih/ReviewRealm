@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.dtos.Page;
+import ar.edu.itba.paw.dtos.filtering.GameFilterBuilder;
 import ar.edu.itba.paw.dtos.saving.SubmitGameDTO;
 import ar.edu.itba.paw.enums.Difficulty;
 import ar.edu.itba.paw.enums.Genre;
@@ -51,6 +52,9 @@ public class GameServiceImplTest {
 
     @Mock
     private SubmitGameDTO dto;
+    @Mock
+    private GameFilterBuilder filterBuilder;
+
 
     @Test
     public void testGetGameById() {
@@ -134,7 +138,10 @@ public class GameServiceImplTest {
         Mockito.when(user.getPreferences()).thenReturn(new HashSet<>(Arrays.asList(Genre.ACTION, Genre.ADVENTURE)));
         Mockito.when(user.hasPreferencesSet()).thenReturn(true);
         Mockito.when(gameDao.getGamesReviewedByUser(anyLong())).thenReturn(Optional.of(new HashSet<>(Arrays.asList(getSuperGameA()))));
-        Mockito.when(gameDao.getRecommendationsForUser(any(), any())).thenReturn(Arrays.asList(getSuperGameB()));
+        Mockito.when(filterBuilder.withGameGenres(any())).thenReturn(filterBuilder);
+        Mockito.when(filterBuilder.withGamesToExclude(any())).thenReturn(filterBuilder);
+        Mockito.when(filterBuilder.build()).thenReturn(new GameFilterBuilder().build());
+        Mockito.when(gameDao.findAll(any(), any(),any())).thenReturn(new Paginated<>(1,10,1,Arrays.asList(getSuperGameB())));
 
         List<Game> games = gs.getRecommendationsOfGamesForUser(Page.with(1,10),getUser1().getId()).getList();
 

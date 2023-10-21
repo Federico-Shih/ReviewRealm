@@ -95,15 +95,6 @@ public class GameHibernateDao implements GameDao, PaginationDao<GameFilter> {
         return game.getGenres();
     }
 
-    @Override
-    public Optional<List<Game>> getFavoriteGamesFromUser(long userId) {
-        final User user = em.find(User.class, userId);
-        if(user == null) {
-            return Optional.empty();
-        }
-        return Optional.of(user.getFavoriteGames());
-    }
-
 
     @Override
     public List<Game> getFavoriteGamesCandidates(long userId, int minRating) {
@@ -114,16 +105,6 @@ public class GameHibernateDao implements GameDao, PaginationDao<GameFilter> {
         return query.getResultList().stream().map(Review::getReviewedGame).collect(Collectors.toList());
     }
 
-    @Override
-    public List<Game> getRecommendationsForUser(List<Integer> userPreferences, List<Long> gamesToExclude) {
-        final TypedQuery<Game> query = em.createQuery("select distinct g from Game g inner join g.genres genre " +
-                "where " + (gamesToExclude.size() > 0 ? "g.id not in :exclude and " : "") + (userPreferences.size() > 0 ? "genre in :preferences" : "1 = 2") +
-                " order by g.averageRating desc", Game.class);
-        if (gamesToExclude.size() > 0) query.setParameter("exclude", gamesToExclude);
-        if (userPreferences.size() > 0)
-            query.setParameter("preferences", userPreferences.stream().map(Genre::valueFrom).collect(Collectors.toList()));
-        return query.getResultList();
-    }
 
     @Override
     public Optional<Set<Game>> getGamesReviewedByUser(long userId) {
@@ -185,6 +166,7 @@ public class GameHibernateDao implements GameDao, PaginationDao<GameFilter> {
         return new QueryBuilder()
                 .withSimilar("g.name", filter.getGameContent())
                 .withList("gg.genreid", filter.getGameGenres())
+                .withExact("fg.userid", filter.getFavoriteGamesOf())
                 .withExact("g.publisher", filter.getPublisher())
                 .withExact("g.suggestion", filter.getSuggested())
                 .NOT().withList("g.id", filter.getGamesToExclude())
@@ -203,6 +185,8 @@ public class GameHibernateDao implements GameDao, PaginationDao<GameFilter> {
         str.append("games as g ");
         if (filter.getGameGenres() != null && !filter.getGameGenres().isEmpty()) {
             str.append("JOIN genreforgames as gg ON g.id = gg.gameid ");
+        } else if (filter.getFavoriteGamesOf() != null) {
+            str.append("JOIN favoritegames as fg ON g.id = fg.gameid ");
         }
         return str.toString();
     }

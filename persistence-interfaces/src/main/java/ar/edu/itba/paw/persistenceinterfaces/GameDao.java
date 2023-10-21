@@ -26,11 +26,7 @@ public interface GameDao {
 
     List<Genre> getGenresByGame(long id);
 
-    Optional<List<Game>> getFavoriteGamesFromUser(long userId);
-
     List<Game> getFavoriteGamesCandidates(long userId, int minRating);
-
-    List<Game> getRecommendationsForUser(List<Integer> userPreferences,List<Long> gamesToExclude);
 
     Optional<Set<Game>> getGamesReviewedByUser(long userId);
 

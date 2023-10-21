@@ -224,13 +224,13 @@ public class GameDaoImplTest {
     @Rollback
     @Test
     public void testGetFavoriteGamesFromUser() {
-        Optional<List<Game>> games = gameDao.getFavoriteGamesFromUser(withFavoriteGamesUser.getId());
+        GameFilter filter = new GameFilterBuilder().withFavoriteGamesOf(withFavoriteGamesUser.getId()).build();
+        List<Game> games = gameDao.findAll(Page.with(1,10), filter, new Ordering<>(OrderDirection.DESCENDING, GameOrderCriteria.AVERAGE_RATING)).getList();
 
-        Assert.assertTrue(games.isPresent());
-        Assert.assertEquals(3, games.get().size());
+        Assert.assertEquals(3, games.size());
 
-        List<Game> expectedFavorites = Arrays.asList(GameTestModels.getSuperGameA(), GameTestModels.getSuperGameB(), GameTestModels.getSubnautica());
-        Assert.assertArrayEquals(expectedFavorites.toArray(), games.get().toArray());
+        List<Game> expectedFavorites = Arrays.asList(GameTestModels.getSuperGameB(), GameTestModels.getSubnautica(), GameTestModels.getSuperGameA());
+        Assert.assertArrayEquals(expectedFavorites.toArray(), games.toArray());
     }
 
 
@@ -360,8 +360,10 @@ public class GameDaoImplTest {
     public void testGetRecommendationsForUser() {
         //Setup user
         List<Integer> genres = Collections.singletonList(Genre.CASUAL.getId());
+        GameFilter filter = new GameFilterBuilder().withGameGenres(genres).withGamesToExclude(new ArrayList<>()).build();
+        Ordering<GameOrderCriteria> ordering = new Ordering<>(OrderDirection.DESCENDING, GameOrderCriteria.AVERAGE_RATING);
 
-        List<Game> games = gameDao.getRecommendationsForUser(genres,new ArrayList<>());
+        List<Game> games = gameDao.findAll(Page.with(1,10),filter, ordering).getList();
 
         Assert.assertEquals(1, games.size());
         Game[] expectedGames = {GameTestModels.getSuperGameB()};
@@ -371,8 +373,12 @@ public class GameDaoImplTest {
     @Rollback
     @Test
     public void testGetRecommendationsForUserExclude() {
-        List<Game> games = gameDao.getRecommendationsForUser(Collections.singletonList(Genre.ADVENTURE.getId()),
-                Collections.singletonList(GameTestModels.getSuperGameB().getId()));
+        List<Integer> genres = Collections.singletonList(Genre.ADVENTURE.getId());
+        List<Long> gamesToExclude = Collections.singletonList(GameTestModels.getSuperGameB().getId());
+        GameFilter filter = new GameFilterBuilder().withGameGenres(genres).withGamesToExclude(gamesToExclude).build();
+        Ordering<GameOrderCriteria> ordering = new Ordering<>(OrderDirection.DESCENDING, GameOrderCriteria.AVERAGE_RATING);
+
+        List<Game> games = gameDao.findAll(Page.with(1,10),filter, ordering).getList();
 
         Assert.assertEquals(1,games.size());
         List<Game> expectedGames = Collections.singletonList(GameTestModels.getSuperGameA());

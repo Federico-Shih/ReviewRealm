@@ -1,8 +1,12 @@
 package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.dtos.Page;
+import ar.edu.itba.paw.dtos.filtering.GameFilter;
+import ar.edu.itba.paw.dtos.filtering.GameFilterBuilder;
 import ar.edu.itba.paw.dtos.filtering.UserFilter;
 import ar.edu.itba.paw.dtos.filtering.UserFilterBuilder;
+import ar.edu.itba.paw.dtos.ordering.GameOrderCriteria;
+import ar.edu.itba.paw.dtos.ordering.OrderDirection;
 import ar.edu.itba.paw.dtos.ordering.Ordering;
 import ar.edu.itba.paw.dtos.ordering.UserOrderCriteria;
 import ar.edu.itba.paw.dtos.saving.SaveUserBuilder;
@@ -404,8 +408,11 @@ public class UserServiceImpl implements UserService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<Game> getFavoriteGamesFromUser(long userId) {
-        return gameDao.getFavoriteGamesFromUser(userId).orElseThrow(UserNotFoundException::new);
+    public Paginated<Game> getFavoriteGamesFromUser(Page page,long userId) {
+        if (!getUserById(userId).isPresent())
+            throw new UserNotFoundException();
+        GameFilter filter = new GameFilterBuilder().withFavoriteGamesOf(userId).build();
+        return gameDao.findAll(page, filter, new Ordering<>(OrderDirection.DESCENDING, GameOrderCriteria.AVERAGE_RATING));
     }
 
     @Transactional(readOnly = true)
