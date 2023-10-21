@@ -3,6 +3,7 @@ package ar.edu.itba.paw.webapp.controller.forms;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+@NotNull(message = "error.body.empty")
 public class PatchUserForm {
     @Size(min = 8, max = 100, message = "Size.passwordForm.password")
     private String password;

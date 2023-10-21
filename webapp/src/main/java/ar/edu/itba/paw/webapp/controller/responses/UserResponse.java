@@ -1,12 +1,13 @@
 package ar.edu.itba.paw.webapp.controller.responses;
 
-import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.models.User;
+
 import javax.ws.rs.core.UriInfo;
 import java.net.URI;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class UserResponse extends BaseResponse {
     private static String BASE_PATH = "/users";
@@ -19,7 +20,7 @@ public class UserResponse extends BaseResponse {
     private Locale language;
     private Float xp;
 
-    private Set<Genre> preferences;
+    private Set<URI> preferences;
 
 
     public static UserResponse fromEntity(final UriInfo uri, User user) {
@@ -32,7 +33,7 @@ public class UserResponse extends BaseResponse {
         response.setLanguage(user.getLanguage());
         response.setXp(user.getXp());
         response.setAvatarId(user.getAvatarId());
-        response.setPreferences(user.getPreferences());
+        response.setPreferences(user.getPreferences().stream().map(preferences -> GenreResponse.getLinkFromEntity(uri, preferences)).collect(Collectors.toSet()));
 
         response.link("self", getLinkFromEntity(uri, user));
         response.link("followers", uri.getBaseUriBuilder().path(BASE_PATH).queryParam("followers", user.getId()).build());
@@ -113,11 +114,11 @@ public class UserResponse extends BaseResponse {
         return xp;
     }
 
-    public void setPreferences(Set<Genre> preferences) {
-        this.preferences = preferences;
+    public Set<URI> getPreferences() {
+        return preferences;
     }
 
-    public Set<Genre> getPreferences() {
-        return preferences;
+    public void setPreferences(Set<URI> preferences) {
+        this.preferences = preferences;
     }
 }

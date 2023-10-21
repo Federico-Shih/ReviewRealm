@@ -1,7 +1,9 @@
 package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.dtos.Page;
-import ar.edu.itba.paw.exceptions.*;
+import ar.edu.itba.paw.exceptions.EmailAlreadyExistsException;
+import ar.edu.itba.paw.exceptions.UserAlreadyEnabled;
+import ar.edu.itba.paw.exceptions.UsernameAlreadyExistsException;
 import ar.edu.itba.paw.models.Paginated;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.servicesinterfaces.UserService;
@@ -23,9 +25,11 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
-import javax.ws.rs.core.*;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -97,7 +101,7 @@ public class UserController {
     @POST
     @Consumes(VndType.APPLICATION_ENABLE_USER)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response validateUser(@Valid @NotNull(message = "error.body.empty") ResendEmailForm emailForm) throws UserAlreadyEnabled {
+    public Response validateUser(@Valid ResendEmailForm emailForm) throws UserAlreadyEnabled {
         us.resendToken(emailForm.getEmail());
         return Response.noContent().build();
     }
@@ -169,13 +173,9 @@ public class UserController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @PreAuthorize("@accessControl.checkAccessedUserIdIsUser(#id)")
-    public Response putPreferences(@PathParam(("id")) Integer id, @Valid @NotNull(message = "error.body.empty") EditPreferencesForm preferencesForm) {
-        final Optional<User> user = us.getUserById(id);
-        if (!user.isPresent()) {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
+    public Response putPreferences(@ExistentUserId @PathParam(("id")) Long id, @Valid EditPreferencesForm preferencesForm) {
         us.setPreferences(new HashSet<>(preferencesForm.getGenres()), id);
-        return Response.noContent().build();
+        return Response.ok().build();
     }
 
     @GET
@@ -193,7 +193,7 @@ public class UserController {
     @PATCH
     @PreAuthorize("@accessControl.checkAccessedUserIdIsUser(#id)")
     @Path("{id:\\d+}")
-    public Response patchUser(@Valid @NotNull(message = "error.body.empty") PatchUserForm patchUserForm, @PathParam("id") Integer id) {
+    public Response patchUser(@Valid PatchUserForm patchUserForm, @PathParam("id") Integer id) {
         us.patchUser(id, patchUserForm.getPassword(), patchUserForm.getEnabled());
         return Response.noContent().build();
     }
@@ -214,19 +214,36 @@ public class UserController {
     @PreAuthorize("@accessControl.checkAccessedUserIdIsUser(#id)")
     @Consumes(value = {MediaType.APPLICATION_JSON})
     @Produces(value = {MediaType.APPLICATION_JSON})
-    public Response createNewFavoriteGame(@PathParam("id") final long id, @Valid @NotNull(message = "error.body.empty") FavoriteGameForm favoriteGameForm) {
+    public Response createNewFavoriteGame(@PathParam("id") final long id, @Valid FavoriteGameForm favoriteGameForm) {
         boolean added = us.addFavoriteGame(id, favoriteGameForm.getGameId());
         if (!added) throw new CustomRuntimeException(Response.Status.BAD_REQUEST, "error.game.already.favorite");
         return Response.created(
-                    uriInfo.getBaseUriBuilder()
-                    .path("users")
-                    .path(String.valueOf(id))
-                    .path("favoritegames")
-                    .path(String.valueOf(favoriteGameForm.getGameId()))
-                    .build()
-                ).build();
+                uriInfo.getBaseUriBuilder()
+                        .path("users")
+                        .path(String.valueOf(id))
+                        .path("favoritegames")
+                        .path(String.valueOf(favoriteGameForm.getGameId()))
+                        .build()
+        ).build();
     }
 
+    @DELETE
+    @Path("{id:\\d+}/favoritegames/{gameId:\\d+}")
+    @PreAuthorize("@accessControl.checkAccessedUserIdIsUser(#id)")
+    @Consumes(value = {MediaType.APPLICATION_JSON})
+    @Produces(value = {MediaType.APPLICATION_JSON})
+    public Response deleteFavoriteGame(@PathParam("id") final long id, @PathParam("gameId") final long gameId) {
+        boolean deleted = us.deleteFavoriteGame(id, gameId);
+        return deleted ? Response.ok().build() : Response.status(Response.Status.NOT_FOUND).build();
+    }
+
+//    @GET
+//    @Path("{id:\\d+}/notifications")
+//    @PreAuthorize("@accessControl.checkAccessedUserIdIsUser(#id)")
+//    @Produces(value = {MediaType.APPLICATION_JSON})
+//    public Response getNotifications() {
+//
+//    }
 
 //    @RequestMapping("/login")
 //    public ModelAndView loginForm(S
