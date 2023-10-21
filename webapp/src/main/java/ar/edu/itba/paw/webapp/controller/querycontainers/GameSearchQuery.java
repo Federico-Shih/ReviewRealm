@@ -81,7 +81,7 @@ public class GameSearchQuery extends PaginatedQuery{
         return recommendedFor != null && recommendedFor > 0;
     }
     public boolean isProperRecommendedFor(){
-        return search == null && genres == null && rating == null && excludeNoRating == null && suggested == null;
+        return search == null && genres.isEmpty() && rating == null && excludeNoRating == null && suggested == null;
     }
 
     public Long getRecommendedFor() {
