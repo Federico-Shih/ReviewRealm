@@ -16,6 +16,7 @@ import ar.edu.itba.paw.webapp.controller.responses.GameResponse;
 import ar.edu.itba.paw.webapp.controller.responses.GenreResponse;
 import ar.edu.itba.paw.webapp.controller.responses.ListResponse;
 import ar.edu.itba.paw.webapp.controller.responses.PaginatedResponse;
+import ar.edu.itba.paw.webapp.exceptions.CustomRuntimeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,12 +82,12 @@ public class GameController extends UriInfoController {
         Paginated<Game> games;
         if(gameSearchQuery.isRecommendedFor()){
             if(!gameSearchQuery.isProperRecommendedFor()){
-                return Response.status(Response.Status.BAD_REQUEST).build(); //todo: capaz aca habria que poner porque tira bad request
+                throw new CustomRuntimeException(Response.Status.BAD_REQUEST, "error.game.filter.recommended");
             }
             games = gs.getRecommendationsOfGamesForUser(gameSearchQuery.getPage(),gameSearchQuery.getRecommendedFor());
         }else if(gameSearchQuery.isFavoriteOf()){
             if(!gameSearchQuery.isProperFavoriteOf()){
-                return Response.status(Response.Status.BAD_REQUEST).build();
+                throw new CustomRuntimeException(Response.Status.BAD_REQUEST, "error.game.filter.favorite");
             }
             games = us.getFavoriteGamesFromUser(gameSearchQuery.getPage(),gameSearchQuery.getFavoriteOf());
         }else{
@@ -109,7 +110,7 @@ public class GameController extends UriInfoController {
     public Response postGame(@Valid SubmitGameForm submitGameForm) throws IOException {
         //TODO:Que onda con las excepciones
         User loggedUser = AuthenticationHelper.getLoggedUser(us);
-        Optional<Game> game = gs.createGame(submitGameForm.toSubmitDTO(),loggedUser.getId());//TODO: id de usuario que lo crea
+        Optional<Game> game = gs.createGame(submitGameForm.toSubmitDTO(),loggedUser.getId());
         //Que hago aca con el suggest, que devuelvo???
         return Response.
                 created(uriInfo.getAbsolutePathBuilder().path("/games").path(game.get().getId().toString()).build())

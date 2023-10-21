@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.webapp.controller.forms;
 
 import ar.edu.itba.paw.webapp.controller.annotations.CheckDateFormat;
+import ar.edu.itba.paw.webapp.controller.annotations.ExistentGenreList;
 import ar.edu.itba.paw.webapp.controller.annotations.ValidMediaSize;
 import ar.edu.itba.paw.webapp.controller.annotations.ValidMediaType;
 import ar.edu.itba.paw.dtos.saving.SubmitGameDTO;
@@ -21,7 +22,7 @@ public class SubmitGameForm {
     @Size(min = 1, max = 50)
     private String publisher;
 
-    //Todo: chequear que son generos validos
+    @ExistentGenreList
     private List<Integer> genres;
     @CheckDateFormat(pattern = "yyyy-mm-dd")
     private String releaseDate;

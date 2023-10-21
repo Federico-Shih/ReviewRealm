@@ -24,6 +24,6 @@ public class ExistentGenreListValidator implements ConstraintValidator<ExistentG
                 return false;
             }
         }
-        return false;
+        return true;
     }
 }
