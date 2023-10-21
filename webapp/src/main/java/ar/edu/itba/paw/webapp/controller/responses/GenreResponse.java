@@ -5,6 +5,7 @@ import ar.edu.itba.paw.webapp.controller.helpers.LocaleHelper;
 import org.springframework.context.MessageSource;
 
 import javax.ws.rs.core.UriInfo;
+import java.net.URI;
 
 public class GenreResponse extends BaseResponse {
     private static final String BASE_PATH = "/genres";
@@ -22,6 +23,9 @@ public class GenreResponse extends BaseResponse {
         GenreResponse response = new GenreResponse(genre.getId(), genre.name(), localized);
         response.link("self", uri.getBaseUriBuilder().path(BASE_PATH).path(String.valueOf(genre.getId())).build());
         return response;
+    }
+    public static URI getLinkFromEntity(final UriInfo uri, Genre genre) {
+        return uri.getBaseUriBuilder().path(BASE_PATH).path(String.valueOf(genre.getId())).build();
     }
 
     public String getLocalized() {

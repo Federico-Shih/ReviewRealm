@@ -4,18 +4,34 @@ import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.servicesinterfaces.GameService;
 import ar.edu.itba.paw.servicesinterfaces.ReviewService;
 import ar.edu.itba.paw.servicesinterfaces.UserService;
+import ar.edu.itba.paw.webapp.auth.AccessControl;
+import ar.edu.itba.paw.webapp.auth.AuthenticationHelper;
+import ar.edu.itba.paw.webapp.controller.forms.PatchGameForm;
+import ar.edu.itba.paw.webapp.controller.forms.SubmitGameForm;
+import ar.edu.itba.paw.webapp.controller.mediatypes.VndType;
+import ar.edu.itba.paw.webapp.controller.querycontainers.GameSearchQuery;
 import ar.edu.itba.paw.webapp.controller.responses.GameResponse;
+import ar.edu.itba.paw.webapp.controller.responses.GenreResponse;
+import ar.edu.itba.paw.webapp.controller.responses.ListResponse;
+import ar.edu.itba.paw.webapp.controller.responses.PaginatedResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
+import org.springframework.validation.BindingResult;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Path("/games")
 @Component
@@ -45,48 +61,116 @@ public class GameController extends UriInfoController {
     @GET
     @Path("{id:\\d+}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getGameById(final Long gameId) {
+    public Response getById(@PathParam("id") final long gameId) {
+        User loggedUser = AuthenticationHelper.getLoggedUser(us);
         Optional<Game> game = gs.getGameById(gameId);
         if (game.isPresent()) {
-            return Response.ok(GameResponse.fromEntity(uriInfo,game.get(),gs.getGameReviewDataByGameId(gameId))).build();
+            return Response.ok(GameResponse.fromEntity(uriInfo,game.get(),gs.getGameReviewDataByGameId(gameId),loggedUser)).build();
         } else {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
     }
 
 
-//    @GET
-//    @Produces(MediaType.APPLICATION_JSON)
-//    public Response getGames(@Valid @BeanParam GameSearchQuery gameSearchQuery){
-//        final Paginated<Game> games = gs.searchGames(gameSearchQuery.getPage(), gameSearchQuery.getFilter(),gameSearchQuery.getOrdering());
-//        List<GameResponse> gameResponseList = games.getList().stream().map(this.currifyUriInfo(GameResponse::fromEntity)).collect(Collectors.toList();
-//        Response.ResponseBuilder response = Response.ok(PaginatedResponse.fromPaginated(uriInfo,gameResponseList,games));
-//        return response.build();
-//    }
-//
-//    @POST
-//    @Produces(MediaType.APPLICATION_JSON)
-//    public Response postGame(@Valid @BeanParam SubmitGameForm submitGameForm, BindingResult bindingResult) throws IOException {
-//        if(bindingResult.hasErrors()){
-//            return Response.status(Response.Status.BAD_REQUEST).build();
-//        }
-//        //TODO:Try catch???
-//        Game game = gs.createGame(submitGameForm.toSubmitDTO(),id);//TODO: id de usuario que lo crea
-//        //Que hago aca con el suggest, que devuelvo???
-//        return Response.created(uriInfo.getAbsolutePathBuilder().path(String.valueOf(game.getId())).build()).build();
-//    }
-//
-//    @PUT
-//    @Produces(MediaType.APPLICATION_JSON)
-//    public Response putGame(@Valid @BeanParam SubmitGameForm submitGameForm, BindingResult bindingResult) throws IOException {
-//        if (bindingResult.hasErrors()) {
-//            return Response.status(Response.Status.BAD_REQUEST).build();
-//        }
-//        //TODO:Try catch???
-//        Game game = gs.editGame(submitGameForm.toSubmitDTO(), id);//TODO: id de usuario que lo crea
-//
-//        return Response.ok(uriInfo.getAbsolutePathBuilder().path(String.valueOf(game.getId())).build()).build();
-//    }
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getGames(@Valid @BeanParam GameSearchQuery gameSearchQuery){
+        User loggedUser = AuthenticationHelper.getLoggedUser(us);
+        if(gameSearchQuery.isRecommendedFor()){
+            if(!gameSearchQuery.isProperRecommendedFor()){
+                return Response.status(Response.Status.BAD_REQUEST).build();
+            }
+            final Paginated<Game> recommended = gs.getRecommendationsOfGamesForUser(gameSearchQuery.getPage(),gameSearchQuery.getRecommendedFor());
+            if(recommended.getTotalPages() == 0 || recommended.getList().isEmpty()){
+                return Response.noContent().build();
+            }
+            List<GameResponse> gameResponseList = recommended.getList().stream().map(
+                    (game) -> GameResponse.fromEntity(uriInfo,game,gs.getGameReviewDataByGameId(game.getId()),loggedUser)
+            ).collect(Collectors.toList());
+            return Response.ok(PaginatedResponse.fromPaginated(uriInfo,gameResponseList,recommended)).build();
+        }
+
+        final Paginated<Game> games = gs.searchGames(gameSearchQuery.getPage(), gameSearchQuery.getFilter(),gameSearchQuery.getOrdering());
+        if(games.getTotalPages() == 0 || games.getList().isEmpty()){
+            return Response.noContent().build();
+        }
+        List<GameResponse> gameResponseList = games.getList().stream().map(
+                (game) -> GameResponse.fromEntity(uriInfo,game,gs.getGameReviewDataByGameId(game.getId()),loggedUser)
+                // Que busque los gameReviewData por todos los games es medio lento
+        ).collect(Collectors.toList());
+        return Response.ok(PaginatedResponse.fromPaginated(uriInfo,gameResponseList,games)).build();
+    }
+
+    @POST
+    @Consumes(VndType.APPLICATION_GAME)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response postGame(@Valid @BeanParam SubmitGameForm submitGameForm, BindingResult bindingResult) throws IOException {
+        if(bindingResult.hasErrors()){
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+        //TODO:Que onda con las excepciones
+        User loggedUser = AuthenticationHelper.getLoggedUser(us);
+        Optional<Game> game = gs.createGame(submitGameForm.toSubmitDTO(),loggedUser.getId());//TODO: id de usuario que lo crea
+        //Que hago aca con el suggest, que devuelvo???
+        return Response.
+                created(uriInfo.getAbsolutePathBuilder().path("/games").path(game.get().getId().toString()).build())
+                .entity(GameResponse.fromEntity(uriInfo,game.get(),
+        new GameReviewData(-1, null, null,-1,-1,-1),null))
+                .build();
+        //todo: revisar que onda con suggest
+        //Recien se crea entonces deberia ser como si no tuviera reviews
+    }
+
+    @PUT
+    @Consumes(VndType.APPLICATION_GAME)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("{id:\\d+}")
+    public Response putGame(@Valid @BeanParam SubmitGameForm submitGameForm, BindingResult bindingResult, @PathParam("id") final long id) throws IOException {
+        if (bindingResult.hasErrors()) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+        //TODO:Auth sobre quien puede editar
+        Game game = gs.editGame(submitGameForm.toSubmitDTO(),id);
+        User user = AuthenticationHelper.getLoggedUser(us);
+
+        return Response.ok(uriInfo.getAbsolutePathBuilder().path("/games").path(game.getId().toString()).build())
+                .entity(GameResponse.fromEntity(uriInfo,game,gs.getGameReviewDataByGameId(game.getId()),user)).build();
+    }
+
+    @DELETE
+    @Path("{id:\\d+}")
+    public Response deleteGame(@PathParam("id") final long id) {
+        boolean deleted = gs.deleteGame(id);
+        if(deleted) {
+            return Response.ok().build();
+        }else{
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+    }
+
+    @PATCH
+    @Path("{id:\\d+}")
+    public Response patchGame(@Valid @NotNull(message = "error.body.empty") PatchGameForm patchGameForm, @PathParam("id") final long id) {
+        User loggedUser = AuthenticationHelper.getLoggedUser(us);
+        //todo: check auth
+        if(patchGameForm.getAccept()){
+            gs.acceptGame(id,loggedUser.getId());
+        }else{
+            gs.rejectGame(id,loggedUser.getId());
+        }
+        return Response.noContent().build();
+    }
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("{id:\\d+}/genres")
+    public Response getGameGenres(@PathParam("id") final long id) {
+        Optional<Game> game = gs.getGameById(id);
+        if (game.isPresent()) {
+            return Response.ok(ListResponse.fromEntity(uriInfo,game.get().getGenres().stream().map((genre) -> GenreResponse.getLinkFromEntity(uriInfo,genre)).collect(Collectors.toList()))).build();
+        } else {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+    }
 
     /*
         TODO:

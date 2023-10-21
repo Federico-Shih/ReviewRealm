@@ -5,10 +5,10 @@ import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.enums.Platform;
 import ar.edu.itba.paw.models.Game;
 import ar.edu.itba.paw.models.GameReviewData;
-
+import ar.edu.itba.paw.models.User;
 import javax.ws.rs.core.UriInfo;
+import java.net.URI;
 import java.time.LocalDate;
-import java.util.List;
 
 public class GameResponse extends BaseResponse {
 
@@ -23,8 +23,6 @@ public class GameResponse extends BaseResponse {
     private String developer;
 
     private String publisher;
-
-    private List<Genre> genres;
 
     private LocalDate publishDate;
 
@@ -41,7 +39,7 @@ public class GameResponse extends BaseResponse {
 
     //Link reviews,Image,self
 
-    public static GameResponse fromEntity(final UriInfo uri, Game game, GameReviewData gameReviewData){
+    public static GameResponse fromEntity(final UriInfo uri, Game game, GameReviewData gameReviewData, User user){
         GameResponse response = new GameResponse();
 
         response.setId(game.getId());
@@ -49,7 +47,6 @@ public class GameResponse extends BaseResponse {
         response.setDescription(game.getDescription());
         response.setDeveloper(game.getDeveloper());
         response.setPublisher(game.getPublisher());
-        response.setGenres(game.getGenres());
         response.setPublishDate(game.getPublishDate());
         response.setRatingSum(game.getRatingSum());
         response.setReviewCount(game.getReviewCount());
@@ -62,12 +59,21 @@ public class GameResponse extends BaseResponse {
         }
 
 
+
         response.link("self",uri.getBaseUriBuilder().path(BASE_PATH).path(String.valueOf(game.getId())).build());
+        //Todo: check with review paths
         response.link("reviews",uri.getBaseUriBuilder().path("reviews").queryParam("gameId",game.getId()).build());
-//        response.link("userReview",uri.getBaseUriBuilder().path("reviews").queryParam("authorId",game.getId()).build()); TODO: Conseguir el usuario logueado
+        if(user != null) {
+            response.link("userReview", uri.getBaseUriBuilder().path("reviews").queryParam("authorId", user.getId()).queryParam("gameId", game.getId()).build());
+        }
         response.link("image",uri.getBaseUriBuilder().path("images").path(game.getImage().getId()).build());
+        response.link("genres",uri.getBaseUriBuilder().path("games").path(String.valueOf(game.getId())).path("genres").build());
+
 
         return response;
+    }
+    public static URI getLinkFromEntity(final UriInfo uri, Game game) {
+        return uri.getBaseUriBuilder().path(BASE_PATH).path(String.valueOf(game.getId())).build();
     }
 
     public void setId(long id) {
@@ -90,9 +96,6 @@ public class GameResponse extends BaseResponse {
         this.publisher = publisher;
     }
 
-    public void setGenres(List<Genre> genres) {
-        this.genres = genres;
-    }
 
     public void setPublishDate(LocalDate publishDate) {
         this.publishDate = publishDate;
@@ -128,5 +131,53 @@ public class GameResponse extends BaseResponse {
 
     public void setCompletability(double completability) {
         this.completability = completability;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public String getDeveloper() {
+        return developer;
+    }
+
+    public String getPublisher() {
+        return publisher;
+    }
+
+    public LocalDate getPublishDate() {
+        return publishDate;
+    }
+
+    public int getRatingSum() {
+        return ratingSum;
+    }
+
+    public int getReviewCount() {
+        return reviewCount;
+    }
+
+    public Difficulty getAverageDifficulty() {
+        return averageDifficulty;
+    }
+
+    public Platform getAveragePlatform() {
+        return averagePlatform;
+    }
+
+    public double getAverageGameTime() {
+        return averageGameTime;
+    }
+
+    public double getReplayability() {
+        return replayability;
+    }
+
+    public double getCompletability() {
+        return completability;
     }
 }

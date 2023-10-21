@@ -49,8 +49,6 @@ public class GameSearchQuery extends PaginatedQuery{
     @QueryParam("recommendedFor")
     private Long recommendedFor;
 
-    @QueryParam("favouriteOf")
-    private Long favouriteOf;
 
     public GameSearchQuery() {
     }
@@ -79,7 +77,16 @@ public class GameSearchQuery extends PaginatedQuery{
                 withRatingRange(minRating,maxRating,excludeNoRating == null || !excludeNoRating)
                 .build();
     }
+    public boolean isRecommendedFor(){
+        return recommendedFor != null && recommendedFor > 0;
+    }
+    public boolean isProperRecommendedFor(){
+        return search == null && genres == null && rating == null && excludeNoRating == null && suggested == null;
+    }
 
+    public Long getRecommendedFor() {
+        return recommendedFor;
+    }
 
 
 }

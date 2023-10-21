@@ -43,7 +43,7 @@ public class Game implements Cloneable {
     @JoinColumn(name = "imageid", referencedColumnName = "id")
     private Image image;
 
-    @ElementCollection(targetClass = Genre.class, fetch = FetchType.LAZY)
+    @ElementCollection(targetClass = Genre.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "genreforgames", joinColumns = @JoinColumn(name = "gameid", referencedColumnName = "id"))
     @Column(name = "genreid")
     @Convert(converter = GenreAttributeConverter.class)
