@@ -3,7 +3,7 @@ package ar.edu.itba.paw.webapp.controller.forms;
 import javax.validation.constraints.NotNull;
 
 public class PatchGameForm {
-    @NotNull(message = "error.body.empty")
+    @NotNull(message = "NotNull.property")
     private Boolean accept;
 
     public Boolean getAccept() {

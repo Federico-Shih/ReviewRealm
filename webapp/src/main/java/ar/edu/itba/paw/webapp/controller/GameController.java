@@ -6,6 +6,8 @@ import ar.edu.itba.paw.servicesinterfaces.ReviewService;
 import ar.edu.itba.paw.servicesinterfaces.UserService;
 import ar.edu.itba.paw.webapp.auth.AccessControl;
 import ar.edu.itba.paw.webapp.auth.AuthenticationHelper;
+import ar.edu.itba.paw.webapp.controller.annotations.ExistentGameId;
+import ar.edu.itba.paw.webapp.controller.annotations.ExistentUserId;
 import ar.edu.itba.paw.webapp.controller.forms.PatchGameForm;
 import ar.edu.itba.paw.webapp.controller.forms.SubmitGameForm;
 import ar.edu.itba.paw.webapp.controller.mediatypes.VndType;
@@ -104,10 +106,7 @@ public class GameController extends UriInfoController {
     @POST
     @Consumes(VndType.APPLICATION_GAME)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response postGame(@Valid @BeanParam SubmitGameForm submitGameForm, BindingResult bindingResult) throws IOException {
-        if(bindingResult.hasErrors()){
-            return Response.status(Response.Status.BAD_REQUEST).build();
-        }
+    public Response postGame(@Valid SubmitGameForm submitGameForm) throws IOException {
         //TODO:Que onda con las excepciones
         User loggedUser = AuthenticationHelper.getLoggedUser(us);
         Optional<Game> game = gs.createGame(submitGameForm.toSubmitDTO(),loggedUser.getId());//TODO: id de usuario que lo crea
@@ -125,10 +124,7 @@ public class GameController extends UriInfoController {
     @Consumes(VndType.APPLICATION_GAME)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{id:\\d+}")
-    public Response putGame(@Valid @BeanParam SubmitGameForm submitGameForm, BindingResult bindingResult, @PathParam("id") final long id) throws IOException {
-        if (bindingResult.hasErrors()) {
-            return Response.status(Response.Status.BAD_REQUEST).build();
-        }
+    public Response putGame(@Valid SubmitGameForm submitGameForm, @Valid @ExistentGameId @PathParam("id") final long id) throws IOException {
         //TODO:Auth sobre quien puede editar
         Game game = gs.editGame(submitGameForm.toSubmitDTO(),id);
         User user = AuthenticationHelper.getLoggedUser(us);
@@ -150,7 +146,7 @@ public class GameController extends UriInfoController {
 
     @PATCH
     @Path("{id:\\d+}")
-    public Response patchGame(@Valid @NotNull(message = "error.body.empty") PatchGameForm patchGameForm, @PathParam("id") final long id) {
+    public Response patchGame(@Valid @NotNull(message = "error.body.empty") PatchGameForm patchGameForm, @Valid @ExistentGameId @PathParam("id") final long id) {
         User loggedUser = AuthenticationHelper.getLoggedUser(us);
         //todo: check auth
         if(patchGameForm.getAccept()){
