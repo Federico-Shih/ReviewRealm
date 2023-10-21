@@ -9,6 +9,7 @@ import javax.validation.ConstraintValidatorContext;
 
 public class ExistentUserIdValidator implements ConstraintValidator<ExistentUserId, Long> {
     private final UserService userService;
+    private boolean optional;
 
     @Autowired
     public ExistentUserIdValidator(UserService userService) {
@@ -18,10 +19,12 @@ public class ExistentUserIdValidator implements ConstraintValidator<ExistentUser
     @Override
     public void initialize(ExistentUserId constraintAnnotation) {
         ConstraintValidator.super.initialize(constraintAnnotation);
+        optional = constraintAnnotation.optional();
     }
 
     @Override
     public boolean isValid(Long id, ConstraintValidatorContext constraintValidatorContext) {
+        if (optional && id == null) return true;
         if (id == null) return false;
         return userService.getUserById(id).isPresent();
     }

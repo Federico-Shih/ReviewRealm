@@ -429,8 +429,21 @@ public class UserServiceImpl implements UserService {
         return userDao.replaceAllFavoriteGames(userId, gameIds==null? new ArrayList<>(): gameIds).orElseThrow(UserNotFoundException::new);
     }
 
+    @Transactional
+    @Override
+    public boolean addFavoriteGame(long userId, long gameid) {
+        if (!getUserById(userId).isPresent()) throw new UserNotFoundException();
+        return userDao.addFavoriteGame(userId, gameid);
+    }
+
     @Override
     public Paginated<User> getUsers(Page page, UserFilter filter, Ordering<UserOrderCriteria> ordering) {
+        if (filter.hasFollowersQuery()) {
+            return userDao.getFollowers(filter.getFollowersQueryId(), page).orElseThrow(UserNotFoundException::new);
+        }
+        if (filter.hasFollowingQuery()) {
+            return userDao.getFollowing(filter.getFollowingQueryId(), page).orElseThrow(UserNotFoundException::new);
+        }
         return userDao.findAll(page, filter, ordering);
     }
 

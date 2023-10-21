@@ -69,6 +69,7 @@ public class UserDaoImplTest {
     private User testUserWithPref;
     private User testUserWithoutPref;
     private User disabledNotifUser;
+    private User testUserWithFavoriteGame;
 
     @Before
     public void setUp() {
@@ -80,6 +81,7 @@ public class UserDaoImplTest {
         this.testUserWithPref = UserTestModels.getUser1();
         this.testUserWithoutPref = UserTestModels.getUser5();
         this.disabledNotifUser = UserTestModels.getUser5();
+        this.testUserWithFavoriteGame = UserTestModels.getUser5();
     }
 
     @Rollback
@@ -370,5 +372,21 @@ public class UserDaoImplTest {
         userDao.disableNotification(disabledNotifUser.getId(), NotificationType.MY_REVIEW_IS_DELETED.getTypeName());
         em.flush();
         Assert.assertEquals(1, JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, "user_disabled_notifications", String.format("userid ='%s' and notification = '%s'", disabledNotifUser.getId(), NotificationType.MY_REVIEW_IS_DELETED.getTypeName())));
+    }
+
+    @Rollback
+    @Test
+    public void testAddFavoriteGame() {
+        userDao.addFavoriteGame(testUser.getId(), GameTestModels.getSuperGameA().getId());
+        em.flush();
+        Assert.assertEquals(1, JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, "favoritegames", String.format("userid ='%s' and gameid = '%s'", testUser.getId(), GameTestModels.getSuperGameA().getId())));
+    }
+
+    @Rollback
+    @Test
+    public void testAddRepeatedFavoriteGame() {
+        userDao.addFavoriteGame(testUserWithFavoriteGame.getId(), 1);
+        em.flush();
+        Assert.assertEquals(testUserWithFavoriteGame.getFavoriteGames().size(), JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, "favoritegames", String.format("userid ='%s'", testUserWithFavoriteGame.getId())));
     }
 }

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import javax.validation.ConstraintViolationException;
 import javax.ws.rs.core.GenericEntity;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
@@ -25,6 +26,6 @@ public class ValidationExceptionMapper implements ExceptionMapper<ConstraintViol
                 .map(ValidationErrorResponse::fromValidationException)
                 .peek(error -> error.setMessage(messageSource.getMessage(error.getMessage(), new Object[] {error.getProperty()}, LocaleHelper.getLocale())))
                 .collect(Collectors.toList());
-        return Response.status(Response.Status.BAD_REQUEST).entity(new GenericEntity<List<ValidationErrorResponse>>(errors){}).build();
+        return Response.status(Response.Status.BAD_REQUEST).type(MediaType.APPLICATION_JSON).entity(new GenericEntity<List<ValidationErrorResponse>>(errors){}).build();
     }
 }

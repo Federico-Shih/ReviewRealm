@@ -85,6 +85,8 @@ public interface UserService {
     
     User setFavoriteGames(long userId, List<Long> gameIds);
 
+    boolean addFavoriteGame(long userId, long gameid);
+
     Paginated<User> getUsers(Page page, UserFilter filter, Ordering<UserOrderCriteria> ordering);
 
     Optional<ExpirationToken> getExpirationToken(String token);

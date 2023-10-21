@@ -54,4 +54,6 @@ public interface UserDao {
 
     boolean deleteFavoriteGameForUser(long userId, long gameId);
     Optional<User> replaceAllFavoriteGames(long userId, List<Long> gameIds);
+
+    boolean addFavoriteGame(long userId, long gameid);
 }

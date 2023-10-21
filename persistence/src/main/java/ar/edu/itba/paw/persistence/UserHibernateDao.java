@@ -304,6 +304,17 @@ public class UserHibernateDao implements UserDao, PaginationDao<UserFilter> {
         return Optional.of(user);
     }
 
+    @Override
+    public boolean addFavoriteGame(long userId, long gameid) {
+        User user = em.createQuery("select u from User u where u.id = :id", User.class)
+                .setParameter("id", userId)
+                .getSingleResult();
+        if (user == null) return false;
+        if (user.getFavoriteGames().stream().anyMatch((game) -> game.getId().equals(gameid))) return false;
+        user.getFavoriteGames().add(em.find(Game.class, gameid));
+        return true;
+    }
+
     private String toTableString(UserFilter filter) {
         StringBuilder str = new StringBuilder();
         str.append("users as u ");

@@ -11,8 +11,11 @@ import ar.edu.itba.paw.webapp.controller.forms.*;
 import ar.edu.itba.paw.webapp.controller.helpers.LocaleHelper;
 import ar.edu.itba.paw.webapp.controller.mediatypes.VndType;
 import ar.edu.itba.paw.webapp.controller.querycontainers.UserSearchQuery;
+import ar.edu.itba.paw.webapp.controller.responses.GenreResponse;
+import ar.edu.itba.paw.webapp.controller.responses.ListResponse;
 import ar.edu.itba.paw.webapp.controller.responses.PaginatedResponse;
 import ar.edu.itba.paw.webapp.controller.responses.UserResponse;
+import ar.edu.itba.paw.webapp.exceptions.CustomRuntimeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +26,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -60,17 +64,6 @@ public class UserController {
      */
 
     @GET
-    @Path("{id}")
-    @Produces(value = {MediaType.APPLICATION_JSON})
-    public Response getById(@PathParam("id") final long id) {
-        final Optional<User> user = us.getUserById(id);
-        if (!user.isPresent()) {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
-        return Response.ok(UserResponse.fromEntity(uriInfo, user.get())).build();
-    }
-
-    @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getUsers(@Valid @BeanParam UserSearchQuery userSearchQuery) {
         final Paginated<User> users = us.getUsers(userSearchQuery.getPage(), userSearchQuery.getFilter(), userSearchQuery.getOrdering());
@@ -101,14 +94,6 @@ public class UserController {
         return Response.accepted().build();
     }
 
-    @PATCH
-    @PreAuthorize("@accessControl.checkAccessedUserIdIsUser(#id)")
-    @Path("{id:\\d+}")
-    public Response patchUser(@Valid @NotNull(message = "error.body.empty") PatchUserForm patchUserForm, @PathParam("id") Integer id) {
-        us.patchUser(id, patchUserForm.getPassword(), patchUserForm.getEnabled());
-        return Response.noContent().build();
-    }
-
     @POST
     @Consumes(VndType.APPLICATION_ENABLE_USER)
     @Produces(MediaType.APPLICATION_JSON)
@@ -128,7 +113,7 @@ public class UserController {
                 PaginatedResponse
                         .fromPaginated(uriInfo,
                                 followers.getList().stream()
-                                        .map((user) -> UserResponse.createUserLink(uriInfo, user).toString())
+                                        .map((user) -> UserResponse.getLinkFromEntity(uriInfo, user).toString())
                                         .collect(Collectors.toList()),
                                 followers)
             ).build();
@@ -150,7 +135,7 @@ public class UserController {
                 PaginatedResponse
                         .fromPaginated(uriInfo,
                                 following.getList().stream()
-                                        .map((user) -> UserResponse.createUserLink(uriInfo, user).toString())
+                                        .map((user) -> UserResponse.getLinkFromEntity(uriInfo, user).toString())
                                         .collect(Collectors.toList()),
                                 following)
         ).build();
@@ -178,6 +163,70 @@ public class UserController {
         }
         return Response.noContent().build();
     }
+
+    @PUT
+    @Path("{id: \\d+}/preferences")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @PreAuthorize("@accessControl.checkAccessedUserIdIsUser(#id)")
+    public Response putPreferences(@PathParam(("id")) Integer id, @Valid @NotNull(message = "error.body.empty") EditPreferencesForm preferencesForm) {
+        final Optional<User> user = us.getUserById(id);
+        if (!user.isPresent()) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        us.setPreferences(new HashSet<>(preferencesForm.getGenres()), id);
+        return Response.noContent().build();
+    }
+
+    @GET
+    @Path("{id:\\d+}/preferences")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getPreferences(@PathParam(("id")) Integer id) {
+        final Optional<User> user = us.getUserById(id);
+        if (!user.isPresent()) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        return Response.ok(ListResponse.fromEntity(uriInfo, user.get().getPreferences().stream().map((genre) -> GenreResponse.getLinkFromEntity(uriInfo, genre)).collect(Collectors.toList())))
+                .build();
+    }
+
+    @PATCH
+    @PreAuthorize("@accessControl.checkAccessedUserIdIsUser(#id)")
+    @Path("{id:\\d+}")
+    public Response patchUser(@Valid @NotNull(message = "error.body.empty") PatchUserForm patchUserForm, @PathParam("id") Integer id) {
+        us.patchUser(id, patchUserForm.getPassword(), patchUserForm.getEnabled());
+        return Response.noContent().build();
+    }
+
+    @GET
+    @Path("{id:\\d+}")
+    @Produces(value = {MediaType.APPLICATION_JSON})
+    public Response getById(@PathParam("id") final long id) {
+        final Optional<User> user = us.getUserById(id);
+        if (!user.isPresent()) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        return Response.ok(UserResponse.fromEntity(uriInfo, user.get())).build();
+    }
+
+    @POST
+    @Path("{id:\\d+}/favoritegames")
+    @PreAuthorize("@accessControl.checkAccessedUserIdIsUser(#id)")
+    @Consumes(value = {MediaType.APPLICATION_JSON})
+    @Produces(value = {MediaType.APPLICATION_JSON})
+    public Response createNewFavoriteGame(@PathParam("id") final long id, @Valid @NotNull(message = "error.body.empty") FavoriteGameForm favoriteGameForm) {
+        boolean added = us.addFavoriteGame(id, favoriteGameForm.getGameId());
+        if (!added) throw new CustomRuntimeException(Response.Status.BAD_REQUEST, "error.game.already.favorite");
+        return Response.created(
+                    uriInfo.getBaseUriBuilder()
+                    .path("users")
+                    .path(String.valueOf(id))
+                    .path("favoritegames")
+                    .path(String.valueOf(favoriteGameForm.getGameId()))
+                    .build()
+                ).build();
+    }
+
 
 //    @RequestMapping("/login")
 //    public ModelAndView loginForm(S

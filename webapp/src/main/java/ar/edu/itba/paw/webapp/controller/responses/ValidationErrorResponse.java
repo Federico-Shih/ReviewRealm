@@ -1,10 +1,6 @@
 package ar.edu.itba.paw.webapp.controller.responses;
 
 import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
-import javax.validation.Path;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.ExceptionMapper;
 
 public class ValidationErrorResponse {
     private String message;

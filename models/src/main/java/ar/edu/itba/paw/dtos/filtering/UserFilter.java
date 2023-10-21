@@ -12,10 +12,11 @@ public class UserFilter {
     private final Long notId;
     private final String search;
     private final List<Integer> preferences;
-
     private final List<Long> gamesPlayed;
+    private final Long followingQueryId;
+    private final Long followersQueryId;
 
-    public UserFilter(Long id, String username, String email, Boolean enabled, Long reputation, Long notId, String search, List<Integer> preferences, List<Long> gamesPlayed) {
+    public UserFilter(Long id, String username, String email, Boolean enabled, Long reputation, Long notId, String search, List<Integer> preferences, List<Long> gamesPlayed, Long followingQueryId, Long followersQueryId) {
         this.id = id;
         this.username = username;
         this.email = email;
@@ -25,6 +26,8 @@ public class UserFilter {
         this.search = search;
         this.preferences = preferences;
         this.gamesPlayed = gamesPlayed;
+        this.followingQueryId = followingQueryId;
+        this.followersQueryId = followersQueryId;
     }
 
     public String getUsername() {
@@ -61,5 +64,21 @@ public class UserFilter {
 
     public List<Long> getGamesPlayed() {
         return gamesPlayed;
+    }
+
+    public boolean hasFollowingQuery() {
+        return followingQueryId != null;
+    }
+
+    public boolean hasFollowersQuery() {
+        return followersQueryId != null;
+    }
+
+    public Long getFollowingQueryId() {
+        return followingQueryId;
+    }
+
+    public Long getFollowersQueryId() {
+        return followersQueryId;
     }
 }

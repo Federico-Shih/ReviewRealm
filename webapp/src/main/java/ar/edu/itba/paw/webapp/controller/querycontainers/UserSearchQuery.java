@@ -1,22 +1,12 @@
 package ar.edu.itba.paw.webapp.controller.querycontainers;
 
-/*
-//            @RequestParam(value = "search", defaultValue = "") final String search,
-//            @RequestParam(value = "page", defaultValue = "1") Integer page,
-//            @RequestParam(value = "pageSize", required = false) Integer pageSize,
-//            @RequestParam(value = "o-crit", defaultValue = "0") Integer orderCriteria,
-//            @RequestParam(value = "o-dir", defaultValue = "0") Integer orderDirection
- */
-
-import ar.edu.itba.paw.dtos.Page;
 import ar.edu.itba.paw.dtos.filtering.UserFilter;
 import ar.edu.itba.paw.dtos.filtering.UserFilterBuilder;
 import ar.edu.itba.paw.dtos.ordering.OrderDirection;
 import ar.edu.itba.paw.dtos.ordering.Ordering;
 import ar.edu.itba.paw.dtos.ordering.UserOrderCriteria;
-import org.springframework.security.access.method.P;
+import ar.edu.itba.paw.webapp.controller.annotations.ExistentUserId;
 
-import javax.validation.constraints.Min;
 import javax.validation.constraints.Pattern;
 import javax.ws.rs.QueryParam;
 import java.util.List;
@@ -49,6 +39,14 @@ public class UserSearchQuery extends PaginatedQuery {
     @QueryParam("gamesPlayed")
     private List<Long> gamesPlayed;
 
+    @ExistentUserId(optional = true)
+    @QueryParam("following")
+    private Long following;
+
+    @ExistentUserId(optional = true)
+    @QueryParam("followers")
+    private Long followers;
+
     public UserSearchQuery() {
     }
 
@@ -64,6 +62,8 @@ public class UserSearchQuery extends PaginatedQuery {
                 .withPreferences(preferences)
                 .withId(id)
                 .withUsername(username)
+                .withFollowers(followers)
+                .withFollowing(following)
                 .build();
     }
 

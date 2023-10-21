@@ -1,7 +1,7 @@
 package ar.edu.itba.paw.webapp.controller.annotations;
 
-import ar.edu.itba.paw.webapp.validators.ExistentEmailValidator;
-import ar.edu.itba.paw.webapp.validators.ExistentUserIdValidator;
+
+import ar.edu.itba.paw.webapp.validators.ExistentGameIdValidator;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;
@@ -12,9 +12,9 @@ import java.lang.annotation.Target;
 
 @Target({ ElementType.FIELD, ElementType.PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = ExistentUserIdValidator.class)
-public @interface ExistentUserId {
-    String message() default "javax.validation.constraints.ExistentUserId.message";
+@Constraint(validatedBy = ExistentGameIdValidator.class)
+public @interface ExistentGameId {
+    String message() default "javax.validation.constraints.ExistentGameId.message";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
     boolean optional() default false;

@@ -1,5 +1,9 @@
 package ar.edu.itba.paw.webapp.controller.responses;
 
+import ar.edu.itba.paw.enums.Genre;
+import org.apache.commons.lang3.NotImplementedException;
+
+import javax.ws.rs.core.UriInfo;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
@@ -18,4 +22,8 @@ public abstract class BaseResponse {
     public void setLinks(Map<String, URI> links) {
         this.links.putAll(links);
     }
+
+//    public static <T>URI getLinkFromEntity(final UriInfo uri, T entity) {
+//        throw new NotImplementedException();
+//    }
 }

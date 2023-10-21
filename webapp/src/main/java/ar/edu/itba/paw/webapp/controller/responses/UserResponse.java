@@ -34,14 +34,14 @@ public class UserResponse extends BaseResponse {
         response.setAvatarId(user.getAvatarId());
         response.setPreferences(user.getPreferences());
 
-        response.link("self", createUserLink(uri, user));
-        response.link("followers", uri.getBaseUriBuilder().path(BASE_PATH).path(String.valueOf(user.getId())).path("followers").build());
-        response.link("following", uri.getBaseUriBuilder().path(BASE_PATH).path(String.valueOf(user.getId())).path("following").build());
+        response.link("self", getLinkFromEntity(uri, user));
+        response.link("followers", uri.getBaseUriBuilder().path(BASE_PATH).queryParam("followers", user.getId()).build());
+        response.link("following", uri.getBaseUriBuilder().path(BASE_PATH).queryParam("following", user.getId()).build());
         // TODO: rest of paths
         return response;
     }
 
-    public static URI createUserLink(final UriInfo uri, User user) {
+    public static URI getLinkFromEntity(final UriInfo uri, User user) {
         return uri.getBaseUriBuilder().path(BASE_PATH).path(String.valueOf(user.getId())).build();
     }
 
