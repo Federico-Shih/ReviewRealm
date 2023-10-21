@@ -5,11 +5,13 @@ import javax.validation.ConstraintViolation;
 public class ValidationErrorResponse {
     private String message;
     private Object property;
+    private Object value;
 
     public static ValidationErrorResponse fromValidationException(ConstraintViolation<?> violation) {
         ValidationErrorResponse response = new ValidationErrorResponse();
         response.message = violation.getMessage();
-        response.property = violation.getInvalidValue();
+        response.property = violation.getPropertyPath().toString();
+        response.value = violation.getInvalidValue();
         return response;
     }
     public String getMessage() {
@@ -22,5 +24,9 @@ public class ValidationErrorResponse {
 
     public Object getProperty() {
         return property;
+    }
+
+    public Object getValue() {
+        return value;
     }
 }
