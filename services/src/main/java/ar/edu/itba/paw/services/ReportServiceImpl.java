@@ -48,10 +48,16 @@ public class ReportServiceImpl implements ReportService {
         }else if(!reviewService.getReviewById(reviewToReport,null).isPresent()){
             throw new ReviewNotFoundException();
         }
-        Report report = reportDao.create(reporterId, reviewToReport,reason);
-        if(report==null) {
+        if(!reportDao.findAll(
+                Page.with(1,1),
+                new ReportFilterBuilder()
+                        .withReporterId(reporterId)
+                        .withReviewId(reviewToReport)
+                        .withResolved(false)
+                        .build()
+        ).getList().isEmpty())
             throw new ReportAlreadyExistsException("report.notcreated");
-        }
+        Report report = reportDao.create(reporterId, reviewToReport,reason);
         return report;
     }
 
@@ -78,6 +84,8 @@ public class ReportServiceImpl implements ReportService {
     @Override
     public Report resolveReport(long reportid, long moderatorId) {
         Report report = reportDao.get(reportid).orElseThrow(ReportNotFoundException::new);
+        if (report.isResolved())
+            throw new ReportAlreadyResolvedException();
         long reviewId = report.getReportedReview().getId();
         Report toReturn = updateReportStatus(report,moderatorId,true);
         reviewService.deleteReviewById(reviewId,moderatorId);
@@ -88,6 +96,8 @@ public class ReportServiceImpl implements ReportService {
     @Override
     public Report rejectReport(long reportid, long moderatorId) {
         Report report = reportDao.get(reportid).orElseThrow(ReportNotFoundException::new);
+        if (report.isResolved())
+            throw new ReportAlreadyResolvedException();
         return updateReportStatus(report,moderatorId,false);
     }
 

@@ -44,7 +44,7 @@ public class Report {
     @Convert(converter = LocalDateTimeConverter.class)
     private LocalDateTime resolvedDate;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "moderatorId", referencedColumnName = "id")
     private User moderator;
 
