@@ -15,6 +15,8 @@ public interface MissionService {
 
     List<Mission> getMissions(User user);
 
+    List<MissionProgress> getMissionProgresses(long userId);
+
     void resetMissionsWeekly();
 
     void resetMissionsDaily();

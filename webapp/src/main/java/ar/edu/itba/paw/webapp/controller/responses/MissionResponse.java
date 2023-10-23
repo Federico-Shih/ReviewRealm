@@ -4,6 +4,7 @@ import ar.edu.itba.paw.enums.Mission;
 import ar.edu.itba.paw.models.Pair;
 
 import javax.ws.rs.core.UriInfo;
+import java.net.URI;
 
 public class MissionResponse extends BaseResponse {
     private final static String BASE_PATH = "/missions";
@@ -34,9 +35,13 @@ public class MissionResponse extends BaseResponse {
                 mission.getTarget(),
                 mission.isRepeatable(),
                 MissionFrequencyResponse.fromEntity(mission.getFrequency(), localizedFreq)
-            );
-        response.link("self", uriInfo.getBaseUriBuilder().path(BASE_PATH).path(mission.name()).build());
+        );
+        response.link("self", getLinkFromEntity(uriInfo, mission));
         return response;
+    }
+
+    public static URI getLinkFromEntity(UriInfo uriInfo, Mission mission) {
+        return uriInfo.getBaseUriBuilder().path(BASE_PATH).path(mission.name()).build();
     }
 
     public String getId() {

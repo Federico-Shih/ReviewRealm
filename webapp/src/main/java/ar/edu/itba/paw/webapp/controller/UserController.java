@@ -4,8 +4,10 @@ import ar.edu.itba.paw.dtos.Page;
 import ar.edu.itba.paw.exceptions.EmailAlreadyExistsException;
 import ar.edu.itba.paw.exceptions.UserAlreadyEnabled;
 import ar.edu.itba.paw.exceptions.UsernameAlreadyExistsException;
+import ar.edu.itba.paw.models.MissionProgress;
 import ar.edu.itba.paw.models.Paginated;
 import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.servicesinterfaces.MissionService;
 import ar.edu.itba.paw.servicesinterfaces.UserService;
 import ar.edu.itba.paw.webapp.auth.AccessControl;
 import ar.edu.itba.paw.webapp.controller.annotations.ExistentUserId;
@@ -13,10 +15,7 @@ import ar.edu.itba.paw.webapp.controller.forms.*;
 import ar.edu.itba.paw.webapp.controller.helpers.LocaleHelper;
 import ar.edu.itba.paw.webapp.controller.mediatypes.VndType;
 import ar.edu.itba.paw.webapp.controller.querycontainers.UserSearchQuery;
-import ar.edu.itba.paw.webapp.controller.responses.GenreResponse;
-import ar.edu.itba.paw.webapp.controller.responses.ListResponse;
-import ar.edu.itba.paw.webapp.controller.responses.PaginatedResponse;
-import ar.edu.itba.paw.webapp.controller.responses.UserResponse;
+import ar.edu.itba.paw.webapp.controller.responses.*;
 import ar.edu.itba.paw.webapp.exceptions.CustomRuntimeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,15 +39,18 @@ import java.util.stream.Collectors;
 public class UserController {
     private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
     private final UserService us;
+    private final MissionService missionService;
 
     @Context
     private UriInfo uriInfo;
 
     @Autowired
     private AccessControl accessControl;
+
     @Autowired
-    public UserController(UserService us) {
+    public UserController(UserService us, MissionService missionService) {
         this.us = us;
+        this.missionService = missionService;
     }
 
     /*
@@ -235,6 +237,42 @@ public class UserController {
     public Response deleteFavoriteGame(@PathParam("id") final long id, @PathParam("gameId") final long gameId) {
         boolean deleted = us.deleteFavoriteGame(id, gameId);
         return deleted ? Response.ok().build() : Response.status(Response.Status.NOT_FOUND).build();
+    }
+
+    @PUT
+    @Path("{id:\\d+}/notifications")
+    @PreAuthorize("@accessControl.checkAccessedUserIdIsUser(#id)")
+    @Consumes(value = {MediaType.APPLICATION_JSON})
+    @Produces(value = {MediaType.APPLICATION_JSON})
+    public Response putNotifications(@PathParam("id") final long id, @Valid ChangeNotificationForm changeNotificationForm) {
+        User user = us.setUserNotificationSettings(id, changeNotificationForm.getNotificationMap());
+        return Response.ok().entity(NotificationStatusResponse.fromEntity(uriInfo, user)).build();
+    }
+
+    @GET
+    @Path("{id:\\d+}/notifications")
+    @PreAuthorize("@accessControl.checkAccessedUserIdIsUser(#id)")
+    @Consumes(value = {MediaType.APPLICATION_JSON})
+    @Produces(value = {MediaType.APPLICATION_JSON})
+    public Response getNotifications(@PathParam("id") final long id) {
+        Optional<User> user = us.getUserById(id);
+        if (!user.isPresent()) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        return Response.ok().entity(NotificationStatusResponse.fromEntity(uriInfo, user.get())).build();
+    }
+
+    @GET
+    @Path("{id:\\d+}/mission-progresses")
+    @PreAuthorize("@accessControl.checkAccessedUserIdIsUser(#id)")
+    @Consumes(value = {MediaType.APPLICATION_JSON})
+    @Produces(value = {MediaType.APPLICATION_JSON})
+    public Response getMissionProgresses(@PathParam("id") final Long id) {
+        List<MissionProgress> progresses = missionService.getMissionProgresses(id);
+        if (progresses.isEmpty()) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        return Response.ok(ListResponse.fromEntity(uriInfo, progresses.stream().map((progress) -> MissionProgressResponse.fromEntity(uriInfo, progress)).collect(Collectors.toList()))).build();
     }
 
 //    @GET

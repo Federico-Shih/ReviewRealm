@@ -171,16 +171,21 @@ public class UserServiceImpl implements UserService {
     @Transactional()
     @Override
     public User patchUser(long id, String password, Boolean enabled) {
-        SaveUserBuilder builder = new SaveUserBuilder()
-                .withEnabled(enabled);
+        User user = userDao.findById(id).orElseThrow(UserNotFoundException::new);
+
+        SaveUserBuilder builder = new SaveUserBuilder();
         if (password != null) {
             builder.withPassword(passwordEncoder.encode(password));
         }
-        User user = userDao.update(
-                id, builder.build())
+        if (enabled != null) {
+            if (user.isEnabled()) throw new UserAlreadyEnabled();
+            builder.withEnabled(enabled);
+        }
+        User updated = userDao.update(
+                        id, builder.build())
                 .orElseThrow(UserNotFoundException::new);
         LOGGER.info("User {} patched", id);
-        return user;
+        return updated;
     }
 
     @Transactional(readOnly = true)

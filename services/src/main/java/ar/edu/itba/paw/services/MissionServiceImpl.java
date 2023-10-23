@@ -89,6 +89,7 @@ public class MissionServiceImpl implements MissionService {
         return missionProgress;
     }
 
+    @Transactional
     @Override
     public Optional<Mission> getMissionById(String missionName) {
         for (Mission mission : Mission.values()) {
@@ -99,9 +100,16 @@ public class MissionServiceImpl implements MissionService {
         return Optional.empty();
     }
 
+    @Transactional
     @Override
     public List<Mission> getMissions(User user) {
         return Arrays.stream(Mission.values()).filter((mission -> mission.getRoleType() == null || (user != null && user.getRoles().stream().anyMatch((roleType -> roleType.equals(mission.getRoleType())))))).collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<MissionProgress> getMissionProgresses(long userId) {
+        return this.userDao.findById(userId).orElseThrow(UserNotFoundException::new).getMissions();
     }
 
     @Scheduled(cron = "0 0 0 * * 0")

@@ -6,8 +6,6 @@ import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.enums.LevelRange;
 import ar.edu.itba.paw.enums.NotificationType;
 import ar.edu.itba.paw.enums.RoleType;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.util.*;
@@ -42,7 +40,7 @@ public class User {
     @Column(name = "reputation")
     private Long reputation = 0L;
 
-    @ElementCollection(targetClass = NotificationType.class, fetch = FetchType.LAZY)
+    @ElementCollection(targetClass = NotificationType.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "user_disabled_notifications", joinColumns = @JoinColumn(name = "userid", referencedColumnName = "id"))
     @Column(name = "notification")
     @Convert(converter = NotificationTypeAttributeConverter.class)

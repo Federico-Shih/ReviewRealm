@@ -3,6 +3,7 @@ package ar.edu.itba.paw.webapp.controller.responses;
 import ar.edu.itba.paw.enums.NotificationType;
 
 import javax.ws.rs.core.UriInfo;
+import java.net.URI;
 
 public class NotificationResponse extends BaseResponse {
     private static final String BASE_PATH = "/notifications";
@@ -17,8 +18,12 @@ public class NotificationResponse extends BaseResponse {
 
     public static NotificationResponse fromEntity(final UriInfo uri, NotificationType notificationType, String localized) {
         NotificationResponse response = new NotificationResponse(notificationType.getTypeName(), localized);
-        response.link("self", uri.getBaseUriBuilder().path(BASE_PATH).path(String.valueOf(notificationType.getTypeName())).build());
+        response.link("self", getLinkFromEntity(uri, notificationType));
         return response;
+    }
+
+    public static URI getLinkFromEntity(final UriInfo uri, NotificationType notificationType) {
+        return uri.getBaseUriBuilder().path(BASE_PATH).path(String.valueOf(notificationType.getTypeName())).build();
     }
 
     public String getId() {
