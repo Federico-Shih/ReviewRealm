@@ -61,7 +61,7 @@ public class GameServiceImplTest {
         Mockito.when(gameDao.getById(getSuperGameA().getId()))
                 .thenReturn(Optional.of(getSuperGameA()));
 
-        Optional<Game> opt = gs.getGameById(getSuperGameA().getId());
+        Optional<Game> opt = gs.getGameById(getSuperGameA().getId(),null);
 
         Assert.assertTrue(opt.isPresent());
         Long id = opt.get().getId();
@@ -73,7 +73,7 @@ public class GameServiceImplTest {
     public void testCantFindGameById() {
         Mockito.when(gameDao.getById(getSuperGameA().getId()))
                 .thenReturn(Optional.empty());
-        Optional<Game> opt = gs.getGameById(getSuperGameA().getId());
+        Optional<Game> opt = gs.getGameById(getSuperGameA().getId(),null);
 
         Assert.assertFalse(opt.isPresent());
 
@@ -84,7 +84,7 @@ public class GameServiceImplTest {
         Mockito.when(gameDao.getById(anyLong())).thenReturn(Optional.of(getSuperGameA()));
         Mockito.when(reviewService.getAllReviewsFromGame(getSuperGameA().getId(),null)).thenReturn(Arrays.asList(getReview1(),getReview2(),getReview3()));
 
-        GameReviewData data = gs.getGameReviewDataByGameId(getSuperGameA().getId());
+        GameReviewData data = gs.getGameReviewDataByGameId(getSuperGameA().getId(),null);
 
         Assert.assertEquals(Difficulty.EASY, data.getAverageDifficulty());
         Assert.assertEquals(Platform.PS, data.getAveragePlatform());
@@ -100,7 +100,7 @@ public class GameServiceImplTest {
         Mockito.when(gameDao.getById(anyLong())).thenReturn(Optional.of(getSuperGameA()));
         Mockito.when(reviewService.getAllReviewsFromGame(getSuperGameA().getId(),null)).thenReturn(new ArrayList<>());
 
-        GameReviewData data = gs.getGameReviewDataByGameId(getSuperGameA().getId());
+        GameReviewData data = gs.getGameReviewDataByGameId(getSuperGameA().getId(),null);
 
         Assert.assertNull(data.getAverageDifficulty());
         Assert.assertNull(data.getAveragePlatform());
@@ -113,7 +113,7 @@ public class GameServiceImplTest {
     public void testGameReviewDataByGameIdNoGame(){
         Mockito.when(gameDao.getById(anyLong())).thenReturn(Optional.empty());
 
-        GameReviewData data = gs.getGameReviewDataByGameId(getSuperGameA().getId());
+        GameReviewData data = gs.getGameReviewDataByGameId(getSuperGameA().getId(),null);
     }
 
     @Test(expected = GameNotFoundException.class)
@@ -164,10 +164,10 @@ public class GameServiceImplTest {
 
         Mockito.when(gameDao.create(any(),any(),any(),any(),any(),any(),any(),eq(false),any())).thenReturn(getSuperGameA());
 
-        Optional<Game> game = gs.createGame(dto,getUser1().getId());
+        Game game = gs.createGame(dto,getUser1().getId());
 
-        Assert.assertTrue(game.isPresent());
-        Assert.assertEquals(getSuperGameA().getId(),game.get().getId());
+        Assert.assertNotNull(game);
+        Assert.assertEquals(getSuperGameA().getId(),game.getId());
     }
 
     @Test
@@ -179,9 +179,9 @@ public class GameServiceImplTest {
 
         Mockito.when(gameDao.create(any(),any(),any(),any(),any(),any(),any(),eq(true),any())).thenReturn(getSuperGameA());
 
-        Optional<Game> game = gs.createGame(dto,getUser1().getId());
+        Game game = gs.createGame(dto,getUser1().getId());
 
-        Assert.assertFalse(game.isPresent());
+        Assert.assertNotNull(game);
     }
 
     @Test(expected = UserNotFoundException.class)

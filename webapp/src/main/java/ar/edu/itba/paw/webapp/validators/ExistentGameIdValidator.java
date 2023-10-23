@@ -27,6 +27,6 @@ public class ExistentGameIdValidator implements ConstraintValidator<ExistentGame
     public boolean isValid(Long aLong, ConstraintValidatorContext constraintValidatorContext) {
         if (optional && aLong == null) return true;
         if (aLong == null) return false;
-        return gameService.getGameById(aLong).isPresent();
+        return gameService.getGameById(aLong,null).isPresent();
     }
 }

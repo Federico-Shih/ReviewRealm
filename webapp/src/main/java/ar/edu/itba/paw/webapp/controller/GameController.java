@@ -1,13 +1,13 @@
 package ar.edu.itba.paw.webapp.controller;
 
+import ar.edu.itba.paw.exceptions.GameSuggestionAlreadyHandled;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.servicesinterfaces.GameService;
 import ar.edu.itba.paw.servicesinterfaces.ReviewService;
 import ar.edu.itba.paw.servicesinterfaces.UserService;
 import ar.edu.itba.paw.webapp.auth.AccessControl;
 import ar.edu.itba.paw.webapp.auth.AuthenticationHelper;
-import ar.edu.itba.paw.webapp.controller.annotations.ExistentGameId;
-import ar.edu.itba.paw.webapp.controller.annotations.ExistentUserId;
+import ar.edu.itba.paw.webapp.controller.annotations.*;
 import ar.edu.itba.paw.webapp.controller.forms.PatchGameForm;
 import ar.edu.itba.paw.webapp.controller.forms.SubmitGameForm;
 import ar.edu.itba.paw.webapp.controller.mediatypes.VndType;
@@ -17,15 +17,18 @@ import ar.edu.itba.paw.webapp.controller.responses.GenreResponse;
 import ar.edu.itba.paw.webapp.controller.responses.ListResponse;
 import ar.edu.itba.paw.webapp.controller.responses.PaginatedResponse;
 import ar.edu.itba.paw.webapp.exceptions.CustomRuntimeException;
+import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -62,13 +65,15 @@ public class GameController extends UriInfoController {
     }
 
     @GET
-    @Path("{id:\\d+}")
     @Produces(MediaType.APPLICATION_JSON)
+    @Path("{id:\\d+}")
     public Response getById(@PathParam("id") final long gameId) {
+        //TODO: Limitar el acceso a los juegos que no estan aceptados
         User loggedUser = AuthenticationHelper.getLoggedUser(us);
-        Optional<Game> game = gs.getGameById(gameId);
+        Optional<Game> game = gs.getGameById(gameId,loggedUser != null ? loggedUser.getId() : null);
         if (game.isPresent()) {
-            return Response.ok(GameResponse.fromEntity(uriInfo,game.get(),gs.getGameReviewDataByGameId(gameId),loggedUser)).build();
+            return Response.ok(GameResponse.fromEntity(uriInfo,game.get(),
+                    gs.getGameReviewDataByGameId(gameId,loggedUser != null? loggedUser.getId() : null),loggedUser)).build();
         } else {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
@@ -78,6 +83,7 @@ public class GameController extends UriInfoController {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getGames(@Valid @BeanParam GameSearchQuery gameSearchQuery){
+        //Todo: Limitar el acceso a los juegos que no estan aceptados
         User loggedUser = AuthenticationHelper.getLoggedUser(us);
         Paginated<Game> games;
         if(gameSearchQuery.isRecommendedFor()){
@@ -91,47 +97,44 @@ public class GameController extends UriInfoController {
             }
             games = us.getFavoriteGamesFromUser(gameSearchQuery.getPage(),gameSearchQuery.getFavoriteOf());
         }else{
-            games = gs.searchGames(gameSearchQuery.getPage(), gameSearchQuery.getFilter(),gameSearchQuery.getOrdering());
+            games = gs.searchGames(gameSearchQuery.getPage(), gameSearchQuery.getFilter(),gameSearchQuery.getOrdering(),(loggedUser != null ? loggedUser.getId() : null));
         }
 
         if(games.getTotalPages() == 0 || games.getList().isEmpty()){
             return Response.noContent().build();
         }
         List<GameResponse> gameResponseList = games.getList().stream().map(
-                (game) -> GameResponse.fromEntity(uriInfo,game,gs.getGameReviewDataByGameId(game.getId()),loggedUser)
+                (game) -> GameResponse.fromEntity(uriInfo,game, gs.getGameReviewDataByGameId(game.getId(),loggedUser != null? loggedUser.getId() : null)
+                        ,loggedUser)
                 // Que busque los gameReviewData por todos los games es medio lento
         ).collect(Collectors.toList());
         return Response.ok(PaginatedResponse.fromPaginated(uriInfo,gameResponseList,games)).build();
     }
 
     @POST
-    @Consumes(VndType.APPLICATION_GAME)
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response postGame(@Valid SubmitGameForm submitGameForm) throws IOException {
+    public Response postGame(@Valid @BeanParam SubmitGameForm submitGameForm) throws IOException {
         //TODO:Que onda con las excepciones
         User loggedUser = AuthenticationHelper.getLoggedUser(us);
-        Optional<Game> game = gs.createGame(submitGameForm.toSubmitDTO(),loggedUser.getId());
-        //Que hago aca con el suggest, que devuelvo???
+        Game game = gs.createGame(submitGameForm.toSubmitDTO(),loggedUser.getId());
+
         return Response.
-                created(uriInfo.getAbsolutePathBuilder().path("/games").path(game.get().getId().toString()).build())
-                .entity(GameResponse.fromEntity(uriInfo,game.get(),
-        new GameReviewData(-1, null, null,-1,-1,-1),null))
-                .build();
-        //todo: revisar que onda con suggest
-        //Recien se crea entonces deberia ser como si no tuviera reviews
+                created(uriInfo.getAbsolutePathBuilder().path("/games").path(game.getId().toString()).build()).build();
     }
 
     @PUT
-    @Consumes(VndType.APPLICATION_GAME)
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{id:\\d+}")
-    public Response putGame(@Valid SubmitGameForm submitGameForm, @Valid @ExistentGameId @PathParam("id") final long id) throws IOException {
+    public Response putGame(@Valid @BeanParam SubmitGameForm submitGameForm, @Valid @ExistentGameId @PathParam("id") final long id) throws IOException {
         //TODO:Auth sobre quien puede editar
         Game game = gs.editGame(submitGameForm.toSubmitDTO(),id);
         User user = AuthenticationHelper.getLoggedUser(us);
 
         return Response.ok(uriInfo.getAbsolutePathBuilder().path("/games").path(game.getId().toString()).build())
-                .entity(GameResponse.fromEntity(uriInfo,game,gs.getGameReviewDataByGameId(game.getId()),user)).build();
+                .entity(GameResponse.fromEntity(uriInfo,game,
+                        gs.getGameReviewDataByGameId(game.getId(),user != null? user.getId(): null),user)).build();
     }
 
     @DELETE
@@ -146,14 +149,19 @@ public class GameController extends UriInfoController {
     }
 
     @PATCH
+    @Produces(MediaType.APPLICATION_JSON)
     @Path("{id:\\d+}")
     public Response patchGame(@Valid @NotNull(message = "error.body.empty") PatchGameForm patchGameForm, @Valid @ExistentGameId @PathParam("id") final long id) {
         User loggedUser = AuthenticationHelper.getLoggedUser(us);
         //todo: check auth
-        if(patchGameForm.getAccept()){
-            gs.acceptGame(id,loggedUser.getId());
-        }else{
-            gs.rejectGame(id,loggedUser.getId());
+        try {
+            if(patchGameForm.getAccept()){
+                gs.acceptGame(id, loggedUser.getId());
+            }else{
+                gs.rejectGame(id,loggedUser.getId());
+            }
+        }catch (GameSuggestionAlreadyHandled e){
+            throw new CustomRuntimeException(Response.Status.BAD_REQUEST, "error.game.suggestion.already.handled");
         }
         return Response.noContent().build();
     }
@@ -161,7 +169,8 @@ public class GameController extends UriInfoController {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{id:\\d+}/genres")
     public Response getGameGenres(@PathParam("id") final long id) {
-        Optional<Game> game = gs.getGameById(id);
+        User loggedUser = AuthenticationHelper.getLoggedUser(us);
+        Optional<Game> game = gs.getGameById(id,loggedUser != null ? loggedUser.getId() : null);
         if (game.isPresent()) {
             return Response.ok(ListResponse.fromEntity(uriInfo,game.get().getGenres().stream().map((genre) -> GenreResponse.getLinkFromEntity(uriInfo,genre)).collect(Collectors.toList()))).build();
         } else {

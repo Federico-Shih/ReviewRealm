@@ -12,19 +12,19 @@ import java.util.Set;
 
 public interface GameService {
 
-    Optional<Game> createGame(SubmitGameDTO gameDTO, long userId);
+    Game createGame(SubmitGameDTO gameDTO, long userId);
 
     boolean deleteGame(long gameId);
 
     Game editGame(SubmitGameDTO gameDTO, long userId);
 
-    Optional<Game> getGameById(long id);
+    Optional<Game> getGameById(long id,Long userId);
 
-    Paginated<Game> searchGames(Page page, GameFilter filter, Ordering<GameOrderCriteria> ordering);
+    Paginated<Game> searchGames(Page page, GameFilter filter, Ordering<GameOrderCriteria> ordering,Long userId);
 
     Paginated<Game> searchGamesNotReviewedByUser(Page page, String search, Ordering<GameOrderCriteria> ordering, long userId);
 
-    GameReviewData getGameReviewDataByGameId(long id);
+    GameReviewData getGameReviewDataByGameId(long id,Long userId);
 
     Game addNewReviewToGame(long gameId, int rating);
 

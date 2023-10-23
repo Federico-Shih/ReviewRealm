@@ -1,35 +1,49 @@
 package ar.edu.itba.paw.webapp.controller.forms;
 
-import ar.edu.itba.paw.webapp.controller.annotations.CheckDateFormat;
-import ar.edu.itba.paw.webapp.controller.annotations.ExistentGenreList;
-import ar.edu.itba.paw.webapp.controller.annotations.ValidMediaSize;
-import ar.edu.itba.paw.webapp.controller.annotations.ValidMediaType;
+import ar.edu.itba.paw.webapp.controller.annotations.*;
 import ar.edu.itba.paw.dtos.saving.SubmitGameDTO;
+import ar.edu.itba.paw.webapp.exceptions.CustomRuntimeException;
+import org.apache.commons.io.IOUtils;
+import org.glassfish.jersey.media.multipart.FormDataBodyPart;
+import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.springframework.http.MediaType;
 import org.springframework.web.multipart.MultipartFile;
 import javax.validation.constraints.Size;
+import javax.ws.rs.core.Response;
 import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDate;
 import java.util.List;
 
+
 public class SubmitGameForm {
     @Size(min = 1, max = 80)
+    @FormDataParam("name")
     private String name;
     @Size(max = 300)
+    @FormDataParam("description")
     private String description;
     @Size(min = 1, max = 50)
+    @FormDataParam("developer")
     private String developer;
     @Size(min = 1, max = 50)
+    @FormDataParam("publisher")
     private String publisher;
 
     @ExistentGenreList
+    @FormDataParam("genres")
     private List<Integer> genres;
     @CheckDateFormat(pattern = "yyyy-mm-dd")
+    @FormDataParam("releaseDate")
     private String releaseDate;
 
-    @ValidMediaType(value = {MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE, MediaType.IMAGE_GIF_VALUE}, message = "invalid.mediatype")
-    @ValidMediaSize(value = 20 * 1024 * 1024)
-    private MultipartFile image;
+    @FormDataParam("image")
+    private InputStream imageStream;
+
+    @ValidImage
+    @FormDataParam("image")
+    private FormDataBodyPart imageDetails;
+
 
     public String getName() {
         return name;
@@ -71,12 +85,20 @@ public class SubmitGameForm {
         this.genres = genres;
     }
 
-    public MultipartFile getImage() {
-        return image;
+    public InputStream getImageStream() {
+        return imageStream;
     }
 
-    public void setImage(MultipartFile image) {
-        this.image = image;
+    public void setImageStream(InputStream imageStream) {
+        this.imageStream = imageStream;
+    }
+
+    public FormDataBodyPart getImageDetails() {
+        return imageDetails;
+    }
+
+    public void setImageDetails(FormDataBodyPart imageDetails) {
+        this.imageDetails = imageDetails;
     }
 
     public String getReleaseDate() {
@@ -88,6 +110,12 @@ public class SubmitGameForm {
     }
 
     public SubmitGameDTO toSubmitDTO() throws IOException {
-        return new SubmitGameDTO(name, description, developer, publisher, genres, image.getBytes(), image.getContentType(), LocalDate.parse(releaseDate));
+            byte[] imageArray = new byte[0];
+            try {
+                imageArray = IOUtils.toByteArray(imageStream);
+            } catch (IOException e) {
+                throw new CustomRuntimeException(Response.Status.INTERNAL_SERVER_ERROR,"image.error");
+            }
+        return new SubmitGameDTO(name, description, developer, publisher, genres, imageArray, imageDetails.getMediaType().toString(), LocalDate.parse(releaseDate));
     }
 }

@@ -62,7 +62,7 @@ public class ReviewServiceImplTest {
         Mockito.when(userService.getFollowers(anyLong(), any())).thenReturn(new Paginated<>(1,1,1, Arrays.asList(getUser2(), getUser3())));
         Mockito.when(userService.isNotificationEnabled(eq(getUser2().getId()), any())).thenReturn(true);
         Mockito.when(userService.isNotificationEnabled(eq(getUser3().getId()), any())).thenReturn(false);
-        Mockito.when(gameService.getGameById(anyLong())).thenReturn(Optional.of(getSuperGameA()));
+        Mockito.when(gameService.getGameById(anyLong(),anyLong())).thenReturn(Optional.of(getSuperGameA()));
         Mockito.when(userService.getUserById(anyLong())).thenReturn(Optional.of(getUser1()));
         Mockito.when(reviewDao.findAll(any(), any(), any(), any())).thenReturn(new Paginated<>(1,1,1, new ArrayList<>()));
 

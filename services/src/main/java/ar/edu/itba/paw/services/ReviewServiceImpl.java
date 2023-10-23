@@ -58,7 +58,7 @@ public class ReviewServiceImpl implements ReviewService {
                         Boolean completed,
                         Boolean replayable) {
         User author = userService.getUserById(authorId).orElseThrow(UserNotFoundException::new);
-        Game reviewedGame = gameService.getGameById(gameId).orElseThrow(GameNotFoundException::new);
+        Game reviewedGame = gameService.getGameById(gameId,authorId).orElseThrow(GameNotFoundException::new);
 
         if (getReviewOfUserForGame(authorId, gameId).isPresent()) {
             throw new ReviewAlreadyExistsException(reviewedGame);
