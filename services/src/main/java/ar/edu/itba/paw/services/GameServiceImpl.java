@@ -150,6 +150,18 @@ public class GameServiceImpl implements GameService {
                 throw new UserNotAModeratorException();
             }
         }
+        if(searchFilter.getFavoriteGamesOf() != null){
+            if(searchFilter.isProperFavoriteOf()){
+                return userService.getFavoriteGamesFromUser(page,searchFilter.getFavoriteGamesOf());
+            }
+            throw new ExclusiveFilterException("error.game.filter.favorite");
+        }
+        if(searchFilter.getRecommendedFor() != null){
+            if(searchFilter.isProperRecommendedFor()){
+                return getRecommendationsOfGamesForUser(page,searchFilter.getRecommendedFor());
+            }
+            throw new ExclusiveFilterException("error.game.filter.recommended");
+        }
         return gameDao.findAll(page, searchFilter, ordering);
     }
 
@@ -222,7 +234,7 @@ public class GameServiceImpl implements GameService {
         List<Integer> preferencesIds = userPreferences.stream().map(Genre::getId).collect(Collectors.toList());
         Set<Game> userReviewedGames = getGamesReviewedByUser(user.getId());
         List<Long> idsToExclude = userReviewedGames.stream().map(Game::getId).collect(Collectors.toList());
-        GameFilter filter = new GameFilterBuilder().withGameGenres(preferencesIds).withGamesToExclude(idsToExclude).build();
+        GameFilter filter = new GameFilterBuilder().withGameGenres(preferencesIds).withSuggestion(false).withGamesToExclude(idsToExclude).build();
         Ordering<GameOrderCriteria> ordering = new Ordering<>(OrderDirection.DESCENDING, GameOrderCriteria.AVERAGE_RATING);
         return gameDao.findAll(page,filter,ordering);
     }

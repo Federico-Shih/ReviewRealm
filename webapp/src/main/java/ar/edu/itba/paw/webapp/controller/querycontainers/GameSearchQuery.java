@@ -10,6 +10,7 @@ import ar.edu.itba.paw.webapp.controller.annotations.ExistentGenreList;
 import ar.edu.itba.paw.webapp.controller.annotations.ExistentUserId;
 
 import javax.validation.constraints.Pattern;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.QueryParam;
 import java.util.List;
 
@@ -47,6 +48,7 @@ public class GameSearchQuery extends PaginatedQuery{
     private Boolean excludeNoRating;
 
     @QueryParam("suggested")
+    @DefaultValue("false")
     private Boolean suggested;
 
     @ExistentUserId(optional = true)
@@ -82,27 +84,8 @@ public class GameSearchQuery extends PaginatedQuery{
                 withGameGenres(genres).
                 withSuggestion(suggested).
                 withRatingRange(minRating,maxRating,excludeNoRating == null || !excludeNoRating)
+                .withFavoriteGamesOf(favoriteOf)
+                .withRecommendedFor(recommendedFor)
                 .build();
-    }
-    public boolean isRecommendedFor(){
-        return recommendedFor != null && recommendedFor > 0;
-    }
-    public boolean isProperRecommendedFor(){
-        return search == null && genres.isEmpty() && rating == null && excludeNoRating == null && suggested == null && favoriteOf == null;
-    }
-
-    public Long getRecommendedFor() {
-        return recommendedFor;
-    }
-
-    public boolean isFavoriteOf(){
-        return favoriteOf != null && favoriteOf > 0;
-    }
-    public boolean isProperFavoriteOf(){
-        return search == null && genres.isEmpty() && rating == null && excludeNoRating == null && suggested == null && recommendedFor == null;
-    }
-
-    public Long getFavoriteOf() {
-        return favoriteOf;
     }
 }

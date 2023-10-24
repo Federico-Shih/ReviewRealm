@@ -83,23 +83,9 @@ public class GameController extends UriInfoController {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getGames(@Valid @BeanParam GameSearchQuery gameSearchQuery){
-        //Todo: Limitar el acceso a los juegos que no estan aceptados
         User loggedUser = AuthenticationHelper.getLoggedUser(us);
-        Paginated<Game> games;
-        if(gameSearchQuery.isRecommendedFor()){
-            if(!gameSearchQuery.isProperRecommendedFor()){
-                throw new CustomRuntimeException(Response.Status.BAD_REQUEST, "error.game.filter.recommended");
-            }
-            games = gs.getRecommendationsOfGamesForUser(gameSearchQuery.getPage(),gameSearchQuery.getRecommendedFor());
-        }else if(gameSearchQuery.isFavoriteOf()){
-            if(!gameSearchQuery.isProperFavoriteOf()){
-                throw new CustomRuntimeException(Response.Status.BAD_REQUEST, "error.game.filter.favorite");
-            }
-            games = us.getFavoriteGamesFromUser(gameSearchQuery.getPage(),gameSearchQuery.getFavoriteOf());
-        }else{
-            games = gs.searchGames(gameSearchQuery.getPage(), gameSearchQuery.getFilter(),gameSearchQuery.getOrdering(),(loggedUser != null ? loggedUser.getId() : null));
-        }
-
+        Paginated<Game> games = gs.searchGames(gameSearchQuery.getPage(), gameSearchQuery.getFilter(),gameSearchQuery.getOrdering(),(loggedUser != null ? loggedUser.getId() : null));
+        //Todo: las excepciones tener que mapearlas
         if(games.getTotalPages() == 0 || games.getList().isEmpty()){
             return Response.noContent().build();
         }

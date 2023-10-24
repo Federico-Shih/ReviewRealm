@@ -16,7 +16,9 @@ public class GameFilter {
 
     private final Long favoriteGamesOf;
 
-    public GameFilter(List<Integer> gameGenres, String gameContent, String developer, String publisher, Float minRating, Float maxRating, boolean includeNoRating, Boolean isSuggested, List<Long> gamesToExclude, Long favoriteGamesOf) {
+    private final Long recommendedFor;
+
+    public GameFilter(List<Integer> gameGenres, String gameContent, String developer, String publisher, Float minRating, Float maxRating, boolean includeNoRating, Boolean isSuggested, List<Long> gamesToExclude, Long favoriteGamesOf,Long recommendedFor) {
         this.gameGenres = gameGenres;
         this.gameContent = gameContent;
         this.developer = developer;
@@ -27,6 +29,7 @@ public class GameFilter {
         this.isSuggested = isSuggested;
         this.gamesToExclude = gamesToExclude;
         this.favoriteGamesOf = favoriteGamesOf;
+        this.recommendedFor = recommendedFor;
     }
 
     public List<Integer> getGameGenres() {
@@ -63,5 +66,16 @@ public class GameFilter {
 
     public Long getFavoriteGamesOf() {
         return favoriteGamesOf;
+    }
+
+    public Long getRecommendedFor() {
+        return recommendedFor;
+    }
+
+    public boolean isProperRecommendedFor(){
+        return gameContent == null && gameGenres.isEmpty() && minRating == null && maxRating == null && includeNoRating && !isSuggested && favoriteGamesOf == null;
+    }
+    public boolean isProperFavoriteOf(){
+        return gameContent == null && gameGenres.isEmpty() && minRating == null && maxRating == null && includeNoRating && !isSuggested && recommendedFor == null;
     }
 }
