@@ -10,7 +10,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class UserResponse extends BaseResponse {
-    private static final String BASE_PATH = "/users";
+    public static final String BASE_PATH = "/users";
     private long id;
     private String username;
     private String email;
@@ -38,7 +38,7 @@ public class UserResponse extends BaseResponse {
         response.link("followers", uri.getBaseUriBuilder().path(BASE_PATH).queryParam("followers", user.getId()).build());
         response.link("following", uri.getBaseUriBuilder().path(BASE_PATH).queryParam("following", user.getId()).build());
         response.link("preferences", uri.getBaseUriBuilder().path(BASE_PATH).path(String.valueOf(user.getId())).path("preferences").build());
-        response.link("favoriteGames", uri.getBaseUriBuilder().path(BASE_PATH).path(String.valueOf(user.getId())).path("favoritegames").build());
+        response.link("favoriteGames", uri.getBaseUriBuilder().path(GameResponse.BASE_PATH).queryParam("favoriteOf", user.getId()).build());
         return response;
     }
 

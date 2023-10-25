@@ -1,34 +1,29 @@
 package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.exceptions.GameSuggestionAlreadyHandled;
-import ar.edu.itba.paw.models.*;
+import ar.edu.itba.paw.models.Game;
+import ar.edu.itba.paw.models.Paginated;
+import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.servicesinterfaces.GameService;
 import ar.edu.itba.paw.servicesinterfaces.ReviewService;
 import ar.edu.itba.paw.servicesinterfaces.UserService;
-import ar.edu.itba.paw.webapp.auth.AccessControl;
 import ar.edu.itba.paw.webapp.auth.AuthenticationHelper;
-import ar.edu.itba.paw.webapp.controller.annotations.*;
+import ar.edu.itba.paw.webapp.controller.annotations.ExistentGameId;
 import ar.edu.itba.paw.webapp.controller.forms.PatchGameForm;
 import ar.edu.itba.paw.webapp.controller.forms.SubmitGameForm;
-import ar.edu.itba.paw.webapp.controller.mediatypes.VndType;
 import ar.edu.itba.paw.webapp.controller.querycontainers.GameSearchQuery;
 import ar.edu.itba.paw.webapp.controller.responses.GameResponse;
 import ar.edu.itba.paw.webapp.controller.responses.GenreResponse;
 import ar.edu.itba.paw.webapp.controller.responses.ListResponse;
 import ar.edu.itba.paw.webapp.controller.responses.PaginatedResponse;
 import ar.edu.itba.paw.webapp.exceptions.CustomRuntimeException;
-import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -106,7 +101,7 @@ public class GameController extends UriInfoController {
         Game game = gs.createGame(submitGameForm.toSubmitDTO(),loggedUser.getId());
 
         return Response.
-                created(uriInfo.getAbsolutePathBuilder().path("/games").path(game.getId().toString()).build()).build();
+                created(uriInfo.getAbsolutePathBuilder().path(game.getId().toString()).build()).build();
     }
 
     @PUT
@@ -118,9 +113,9 @@ public class GameController extends UriInfoController {
         Game game = gs.editGame(submitGameForm.toSubmitDTO(),id);
         User user = AuthenticationHelper.getLoggedUser(us);
 
-        return Response.ok(uriInfo.getAbsolutePathBuilder().path("/games").path(game.getId().toString()).build())
-                .entity(GameResponse.fromEntity(uriInfo,game,
-                        gs.getGameReviewDataByGameId(game.getId(),user != null? user.getId(): null),user)).build();
+        return Response.ok(uriInfo.getAbsolutePathBuilder().path(game.getId().toString()).build())
+                .entity(GameResponse.fromEntity(uriInfo, game,
+                        gs.getGameReviewDataByGameId(game.getId(), user != null ? user.getId() : null), user)).build();
     }
 
     @DELETE

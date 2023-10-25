@@ -4,17 +4,13 @@ import ar.edu.itba.paw.enums.RoleType;
 import ar.edu.itba.paw.webapp.auth.AccessControl;
 import ar.edu.itba.paw.webapp.auth.BasicAuthFilter;
 import ar.edu.itba.paw.webapp.auth.JwtTokenFilter;
-import ar.edu.itba.paw.webapp.config.filters.AuthenticationPageFilter;
-import ar.edu.itba.paw.webapp.config.handlers.CustomAuthenticationFailureHandler;
 import ar.edu.itba.paw.webapp.mappers.ForbiddenRequestHandler;
 import ar.edu.itba.paw.webapp.mappers.UnauthorizedRequestHandler;
-import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.access.AccessDecisionManager;
@@ -36,16 +32,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 import org.springframework.security.web.access.expression.WebExpressionVoter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-import java.util.Base64;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 
 @EnableWebSecurity
@@ -117,10 +106,10 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                 // redirecciona si uno trata de ir a login o register y ya está conectado
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            .and().authorizeRequests()
+                .and().authorizeRequests()
                 .accessDecisionManager(accessDecisionManager())
                 .antMatchers(HttpMethod.PATCH, "/api/users/{id:\\d+}").authenticated()
-                .antMatchers(HttpMethod.POST, "/api/reports").authenticated()
+                .antMatchers(HttpMethod.POST, "/api/reports", "/api/games").authenticated()
                 .antMatchers("/api/reports/**").hasRole(RoleType.MODERATOR.getRole())
 // todo: agregar rutas a medida que se van haciendo las APIs
                 //.antMatchers("/admin/**").hasRole("ADMIN")  lo que requiera un rol especial
