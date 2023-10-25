@@ -110,6 +110,9 @@ public class User {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "moderator")
     private List<Report> resolvedReports;
 
+    @Transient
+    private boolean isFollowing = false;
+
     public User(String username,
                 String email,
                 String password) {
@@ -338,10 +341,20 @@ public class User {
         this.roles = objects;
     }
 
-    public boolean isModerator() { return roles.contains(RoleType.MODERATOR); }
+    public boolean isModerator() {
+        return roles.contains(RoleType.MODERATOR);
+    }
 
     public List<Report> getReportsMade() {
         return reportsMade;
+    }
+
+    public boolean isFollowing() {
+        return isFollowing;
+    }
+
+    public void setFollowing(boolean following) {
+        isFollowing = following;
     }
 }
 
