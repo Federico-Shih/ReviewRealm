@@ -9,7 +9,6 @@ import ar.edu.itba.paw.dtos.saving.SaveUserBuilder;
 import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.enums.NotificationType;
 import ar.edu.itba.paw.models.FollowerFollowingCount;
-import ar.edu.itba.paw.models.Game;
 import ar.edu.itba.paw.models.Paginated;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.persistence.config.TestConfig;
@@ -88,7 +87,7 @@ public class UserDaoImplTest {
     @Test
     public void testFindById() throws SQLException {
         //2.execute
-        Optional<User> maybeUser = userDao.findById(testUser.getId());
+        Optional<User> maybeUser = userDao.findById(testUser.getId(), null);
 
         //3.assert
         Assert.assertTrue(maybeUser.isPresent());
@@ -102,7 +101,7 @@ public class UserDaoImplTest {
     public void testFindByIdDoesNotExist() throws SQLException {
 
         //2.execute
-        Optional<User> maybeUser = userDao.findById(-1L);
+        Optional<User> maybeUser = userDao.findById(-1L, null);
 
         //3.assert
         Assert.assertFalse(maybeUser.isPresent());
@@ -110,8 +109,32 @@ public class UserDaoImplTest {
 
     @Rollback
     @Test
+    public void testFindByIdWithFollowing() throws SQLException {
+
+        //2.execute
+        Optional<User> maybeUser = userDao.findById(UserTestModels.getUser3().getId(), testFollowingUser.getId());
+
+        //3.assert
+        Assert.assertTrue(maybeUser.isPresent());
+        Assert.assertTrue(maybeUser.get().isFollowing());
+    }
+
+    @Rollback
+    @Test
+    public void testFindByIdWithoutFollowing() throws SQLException {
+
+        //2.execute
+        Optional<User> maybeUser = userDao.findById(testFollowingUser.getId(), testFollowingUser.getId());
+
+        //3.assert
+        Assert.assertTrue(maybeUser.isPresent());
+        Assert.assertFalse(maybeUser.get().isFollowing());
+    }
+
+    @Rollback
+    @Test
     public void testFindAll() throws SQLException {
-        Paginated<User> userlist = userDao.findAll(Page.with(1, 80), new UserFilterBuilder().build(), new Ordering<>(OrderDirection.DESCENDING, UserOrderCriteria.LEVEL));
+        Paginated<User> userlist = userDao.findAll(Page.with(1, 80), new UserFilterBuilder().build(), new Ordering<>(OrderDirection.DESCENDING, UserOrderCriteria.LEVEL), null);
 
         Assert.assertEquals(userlist.getTotalPages(), 1);
         Assert.assertEquals(userlist.getList().size(), 5);
@@ -123,7 +146,7 @@ public class UserDaoImplTest {
     @Test
     public void testMultipleFilter() throws SQLException {
         //2.execute
-        Paginated<User> userlist = userDao.findAll(Page.with(1, 10), new UserFilterBuilder().withEmail("email2").build(), new Ordering<>(OrderDirection.DESCENDING, UserOrderCriteria.LEVEL));
+        Paginated<User> userlist = userDao.findAll(Page.with(1, 10), new UserFilterBuilder().withEmail("email2").build(), new Ordering<>(OrderDirection.DESCENDING, UserOrderCriteria.LEVEL), null);
 
         Assert.assertEquals(userlist.getTotalPages(), 1);
         Assert.assertEquals(userlist.getList().size(), 1);
@@ -135,10 +158,10 @@ public class UserDaoImplTest {
     @Test
     public void wrongPaginationTest() {
         Assert.assertThrows(RuntimeException.class, () -> {
-            userDao.findAll(Page.with(0, 0), new UserFilterBuilder().build(), new Ordering<>(OrderDirection.DESCENDING, UserOrderCriteria.LEVEL));
+            userDao.findAll(Page.with(0, 0), new UserFilterBuilder().build(), new Ordering<>(OrderDirection.DESCENDING, UserOrderCriteria.LEVEL), null);
         });
 
-        Paginated<User> userlist = userDao.findAll(Page.with(1000000, 10), new UserFilterBuilder().build(), new Ordering<>(OrderDirection.DESCENDING, UserOrderCriteria.LEVEL));
+        Paginated<User> userlist = userDao.findAll(Page.with(1000000, 10), new UserFilterBuilder().build(), new Ordering<>(OrderDirection.DESCENDING, UserOrderCriteria.LEVEL), null);
         Assert.assertEquals(userlist.getTotalPages(), 1);
         Assert.assertEquals(userlist.getList().size(), 0);
     }
@@ -265,6 +288,18 @@ public class UserDaoImplTest {
         Assert.assertEquals(1, following.get().getList().size());
         User[] expectedUsers = {UserTestModels.getUser3()};
         Assert.assertArrayEquals(expectedUsers, following.get().getList().toArray());
+    }
+
+    @Rollback
+    @Test
+    public void testGetUsersWithFollowing() {
+        Paginated<User> allUsers = userDao.findAll(Page.with(1, 20), new UserFilterBuilder().build(), new Ordering<>(OrderDirection.DESCENDING, UserOrderCriteria.LEVEL), testFollowingUser.getId());
+
+        User[] expectedUser = {UserTestModels.getUser5(), UserTestModels.getUser1(), UserTestModels.getUser2(), UserTestModels.getUser3(), UserTestModels.getUser4()};
+        Boolean[] isFollowing = {false, false, false, true, false};
+        Assert.assertEquals(expectedUser.length, allUsers.getList().size());
+        Assert.assertArrayEquals(expectedUser, allUsers.getList().toArray());
+        Assert.assertArrayEquals(isFollowing, allUsers.getList().stream().map(User::isFollowing).toArray());
     }
 
     @Rollback

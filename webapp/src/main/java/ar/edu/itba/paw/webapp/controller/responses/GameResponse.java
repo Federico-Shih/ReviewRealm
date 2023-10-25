@@ -1,18 +1,18 @@
 package ar.edu.itba.paw.webapp.controller.responses;
 
 import ar.edu.itba.paw.enums.Difficulty;
-import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.enums.Platform;
 import ar.edu.itba.paw.models.Game;
 import ar.edu.itba.paw.models.GameReviewData;
 import ar.edu.itba.paw.models.User;
+
 import javax.ws.rs.core.UriInfo;
 import java.net.URI;
 import java.time.LocalDate;
 
 public class GameResponse extends BaseResponse {
 
-    private static final String BASE_PATH = "/games";
+    public static final String BASE_PATH = "/games";
 
     private long id;
 

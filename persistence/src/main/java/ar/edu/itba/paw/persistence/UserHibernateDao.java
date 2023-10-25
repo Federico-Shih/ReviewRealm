@@ -120,7 +120,7 @@ public class UserHibernateDao implements UserDao, PaginationDao<UserFilter> {
     }
 
     @Override
-    public Paginated<User> findAll(Page page, UserFilter userFilter, Ordering<UserOrderCriteria> ordering) {
+    public Paginated<User> findAll(Page page, UserFilter userFilter, Ordering<UserOrderCriteria> ordering, Long currentUserId) {
         int pages = getPageCount(userFilter, page.getPageSize());
         if (page.getPageNumber() > pages || page.getPageNumber() <= 0) {
             return new Paginated<>(page.getPageNumber(), page.getPageSize(), pages, Collections.emptyList());
@@ -129,24 +129,33 @@ public class UserHibernateDao implements UserDao, PaginationDao<UserFilter> {
         QueryBuilder queryBuilder = getQueryBuilderFromFilter(userFilter);
         Query nativeQuery = em.createNativeQuery(
                 "SELECT mainuserid FROM " +
-                        "("+
-                        "SELECT distinct u.id as mainuserid,u.xp,u.reputation, coalesce((SELECT count(distinct f.userid) FROM followers as f WHERE f.following=u.id GROUP BY f.following), 0) as follower_count FROM " + toTableString(userFilter) + queryBuilder.toQuery()  + ") as users"
+                        "(" +
+                        "SELECT distinct u.id as mainuserid,u.xp,u.reputation, coalesce((SELECT count(distinct f.userid) FROM followers as f WHERE f.following=u.id GROUP BY f.following), 0) as follower_count FROM " + toTableString(userFilter) + queryBuilder.toQuery() + ") as users"
                         + DaoUtils.toOrderString(ordering, true));
         DaoUtils.setNativeParameters(queryBuilder, nativeQuery);
         nativeQuery.setMaxResults(page.getPageSize());
         nativeQuery.setFirstResult(page.getOffset().intValue());
 
-        @SuppressWarnings("unchecked")
-        final List<Long> idlist = (List<Long>) nativeQuery.getResultList().stream().map(n -> ((Number) n).longValue()).collect(Collectors.toList());
+        @SuppressWarnings("unchecked") final List<Long> idlist = (List<Long>) nativeQuery.getResultList().stream().map(n -> ((Number) n).longValue()).collect(Collectors.toList());
 
-        if(idlist.isEmpty()) {
+        if (idlist.isEmpty()) {
             return new Paginated<>(page.getPageNumber(), page.getPageSize(), pages, new ArrayList<>());
         }
 
-        final TypedQuery<User> userQuery = em.createQuery("from User where id IN :ids"+ DaoUtils.toOrderString(ordering, false), User.class);
+        final TypedQuery<User> userQuery = em.createQuery("from User where id IN :ids" + DaoUtils.toOrderString(ordering, false), User.class);
         userQuery.setParameter("ids", idlist);
+        List<User> users = userQuery.getResultList();
 
-        return new Paginated<>(page.getPageNumber(), page.getPageSize(), pages, userQuery.getResultList());
+        // Agrega si el usuario lo sigue o no.
+        if (currentUserId != null) {
+            final TypedQuery<Long> isFollowing = em.createQuery("select u.id from User current join current.following u where current.id = :id and u.id in :idlist", Long.class);
+            isFollowing.setParameter("id", currentUserId);
+            isFollowing.setParameter("idlist", idlist);
+            Set<Long> isFollowingList = new HashSet<>(isFollowing.getResultList());
+            users.forEach((user) -> user.setFollowing(isFollowingList.contains(user.getId())));
+        }
+
+        return new Paginated<>(page.getPageNumber(), page.getPageSize(), pages, users);
     }
 
     @Override
@@ -162,16 +171,27 @@ public class UserHibernateDao implements UserDao, PaginationDao<UserFilter> {
 
 
     @Override
+    public Optional<User> findById(long id, Long currentUserId) {
+        User user = em.find(User.class, id);
+        if (user == null) return Optional.empty();
+        if (currentUserId != null) {
+            user.setFollowing(user.getFollowers().stream().anyMatch((u) -> u.getId().equals(currentUserId)));
+        }
+        return Optional.of(user);
+    }
+
+    @Override
     public Optional<User> findById(long id) {
         return Optional.ofNullable(em.find(User.class, id));
     }
+
 
     @Override
     public Optional<Paginated<User>> getFollowers(long id, Page page) {
         User user = em.find(User.class, id);
         if (user == null) return Optional.empty();
 
-        int pages = (int) Math.ceil((float)(em.createQuery("select count(f) from User u join u.followers f where u.id = :id", Long.class)
+        int pages = (int) Math.ceil((float) (em.createQuery("select count(f) from User u join u.followers f where u.id = :id", Long.class)
                 .setParameter("id", id)
                 .getSingleResult()) / page.getPageSize());
         if (pages < page.getPageNumber() || page.getPageNumber() <= 0) {

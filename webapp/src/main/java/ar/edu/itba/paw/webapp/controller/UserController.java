@@ -10,6 +10,7 @@ import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.servicesinterfaces.MissionService;
 import ar.edu.itba.paw.servicesinterfaces.UserService;
 import ar.edu.itba.paw.webapp.auth.AccessControl;
+import ar.edu.itba.paw.webapp.auth.AuthenticationHelper;
 import ar.edu.itba.paw.webapp.controller.annotations.ExistentUserId;
 import ar.edu.itba.paw.webapp.controller.forms.*;
 import ar.edu.itba.paw.webapp.controller.helpers.LocaleHelper;
@@ -72,19 +73,43 @@ public class UserController {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getUsers(@Valid @BeanParam UserSearchQuery userSearchQuery) {
-        final Paginated<User> users = us.getUsers(userSearchQuery.getPage(), userSearchQuery.getFilter(), userSearchQuery.getOrdering());
+        User loggedIn = AuthenticationHelper.getLoggedUser(us);
+        final Paginated<User> users = us.getUsers(userSearchQuery.getPage(), userSearchQuery.getFilter(), userSearchQuery.getOrdering(), (loggedIn != null) ? loggedIn.getId() : null);
         if (users.getTotalPages() == 0 || users.getList().isEmpty()) {
             return Response.noContent().build();
         }
-        List<UserResponse> userResponseList = users.getList().stream().map((user) -> UserResponse.fromEntity(uriInfo, user)).collect(Collectors.toList());
+        List<UserResponse> userResponseList = users.getList().stream().map(
+                (user) -> UserResponse.UserResponseBuilder
+                        .fromUser(user, uriInfo)
+                        .withAuthed(loggedIn)
+                        .build()
+        ).collect(Collectors.toList());
         Response.ResponseBuilder response = Response.ok(PaginatedResponse.fromPaginated(uriInfo, userResponseList, users));
         return response.build();
+    }
+
+    @GET
+    @Path("{id:\\d+}")
+    @Produces(value = {MediaType.APPLICATION_JSON})
+    public Response getById(@PathParam("id") final long id) {
+        User loggedIn = AuthenticationHelper.getLoggedUser(us);
+        final Optional<User> user = us.getUserById(id, loggedIn != null ? loggedIn.getId() : null);
+        if (!user.isPresent()) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        return Response.ok(
+                UserResponse.UserResponseBuilder
+                        .fromUser(user.get(), uriInfo)
+                        .withAuthed(loggedIn)
+                        .build()
+        ).build();
     }
 
     @POST
     @Consumes(VndType.APPLICATION_USER)
     @Produces(MediaType.APPLICATION_JSON)
     public Response createUser(@Valid RegisterForm registerForm) throws UsernameAlreadyExistsException, EmailAlreadyExistsException {
+        LOGGER.info("Creating user with username " + registerForm.getUsername() + " and email " + registerForm.getEmail());
         final User user = us.createUser(registerForm.getUsername(), registerForm.getEmail(), registerForm.getPassword(), LocaleHelper.getLocale());
         return Response
                 .created(uriInfo.getAbsolutePathBuilder().path("/users").path(user.getId().toString()).build())
@@ -96,6 +121,7 @@ public class UserController {
     @Consumes(VndType.APPLICATION_PASSWORD_RESET)
     @Produces(MediaType.APPLICATION_JSON)
     public Response changePasswordRequest(@Valid ResendEmailForm emailForm) {
+        LOGGER.info("User with email " + emailForm.getEmail() + " requested password reset");
         us.sendPasswordResetToken(emailForm.getEmail());
         return Response.accepted().build();
     }
@@ -105,7 +131,7 @@ public class UserController {
     @Produces(MediaType.APPLICATION_JSON)
     public Response validateUser(@Valid ResendEmailForm emailForm) throws UserAlreadyEnabled {
         us.resendToken(emailForm.getEmail());
-        return Response.noContent().build();
+        return Response.ok().build();
     }
 
     @GET
@@ -116,12 +142,11 @@ public class UserController {
         if (followers.getList().isEmpty())
             return Response.noContent().build();
         return Response.ok(
-                PaginatedResponse
-                        .fromPaginated(uriInfo,
-                                followers.getList().stream()
-                                        .map((user) -> UserResponse.getLinkFromEntity(uriInfo, user).toString())
-                                        .collect(Collectors.toList()),
-                                followers)
+                PaginatedResponse.fromPaginated(uriInfo,
+                        followers.getList().stream()
+                                .map((user) -> UserResponse.getLinkFromEntity(uriInfo, user).toString())
+                                .collect(Collectors.toList()),
+                        followers)
             ).build();
     }
 
@@ -154,7 +179,7 @@ public class UserController {
     public Response createFollowing(@PathParam("id") String id, @Valid FollowingForm following) {
         final User user = us.followUserById(Long.parseLong(id), following.getUserId());
         return Response
-                .created(uriInfo.getAbsolutePathBuilder().path("/users").path(user.getId().toString()).path("/following").path(following.getUserId().toString()).build())
+                .created(uriInfo.getBaseUriBuilder().path("/users").path(user.getId().toString()).path("/following").path(following.getUserId().toString()).build())
                 .build();
     }
 
@@ -198,17 +223,6 @@ public class UserController {
     public Response patchUser(@Valid PatchUserForm patchUserForm, @PathParam("id") Integer id) {
         us.patchUser(id, patchUserForm.getPassword(), patchUserForm.getEnabled());
         return Response.noContent().build();
-    }
-
-    @GET
-    @Path("{id:\\d+}")
-    @Produces(value = {MediaType.APPLICATION_JSON})
-    public Response getById(@PathParam("id") final long id) {
-        final Optional<User> user = us.getUserById(id);
-        if (!user.isPresent()) {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
-        return Response.ok(UserResponse.fromEntity(uriInfo, user.get())).build();
     }
 
     @POST

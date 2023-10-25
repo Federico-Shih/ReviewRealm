@@ -26,7 +26,9 @@ public interface UserDao {
 
     Optional<User> getByUsername(String username);
 
-    Paginated<User> findAll(Page page, UserFilter userFilter, Ordering<UserOrderCriteria> ordering);
+    Paginated<User> findAll(Page page, UserFilter userFilter, Ordering<UserOrderCriteria> ordering, Long currentUserId);
+
+    Optional<User> findById(final long id, Long currentUserId);
 
     Optional<User> findById(final long id);
 

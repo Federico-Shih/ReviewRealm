@@ -107,6 +107,12 @@ public class UserServiceImpl implements UserService {
 
     @Transactional(readOnly = true)
     @Override
+    public Optional<User> getUserById(long id, Long currentUserId) {
+        return userDao.findById(id, currentUserId);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
     public Optional<User> getUserByToken(String token) {
         ExpirationToken expirationToken = tokenDao.getByToken(token).orElseThrow(UserNotFoundException::new);
         return getUserById(expirationToken.getUser().getId());
@@ -260,33 +266,34 @@ public class UserServiceImpl implements UserService {
 
     @Transactional(readOnly = true)
     @Override
-    public Paginated<User> searchUsers(Page page, String search, Ordering<UserOrderCriteria> ordering) {
+    public Paginated<User> searchUsers(Page page, String search, Ordering<UserOrderCriteria> ordering, Long currentUserId) {
         UserFilterBuilder userFilterBuilder = new UserFilterBuilder();
-        if(search != null) {
+        if (search != null) {
             userFilterBuilder = userFilterBuilder.withSearch(search);
         }
-        return userDao.findAll(page, userFilterBuilder.build(), ordering);
+        return userDao.findAll(page, userFilterBuilder.build(), ordering, currentUserId);
     }
 
     @Transactional(readOnly = true)
     @Override
-    public Paginated<User> getOtherUsers(Page page, Long userId, Ordering<UserOrderCriteria> ordering) {
+    public Paginated<User> getOtherUsers(Page page, Long userId, Ordering<UserOrderCriteria> ordering, Long currentUserId) {
         UserFilterBuilder userFilterBuilder = new UserFilterBuilder();
-        if(userId!=null)
+        if (userId != null)
             userFilterBuilder = userFilterBuilder.notWithId(userId);
-        return userDao.findAll(page, userFilterBuilder.build(), ordering);
+        return userDao.findAll(page, userFilterBuilder.build(), ordering, currentUserId);
     }
 
     @Transactional(readOnly = true)
     @Override
-    public Paginated<User> getUsersWhoReviewedSameGames(Page page, long userId, Ordering<UserOrderCriteria> ordering) {
+    public Paginated<User> getUsersWhoReviewedSameGames(Page page, long userId, Ordering<UserOrderCriteria> ordering, Long currentUserId) {
         Set<Game> reviewedGames = gameService.getGamesReviewedByUser(userId);
         return userDao.findAll(page,
                 new UserFilterBuilder()
                         .withGamesPlayed(reviewedGames.stream().map(Game::getId).collect(Collectors.toList()))
                         .notWithId(userId)
                         .build(),
-                ordering);
+                ordering,
+                currentUserId);
     }
 
     @Transactional(readOnly = true)
@@ -297,14 +304,15 @@ public class UserServiceImpl implements UserService {
 
     @Transactional(readOnly = true)
     @Override
-    public Paginated<User> getUsersWithSamePreferences(Page page, long userId, Ordering<UserOrderCriteria> ordering) {
+    public Paginated<User> getUsersWithSamePreferences(Page page, long userId, Ordering<UserOrderCriteria> ordering, Long currentUserId) {
         User user = getUserById(userId).orElseThrow(UserNotFoundException::new);
         return userDao.findAll(page,
                 new UserFilterBuilder()
                         .withPreferences(user.getPreferences().stream().map(Genre::getId).collect(Collectors.toList()))
                         .notWithId(userId)
                         .build(),
-                ordering);
+                ordering,
+                currentUserId);
     }
 
     @Transactional
@@ -448,17 +456,19 @@ public class UserServiceImpl implements UserService {
         return userDao.addFavoriteGame(userId, gameid);
     }
 
+    @Transactional(readOnly = true)
     @Override
-    public Paginated<User> getUsers(Page page, UserFilter filter, Ordering<UserOrderCriteria> ordering) {
+    public Paginated<User> getUsers(Page page, UserFilter filter, Ordering<UserOrderCriteria> ordering, Long currentUserId) {
         if (filter.hasFollowersQuery()) {
             return userDao.getFollowers(filter.getFollowersQueryId(), page).orElseThrow(UserNotFoundException::new);
         }
         if (filter.hasFollowingQuery()) {
             return userDao.getFollowing(filter.getFollowingQueryId(), page).orElseThrow(UserNotFoundException::new);
         }
-        return userDao.findAll(page, filter, ordering);
+        return userDao.findAll(page, filter, ordering, currentUserId);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Optional<ExpirationToken> getExpirationToken(String token) {
         return tokenDao.getByToken(token);

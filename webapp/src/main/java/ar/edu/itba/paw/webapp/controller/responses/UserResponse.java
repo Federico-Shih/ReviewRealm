@@ -10,7 +10,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class UserResponse extends BaseResponse {
-    private static String BASE_PATH = "/users";
+    public static final String BASE_PATH = "/users";
     private long id;
     private String username;
     private String email;
@@ -19,7 +19,6 @@ public class UserResponse extends BaseResponse {
     private Long avatarId;
     private Locale language;
     private Float xp;
-
     private Set<URI> preferences;
 
 
@@ -38,7 +37,8 @@ public class UserResponse extends BaseResponse {
         response.link("self", getLinkFromEntity(uri, user));
         response.link("followers", uri.getBaseUriBuilder().path(BASE_PATH).queryParam("followers", user.getId()).build());
         response.link("following", uri.getBaseUriBuilder().path(BASE_PATH).queryParam("following", user.getId()).build());
-        // TODO: rest of paths
+        response.link("preferences", uri.getBaseUriBuilder().path(BASE_PATH).path(String.valueOf(user.getId())).path("preferences").build());
+        response.link("favoriteGames", uri.getBaseUriBuilder().path(GameResponse.BASE_PATH).queryParam("favoriteOf", user.getId()).build());
         return response;
     }
 
@@ -120,5 +120,41 @@ public class UserResponse extends BaseResponse {
 
     public void setPreferences(Set<URI> preferences) {
         this.preferences = preferences;
+    }
+
+    public static class UserResponseBuilder {
+        private UserResponse userResponse;
+        private User user;
+        private UriInfo uriInfo;
+
+        protected UserResponseBuilder() {
+        }
+
+        public static UserResponseBuilder fromUser(User user, UriInfo info) {
+            UserResponseBuilder builder = new UserResponseBuilder();
+            builder.userResponse = UserResponse.fromEntity(info, user);
+            builder.user = user;
+            builder.uriInfo = info;
+            return builder;
+        }
+
+        public UserResponseBuilder withAuthed(User currentUser) {
+            if (currentUser == null) return this;
+            if (user.equals(currentUser)) {
+                userResponse.link("updateNotifications", uriInfo.getBaseUriBuilder().path(BASE_PATH).path(String.valueOf(user.getId())).path("notifications").build());
+                userResponse.link("patchUser", uriInfo.getBaseUriBuilder().path(BASE_PATH).path(String.valueOf(user.getId())).build());
+            } else {
+                if (user.isFollowing()) {
+                    userResponse.link("unfollow", uriInfo.getBaseUriBuilder().path(BASE_PATH).path(String.valueOf(currentUser.getId())).path("following").path(String.valueOf(user.getId())).build());
+                } else {
+                    userResponse.link("follow", uriInfo.getBaseUriBuilder().path(BASE_PATH).path(String.valueOf(currentUser.getId())).path("following").build());
+                }
+            }
+            return this;
+        }
+
+        public UserResponse build() {
+            return userResponse;
+        }
     }
 }
