@@ -67,7 +67,7 @@ public class UserTestModels {
     }
 
     public static User getUser5() {
-        return new User(USER_ID5, USER_USERNAME5, USER_EMAIL5, USER_PASSWORD,true, USER_REPUTATION, new HashSet<>(Collections.singletonList(NotificationType.USER_I_FOLLOW_WRITES_REVIEW)), USER_LANGUAGE, USER_XP, Arrays.asList(GameTestModels.getSuperGameA(), GameTestModels.getSuperGameB(), GameTestModels.getSubnautica()));
+        return new User(USER_ID5, USER_USERNAME5, USER_EMAIL5, USER_PASSWORD,true, USER_REPUTATION, new HashSet<>(Collections.singletonList(NotificationType.USER_I_FOLLOW_WRITES_REVIEW)), USER_LANGUAGE, USER_XP, Arrays.asList(GameTestModels.getSuperGameA(), GameTestModels.getSuperGameB()));
     }
 
     public static User getCreateUser() {

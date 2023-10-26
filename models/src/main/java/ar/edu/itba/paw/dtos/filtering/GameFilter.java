@@ -73,9 +73,9 @@ public class GameFilter {
     }
 
     public boolean isProperRecommendedFor(){
-        return gameContent == null && gameGenres.isEmpty() && minRating == null && maxRating == null && includeNoRating && !isSuggested && favoriteGamesOf == null;
+        return gameContent == null && (gameGenres == null || gameGenres.isEmpty()) && minRating == null && maxRating == null && includeNoRating && !isSuggested && favoriteGamesOf == null;
     }
     public boolean isProperFavoriteOf(){
-        return gameContent == null && gameGenres.isEmpty() && minRating == null && maxRating == null && includeNoRating && !isSuggested && recommendedFor == null;
+        return gameContent == null && (gameGenres == null || gameGenres.isEmpty()) && minRating == null && maxRating == null && includeNoRating && !isSuggested && recommendedFor == null;
     }
 }

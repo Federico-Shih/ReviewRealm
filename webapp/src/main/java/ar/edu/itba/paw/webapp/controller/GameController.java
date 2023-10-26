@@ -68,7 +68,7 @@ public class GameController extends UriInfoController {
         Optional<Game> game = gs.getGameById(gameId,loggedUser != null ? loggedUser.getId() : null);
         if (game.isPresent()) {
             return Response.ok(GameResponse.fromEntity(uriInfo,game.get(),
-                    gs.getGameReviewDataByGameId(gameId,loggedUser != null? loggedUser.getId() : null),loggedUser)).build();
+                    gs.getGameReviewDataByGameId(gameId),loggedUser)).build();
         } else {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
@@ -85,7 +85,7 @@ public class GameController extends UriInfoController {
             return Response.noContent().build();
         }
         List<GameResponse> gameResponseList = games.getList().stream().map(
-                (game) -> GameResponse.fromEntity(uriInfo,game, gs.getGameReviewDataByGameId(game.getId(),loggedUser != null? loggedUser.getId() : null)
+                (game) -> GameResponse.fromEntity(uriInfo,game, gs.getGameReviewDataByGameId(game.getId())
                         ,loggedUser)
                 // Que busque los gameReviewData por todos los games es medio lento
         ).collect(Collectors.toList());
@@ -115,7 +115,7 @@ public class GameController extends UriInfoController {
 
         return Response.ok(uriInfo.getAbsolutePathBuilder().path(game.getId().toString()).build())
                 .entity(GameResponse.fromEntity(uriInfo, game,
-                        gs.getGameReviewDataByGameId(game.getId(), user != null ? user.getId() : null), user)).build();
+                        gs.getGameReviewDataByGameId(game.getId()), user)).build();
     }
 
     @DELETE
@@ -132,7 +132,8 @@ public class GameController extends UriInfoController {
     @PATCH
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{id:\\d+}")
-    public Response patchGame(@Valid @NotNull(message = "error.body.empty") PatchGameForm patchGameForm, @Valid @ExistentGameId @PathParam("id") final long id) {
+    public Response patchGame(@Valid @NotNull(message = "error.body.empty") PatchGameForm patchGameForm,
+                              @Valid @ExistentGameId @PathParam("id") final long id) {
         User loggedUser = AuthenticationHelper.getLoggedUser(us);
         //todo: check auth
         try {

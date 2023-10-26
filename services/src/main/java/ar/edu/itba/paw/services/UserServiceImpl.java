@@ -425,7 +425,7 @@ public class UserServiceImpl implements UserService {
         if (!getUserById(userId).isPresent())
             throw new UserNotFoundException();
         GameFilter filter = new GameFilterBuilder().withFavoriteGamesOf(userId).build();
-        return gameDao.findAll(page, filter, new Ordering<>(OrderDirection.DESCENDING, GameOrderCriteria.AVERAGE_RATING));
+        return gameDao.findAll(page, filter, new Ordering<>(OrderDirection.DESCENDING, GameOrderCriteria.AVERAGE_RATING), userId);
     }
 
     @Transactional(readOnly = true)

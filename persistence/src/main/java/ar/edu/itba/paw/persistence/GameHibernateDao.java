@@ -60,7 +60,17 @@ public class GameHibernateDao implements GameDao, PaginationDao<GameFilter> {
     }
 
     @Override
-    public Paginated<Game> findAll(Page page, GameFilter filter, Ordering<GameOrderCriteria> ordering) {
+    public Optional<Game> getById(long id, Long currentUserId) {
+        final Game game = em.find(Game.class, id);
+        if(game == null) return Optional.empty();
+        if(currentUserId != null){
+            game.setFavorite(game.getFavoriteUsers().stream().anyMatch(u -> u.getId().equals(currentUserId)));
+        }
+        return Optional.of(game);
+    }
+
+    @Override
+    public Paginated<Game> findAll(Page page, GameFilter filter, Ordering<GameOrderCriteria> ordering, Long currentUserId) {
         int totalPages = getPageCount(filter, page.getPageSize());
         if (page.getPageNumber() > totalPages || page.getPageNumber() <= 0) {
             return new Paginated<>(page.getPageNumber(), page.getPageSize(), totalPages, new ArrayList<>());
@@ -83,7 +93,15 @@ public class GameHibernateDao implements GameDao, PaginationDao<GameFilter> {
 
         final TypedQuery<Game> query = em.createQuery("from Game WHERE id IN :ids " + DaoUtils.toOrderString(ordering, true), Game.class);
         query.setParameter("ids", idlist);
-        return new Paginated<>(page.getPageNumber(), page.getPageSize(), totalPages, query.getResultList());
+        final List<Game> games = query.getResultList();
+        if(currentUserId != null){
+            final TypedQuery<Long> favoriteQuery = em.createQuery("select g.id from Game g join g.favoriteUsers u where u.id = :userId", Long.class);
+            favoriteQuery.setParameter("userId", currentUserId);
+            Set<Long> favoriteIds = new HashSet<>(favoriteQuery.getResultList());
+            games.forEach(g -> g.setFavorite(favoriteIds.contains(g.getId())));
+        }
+
+        return new Paginated<>(page.getPageNumber(), page.getPageSize(), totalPages, games);
     }
 
     @Override

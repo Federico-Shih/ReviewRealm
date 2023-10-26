@@ -74,7 +74,7 @@ public class GameDaoImplTest {
         createGameNoGenres = GameTestModels.getCreateGameNoGenres();
         testGameWithReview = GameTestModels.getSubnautica();
         testGameSuggestedTrue = GameTestModels.getSubnautica();
-        withFavoriteGamesUser = UserTestModels.getUser5();
+        withFavoriteGamesUser = UserTestModels.getUser5(); // SuperA,SuperB,Subnautica
         withNoReviewsCandidatesUser = UserTestModels.getUser4();
         withReviewsCandidatesUser = UserTestModels.getUser2();
     }
@@ -132,6 +132,22 @@ public class GameDaoImplTest {
 
         //Assert
         Assert.assertFalse(game.isPresent());
+    }
+    @Rollback
+    @Test
+    public void testFindWithFavoriteGame(){
+        Optional<Game> game = gameDao.getById(GameTestModels.getSuperGameA().getId(),withFavoriteGamesUser.getId());
+
+        Assert.assertTrue(game.isPresent());
+        Assert.assertTrue(game.get().isFavorite());
+    }
+    @Rollback
+    @Test
+    public void testFindWithNoFavoriteGame(){
+        Optional<Game> game = gameDao.getById(GameTestModels.getSuperGameA().getId(),withNoReviewsCandidatesUser.getId());
+
+        Assert.assertTrue(game.isPresent());
+        Assert.assertFalse(game.get().isFavorite());
     }
 
     @Rollback
@@ -225,11 +241,11 @@ public class GameDaoImplTest {
     @Test
     public void testGetFavoriteGamesFromUser() {
         GameFilter filter = new GameFilterBuilder().withFavoriteGamesOf(withFavoriteGamesUser.getId()).build();
-        List<Game> games = gameDao.findAll(Page.with(1,10), filter, new Ordering<>(OrderDirection.DESCENDING, GameOrderCriteria.AVERAGE_RATING)).getList();
+        List<Game> games = gameDao.findAll(Page.with(1,10), filter, new Ordering<>(OrderDirection.DESCENDING, GameOrderCriteria.AVERAGE_RATING),null).getList();
 
-        Assert.assertEquals(3, games.size());
+        Assert.assertEquals(2, games.size());
 
-        List<Game> expectedFavorites = Arrays.asList(GameTestModels.getSuperGameB(), GameTestModels.getSubnautica(), GameTestModels.getSuperGameA());
+        List<Game> expectedFavorites = Arrays.asList(GameTestModels.getSuperGameB(), GameTestModels.getSuperGameA());
         Assert.assertArrayEquals(expectedFavorites.toArray(), games.toArray());
     }
 
@@ -269,10 +285,10 @@ public class GameDaoImplTest {
     public void testFindAllNoFiltersAverageRatingOrdering() {
         GameFilterBuilder filterBuilder = new GameFilterBuilder();
         Ordering<GameOrderCriteria> ordering = new Ordering<>(OrderDirection.DESCENDING, GameOrderCriteria.AVERAGE_RATING);
-        List<Game> games = gameDao.findAll(Page.with(1, 10), filterBuilder.build(), ordering).getList();
+        List<Game> games = gameDao.findAll(Page.with(1, 10), filterBuilder.build(), ordering,null).getList();
 
-        Assert.assertEquals(4, games.size());
-        List<Game> expectedGames = Arrays.asList(GameTestModels.getSuperGameB(), GameTestModels.getSubnautica(), GameTestModels.getSubnautica2(), GameTestModels.getSuperGameA());
+        Assert.assertEquals(3, games.size());
+        List<Game> expectedGames = Arrays.asList(GameTestModels.getSuperGameB(), GameTestModels.getSubnautica2(), GameTestModels.getSuperGameA());
         Assert.assertArrayEquals(expectedGames.toArray(), games.toArray());
     }
 
@@ -280,7 +296,7 @@ public class GameDaoImplTest {
     @Test
     public void testFindAllGenreFilters() {
         GameFilterBuilder filterBuilder = new GameFilterBuilder().withGameGenres(Arrays.asList(Genre.ACTION.getId(), Genre.ADVENTURE.getId()));
-        List<Game> games = gameDao.findAll(Page.with(1, 10), filterBuilder.build(), new Ordering<>(OrderDirection.DESCENDING, GameOrderCriteria.AVERAGE_RATING)).getList();
+        List<Game> games = gameDao.findAll(Page.with(1, 10), filterBuilder.build(), new Ordering<>(OrderDirection.DESCENDING, GameOrderCriteria.AVERAGE_RATING),null).getList();
 
         Assert.assertEquals(2, games.size());
         List<Game> expectedGames = Arrays.asList(GameTestModels.getSuperGameB(), GameTestModels.getSuperGameA());
@@ -291,9 +307,36 @@ public class GameDaoImplTest {
     @Test
     public void testFindAllGenreFiltersEmpty() {
         GameFilterBuilder filterBuilder = new GameFilterBuilder().withGameGenres(Collections.singletonList(Genre.MMO.getId()));
-        List<Game> games = gameDao.findAll(Page.with(1, 10), filterBuilder.build(), new Ordering<>(OrderDirection.DESCENDING, GameOrderCriteria.AVERAGE_RATING)).getList();
+        List<Game> games = gameDao.findAll(Page.with(1, 10), filterBuilder.build(), new Ordering<>(OrderDirection.DESCENDING, GameOrderCriteria.AVERAGE_RATING),null).getList();
 
         Assert.assertTrue(games.isEmpty());
+    }
+    @Rollback
+    @Test
+    public void testFindGamesWithFavoriteGames(){
+        GameFilterBuilder filterBuilder = new GameFilterBuilder().withGameGenres(Collections.singletonList(Genre.ADVENTURE.getId()));
+        List<Game> games = gameDao.findAll(Page.with(1, 10), filterBuilder.build(), new Ordering<>(OrderDirection.DESCENDING, GameOrderCriteria.AVERAGE_RATING),withFavoriteGamesUser.getId()).getList();
+
+        Assert.assertFalse(games.isEmpty());
+        Assert.assertEquals(2,games.size());
+        Assert.assertTrue(games.stream().allMatch(Game::isFavorite));
+
+    }
+    @Rollback
+    @Test
+    public void testFindGamesNoFavorites(){
+        GameFilterBuilder filterBuilder = new GameFilterBuilder().withGameGenres(Collections.singletonList(Genre.ADVENTURE.getId()));
+        List<Game> games = gameDao.findAll(Page.with(1, 10), filterBuilder.build(), new Ordering<>(OrderDirection.DESCENDING, GameOrderCriteria.AVERAGE_RATING),null).getList();
+
+        Assert.assertFalse(games.isEmpty());
+        Assert.assertEquals(2,games.size());
+        Assert.assertFalse(games.stream().anyMatch(Game::isFavorite));
+
+        games = gameDao.findAll(Page.with(1, 10), filterBuilder.build(), new Ordering<>(OrderDirection.DESCENDING, GameOrderCriteria.AVERAGE_RATING),withNoReviewsCandidatesUser.getId()).getList();
+
+        Assert.assertFalse(games.isEmpty());
+        Assert.assertFalse(games.stream().anyMatch(Game::isFavorite));
+
     }
 
     @Rollback
@@ -302,10 +345,10 @@ public class GameDaoImplTest {
         GameFilterBuilder filterBuilder = new GameFilterBuilder().withGameContent(SEARCH_VALUE);
         List<Game> games = gameDao.findAll(Page.with(1, 10),
                 filterBuilder.build(),
-                new Ordering<>(OrderDirection.DESCENDING, GameOrderCriteria.NAME)).getList();
+                new Ordering<>(OrderDirection.DESCENDING, GameOrderCriteria.NAME),null).getList();
 
-        Assert.assertEquals(3, games.size());
-        List<Game> expectedGames = Arrays.asList(GameTestModels.getSuperGameB(), GameTestModels.getSubnautica2(), GameTestModels.getSubnautica());
+        Assert.assertEquals(2, games.size());
+        List<Game> expectedGames = Arrays.asList(GameTestModels.getSuperGameB(), GameTestModels.getSubnautica2());
         Assert.assertArrayEquals(expectedGames.toArray(), games.toArray());
     }
 
@@ -313,7 +356,7 @@ public class GameDaoImplTest {
     @Test
     public void testFindAllSearchEmpty() {
         GameFilterBuilder filterBuilder = new GameFilterBuilder().withGameContent(NOSEARCH);
-        List<Game> games = gameDao.findAll(Page.with(1, 10), filterBuilder.build(), new Ordering<>(OrderDirection.DESCENDING, GameOrderCriteria.AVERAGE_RATING)).getList();
+        List<Game> games = gameDao.findAll(Page.with(1, 10), filterBuilder.build(), new Ordering<>(OrderDirection.DESCENDING, GameOrderCriteria.AVERAGE_RATING),null).getList();
 
         Assert.assertTrue(games.isEmpty());
     }
@@ -322,24 +365,24 @@ public class GameDaoImplTest {
     @Test
     public void testFindAllDeveloper() {
         GameFilterBuilder filterBuilder = new GameFilterBuilder().withDeveloper(testGame.getDeveloper());
-        List<Game> games = gameDao.findAll(Page.with(1, 10), filterBuilder.build(), new Ordering<>(OrderDirection.DESCENDING, GameOrderCriteria.AVERAGE_RATING)).getList();
+        List<Game> games = gameDao.findAll(Page.with(1, 10), filterBuilder.build(), new Ordering<>(OrderDirection.DESCENDING, GameOrderCriteria.AVERAGE_RATING),null).getList();
 
-        Assert.assertEquals(4, games.size());
+        Assert.assertEquals(3, games.size()); // No incluye suggested
     }
 
     @Test
     public void testFindAllPublishers() {
         GameFilterBuilder filterBuilder = new GameFilterBuilder().withPublisher(testGame.getPublisher());
-        List<Game> games = gameDao.findAll(Page.with(1, 10), filterBuilder.build(), new Ordering<>(OrderDirection.DESCENDING, GameOrderCriteria.AVERAGE_RATING)).getList();
+        List<Game> games = gameDao.findAll(Page.with(1, 10), filterBuilder.build(), new Ordering<>(OrderDirection.DESCENDING, GameOrderCriteria.AVERAGE_RATING),null).getList();
 
-        Assert.assertEquals(4, games.size());
+        Assert.assertEquals(3, games.size());// No incluye suggested
     }
 
     @Rollback
     @Test
     public void testFindAllRatingRange() {
         GameFilterBuilder filterBuilder = new GameFilterBuilder().withRatingRange(8.0f, 10.0f, false);
-        List<Game> games = gameDao.findAll(Page.with(1, 10), filterBuilder.build(), new Ordering<>(OrderDirection.DESCENDING, GameOrderCriteria.AVERAGE_RATING)).getList();
+        List<Game> games = gameDao.findAll(Page.with(1, 10), filterBuilder.build(), new Ordering<>(OrderDirection.DESCENDING, GameOrderCriteria.AVERAGE_RATING),null).getList();
 
         Assert.assertEquals(1, games.size());
         List<Game> expectedGames = Collections.singletonList(GameTestModels.getSuperGameB());
@@ -350,7 +393,7 @@ public class GameDaoImplTest {
     @Test
     public void testFindAllRatingRangeEmpty() {
         GameFilterBuilder filterBuilder = new GameFilterBuilder().withRatingRange(9.5f, 9.9f, false);
-        List<Game> games = gameDao.findAll(Page.with(1, 10), filterBuilder.build(), new Ordering<>(OrderDirection.DESCENDING, GameOrderCriteria.AVERAGE_RATING)).getList();
+        List<Game> games = gameDao.findAll(Page.with(1, 10), filterBuilder.build(), new Ordering<>(OrderDirection.DESCENDING, GameOrderCriteria.AVERAGE_RATING),null).getList();
 
         Assert.assertTrue(games.isEmpty());
     }
@@ -363,7 +406,7 @@ public class GameDaoImplTest {
         GameFilter filter = new GameFilterBuilder().withGameGenres(genres).withGamesToExclude(new ArrayList<>()).build();
         Ordering<GameOrderCriteria> ordering = new Ordering<>(OrderDirection.DESCENDING, GameOrderCriteria.AVERAGE_RATING);
 
-        List<Game> games = gameDao.findAll(Page.with(1,10),filter, ordering).getList();
+        List<Game> games = gameDao.findAll(Page.with(1,10),filter, ordering,null).getList();
 
         Assert.assertEquals(1, games.size());
         Game[] expectedGames = {GameTestModels.getSuperGameB()};
@@ -378,7 +421,7 @@ public class GameDaoImplTest {
         GameFilter filter = new GameFilterBuilder().withGameGenres(genres).withGamesToExclude(gamesToExclude).build();
         Ordering<GameOrderCriteria> ordering = new Ordering<>(OrderDirection.DESCENDING, GameOrderCriteria.AVERAGE_RATING);
 
-        List<Game> games = gameDao.findAll(Page.with(1,10),filter, ordering).getList();
+        List<Game> games = gameDao.findAll(Page.with(1,10),filter, ordering,null).getList();
 
         Assert.assertEquals(1,games.size());
         List<Game> expectedGames = Collections.singletonList(GameTestModels.getSuperGameA());

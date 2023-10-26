@@ -22,7 +22,9 @@ public interface GameDao {
 
     Optional<Game> getById(long id);
 
-    Paginated<Game> findAll(Page page, GameFilter filter, Ordering<GameOrderCriteria> ordering);
+    Optional<Game> getById(long id, Long currentUserId);
+
+    Paginated<Game> findAll(Page page, GameFilter filter, Ordering<GameOrderCriteria> ordering, Long currentUserId);
 
     List<Genre> getGenresByGame(long id);
 

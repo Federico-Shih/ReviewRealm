@@ -24,7 +24,7 @@ public interface GameService {
 
     Paginated<Game> searchGamesNotReviewedByUser(Page page, String search, Ordering<GameOrderCriteria> ordering, long userId);
 
-    GameReviewData getGameReviewDataByGameId(long id,Long userId);
+    GameReviewData getGameReviewDataByGameId(long id);
 
     Game addNewReviewToGame(long gameId, int rating);
 

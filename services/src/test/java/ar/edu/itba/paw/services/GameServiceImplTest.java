@@ -1,14 +1,17 @@
 package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.dtos.Page;
+import ar.edu.itba.paw.dtos.filtering.GameFilter;
 import ar.edu.itba.paw.dtos.filtering.GameFilterBuilder;
+import ar.edu.itba.paw.dtos.ordering.GameOrderCriteria;
+import ar.edu.itba.paw.dtos.ordering.OrderDirection;
+import ar.edu.itba.paw.dtos.ordering.Ordering;
 import ar.edu.itba.paw.dtos.saving.SubmitGameDTO;
 import ar.edu.itba.paw.enums.Difficulty;
 import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.enums.Platform;
 import ar.edu.itba.paw.enums.RoleType;
-import ar.edu.itba.paw.exceptions.GameNotFoundException;
-import ar.edu.itba.paw.exceptions.UserNotFoundException;
+import ar.edu.itba.paw.exceptions.*;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.persistenceinterfaces.GameDao;
 import ar.edu.itba.paw.servicesinterfaces.*;
@@ -21,8 +24,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import java.util.*;
 
-import static ar.edu.itba.paw.services.utils.GameTestModels.getSuperGameA;
-import static ar.edu.itba.paw.services.utils.GameTestModels.getSuperGameB;
+import static ar.edu.itba.paw.services.utils.GameTestModels.*;
 import static ar.edu.itba.paw.services.utils.ReviewTestModels.*;
 import static ar.edu.itba.paw.services.utils.UserTestModels.getUser1;
 import static org.mockito.ArgumentMatchers.*;
@@ -58,7 +60,7 @@ public class GameServiceImplTest {
 
     @Test
     public void testGetGameById() {
-        Mockito.when(gameDao.getById(getSuperGameA().getId()))
+        Mockito.when(gameDao.getById(getSuperGameA().getId(),null))
                 .thenReturn(Optional.of(getSuperGameA()));
 
         Optional<Game> opt = gs.getGameById(getSuperGameA().getId(),null);
@@ -68,7 +70,6 @@ public class GameServiceImplTest {
         Assert.assertEquals(getSuperGameA().getId(), id);
         Assert.assertEquals(getSuperGameA().getName(), opt.get().getName());
     }
-
     @Test
     public void testCantFindGameById() {
         Mockito.when(gameDao.getById(getSuperGameA().getId()))
@@ -84,7 +85,7 @@ public class GameServiceImplTest {
         Mockito.when(gameDao.getById(anyLong())).thenReturn(Optional.of(getSuperGameA()));
         Mockito.when(reviewService.getAllReviewsFromGame(getSuperGameA().getId(),null)).thenReturn(Arrays.asList(getReview1(),getReview2(),getReview3()));
 
-        GameReviewData data = gs.getGameReviewDataByGameId(getSuperGameA().getId(),null);
+        GameReviewData data = gs.getGameReviewDataByGameId(getSuperGameA().getId());
 
         Assert.assertEquals(Difficulty.EASY, data.getAverageDifficulty());
         Assert.assertEquals(Platform.PS, data.getAveragePlatform());
@@ -100,7 +101,7 @@ public class GameServiceImplTest {
         Mockito.when(gameDao.getById(anyLong())).thenReturn(Optional.of(getSuperGameA()));
         Mockito.when(reviewService.getAllReviewsFromGame(getSuperGameA().getId(),null)).thenReturn(new ArrayList<>());
 
-        GameReviewData data = gs.getGameReviewDataByGameId(getSuperGameA().getId(),null);
+        GameReviewData data = gs.getGameReviewDataByGameId(getSuperGameA().getId());
 
         Assert.assertNull(data.getAverageDifficulty());
         Assert.assertNull(data.getAveragePlatform());
@@ -113,7 +114,7 @@ public class GameServiceImplTest {
     public void testGameReviewDataByGameIdNoGame(){
         Mockito.when(gameDao.getById(anyLong())).thenReturn(Optional.empty());
 
-        GameReviewData data = gs.getGameReviewDataByGameId(getSuperGameA().getId(),null);
+        GameReviewData data = gs.getGameReviewDataByGameId(getSuperGameA().getId());
     }
 
     @Test(expected = GameNotFoundException.class)
@@ -141,7 +142,7 @@ public class GameServiceImplTest {
         Mockito.when(filterBuilder.withGameGenres(any())).thenReturn(filterBuilder);
         Mockito.when(filterBuilder.withGamesToExclude(any())).thenReturn(filterBuilder);
         Mockito.when(filterBuilder.build()).thenReturn(new GameFilterBuilder().build());
-        Mockito.when(gameDao.findAll(any(), any(),any())).thenReturn(new Paginated<>(1,10,1,Arrays.asList(getSuperGameB())));
+        Mockito.when(gameDao.findAll(any(), any(),any(),any())).thenReturn(new Paginated<>(1,10,1,Arrays.asList(getSuperGameB())));
 
         List<Game> games = gs.getRecommendationsOfGamesForUser(Page.with(1,10),getUser1().getId()).getList();
 
@@ -153,6 +154,43 @@ public class GameServiceImplTest {
     public void testGetRecommendationsOfGamesForUserError() {
         Mockito.when(userService.getUserById(anyLong())).thenReturn(Optional.empty());
         gs.getRecommendationsOfGamesForUser(Page.with(1,10),getUser1().getId());
+    }
+
+    @Test(expected = ExclusiveFilterException.class)
+    public void testExclusiveFavoriteFilter(){
+        GameFilter filter = new GameFilterBuilder().withFavoriteGamesOf(getUser1().getId()).withRecommendedFor(getUser1().getId()).build();
+
+        gs.searchGames(Page.with(1,10),filter,
+                new Ordering<>(OrderDirection.DESCENDING, GameOrderCriteria.AVERAGE_RATING),null);
+    }
+    @Test(expected = ExclusiveFilterException.class)
+    public void testExclusiveRecommendedFilter(){
+        GameFilter filter = new GameFilterBuilder().withRecommendedFor(getUser1().getId()).withFavoriteGamesOf(getUser1().getId()).build();
+
+        gs.searchGames(Page.with(1,10),filter,
+                new Ordering<>(OrderDirection.DESCENDING, GameOrderCriteria.AVERAGE_RATING),null);
+    }
+    @Test(expected = AuthenticationNeededException.class)
+    public void testSuggestedWithoutLogin(){
+        GameFilter filter = new GameFilterBuilder().withSuggestion(true).build();
+
+        gs.searchGames(Page.with(1,10),filter,
+                new Ordering<>(OrderDirection.DESCENDING, GameOrderCriteria.AVERAGE_RATING),null);
+    }
+    @Test(expected = UserNotFoundException.class)
+    public void testSuggestedWithUnknownUserId(){
+        GameFilter filter = new GameFilterBuilder().withSuggestion(true).build();
+        Mockito.when(userService.getUserById(anyLong())).thenReturn(Optional.empty());
+        gs.searchGames(Page.with(1,10),filter,
+                new Ordering<>(OrderDirection.DESCENDING, GameOrderCriteria.AVERAGE_RATING),-1L);
+    }
+    @Test(expected = UserNotAModeratorException.class)
+    public void testSuggestedWithNonModerator(){
+        GameFilter filter = new GameFilterBuilder().withSuggestion(true).build();
+        Mockito.when(userService.getUserById(anyLong())).thenReturn(Optional.of(user));
+        Mockito.when(user.getRoles()).thenReturn(new HashSet<>(Collections.singleton(RoleType.USER)));;
+        gs.searchGames(Page.with(1,10),filter,
+                new Ordering<>(OrderDirection.DESCENDING, GameOrderCriteria.AVERAGE_RATING),getUser1().getId());
     }
 
     @Test

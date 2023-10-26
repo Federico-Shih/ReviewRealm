@@ -115,20 +115,24 @@ public class GameServiceImpl implements GameService {
     @Transactional(readOnly = true)
     @Override
     public Optional<Game> getGameById(long id,Long userId) {
-        Optional<Game> game =  gameDao.getById(id);
+        Optional<Game> game =  gameDao.getById(id,userId);
         if(!game.isPresent()){
             return game;
         }
         if(game.get().getSuggestion()){
+            //Todo: revisar la logica de devolver empty o tirar excepcion
             if(userId == null){
-                throw new AuthenticationNeededException();
+//                throw new AuthenticationNeededException();
+                return Optional.empty();
             }
             Optional<User> user = userService.getUserById(userId);
             if(!user.isPresent()){
-                throw new UserNotFoundException();
+//                throw new UserNotFoundException();
+                return Optional.empty();
             }
             if(!user.get().getRoles().contains(RoleType.MODERATOR)){
-                throw new UserNotAModeratorException();
+//                throw new UserNotAModeratorException();
+                return Optional.empty();
             }
         }
         return game;
@@ -162,7 +166,7 @@ public class GameServiceImpl implements GameService {
             }
             throw new ExclusiveFilterException("error.game.filter.recommended");
         }
-        return gameDao.findAll(page, searchFilter, ordering);
+        return gameDao.findAll(page, searchFilter, ordering,userId);
     }
 
     @Transactional(readOnly = true)
@@ -170,14 +174,14 @@ public class GameServiceImpl implements GameService {
     public Paginated<Game> searchGamesNotReviewedByUser(Page page, String search, Ordering<GameOrderCriteria> ordering, long userId) {
         List<Long> gamesReviewed = getGamesReviewedByUser(userId).stream().map(Game::getId).collect(Collectors.toList());
         GameFilter gameFilter = new GameFilterBuilder().withGameContent(search).withGamesToExclude(gamesReviewed).build();
-        return gameDao.findAll(page, gameFilter, ordering);
+        return gameDao.findAll(page, gameFilter, ordering,userId);
     }
 
 
     @Transactional(readOnly = true)
     @Override
-    public GameReviewData getGameReviewDataByGameId(long id,Long idUser) {
-        if(!getGameById(id,idUser).isPresent())
+    public GameReviewData getGameReviewDataByGameId(long id) {
+        if(!gameDao.getById(id).isPresent())
             throw new GameNotFoundException();
         List<Review> reviews = reviewService.getAllReviewsFromGame(id,null);
         if(!reviews.isEmpty()) {
@@ -236,7 +240,7 @@ public class GameServiceImpl implements GameService {
         List<Long> idsToExclude = userReviewedGames.stream().map(Game::getId).collect(Collectors.toList());
         GameFilter filter = new GameFilterBuilder().withGameGenres(preferencesIds).withSuggestion(false).withGamesToExclude(idsToExclude).build();
         Ordering<GameOrderCriteria> ordering = new Ordering<>(OrderDirection.DESCENDING, GameOrderCriteria.AVERAGE_RATING);
-        return gameDao.findAll(page,filter,ordering);
+        return gameDao.findAll(page,filter,ordering,userId);
     }
 
     @Transactional(readOnly = true)

@@ -72,6 +72,9 @@ public class Game implements Cloneable {
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "favoriteGames",targetEntity = User.class)
     private Set<User> favoriteUsers;
 
+    @Transient
+    private boolean isFavorite = false;
+
     @Formula(value = "case when reviewCount = 0 then 0 else ratingSum/reviewCount end")
     private Double averageRating;
 
@@ -282,5 +285,13 @@ public class Game implements Cloneable {
 
     public Set<User> getFavoriteUsers() {
         return favoriteUsers;
+    }
+
+    public boolean isFavorite() {
+        return isFavorite;
+    }
+
+    public void setFavorite(boolean favorite) {
+        isFavorite = favorite;
     }
 }

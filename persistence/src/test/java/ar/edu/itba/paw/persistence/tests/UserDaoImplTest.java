@@ -266,7 +266,7 @@ public class UserDaoImplTest {
 
         Object[] params = {UserTestModels.getUser5().getId()};
         List<Long> gameIds = jdbcTemplate.queryForList("Select gameid from favoritegames where userid = ?", params, Long.class);
-        Assert.assertEquals(2, gameIds.size());
+        Assert.assertEquals(1, gameIds.size());
     }
 
     @Rollback
