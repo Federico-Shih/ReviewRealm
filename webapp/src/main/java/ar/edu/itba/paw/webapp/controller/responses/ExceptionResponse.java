@@ -3,7 +3,6 @@ package ar.edu.itba.paw.webapp.controller.responses;
 public class ExceptionResponse {
     private final String message;
 
-
     public ExceptionResponse(String message) {
         this.message = message;
     }
