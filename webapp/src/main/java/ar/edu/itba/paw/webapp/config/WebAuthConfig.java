@@ -109,8 +109,11 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                 .and().authorizeRequests()
                 .accessDecisionManager(accessDecisionManager())
                 .antMatchers(HttpMethod.PATCH, "/api/users/{id:\\d+}").authenticated()
-                .antMatchers(HttpMethod.POST, "/api/reports", "/api/games").authenticated()
+                .antMatchers(HttpMethod.POST, "/api/reports", "/api/games","/api/reviews").authenticated()
                 .antMatchers("/api/reports/**").hasRole(RoleType.MODERATOR.getRole())
+                .antMatchers(HttpMethod.PATCH, "/api/games/{id:\\d+}").hasRole(RoleType.MODERATOR.getRole())
+                .antMatchers(HttpMethod.DELETE, "/api/games/{id:\\d+}").hasRole(RoleType.MODERATOR.getRole())
+                .antMatchers(HttpMethod.PUT, "/api/games/{id:\\d+}").hasRole(RoleType.MODERATOR.getRole())
 // todo: agregar rutas a medida que se van haciendo las APIs
                 //.antMatchers("/admin/**").hasRole("ADMIN")  lo que requiera un rol especial
                 //.antMatchers("/review/edit/").access("@AccessHelper.canEdit") cuando se requiera un acceso especial segun el usuario (Spring Expression Language)

@@ -88,4 +88,8 @@ public class GameSearchQuery extends PaginatedQuery{
                 .withRecommendedFor(recommendedFor)
                 .build();
     }
+
+    public Boolean getSuggested() {
+        return suggested;
+    }
 }

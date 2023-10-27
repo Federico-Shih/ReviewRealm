@@ -47,4 +47,10 @@ public class AccessControl {
             return false;
         return Objects.equals(activeUser.getId(), id);
     }
+    public boolean checkSuggestedFilterIsModerator(boolean isSuggested){
+        User activeUser = AuthenticationHelper.getLoggedUser(userService);
+        if(activeUser == null || !activeUser.isModerator())
+            return !isSuggested;
+        return true;
+    }
 }

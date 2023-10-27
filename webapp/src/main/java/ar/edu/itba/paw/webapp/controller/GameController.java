@@ -20,6 +20,7 @@ import ar.edu.itba.paw.webapp.exceptions.CustomRuntimeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 
 import javax.validation.Valid;
@@ -63,7 +64,6 @@ public class GameController extends UriInfoController {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{id:\\d+}")
     public Response getById(@PathParam("id") final long gameId) {
-        //TODO: Limitar el acceso a los juegos que no estan aceptados
         User loggedUser = AuthenticationHelper.getLoggedUser(us);
         Optional<Game> game = gs.getGameById(gameId,loggedUser != null ? loggedUser.getId() : null);
         if (game.isPresent()) {
@@ -77,6 +77,7 @@ public class GameController extends UriInfoController {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
+    @PreAuthorize("@accessControl.checkSuggestedFilterIsModerator(#gameSearchQuery.getSuggested())")
     public Response getGames(@Valid @BeanParam GameSearchQuery gameSearchQuery){
         User loggedUser = AuthenticationHelper.getLoggedUser(us);
         Paginated<Game> games = gs.searchGames(gameSearchQuery.getPage(), gameSearchQuery.getFilter(),gameSearchQuery.getOrdering(),(loggedUser != null ? loggedUser.getId() : null));
@@ -109,7 +110,6 @@ public class GameController extends UriInfoController {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{id:\\d+}")
     public Response putGame(@Valid @BeanParam SubmitGameForm submitGameForm, @Valid @ExistentGameId @PathParam("id") final long id) throws IOException {
-        //TODO:Auth sobre quien puede editar
         Game game = gs.editGame(submitGameForm.toSubmitDTO(),id);
         User user = AuthenticationHelper.getLoggedUser(us);
 
@@ -135,7 +135,6 @@ public class GameController extends UriInfoController {
     public Response patchGame(@Valid @NotNull(message = "error.body.empty") PatchGameForm patchGameForm,
                               @Valid @ExistentGameId @PathParam("id") final long id) {
         User loggedUser = AuthenticationHelper.getLoggedUser(us);
-        //todo: check auth
         try {
             if(patchGameForm.getAccept()){
                 gs.acceptGame(id, loggedUser.getId());

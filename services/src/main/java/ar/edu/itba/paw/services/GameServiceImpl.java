@@ -142,18 +142,6 @@ public class GameServiceImpl implements GameService {
     @Override
     public Paginated<Game> searchGames(Page page, GameFilter searchFilter, Ordering<GameOrderCriteria> ordering, Long userId)
     {
-        if(searchFilter.getSuggested()){
-            if(userId == null){
-                throw new AuthenticationNeededException();
-            }
-            Optional<User> user = userService.getUserById(userId);
-            if(!user.isPresent()){
-                throw new UserNotFoundException();
-            }
-            if(!user.get().getRoles().contains(RoleType.MODERATOR)){
-                throw new UserNotAModeratorException();
-            }
-        }
         if(searchFilter.getFavoriteGamesOf() != null){
             if(searchFilter.isProperFavoriteOf()){
                 return userService.getFavoriteGamesFromUser(page,searchFilter.getFavoriteGamesOf());
