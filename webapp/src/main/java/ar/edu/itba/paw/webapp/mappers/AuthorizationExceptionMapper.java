@@ -26,6 +26,6 @@ public class AuthorizationExceptionMapper implements ExceptionMapper<ForbiddenEx
     public Response toResponse(ForbiddenException e) {
         System.out.println(e.getMessage());
         LOGGER.error("{}: {}", e.getClass().getName(), e.getMessage());
-        return Response.status(Response.Status.FORBIDDEN).entity(ExceptionResponse.of(messageSource.getMessage("unauthorizedexception", null, LocaleHelper.getLocale()))).build();
+        return Response.status(Response.Status.FORBIDDEN).entity(ExceptionResponse.of(messageSource.getMessage("unauthorized", null, LocaleHelper.getLocale()))).build();
     }
 }

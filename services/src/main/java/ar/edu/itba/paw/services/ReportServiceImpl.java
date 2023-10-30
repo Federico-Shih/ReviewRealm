@@ -44,7 +44,7 @@ public class ReportServiceImpl implements ReportService {
     @Override
     public Report createReport(long reporterId, long reviewToReport, ReportReason reason) {
         if(!userService.getUserById(reporterId).isPresent()){
-            throw new UserNotFoundException("user.notfound");
+            throw new UserNotFoundException();
         }else if(!reviewService.getReviewById(reviewToReport,null).isPresent()){
             throw new ReviewNotFoundException();
         }
@@ -56,7 +56,7 @@ public class ReportServiceImpl implements ReportService {
                         .withResolved(false)
                         .build()
         ).getList().isEmpty())
-            throw new ReportAlreadyExistsException("report.notcreated");
+            throw new ReportAlreadyExistsException();
         Report report = reportDao.create(reporterId, reviewToReport,reason);
         return report;
     }

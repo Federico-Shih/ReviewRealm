@@ -111,10 +111,12 @@ public class SubmitGameForm {
 
     public SubmitGameDTO toSubmitDTO() throws IOException {
             byte[] imageArray = new byte[0];
-            try {
-                imageArray = IOUtils.toByteArray(imageStream);
-            } catch (IOException e) {
-                throw new CustomRuntimeException(Response.Status.INTERNAL_SERVER_ERROR,"image.error");
+            if(imageStream != null){
+                try {
+                    imageArray = IOUtils.toByteArray(imageStream);
+                } catch (IOException e) {
+                    throw new CustomRuntimeException(Response.Status.INTERNAL_SERVER_ERROR,"image.error");
+                }
             }
         return new SubmitGameDTO(name, description, developer, publisher, genres, imageArray, imageDetails.getMediaType().toString(), LocalDate.parse(releaseDate));
     }

@@ -57,7 +57,7 @@ public class GameServiceImpl implements GameService {
 
         User user = userService
                 .getUserById(userId)
-                .orElseThrow(() -> new UserNotFoundException("user.notfound"));
+                .orElseThrow(UserNotFoundException::new);
 
         boolean isModerator = user
                 .getRoles()
@@ -105,7 +105,7 @@ public class GameServiceImpl implements GameService {
                     genreList.add(g.get());
                 }
                 else {
-                    throw new GenreNotFoundException();
+                    throw new GenreNotFoundException(c);
                 }
             }
         }

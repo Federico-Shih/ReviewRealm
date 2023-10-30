@@ -102,14 +102,10 @@ public class ReportController extends UriInfoController {
     public Response acceptRejectReport(@PathParam("id") final long id, @Valid AcceptRejectReportForm reportForm) {
         long userId = AuthenticationHelper.getLoggedUser(userService).getId();
         Report report;
-        try {
-            if (reportForm.getState().equals("accepted")) {
-                report = reportService.resolveReport(id, userId);
-            } else {
-                report = reportService.rejectReport(id, userId);
-            }
-        } catch (ReportAlreadyResolvedException e) {
-            throw new CustomRuntimeException(Response.Status.BAD_REQUEST, "report.already.resolved");
+        if (reportForm.getState().equals("accepted")) {
+            report = reportService.resolveReport(id, userId);
+        } else {
+            report = reportService.rejectReport(id, userId);
         }
         return Response.ok(ReportResponse.fromEntity(uriInfo, report)).build();
     }

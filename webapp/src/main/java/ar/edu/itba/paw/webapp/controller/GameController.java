@@ -81,7 +81,6 @@ public class GameController extends UriInfoController {
     public Response getGames(@Valid @BeanParam GameSearchQuery gameSearchQuery){
         User loggedUser = AuthenticationHelper.getLoggedUser(us);
         Paginated<Game> games = gs.searchGames(gameSearchQuery.getPage(), gameSearchQuery.getFilter(),gameSearchQuery.getOrdering(),(loggedUser != null ? loggedUser.getId() : null));
-        //Todo: las excepciones tener que mapearlas
         if(games.getTotalPages() == 0 || games.getList().isEmpty()){
             return Response.noContent().build();
         }
@@ -97,7 +96,6 @@ public class GameController extends UriInfoController {
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
     public Response postGame(@Valid @BeanParam SubmitGameForm submitGameForm) throws IOException {
-        //TODO:Que onda con las excepciones
         User loggedUser = AuthenticationHelper.getLoggedUser(us);
         Game game = gs.createGame(submitGameForm.toSubmitDTO(),loggedUser.getId());
 
@@ -135,14 +133,10 @@ public class GameController extends UriInfoController {
     public Response patchGame(@Valid @NotNull(message = "error.body.empty") PatchGameForm patchGameForm,
                               @Valid @ExistentGameId @PathParam("id") final long id) {
         User loggedUser = AuthenticationHelper.getLoggedUser(us);
-        try {
-            if(patchGameForm.getAccept()){
-                gs.acceptGame(id, loggedUser.getId());
-            }else{
-                gs.rejectGame(id,loggedUser.getId());
-            }
-        }catch (GameSuggestionAlreadyHandled e){
-            throw new CustomRuntimeException(Response.Status.BAD_REQUEST, "error.game.suggestion.already.handled");
+        if(patchGameForm.getAccept()){
+            gs.acceptGame(id, loggedUser.getId());
+        }else{
+            gs.rejectGame(id,loggedUser.getId());
         }
         return Response.noContent().build();
     }

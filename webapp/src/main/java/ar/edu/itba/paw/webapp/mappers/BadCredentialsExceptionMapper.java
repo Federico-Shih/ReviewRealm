@@ -26,6 +26,6 @@ public class BadCredentialsExceptionMapper implements ExceptionMapper<BadCredent
     public Response toResponse(BadCredentialsException e) {
         System.out.println(e.getMessage());
         LOGGER.error("{}: {}", e.getClass().getName(), e.getMessage());
-        return Response.status(Response.Status.UNAUTHORIZED).entity(ExceptionResponse.of(messageSource.getMessage("authenticationexception", null, LocaleHelper.getLocale()))).build();
+        return Response.status(Response.Status.UNAUTHORIZED).entity(ExceptionResponse.of(messageSource.getMessage("unauthorized", null, LocaleHelper.getLocale()))).build();
     }
 }
