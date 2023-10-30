@@ -56,5 +56,7 @@ public interface ReviewService {
 
     ReviewFeedback updateOrCreateReviewFeedback(long reviewId, long userId, FeedbackType feedback);
 
+    boolean deleteReviewFeedback(long reviewId, long userId);
+
     Optional<Review> getReviewOfUserForGame(long userId, long gameId);
 }

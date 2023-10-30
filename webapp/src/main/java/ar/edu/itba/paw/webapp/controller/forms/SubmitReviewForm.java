@@ -22,6 +22,8 @@ public class SubmitReviewForm {
                 '}';
     }
 
+    private long gameId;
+
     @Size(min=8, max=100)
     private String reviewTitle;
 
@@ -84,6 +86,14 @@ public class SubmitReviewForm {
 
     public void setReviewContent(String reviewContent) {
         this.reviewContent = reviewContent;
+    }
+
+    public long getGameId() {
+        return gameId;
+    }
+
+    public void setGameId(long authorId) {
+        this.gameId = authorId;
     }
 
     public Integer getReviewRating() {

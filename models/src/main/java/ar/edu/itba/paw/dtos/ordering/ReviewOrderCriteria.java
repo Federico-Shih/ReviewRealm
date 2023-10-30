@@ -41,6 +41,15 @@ public enum ReviewOrderCriteria implements OrderCriteria {
         return null;
     }
 
+    public static ReviewOrderCriteria fromString(String string) {
+        for (ReviewOrderCriteria orderCriteria : values()) {
+            if (orderCriteria.name().equals(string.toUpperCase())){
+                return orderCriteria;
+            }
+        }
+        return null;
+    }
+
     public String getTableName() {
         return tableName;
     }

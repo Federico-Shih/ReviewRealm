@@ -1,18 +1,54 @@
 package ar.edu.itba.paw.webapp.controller;
 
+import ar.edu.itba.paw.enums.FeedbackType;
+import ar.edu.itba.paw.exceptions.ReviewAlreadyExistsException;
+import ar.edu.itba.paw.models.Paginated;
+import ar.edu.itba.paw.models.Review;
+import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.servicesinterfaces.GameService;
 import ar.edu.itba.paw.servicesinterfaces.ReportService;
 import ar.edu.itba.paw.servicesinterfaces.ReviewService;
 import ar.edu.itba.paw.servicesinterfaces.UserService;
+import ar.edu.itba.paw.webapp.auth.AccessControl;
+import ar.edu.itba.paw.webapp.auth.AuthenticationHelper;
+import ar.edu.itba.paw.webapp.controller.annotations.ExistentReviewId;
+import ar.edu.itba.paw.webapp.controller.annotations.ExistentUserId;
+import ar.edu.itba.paw.webapp.controller.forms.EditReviewForm;
+import ar.edu.itba.paw.webapp.controller.forms.SubmitReviewForm;
+import ar.edu.itba.paw.webapp.controller.helpers.LocaleHelper;
+import ar.edu.itba.paw.webapp.controller.querycontainers.ReviewSearchQuery;
+import ar.edu.itba.paw.webapp.controller.responses.FeedbackResponse;
+import ar.edu.itba.paw.webapp.controller.responses.PaginatedResponse;
+import ar.edu.itba.paw.webapp.controller.responses.ReviewResponse;
+import ar.edu.itba.paw.webapp.controller.responses.UserResponse;
+import ar.edu.itba.paw.webapp.validators.FeedbackTypeBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.ModelAttribute;
 
-@Controller
+import javax.swing.text.html.Option;
+import javax.validation.Valid;
+import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+@Path("reviews")
+@Component
 public class ReviewController{
     private static final Logger LOGGER = LoggerFactory.getLogger(ReviewController.class);
+    @Context
+    private UriInfo uriInfo;
     private final GameService gameService;
+    @Autowired
+    private AccessControl accessControl;
     private final ReviewService reviewService;
     private final UserService userService;
     private final ReportService reportService;
@@ -36,7 +72,119 @@ public class ReviewController{
        DELETE /reviews/{reviewid}
        GET /reviews/{reviewid}
        PATCH /reviews/{reviewid}
+       GET /reviews/{id}/feedback/{userId}
+       POST /reviews/{id}/feedback{?feedbackType}
+       DELETE /reviews/{id}/feedback/{userId}
     */
+
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getReviews(@Valid @BeanParam ReviewSearchQuery reviewSearchQuery) {
+        User user = AuthenticationHelper.getLoggedUser(userService);
+        final Paginated<Review> reviews = reviewService.searchReviews(reviewSearchQuery.getPage(), reviewSearchQuery.getFilter(), reviewSearchQuery.getOrdering(), user!=null? user.getId() : null);
+        if (reviews.getTotalPages() == 0 || reviews.getList().isEmpty()) {
+            return Response.noContent().build();
+        }
+        List<ReviewResponse> reviewResponseList = reviews.getList().stream().map((review) -> ReviewResponse.fromEntity(uriInfo, review)).collect(Collectors.toList());
+        return Response.ok(PaginatedResponse.fromPaginated(uriInfo, reviewResponseList, reviews)).build();
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response createReview(@Valid final SubmitReviewForm form) throws ReviewAlreadyExistsException {
+        User author = AuthenticationHelper.getLoggedUser(userService);
+        Review createdReview = reviewService.createReview(
+                form.getReviewTitle(),
+                form.getReviewContent(),
+                form.getReviewRating(),
+                author.getId(),
+                form.getGameId(),
+                form.getDifficultyEnum(),
+                form.getGameLengthSeconds(),
+                form.getPlatformEnum(),
+                form.getCompleted(),
+                form.getReplayability()
+        );
+        return Response
+                .created(uriInfo.getAbsolutePathBuilder().path("/reviews").path(createdReview.getId().toString()).build())
+                .entity(ReviewResponse.fromEntity(uriInfo, createdReview))
+                .build();
+    }
+
+    @DELETE
+    @Produces({MediaType.APPLICATION_JSON})
+    @Path("{id}")
+    @PreAuthorize("@accessControl.checkReviewAuthorOwnerOrMod(#id)")
+    public Response deleteReview(@Valid @ExistentReviewId @PathParam("id") long id) { // Todo: Hace falta el valid?
+        User loggedUser = AuthenticationHelper.getLoggedUser(userService);
+
+        if (!reviewService.deleteReviewById(id, loggedUser.getId())) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        return Response.ok().build();
+    }
+
+    @GET
+    @Path("{id}")
+    @Produces(value = {MediaType.APPLICATION_JSON})
+    public Response getReviewById(@Valid @ExistentReviewId @PathParam("id") final long id) {
+        Optional<Review> possibleReview = reviewService.getReviewById(id, AuthenticationHelper.getLoggedUser(userService).getId());
+        if (!possibleReview.isPresent())
+            return Response.status(Response.Status.NOT_FOUND).build();
+        return Response.ok(ReviewResponse.fromEntity(uriInfo, possibleReview.get())).build();
+    }
+
+
+
+    @PATCH
+    @Path("{id}")
+    @Consumes(value = {MediaType.APPLICATION_JSON})
+    @PreAuthorize("@accessControl.checkReviewAuthorOwnerOrMod(#id)")
+    public Response patchReview(@Valid @ExistentReviewId @PathParam("id") final long id, @Valid final EditReviewForm form) {
+        reviewService.updateReview(id, form.getReviewTitle(),
+                form.getReviewContent(),
+                form.getReviewRating(),
+                form.getDifficultyEnum(),
+                form.getGameLengthSeconds(),
+                form.getPlatformEnum(),
+                form.getCompleted(),
+                form.getReplayability()
+        );
+        return Response.noContent().build();
+    }
+
+    // Si no existe, devuelve null, no me parece mal
+    @GET
+    @Path("{reviewId}/feedback/{userId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getReviewFeedback(@Valid @ExistentReviewId @PathParam("reviewId") long reviewId, @Valid @ExistentUserId @PathParam("userId") long userId) {
+        Optional<Review> perhapsReview = reviewService.getReviewById(reviewId, userId);
+        return Response.ok(FeedbackResponse.fromEntity(uriInfo, userId, perhapsReview.get().getId(), perhapsReview.get().getFeedback())).build();
+    }
+
+    @POST
+    @Path("{reviewId}/feedback")
+    @Produces(MediaType.APPLICATION_JSON)
+    @PreAuthorize("@accessControl.checkUserIsNotAuthor(#reviewId)")
+    public Response createReviewFeedback(@Valid @ExistentReviewId @PathParam("reviewId") long reviewId, @Valid @BeanParam FeedbackTypeBean feedbackType) {
+        FeedbackType fb = feedbackType.transformToEnum();
+        long userId = AuthenticationHelper.getLoggedUser(userService).getId();
+
+        reviewService.updateOrCreateReviewFeedback(reviewId,userId,fb);
+        return Response
+                .created(uriInfo.getAbsolutePathBuilder().path("reviews").path(String.valueOf(reviewId)).path("feedback").path(String.valueOf(userId)).build())
+                .entity(FeedbackResponse.fromEntity(uriInfo, userId, reviewId, fb))
+                .build();
+    }
+
+
+    @DELETE
+    @Path("{reviewId}/feedback/{userId}")
+    @PreAuthorize("@accessControl.checkLoggedIsCreatorOfFeedback(#reviewId, #userId)")
+    public Response deleteReviewFeedback(@Valid @ExistentReviewId @PathParam("reviewId") long reviewId, @Valid @ExistentUserId @PathParam("userId") long userId) {
+        return reviewService.deleteReviewFeedback(reviewId,userId) ? Response.ok().build() : Response.status(Response.Status.NOT_FOUND).build();
+    }
 
 //    @RequestMapping(value = "/review/submit/search")
 //    public ModelAndView searchGames(@RequestParam(value = "searchquery", defaultValue = "") String searchquery,

@@ -20,12 +20,23 @@ public class AccessControl {
         this.reviewService = reviewService;
     }
 
+    public boolean checkReviewAuthorOwnerOrMod(long reviewId) {
+        return checkReviewAuthorOwner(reviewId) || checkAccessedUserIdIsMod();
+    }
+
     public boolean checkReviewAuthorOwner(long reviewId) {
         User activeUser = AuthenticationHelper.getLoggedUser(userService);
         if(activeUser == null)
             return false;
         Optional<Review> review = reviewService.getReviewById(reviewId, activeUser.getId());
         return review.isPresent() && Objects.equals(review.get().getAuthor().getId(), activeUser.getId());
+    }
+    public boolean checkLoggedIsCreatorOfFeedback(long reviewId, long userId){
+        User activeUser = AuthenticationHelper.getLoggedUser(userService);
+        if(activeUser == null)
+            return false;
+        Optional<Review> review = reviewService.getReviewById(reviewId, activeUser.getId());
+        return review.isPresent() && Objects.equals(userId, activeUser.getId());
     }
     public boolean checkReviewAuthorforFeedback(long reviewId){
         User activeUser = AuthenticationHelper.getLoggedUser(userService);
@@ -52,5 +63,16 @@ public class AccessControl {
         if(activeUser == null || !activeUser.isModerator())
             return !isSuggested;
         return true;
+    }
+
+    public boolean checkAccessedUserIdIsMod() {
+        User activeUser = AuthenticationHelper.getLoggedUser(userService);
+        if(activeUser == null)
+            return false;
+        return activeUser.isModerator();
+    }
+
+    public boolean checkUserIsNotAuthor(long reviewId) {
+        return !checkReviewAuthorOwner(reviewId);
     }
 }

@@ -198,11 +198,7 @@ public class ReviewServiceImpl implements ReviewService {
         Review review = getReviewById(reviewId, null).orElseThrow(ReviewNotFoundException::new);
         
         FeedbackType oldFeedback = reviewDao.getReviewFeedback(review.getId(), user.getId()).orElse(null);
-        if (oldFeedback == feedback) {
-            boolean deleted = deleteReviewFeedback(review, user, oldFeedback);
-            LOGGER.info("User {} deleted review {} feedback: {}", userId, reviewId, deleted);
-            return null;
-        }
+
         Optional<ReviewFeedback> updatedFeedback = (oldFeedback == null) ? reviewDao.addReviewFeedback(review.getId(), user.getId(), feedback) :
                 reviewDao.editReviewFeedback(review.getId(), user.getId(), oldFeedback, feedback);
         if (!updatedFeedback.isPresent()) {
@@ -216,7 +212,17 @@ public class ReviewServiceImpl implements ReviewService {
         return updatedFeedback.get();
     }
 
-    private boolean deleteReviewFeedback(Review review, User user, FeedbackType oldFeedback) {
+    @Transactional
+    @Override
+    public boolean deleteReviewFeedback(long reviewId, long userId){
+        User user = userService.getUserById(userId).orElseThrow(UserNotFoundException::new);
+        Review review = getReviewById(reviewId, null).orElseThrow(ReviewNotFoundException::new);
+
+        FeedbackType oldFeedback = reviewDao.getReviewFeedback(review.getId(), user.getId()).orElse(null);
+        return deleteReviewFeedbackAuxiliar(review, user, oldFeedback);
+    }
+
+    private boolean deleteReviewFeedbackAuxiliar(Review review, User user, FeedbackType oldFeedback) {
         if (oldFeedback == null) {
             return false;
         }
