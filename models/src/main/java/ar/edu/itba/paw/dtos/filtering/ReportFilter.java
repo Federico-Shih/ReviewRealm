@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.dtos.filtering;
 
 import ar.edu.itba.paw.enums.ReportReason;
+import ar.edu.itba.paw.enums.ReportState;
 
 public class ReportFilter {
 
@@ -9,23 +10,21 @@ public class ReportFilter {
     private final Long reporterId;
 
     private final ReportReason reason;
-    private final Boolean resolved;
+
+    private final ReportState state;
 
     private final Long moderatorId;
 
     private final Long reportedUserId;
 
-    private final Boolean closed;
 
-
-    public ReportFilter(Long reviewId, Long reporterId, ReportReason reason,Boolean resolved, Long moderatorId, Long reportedUserId, Boolean closed) {
+    public ReportFilter(Long reviewId, Long reporterId, ReportReason reason, ReportState state, Long moderatorId, Long reportedUserId) {
         this.reviewId = reviewId;
         this.reporterId = reporterId;
         this.reason = reason;
-        this.resolved = resolved;
+        this.state = state;
         this.moderatorId = moderatorId;
         this.reportedUserId = reportedUserId;
-        this.closed = closed;
     }
 
     public Long getReviewId() {
@@ -38,8 +37,8 @@ public class ReportFilter {
 
     public ReportReason getReason() { return reason; }
 
-    public Boolean getResolved() {
-        return resolved;
+    public ReportState getState() {
+        return state;
     }
 
     public Long getModeratorId() {
@@ -50,9 +49,6 @@ public class ReportFilter {
         return reportedUserId;
     }
 
-    public Boolean getClosed() {
-        return closed;
-    }
 }
 
 

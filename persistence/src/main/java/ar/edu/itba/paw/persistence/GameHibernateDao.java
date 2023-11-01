@@ -37,7 +37,7 @@ public class GameHibernateDao implements GameDao, PaginationDao<GameFilter> {
     public Optional<Game> edit(long gameId,String name, String description, String developer, String publisher, String imageid, List<Genre> genres, LocalDate publishDate) {
 
         final Game game = em.find(Game.class, gameId);
-        if(game==null)
+        if(game==null || game.getDeleted())
             return Optional.empty();
         game.setName(name);
         game.setDescription(description);
@@ -56,13 +56,14 @@ public class GameHibernateDao implements GameDao, PaginationDao<GameFilter> {
     @Override
     public Optional<Game> getById(long id) {
         final Game game = em.find(Game.class, id);
-        return Optional.ofNullable(game);
+        if(game == null || game.getDeleted()) return Optional.empty();
+        return Optional.of(game);
     }
 
     @Override
     public Optional<Game> getById(long id, Long currentUserId) {
         final Game game = em.find(Game.class, id);
-        if(game == null) return Optional.empty();
+        if(game == null || game.getDeleted()) return Optional.empty();
         if(currentUserId != null){
             game.setFavorite(game.getFavoriteUsers().stream().anyMatch(u -> u.getId().equals(currentUserId)));
         }
@@ -107,7 +108,7 @@ public class GameHibernateDao implements GameDao, PaginationDao<GameFilter> {
     @Override
     public List<Genre> getGenresByGame(long id) {
         final Game game = em.find(Game.class, id);
-        if(game == null) {
+        if(game == null || game.getDeleted()) {
             return new ArrayList<>();
         }
         return game.getGenres();
@@ -134,36 +135,39 @@ public class GameHibernateDao implements GameDao, PaginationDao<GameFilter> {
     @Override
     public Optional<Game> addNewReview(long gameId, int rating) {
         final Optional<Game> game = Optional.ofNullable(em.find(Game.class, gameId));
-        game.ifPresent((g) -> {
+        if (game.isPresent() && !game.get().getDeleted()) {
+            Game g = game.get();
             g.setReviewCount(g.getReviewCount() + 1);
             g.setRatingSum(g.getRatingSum() + rating);
-        });
+        }
         return game;
     }
 
     @Override
     public Optional<Game> modifyReview(long gameId, int oldRating, int newRating) {
         final Optional<Game> game = Optional.ofNullable(em.find(Game.class, gameId));
-        game.ifPresent((g) -> {
+        if (game.isPresent() && !game.get().getDeleted()) {
+            Game g = game.get();
             g.setRatingSum(g.getRatingSum() + newRating - oldRating);
-        });
+        }
         return game;
     }
 
     @Override
     public Optional<Game> deleteReviewFromGame(long gameId, int rating) {
         final Optional<Game> game = Optional.ofNullable(em.find(Game.class, gameId));
-        game.ifPresent((g) -> {
+        if (game.isPresent() && !game.get().getDeleted()) {
+            Game g = game.get();
             g.setReviewCount(g.getReviewCount() - 1);
             g.setRatingSum(g.getRatingSum() - rating);
-        });
+        }
         return game;
     }
 
     @Override
     public Optional<Game> setSuggestedFalse(long gameId) {
         final Optional<Game> game = Optional.ofNullable(em.find(Game.class, gameId));
-        if(game.isPresent()) {
+        if(game.isPresent() && !game.get().getDeleted()) {
             game.get().setSuggestion(false);
             em.persist(game.get());
         }
@@ -172,11 +176,10 @@ public class GameHibernateDao implements GameDao, PaginationDao<GameFilter> {
 
     @Override
     public boolean deleteGame(long gameId) {
-        final Game game = em.find(Game.class, gameId);
-        if(game != null) {
-            em.remove(game);
-        }
-        return game!=null;
+        Game game = em.find(Game.class, gameId);
+        if(game == null) return false;
+        game.setDeleted(true);
+        return true;
     }
 
 
@@ -195,7 +198,8 @@ public class GameHibernateDao implements GameDao, PaginationDao<GameFilter> {
                 .withLess("g.reviewcount", filter.getIncludeNoRating() ? 1 : 0)
                 .PARENTHESIS_CLOSE()
                 .AND()
-                .withExact("g.developer", filter.getDeveloper());
+                .withExact("g.developer", filter.getDeveloper())
+                .withExact("g.deleted", filter.getDeleted());
     }
 
     private String toTableString(GameFilter filter) {

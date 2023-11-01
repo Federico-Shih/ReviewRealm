@@ -6,6 +6,7 @@ import ar.edu.itba.paw.exceptions.ReportAlreadyResolvedException;
 import ar.edu.itba.paw.exceptions.ReviewNotFoundException;
 import ar.edu.itba.paw.models.Paginated;
 import ar.edu.itba.paw.models.Report;
+import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.servicesinterfaces.ReportService;
 import ar.edu.itba.paw.servicesinterfaces.UserService;
 import ar.edu.itba.paw.webapp.auth.AuthenticationHelper;
@@ -20,7 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -48,18 +48,12 @@ public class ReportController extends UriInfoController {
         this.userService = userService;
     }
 
-    /*
-    TODO:
-       GET /reports <pagination>
-       POST /reports
-       DELETE /reports/{id}
-     */
-
     @GET
     @Path("{id}")
     @Produces(value = {MediaType.APPLICATION_JSON})
     public Response getById(@PathParam("id") final long id) {
         final Optional<Report> report = reportService.getReportById(id);
+        User loggedIn = AuthenticationHelper.getLoggedUser(userService);
         if(!report.isPresent()) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
@@ -67,7 +61,7 @@ public class ReportController extends UriInfoController {
     }
 
     @GET
-    @Produces(value = {MediaType.APPLICATION_JSON})
+    @Produces(MediaType.APPLICATION_JSON)
     public Response getReports(@Valid @BeanParam ReportSearchQuery reportSearchQuery) {
         final Paginated<Report> reports = reportService.getReports(reportSearchQuery.getPage(), reportSearchQuery.getFilter());
         if (reports.getTotalPages() == 0 || reports.getList().isEmpty()) {
@@ -79,27 +73,25 @@ public class ReportController extends UriInfoController {
 
     @POST
     @Produces(value = {MediaType.APPLICATION_JSON})
-    public Response submitReport(@Valid SubmitReportForm reportForm) {
+    public Response submitReport(@Valid SubmitReportForm reportForm) throws ReportAlreadyExistsException, ReviewNotFoundException {
         long reporterId = AuthenticationHelper.getLoggedUser(userService).getId();
         ReportReason rs = ReportReason.valueOf(reportForm.getReason().toUpperCase());
         final Report report;
-        try {
-            report = reportService.createReport(reporterId, reportForm.getReviewId(), rs);
-        } catch (ReviewNotFoundException e) {
-            throw new CustomRuntimeException(Response.Status.BAD_REQUEST, "review.not.found");
-        } catch (ReportAlreadyExistsException e) {
-            throw new CustomRuntimeException(Response.Status.BAD_REQUEST, "report.already.exists");
-        }
+        User loggedIn = AuthenticationHelper.getLoggedUser(userService);
+        report = reportService.createReport(reporterId, reportForm.getReviewId(), rs);
         return Response
                 .created(uriInfo.getAbsolutePathBuilder().path("/reports").path(report.getId().toString()).build())
-                .entity(ReportResponse.fromEntity(uriInfo, report))
+                .entity(ReportResponse.ReportResponseBuilder
+                        .fromReport(report, uriInfo)
+                        .withAuthed(loggedIn)
+                        .build())
                 .build();
     }
 
     @PATCH
     @Path("{id}")
     @Produces(value = {MediaType.APPLICATION_JSON})
-    public Response acceptRejectReport(@PathParam("id") final long id, @Valid AcceptRejectReportForm reportForm) {
+    public Response acceptRejectReport(@PathParam("id") final long id, @Valid AcceptRejectReportForm reportForm) throws ReportAlreadyResolvedException {
         long userId = AuthenticationHelper.getLoggedUser(userService).getId();
         Report report;
         if (reportForm.getState().equals("accepted")) {

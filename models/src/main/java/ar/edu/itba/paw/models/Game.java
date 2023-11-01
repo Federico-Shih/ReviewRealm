@@ -66,6 +66,9 @@ public class Game implements Cloneable {
     @JoinColumn(name = "suggestedby", referencedColumnName = "id")
     private User suggestedBy = null;
 
+    @Column(name = "deleted", nullable = false)
+    private Boolean deleted = false;
+
     @OneToMany(mappedBy = "reviewedGame", fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     private List<Review> reviews;
 
@@ -263,6 +266,14 @@ public class Game implements Cloneable {
         this.publishDate = publishDate;
     }
 
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(Boolean deleted) {
+        this.deleted = deleted;
+    }
+
     @Override
     public Game clone() {
         try {
@@ -277,6 +288,7 @@ public class Game implements Cloneable {
             clone.setReviewCount(this.reviewCount);
             clone.setSuggestion(this.suggestion);
             clone.setGenres(new ArrayList<>(this.genres));
+            clone.setDeleted(this.deleted);
             return clone;
         } catch (CloneNotSupportedException e) {
             throw new AssertionError();

@@ -13,7 +13,6 @@ public class GameFilterBuilder {
     private boolean includeNoRating = true;
     private Boolean isSuggested = false;
     private List<Long> gamesToExclude = null;
-
     private Long favoriteGamesOf = null;
 
     private Long recommendedFor = null;
@@ -64,6 +63,6 @@ public class GameFilterBuilder {
     }
 
     public GameFilter build() {
-        return new GameFilter(gameGenres, gameContent, developer, publisher, minRating, maxRating, includeNoRating, isSuggested, gamesToExclude,favoriteGamesOf,recommendedFor);
+        return new GameFilter(gameGenres, gameContent, developer, publisher, minRating, maxRating, includeNoRating, isSuggested, gamesToExclude,favoriteGamesOf, recommendedFor, false);
     }
 }

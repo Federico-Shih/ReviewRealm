@@ -2,6 +2,8 @@ package ar.edu.itba.paw.webapp.mappers;
 
 import ar.edu.itba.paw.exceptions.ReportAlreadyResolvedException;
 import ar.edu.itba.paw.webapp.controller.helpers.LocaleHelper;
+import ar.edu.itba.paw.webapp.controller.responses.ExceptionResponse;
+import ar.edu.itba.paw.webapp.exceptions.CustomRuntimeException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
@@ -16,10 +18,10 @@ public class ReportAlreadyResolvedExceptionMapper implements ExceptionMapper<Rep
 
     @Autowired
     private MessageSource messageSource;
-
     @Override
-    public Response toResponse(ReportAlreadyResolvedException e) {
-        return Response.status(Response.Status.BAD_REQUEST).entity(messageSource.getMessage("report.already.resolved", null,
-                LocaleHelper.getLocale())).build();
+    public Response toResponse(ReportAlreadyResolvedException userAlreadyEnabled) {
+        return Response.status(Response.Status.BAD_REQUEST)
+                .entity(ExceptionResponse.of(messageSource.getMessage("report.already.resolved", null, LocaleHelper.getLocale())))
+                .build();
     }
 }

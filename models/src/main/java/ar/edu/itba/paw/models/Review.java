@@ -68,6 +68,9 @@ public class Review {
     @Column(name = "dislikes", nullable = false)
     private Long dislikes = 0L;
 
+    @Column(name = "deleted", nullable = false)
+    private Boolean deleted = false;
+
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "review", cascade = CascadeType.ALL)
     private Set<ReviewFeedback> feedbacks = new HashSet<>();
 
@@ -118,7 +121,7 @@ public class Review {
         this.replayability = replayability;
     }
 
-    public Review(long id, String title, String content, LocalDateTime createddate, int rating, Difficulty difficulty, Double aDouble, Platform platform, boolean completed, boolean replayability, long likes, long dislikes) {
+    public Review(long id, String title, String content, LocalDateTime createddate, int rating, Difficulty difficulty, Double aDouble, Platform platform, boolean completed, boolean replayability, long likes, long dislikes, boolean deleted) {
         this.id = id;
         this.title = title;
         this.content = content;
@@ -131,6 +134,7 @@ public class Review {
         this.replayability = replayability;
         this.likes = likes;
         this.dislikes = dislikes;
+        this.deleted = deleted;
     }
 
     // For testing
@@ -236,6 +240,10 @@ public class Review {
         return dislikes;
     }
 
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
     public void setFeedback(FeedbackType feedbackType) {
         this.feedbackType = feedbackType;
     }
@@ -282,6 +290,10 @@ public class Review {
 
     public void setDislikes(Long dislikes) {
         this.dislikes = dislikes;
+    }
+
+    public void setDeleted(Boolean deleted) {
+        this.deleted = deleted;
     }
 
     public Integer getPopularity() {

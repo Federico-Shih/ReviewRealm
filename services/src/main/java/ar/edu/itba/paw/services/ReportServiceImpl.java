@@ -4,6 +4,7 @@ import ar.edu.itba.paw.dtos.Page;
 import ar.edu.itba.paw.dtos.filtering.ReportFilter;
 import ar.edu.itba.paw.dtos.filtering.ReportFilterBuilder;
 import ar.edu.itba.paw.enums.ReportReason;
+import ar.edu.itba.paw.enums.ReportState;
 import ar.edu.itba.paw.enums.RoleType;
 import ar.edu.itba.paw.exceptions.*;
 import ar.edu.itba.paw.models.Paginated;
@@ -16,6 +17,7 @@ import ar.edu.itba.paw.servicesinterfaces.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,7 +28,6 @@ public class ReportServiceImpl implements ReportService {
 
     private final ReportDao reportDao;
 
-
     private final UserService userService;
 
     private final ReviewService reviewService;
@@ -34,7 +35,7 @@ public class ReportServiceImpl implements ReportService {
     private static final Logger LOGGER = LoggerFactory.getLogger(ReportServiceImpl.class);
 
     @Autowired
-    public ReportServiceImpl(ReportDao reportDao, UserService userService, ReviewService reviewService) {
+    public ReportServiceImpl(ReportDao reportDao, UserService userService, @Lazy ReviewService reviewService) {
         this.reportDao = reportDao;
         this.userService = userService;
         this.reviewService = reviewService;
@@ -53,7 +54,7 @@ public class ReportServiceImpl implements ReportService {
                 new ReportFilterBuilder()
                         .withReporterId(reporterId)
                         .withReviewId(reviewToReport)
-                        .withResolved(false)
+                        .withState(ReportState.UNRESOLVED)
                         .build()
         ).getList().isEmpty())
             throw new ReportAlreadyExistsException();
@@ -75,7 +76,7 @@ public class ReportServiceImpl implements ReportService {
     @Transactional
     @Override
     public Boolean isReported(long reviewId, long reporterId){
-        ReportFilter filter = new ReportFilterBuilder().withReviewId(reviewId).withReporterId(reporterId).withResolved(false).build();
+        ReportFilter filter = new ReportFilterBuilder().withReviewId(reviewId).withReporterId(reporterId).withState(ReportState.UNRESOLVED).build();
         return reportDao.findAll(Page.with(1,1),filter).getList().size()>0;
     }
 
@@ -99,6 +100,12 @@ public class ReportServiceImpl implements ReportService {
         if (report.isResolved())
             throw new ReportAlreadyResolvedException();
         return updateReportStatus(report,moderatorId,false);
+    }
+
+    @Transactional
+    @Override
+    public void deleteReviewOfReports(long reviewid) {
+        reportDao.deleteReportsFromReview(reviewid);
     }
 
     private Report updateReportStatus(Report report, long moderatorId, boolean status){

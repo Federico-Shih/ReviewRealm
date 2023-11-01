@@ -40,7 +40,8 @@ public interface CommonRowMappers{
                 resultSet.getBoolean("completed"),
                 resultSet.getBoolean("replayability"),
                 resultSet.getLong("likes"),
-                resultSet.getLong("dislikes"));
+                resultSet.getLong("dislikes"),
+                resultSet.getBoolean("deleted"));
     };
     
     RowMapper<User> TEST_USER_MAPPER = ((resultSet, i) -> (

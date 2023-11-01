@@ -35,6 +35,8 @@ public interface ReviewDao {
 
     boolean deleteReview(long id);
 
+    int deleteReviewsOfGame(long gameId);
+
     Optional<ReviewFeedback> editReviewFeedback(long reviewId, long userId, FeedbackType oldFeedback, FeedbackType feedback);
 
     Optional<ReviewFeedback> addReviewFeedback(long reviewId, long userId, FeedbackType feedback);

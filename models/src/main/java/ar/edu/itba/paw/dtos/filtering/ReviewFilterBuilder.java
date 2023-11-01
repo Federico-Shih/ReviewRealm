@@ -84,6 +84,8 @@ public class ReviewFilterBuilder {
     }
 
     public ReviewFilter build() {
-        return new ReviewFilter(gameGenres, authorGenres, authors, reviewContent, gameId, minTimePlayed, platforms, difficulties, completed, replayable,orBetweenGenres,authorsToExclude,gamesToExclude);
+        return new ReviewFilter(gameGenres, authorGenres, authors, reviewContent,
+                gameId, minTimePlayed, platforms, difficulties, completed, replayable,
+                orBetweenGenres,authorsToExclude,gamesToExclude, false);
     }
 }

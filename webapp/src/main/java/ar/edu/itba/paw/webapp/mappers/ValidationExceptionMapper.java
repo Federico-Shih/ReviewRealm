@@ -24,8 +24,10 @@ public class ValidationExceptionMapper implements ExceptionMapper<ConstraintViol
     public Response toResponse(ConstraintViolationException e) {
         List<ValidationErrorResponse> errors = e.getConstraintViolations().stream()
                 .map(ValidationErrorResponse::fromValidationException)
-                .peek(error -> error.setMessage(messageSource.getMessage(error.getMessage(), new Object[] {error.getProperty()}, LocaleHelper.getLocale())))
+                .peek(error -> error.setMessage(
+                        messageSource.getMessage(error.getMessage(), new Object[] {error.getProperty()}, LocaleHelper.getLocale())))
                 .collect(Collectors.toList());
-        return Response.status(Response.Status.BAD_REQUEST).type(MediaType.APPLICATION_JSON).entity(new GenericEntity<List<ValidationErrorResponse>>(errors){}).build();
+        return Response.status(Response.Status.BAD_REQUEST).type(MediaType.APPLICATION_JSON)
+                .entity(new GenericEntity<List<ValidationErrorResponse>>(errors){}).build();
     }
 }

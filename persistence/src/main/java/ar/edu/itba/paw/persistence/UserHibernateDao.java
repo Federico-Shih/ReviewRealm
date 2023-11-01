@@ -319,7 +319,9 @@ public class UserHibernateDao implements UserDao, PaginationDao<UserFilter> {
         List<Game> favGames = user.getFavoriteGames();
         favGames.clear();
         for (Long gameId : gameIds) {
-            favGames.add(em.find(Game.class, gameId));
+            Game game = em.find(Game.class, gameId);
+            if (game != null && !game.getDeleted())
+                favGames.add(game);
         }
         return Optional.of(user);
     }
@@ -331,7 +333,9 @@ public class UserHibernateDao implements UserDao, PaginationDao<UserFilter> {
                 .getSingleResult();
         if (user == null) return false;
         if (user.getFavoriteGames().stream().anyMatch((game) -> game.getId().equals(gameid))) return false;
-        user.getFavoriteGames().add(em.find(Game.class, gameid));
+        Game game = em.find(Game.class, gameid);
+        if (game != null && !game.getDeleted())
+            user.getFavoriteGames().add(game);
         return true;
     }
 

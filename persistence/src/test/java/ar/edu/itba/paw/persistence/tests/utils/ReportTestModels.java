@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.persistence.tests.utils;
 
 import ar.edu.itba.paw.enums.ReportReason;
+import ar.edu.itba.paw.enums.ReportState;
 import ar.edu.itba.paw.models.Report;
 import ar.edu.itba.paw.models.Review;
 import ar.edu.itba.paw.models.User;
@@ -42,16 +43,16 @@ public class ReportTestModels {
     private final static User COMMON_REPORTER = UserTestModels.getUser3();
     private final static Review COMMON_REPORTED_REVIEW = ReviewTestModels.getReview2();
     public static Report getReport1(){
-        return new Report(REPORT1_ID,REPORT1_REPORTER,REPORT1_REPORTED_REVIEW,REPORT1_REASON,REPORT1_SUBMITTED_DATE,false);
+        return new Report(REPORT1_ID,REPORT1_REPORTER,REPORT1_REPORTED_REVIEW,REPORT1_REASON,REPORT1_SUBMITTED_DATE, ReportState.UNRESOLVED);
     }
     public static Report getReport2(){
-        return new Report(REPORT2_ID,REPORT2_REPORTER,REPORT2_REPORTED_REVIEW,REPORT2_REASON,REPORT2_SUBMITTED_DATE,false);
+        return new Report(REPORT2_ID,REPORT2_REPORTER,REPORT2_REPORTED_REVIEW,REPORT2_REASON,REPORT2_SUBMITTED_DATE,ReportState.UNRESOLVED);
     }
     public static Report getCreateReport(){
         return new Report(REPORT_CREATE_REPORTER,REPORT_CREATE_REPORTED_REVIEW,REPORT_CREATE_REASON,REPORT_CREATE_SUBMITTED_DATE);
     }
     public static Report getReport3(){
-        return new Report(REPORT3_ID,REPORT3_REPORTER,REPORT3_REPORTED_REVIEW,REPORT3_REASON,REPORT3_SUBMITTED_DATE,false);
+        return new Report(REPORT3_ID,REPORT3_REPORTER,REPORT3_REPORTED_REVIEW,REPORT3_REASON,REPORT3_SUBMITTED_DATE,ReportState.UNRESOLVED);
     }
     public static User getCommonReporter(){
         return COMMON_REPORTER;

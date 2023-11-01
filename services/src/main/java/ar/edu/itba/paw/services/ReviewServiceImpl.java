@@ -32,15 +32,17 @@ public class ReviewServiceImpl implements ReviewService {
     private final ReviewDao reviewDao;
     private final UserService userService;
     private final GameService gameService;
+    private final ReportService reportService;
     private final MailingService mailingService;
     private final MissionService missionService;
 
 
     @Autowired
-    public ReviewServiceImpl(ReviewDao reviewDao, UserService userService, GameService gameService, MailingService mailingService, MissionService missionService) {
+    public ReviewServiceImpl(ReviewDao reviewDao, UserService userService, GameService gameService, ReportService reportService, MailingService mailingService, MissionService missionService) {
         this.reviewDao = reviewDao;
         this.userService = userService;
         this.gameService = gameService;
+        this.reportService = reportService;
         this.mailingService = mailingService;
         this.missionService = missionService;
     }
@@ -158,29 +160,43 @@ public class ReviewServiceImpl implements ReviewService {
         return reviewDao.findAll(page, filterBuilder.build(), Ordering.defaultOrder(ReviewOrderCriteria.REVIEW_DATE), activeUserId);
     }
 
+    private void deleteReview(Review review) {
+        long id = review.getId();
+        reportService.deleteReviewOfReports(id);
+        reviewDao.deleteReview(id);
+        gameService.deleteReviewFromGame(review.getReviewedGame().getId(), review.getRating());
+        LOGGER.info("Deleting review: {}", id);
+
+        missionService.addMissionProgress(review.getAuthor().getId(), Mission.REVIEWS_GOAL, -1f);
+
+        if(review.getRating() > MINFAVORITEGAMERATING)
+            userService.deleteFavoriteGame(review.getAuthor().getId(), review.getReviewedGame().getId());
+    }
+
     @Transactional
     @Override
     public boolean deleteReviewById(long id, long reporterUserId) {
         Optional<Review> review = getReviewById(id, null);
         if(review.isPresent()){
-            reviewDao.deleteReview(id);
-            gameService.deleteReviewFromGame(review.get().getReviewedGame().getId(), review.get().getRating());
-            LOGGER.info("Deleting review: {}", id);
-
+            deleteReview(review.get());
             Game game = review.get().getReviewedGame();
             User author = review.get().getAuthor();
-            missionService.addMissionProgress(author.getId(), Mission.REVIEWS_GOAL, -1f);
-
             if(userService.isNotificationEnabled(author.getId(), NotificationType.MY_REVIEW_IS_DELETED) && author.getId() != reporterUserId) {
                 mailingService.sendReviewDeletedEmail(game, author);
             }
-
-            if(review.get().getRating() > MINFAVORITEGAMERATING)
-                userService.deleteFavoriteGame(review.get().getAuthor().getId(), review.get().getReviewedGame().getId());
-
             return true;
         }
         return false;
+    }
+
+    @Transactional
+    @Override
+    public void deleteReviewsOfGame(long gameId) {
+        ReviewFilter filter = new ReviewFilterBuilder().withGameId(gameId).build();
+        List<Review> gameReviews = reviewDao.findAll(filter, null, null);
+        for (Review review : gameReviews) {
+            deleteReview(review);
+        }
     }
 
     @Transactional(readOnly = true)

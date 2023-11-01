@@ -24,7 +24,9 @@ public class ReviewFilter {
 
     private final List<Long> gamesToExclude;
 
-    public ReviewFilter(List<Integer> filterGameGenres, List<Integer> authorPreferences, List<Long> authors, String reviewContent, Long gameId, Double minTimePlayed, List<Platform> platforms, List<Difficulty> difficulties, Boolean completed, Boolean replayable,Boolean orBetweenGenres, List<Long> authorsToExclude, List<Long> gamesToExclude) {
+    private final Boolean deleted;
+
+    public ReviewFilter(List<Integer> filterGameGenres, List<Integer> authorPreferences, List<Long> authors, String reviewContent, Long gameId, Double minTimePlayed, List<Platform> platforms, List<Difficulty> difficulties, Boolean completed, Boolean replayable,Boolean orBetweenGenres, List<Long> authorsToExclude, List<Long> gamesToExclude, Boolean deleted) {
         this.filterGameGenres = filterGameGenres;
         this.authorPreferences = authorPreferences;
         this.authors = authors;
@@ -38,6 +40,7 @@ public class ReviewFilter {
         this.orBetweenGenres = orBetweenGenres;
         this.authorsToExclude = authorsToExclude;
         this.gamesToExclude = gamesToExclude;
+        this.deleted = deleted;
     }
 
     public List<Integer> getFilterGameGenres() {
@@ -85,4 +88,8 @@ public class ReviewFilter {
     public List<Long> getAuthorsToExclude() { return authorsToExclude; }
 
     public List<Long> getGamesToExclude() { return gamesToExclude; }
+
+    public Boolean getDeleted() {
+        return deleted;
+    }
 }

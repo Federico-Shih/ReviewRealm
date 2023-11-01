@@ -77,6 +77,7 @@ public class GameServiceImpl implements GameService {
     @Transactional
     @Override
     public boolean deleteGame(long gameId) {
+        reviewService.deleteReviewsOfGame(gameId);
         return gameDao.deleteGame(gameId);
     }
 

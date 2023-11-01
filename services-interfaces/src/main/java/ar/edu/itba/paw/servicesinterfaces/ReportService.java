@@ -24,5 +24,7 @@ public interface ReportService {
 
     Report rejectReport(long reportid,long moderatorId);
 
+    void deleteReviewOfReports(long reviewid);
+
     Boolean deleteReport(long reportId);
 }
