@@ -20,6 +20,8 @@ public class ReviewFilterBuilder {
     private Boolean replayable = null;
     private Boolean orBetweenGenres = null;
 
+    private Long recommendedFor = null;
+
     public ReviewFilterBuilder withGameGenres(List<Integer> genres) {
         this.gameGenres = genres;
         return this;
@@ -82,10 +84,15 @@ public class ReviewFilterBuilder {
         this.gamesToExclude = gamesToExclude;
         return this;
     }
+    public ReviewFilterBuilder withRecommendedFor(Long recommendedFor) {
+        this.recommendedFor = recommendedFor;
+        return this;
+    }
+
 
     public ReviewFilter build() {
         return new ReviewFilter(gameGenres, authorGenres, authors, reviewContent,
                 gameId, minTimePlayed, platforms, difficulties, completed, replayable,
-                orBetweenGenres,authorsToExclude,gamesToExclude, false);
+                orBetweenGenres,authorsToExclude,gamesToExclude, false, recommendedFor);
     }
 }

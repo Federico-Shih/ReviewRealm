@@ -16,6 +16,10 @@ import ar.edu.itba.paw.dtos.filtering.UserFilterBuilder;
 import ar.edu.itba.paw.dtos.ordering.*;
 import ar.edu.itba.paw.enums.Difficulty;
 import ar.edu.itba.paw.enums.Platform;
+import ar.edu.itba.paw.webapp.controller.annotations.ExistentGameId;
+import ar.edu.itba.paw.webapp.controller.annotations.ExistentGenreList;
+import ar.edu.itba.paw.webapp.controller.annotations.ExistentPlatformList;
+import ar.edu.itba.paw.webapp.controller.annotations.ExistentUserId;
 import org.apache.commons.lang3.builder.Diff;
 import org.springframework.security.access.method.P;
 
@@ -34,20 +38,30 @@ public class ReviewSearchQuery extends PaginatedQuery {
     @QueryParam("orderDirection")
     private String orderDirection;
 
-    @QueryParam("genresFilter")
-    private List<Integer> genreFilter;
+    @ExistentGenreList
+    @QueryParam("gameGenres")
+    private List<Integer> gameGenres;
+
+    @QueryParam("excludeAuthors")
+    private List<Long> authorsToExclude;
+
+    @QueryParam("authors")
+    private List<Long> authors;
 
     @QueryParam("timePlayedFilter")
     private String timePlayedFilter;
 
-    @QueryParam("preferencesFilter")
-    private List<Integer> preferencesFilter;
+    @ExistentGenreList
+    @QueryParam("authorPreferences")
+    private List<Integer> authorPreferences;
 
+    @ExistentPlatformList
     @QueryParam("platformsFilter")
-    private List<Platform> platformsFilter;
+    private List<Integer> platformsFilter;
 
+    @ExistentGenreList
     @QueryParam("difficultyFilter")
-    private List<Difficulty> difficultyFilter;
+    private List<Integer> difficultyFilter;
 
     @QueryParam("completedFilter")
     private Boolean completedFilter;
@@ -55,14 +69,17 @@ public class ReviewSearchQuery extends PaginatedQuery {
     @QueryParam("replayableFilter")
     private Boolean replayableFilter;
 
-    @QueryParam("page")
-    private Integer page;
-
-    @QueryParam("pageSize")
-    private Integer pageSize;
-
     @QueryParam("search")
     private String search;
+
+    @ExistentGameId(optional = true)
+    @QueryParam("gameId")
+    private Long gameId;
+
+    @ExistentUserId(optional = true)
+    @QueryParam("recommendedFor")
+    private Long recommendedFor;
+
 
     public ReviewSearchQuery() {
     }
@@ -73,14 +90,25 @@ public class ReviewSearchQuery extends PaginatedQuery {
 
     public ReviewFilter getFilter() {
         Double timePlayed = timePlayedFilter==null? null : Double.valueOf(timePlayedFilter);
+        //Los gets de los enums son seguros porque se validan en las anotaciones
+        List<Platform> platforms = platformsFilter == null ? null : platformsFilter.stream().map(p -> Platform.getById(p).get()
+        ).collect(java.util.stream.Collectors.toList());
+        List<Difficulty> difficulties = difficultyFilter == null ? null : difficultyFilter.stream().map(d -> Difficulty.getById(d).get()
+        ).collect(java.util.stream.Collectors.toList());
+
         return new ReviewFilterBuilder()
-                .withGameGenres(genreFilter)
-                .withAuthorGenres(preferencesFilter)
+                .withGameId(gameId)
+                .withGameGenres(gameGenres)
+                .withAuthorGenres(authorPreferences)
+                .withAuthors(authors)
+                .withAuthorsToExclude(authorsToExclude)
                 .withMinTimePlayed(timePlayed)
-                .withPlatforms(platformsFilter)
-                .withDifficulties(difficultyFilter)
+                .withPlatforms(platforms)
+                .withDifficulties(difficulties)
                 .withCompleted(completedFilter)
                 .withReplayable(replayableFilter)
+                .withReviewContent(search)
+                .withRecommendedFor(recommendedFor)
                 .build();
     }
 

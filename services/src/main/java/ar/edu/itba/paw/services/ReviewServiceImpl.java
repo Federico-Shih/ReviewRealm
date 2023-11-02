@@ -119,6 +119,13 @@ public class ReviewServiceImpl implements ReviewService {
     @Transactional(readOnly = true)
     @Override
     public Paginated<Review> searchReviews(Page page, ReviewFilter filter, Ordering<ReviewOrderCriteria> ordering, Long activeUserId){
+        if(filter.getRecommendedFor() != null){
+            if(filter.isProperRecommendedFor()){
+                return getRecommendedReviewsByUser(filter.getRecommendedFor(), page);
+            }else{
+                throw new ExclusiveFilterException("error.game.filter.recommended");
+            }
+        }
         return reviewDao.findAll(page, filter, ordering, activeUserId);
     }
 

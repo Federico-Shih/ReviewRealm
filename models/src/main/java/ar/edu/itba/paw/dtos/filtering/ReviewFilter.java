@@ -26,7 +26,9 @@ public class ReviewFilter {
 
     private final Boolean deleted;
 
-    public ReviewFilter(List<Integer> filterGameGenres, List<Integer> authorPreferences, List<Long> authors, String reviewContent, Long gameId, Double minTimePlayed, List<Platform> platforms, List<Difficulty> difficulties, Boolean completed, Boolean replayable,Boolean orBetweenGenres, List<Long> authorsToExclude, List<Long> gamesToExclude, Boolean deleted) {
+    private final Long recommendedFor;
+
+    public ReviewFilter(List<Integer> filterGameGenres, List<Integer> authorPreferences, List<Long> authors, String reviewContent, Long gameId, Double minTimePlayed, List<Platform> platforms, List<Difficulty> difficulties, Boolean completed, Boolean replayable,Boolean orBetweenGenres, List<Long> authorsToExclude, List<Long> gamesToExclude,Boolean deleted, Long recommendedFor) {
         this.filterGameGenres = filterGameGenres;
         this.authorPreferences = authorPreferences;
         this.authors = authors;
@@ -41,6 +43,7 @@ public class ReviewFilter {
         this.authorsToExclude = authorsToExclude;
         this.gamesToExclude = gamesToExclude;
         this.deleted = deleted;
+        this.recommendedFor = recommendedFor;
     }
 
     public List<Integer> getFilterGameGenres() {
@@ -91,5 +94,21 @@ public class ReviewFilter {
 
     public Boolean getDeleted() {
         return deleted;
+    }
+
+    public boolean isProperRecommendedFor(){
+        return (filterGameGenres == null || filterGameGenres.isEmpty()) && (authorPreferences == null || authorPreferences.isEmpty())
+                && (authors == null || authors.isEmpty()) && (reviewContent == null || reviewContent.isEmpty()) &&
+                (gameId == null) && (minTimePlayed == null) &&
+                (platforms == null || platforms.isEmpty()) &&
+                (difficulties == null || difficulties.isEmpty()) &&
+                (completed == null) && (replayable == null) &&
+                (orBetweenGenres == null) &&
+                (authorsToExclude == null || authorsToExclude.isEmpty()) &&
+                (gamesToExclude == null || gamesToExclude.isEmpty());
+    }
+
+    public Long getRecommendedFor() {
+        return recommendedFor;
     }
 }
