@@ -20,8 +20,7 @@ import java.time.LocalDateTime;
 import java.util.Locale;
 import java.util.Optional;
 
-import static ar.edu.itba.paw.services.utils.UserTestModels.getUser1;
-import static ar.edu.itba.paw.services.utils.UserTestModels.getUser2;
+import static ar.edu.itba.paw.services.utils.UserTestModels.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
@@ -226,14 +225,21 @@ public class UserServiceImplTest {
     @Test
     public void patchUser() {
         User user = USER;
+        Mockito.when(userDao.findById(eq(ID))).thenReturn(Optional.of(user));
         Mockito.when(userDao.update(eq(ID), any())).thenReturn(Optional.of(user));
         Assert.assertEquals(user, us.patchUser(user.getId(), OTHER_PASSWORD, true));
     }
 
     @Test(expected = UserNotFoundException.class)
     public void patchUserNotFound() {
-        User user = USER;
         Mockito.when(userDao.update(eq(ID), any())).thenReturn(Optional.empty());
+        us.patchUser(USER.getId(), OTHER_PASSWORD, true);
+    }
+
+    @Test(expected = UserAlreadyEnabled.class)
+    public void patchUserIsAlreadyEnabled() {
+        User user = getUser5();
+        Mockito.when(userDao.findById(eq(user.getId()))).thenReturn(Optional.of(user));
         us.patchUser(user.getId(), OTHER_PASSWORD, true);
     }
 }

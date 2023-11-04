@@ -10,12 +10,11 @@ import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.servicesinterfaces.ReportService;
 import ar.edu.itba.paw.servicesinterfaces.UserService;
 import ar.edu.itba.paw.webapp.auth.AuthenticationHelper;
-
 import ar.edu.itba.paw.webapp.controller.forms.AcceptRejectReportForm;
+import ar.edu.itba.paw.webapp.controller.forms.SubmitReportForm;
 import ar.edu.itba.paw.webapp.controller.querycontainers.ReportSearchQuery;
 import ar.edu.itba.paw.webapp.controller.responses.PaginatedResponse;
 import ar.edu.itba.paw.webapp.controller.responses.ReportResponse;
-import ar.edu.itba.paw.webapp.controller.forms.SubmitReportForm;
 import ar.edu.itba.paw.webapp.exceptions.CustomRuntimeException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -30,7 +29,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@Path("/reports")
+@Path("/api/reports")
 @Component
 public class ReportController extends UriInfoController {
 

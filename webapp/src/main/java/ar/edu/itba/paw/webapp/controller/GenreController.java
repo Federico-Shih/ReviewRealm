@@ -5,7 +5,6 @@ import ar.edu.itba.paw.servicesinterfaces.GenreService;
 import ar.edu.itba.paw.webapp.controller.cache.CacheHelper;
 import ar.edu.itba.paw.webapp.controller.helpers.LocaleHelper;
 import ar.edu.itba.paw.webapp.controller.responses.GenreResponse;
-import ar.edu.itba.paw.webapp.controller.responses.ValidationErrorResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
@@ -18,7 +17,7 @@ import javax.ws.rs.core.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Path("/genres")
+@Path("/api/genres")
 @Component
 public class GenreController {
     private static final int cacheMaxAge = 86400;

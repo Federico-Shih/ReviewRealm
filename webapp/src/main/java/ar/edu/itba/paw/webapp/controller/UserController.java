@@ -35,7 +35,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@Path("/users")
+@Path("/api/users")
 @Component
 public class UserController {
     private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);

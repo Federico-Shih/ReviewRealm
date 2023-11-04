@@ -124,5 +124,4 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     public RequestContextListener requestContextListener(){
         return new RequestContextListener();
     }
-
 }

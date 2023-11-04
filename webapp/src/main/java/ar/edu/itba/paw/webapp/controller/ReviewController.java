@@ -15,21 +15,17 @@ import ar.edu.itba.paw.webapp.controller.annotations.ExistentReviewId;
 import ar.edu.itba.paw.webapp.controller.annotations.ExistentUserId;
 import ar.edu.itba.paw.webapp.controller.forms.EditReviewForm;
 import ar.edu.itba.paw.webapp.controller.forms.SubmitReviewForm;
-import ar.edu.itba.paw.webapp.controller.helpers.LocaleHelper;
 import ar.edu.itba.paw.webapp.controller.querycontainers.ReviewSearchQuery;
 import ar.edu.itba.paw.webapp.controller.responses.FeedbackResponse;
 import ar.edu.itba.paw.webapp.controller.responses.PaginatedResponse;
 import ar.edu.itba.paw.webapp.controller.responses.ReviewResponse;
-import ar.edu.itba.paw.webapp.controller.responses.UserResponse;
 import ar.edu.itba.paw.webapp.validators.FeedbackTypeBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.ModelAttribute;
 
-import javax.swing.text.html.Option;
 import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
@@ -40,7 +36,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@Path("reviews")
+@Path("/api/reviews")
 @Component
 public class ReviewController{
     private static final Logger LOGGER = LoggerFactory.getLogger(ReviewController.class);
