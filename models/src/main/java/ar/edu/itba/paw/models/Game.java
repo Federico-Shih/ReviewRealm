@@ -129,7 +129,7 @@ public class Game implements Cloneable {
         this.genres = genres;
     }
 
-    public Game(long id, String name, String description, String developer, String publisher, LocalDate publishDate, int ratingsum, int reviewcount) {
+    public Game(long id, String name, String description, String developer, String publisher, LocalDate publishDate, int ratingsum, int reviewcount, boolean deleted) {
         // for testing
         this.id = id;
         this.name = name;
@@ -139,6 +139,7 @@ public class Game implements Cloneable {
         this.publishDate = publishDate;
         this.ratingSum = ratingsum;
         this.reviewCount = reviewcount;
+        this.deleted = deleted;
     }
 
     protected Game() {

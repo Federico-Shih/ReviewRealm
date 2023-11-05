@@ -224,7 +224,7 @@ public class UserServiceImplTest {
 
     @Test
     public void patchUser() {
-        User user = USER;
+        User user = getUser1();
         Mockito.when(userDao.findById(eq(ID))).thenReturn(Optional.of(user));
         Mockito.when(userDao.update(eq(ID), any())).thenReturn(Optional.of(user));
         Assert.assertEquals(user, us.patchUser(user.getId(), OTHER_PASSWORD, true));
@@ -232,7 +232,7 @@ public class UserServiceImplTest {
 
     @Test(expected = UserNotFoundException.class)
     public void patchUserNotFound() {
-        Mockito.when(userDao.update(eq(ID), any())).thenReturn(Optional.empty());
+        Mockito.when(userDao.findById(eq(ID))).thenReturn(Optional.empty());
         us.patchUser(USER.getId(), OTHER_PASSWORD, true);
     }
 

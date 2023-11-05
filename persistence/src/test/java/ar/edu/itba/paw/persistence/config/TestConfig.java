@@ -26,9 +26,6 @@ public class TestConfig {
     @Value("classpath:hsqldb.sql")
     private Resource hsqldbSql;
 
-    @Value("classpath:schema.sql")
-    private Resource schemaSql;
-
     @Value("classpath:/populators/games.sql")
     private Resource gamesSql;
 

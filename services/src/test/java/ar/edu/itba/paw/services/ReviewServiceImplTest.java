@@ -5,10 +5,7 @@ import ar.edu.itba.paw.enums.FeedbackType;
 import ar.edu.itba.paw.exceptions.ReviewNotFoundException;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.persistenceinterfaces.ReviewDao;
-import ar.edu.itba.paw.servicesinterfaces.GameService;
-import ar.edu.itba.paw.servicesinterfaces.MailingService;
-import ar.edu.itba.paw.servicesinterfaces.MissionService;
-import ar.edu.itba.paw.servicesinterfaces.UserService;
+import ar.edu.itba.paw.servicesinterfaces.*;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,6 +34,8 @@ public class ReviewServiceImplTest {
     private UserService userService;
     @Mock
     private GameService gameService;
+    @Mock
+    private ReportService reportService;
 
     @Mock
     private MailingService mailingService;

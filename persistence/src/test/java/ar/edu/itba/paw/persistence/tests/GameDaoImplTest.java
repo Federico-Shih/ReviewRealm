@@ -8,6 +8,7 @@ import ar.edu.itba.paw.dtos.ordering.OrderDirection;
 import ar.edu.itba.paw.dtos.ordering.Ordering;
 import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.models.Game;
+import ar.edu.itba.paw.models.Review;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.persistence.config.TestConfig;
 import ar.edu.itba.paw.persistence.helpers.CommonRowMappers;
@@ -450,5 +451,17 @@ public class GameDaoImplTest {
     public void testGetGamesReviewedByNonExistentUser() {
         Optional<Set<Game>> games = gameDao.getGamesReviewedByUser(1000);
         Assert.assertFalse(games.isPresent());
+    }
+
+    @Rollback
+    @Test
+    public void testDeleteGame() {
+        boolean result = gameDao.deleteGame(testGame.getId());
+        em.flush();
+        Assert.assertTrue(result);
+        Optional<Game> deletedGame = jdbcTemplate.query("SELECT * FROM games WHERE id = ?", CommonRowMappers.TEST_GAME_ROW_MAPPER, testGame.getId()).stream().findFirst();
+        Assert.assertTrue(deletedGame.isPresent());
+        Assert.assertTrue(deletedGame.get().getDeleted());
+
     }
 }

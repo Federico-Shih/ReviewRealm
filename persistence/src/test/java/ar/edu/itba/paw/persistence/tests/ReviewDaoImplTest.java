@@ -383,7 +383,8 @@ public class ReviewDaoImplTest {
         // Assertions
         Assert.assertTrue(result);
         Optional<Review> deletedReview = jdbcTemplate.query("SELECT * FROM reviews WHERE id = ?", CommonRowMappers.TEST_REVIEW_MAPPER, testReview.getId()).stream().findFirst();
-        Assert.assertFalse(deletedReview.isPresent());
+        Assert.assertTrue(deletedReview.isPresent());
+        Assert.assertTrue(deletedReview.get().getDeleted());
     }
 
     @Rollback

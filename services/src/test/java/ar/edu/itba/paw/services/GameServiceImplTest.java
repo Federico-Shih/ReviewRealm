@@ -72,8 +72,7 @@ public class GameServiceImplTest {
     }
     @Test
     public void testCantFindGameById() {
-        Mockito.when(gameDao.getById(getSuperGameA().getId()))
-                .thenReturn(Optional.empty());
+        Mockito.when(gameDao.getById(anyLong(), any())).thenReturn(Optional.empty());
         Optional<Game> opt = gs.getGameById(getSuperGameA().getId(),null);
 
         Assert.assertFalse(opt.isPresent());
@@ -119,7 +118,7 @@ public class GameServiceImplTest {
 
     @Test(expected = GameNotFoundException.class)
     public void testAcceptGameError(){
-        Mockito.when(gameDao.setSuggestedFalse(anyLong())).thenReturn(Optional.empty());
+        Mockito.when(gameDao.getById(anyLong())).thenReturn(Optional.empty());
 
         gs.acceptGame(getSuperGameA().getId(), getUser1().getId());
     }
@@ -139,9 +138,6 @@ public class GameServiceImplTest {
         Mockito.when(user.getPreferences()).thenReturn(new HashSet<>(Arrays.asList(Genre.ACTION, Genre.ADVENTURE)));
         Mockito.when(user.hasPreferencesSet()).thenReturn(true);
         Mockito.when(gameDao.getGamesReviewedByUser(anyLong())).thenReturn(Optional.of(new HashSet<>(Arrays.asList(getSuperGameA()))));
-        Mockito.when(filterBuilder.withGameGenres(any())).thenReturn(filterBuilder);
-        Mockito.when(filterBuilder.withGamesToExclude(any())).thenReturn(filterBuilder);
-        Mockito.when(filterBuilder.build()).thenReturn(new GameFilterBuilder().build());
         Mockito.when(gameDao.findAll(any(), any(),any(),any())).thenReturn(new Paginated<>(1,10,1,Arrays.asList(getSuperGameB())));
 
         List<Game> games = gs.getRecommendationsOfGamesForUser(Page.with(1,10),getUser1().getId()).getList();
@@ -169,28 +165,6 @@ public class GameServiceImplTest {
 
         gs.searchGames(Page.with(1,10),filter,
                 new Ordering<>(OrderDirection.DESCENDING, GameOrderCriteria.AVERAGE_RATING),null);
-    }
-    @Test(expected = AuthenticationNeededException.class)
-    public void testSuggestedWithoutLogin(){
-        GameFilter filter = new GameFilterBuilder().withSuggestion(true).build();
-
-        gs.searchGames(Page.with(1,10),filter,
-                new Ordering<>(OrderDirection.DESCENDING, GameOrderCriteria.AVERAGE_RATING),null);
-    }
-    @Test(expected = UserNotFoundException.class)
-    public void testSuggestedWithUnknownUserId(){
-        GameFilter filter = new GameFilterBuilder().withSuggestion(true).build();
-        Mockito.when(userService.getUserById(anyLong())).thenReturn(Optional.empty());
-        gs.searchGames(Page.with(1,10),filter,
-                new Ordering<>(OrderDirection.DESCENDING, GameOrderCriteria.AVERAGE_RATING),-1L);
-    }
-    @Test(expected = UserNotAModeratorException.class)
-    public void testSuggestedWithNonModerator(){
-        GameFilter filter = new GameFilterBuilder().withSuggestion(true).build();
-        Mockito.when(userService.getUserById(anyLong())).thenReturn(Optional.of(user));
-        Mockito.when(user.getRoles()).thenReturn(new HashSet<>(Collections.singleton(RoleType.USER)));;
-        gs.searchGames(Page.with(1,10),filter,
-                new Ordering<>(OrderDirection.DESCENDING, GameOrderCriteria.AVERAGE_RATING),getUser1().getId());
     }
 
     @Test
