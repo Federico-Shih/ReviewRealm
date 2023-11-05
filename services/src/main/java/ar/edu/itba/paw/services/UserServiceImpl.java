@@ -473,4 +473,10 @@ public class UserServiceImpl implements UserService {
     public Optional<ExpirationToken> getExpirationToken(String token) {
         return tokenDao.getByToken(token);
     }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Optional<Set<NotificationType>> getNotifications(long id) {
+        return userDao.findById(id).map(User::getDisabledNotifications);
+    }
 }

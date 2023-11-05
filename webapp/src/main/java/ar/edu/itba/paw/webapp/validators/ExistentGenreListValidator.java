@@ -8,13 +8,18 @@ import javax.validation.ConstraintValidatorContext;
 import java.util.List;
 
 public class ExistentGenreListValidator implements ConstraintValidator<ExistentGenreList, Object> {
+    private boolean isNullable;
     @Override
     public void initialize(ExistentGenreList constraintAnnotation) {
         ConstraintValidator.super.initialize(constraintAnnotation);
+        isNullable = constraintAnnotation.nullable();
     }
 
     @Override
     public boolean isValid(Object o, ConstraintValidatorContext constraintValidatorContext) {
+        if (o == null && isNullable) {
+            return true;
+        }
         if (!(o instanceof List)) {
             return false;
         }

@@ -42,25 +42,7 @@ public class GameResponse extends BaseResponse {
     //Link reviews,Image,self
 
     public static GameResponse fromEntity(final UriInfo uri, Game game, GameReviewData gameReviewData, User user){
-        GameResponse response = new GameResponse();
-
-        response.setId(game.getId());
-        response.setName(game.getName());
-        response.setDescription(game.getDescription());
-        response.setDeveloper(game.getDeveloper());
-        response.setPublisher(game.getPublisher());
-        response.setPublishDate(game.getPublishDate());
-        response.setRatingSum(game.getRatingSum());
-        response.setReviewCount(game.getReviewCount());
-        response.setFavorite(game.isFavorite());
-        if(gameReviewData != null) {
-            response.setAverageDifficulty(gameReviewData.getAverageDifficulty());
-            response.setAveragePlatform(gameReviewData.getAveragePlatform());
-            response.setAverageGameTime(gameReviewData.getAverageGameTime());
-            response.setReplayability(gameReviewData.getReplayability());
-            response.setCompletability(gameReviewData.getCompletability());
-        }
-
+        GameResponse response = getGameResponse(game, gameReviewData);
 
 
         response.link("self",uri.getBaseUriBuilder().path(BASE_PATH).path(String.valueOf(game.getId())).build());
@@ -80,6 +62,29 @@ public class GameResponse extends BaseResponse {
 
         return response;
     }
+
+    private static GameResponse getGameResponse(Game game, GameReviewData gameReviewData) {
+        GameResponse response = new GameResponse();
+
+        response.setId(game.getId());
+        response.setName(game.getName());
+        response.setDescription(game.getDescription());
+        response.setDeveloper(game.getDeveloper());
+        response.setPublisher(game.getPublisher());
+        response.setPublishDate(game.getPublishDate());
+        response.setRatingSum(game.getRatingSum());
+        response.setReviewCount(game.getReviewCount());
+        response.setFavorite(game.isFavorite());
+        if(gameReviewData != null) {
+            response.setAverageDifficulty(gameReviewData.getAverageDifficulty());
+            response.setAveragePlatform(gameReviewData.getAveragePlatform());
+            response.setAverageGameTime(gameReviewData.getAverageGameTime());
+            response.setReplayability(gameReviewData.getReplayability());
+            response.setCompletability(gameReviewData.getCompletability());
+        }
+        return response;
+    }
+
     public static URI getLinkFromEntity(final UriInfo uri, Game game) {
         return uri.getBaseUriBuilder().path(BASE_PATH).path(String.valueOf(game.getId())).build();
     }

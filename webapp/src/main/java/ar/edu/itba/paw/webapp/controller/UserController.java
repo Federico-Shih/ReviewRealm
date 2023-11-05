@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.dtos.Page;
+import ar.edu.itba.paw.enums.NotificationType;
 import ar.edu.itba.paw.exceptions.EmailAlreadyExistsException;
 import ar.edu.itba.paw.exceptions.UserAlreadyEnabled;
 import ar.edu.itba.paw.exceptions.UsernameAlreadyExistsException;
@@ -11,6 +12,7 @@ import ar.edu.itba.paw.servicesinterfaces.MissionService;
 import ar.edu.itba.paw.servicesinterfaces.UserService;
 import ar.edu.itba.paw.webapp.auth.AccessControl;
 import ar.edu.itba.paw.webapp.auth.AuthenticationHelper;
+import ar.edu.itba.paw.webapp.controller.annotations.ExistentGameId;
 import ar.edu.itba.paw.webapp.controller.annotations.ExistentUserId;
 import ar.edu.itba.paw.webapp.controller.forms.*;
 import ar.edu.itba.paw.webapp.controller.helpers.LocaleHelper;
@@ -33,6 +35,7 @@ import javax.ws.rs.core.UriInfo;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Path("/api/users")
@@ -54,24 +57,8 @@ public class UserController {
         this.missionService = missionService;
     }
 
-    /*
-        PUT /users/following/{id}
-        DELETE /users/following/{id}
-        GET /users/{id}/preferences
-        PUT /users/{id}/preferences
-        GET /users/{id}/avatar
-        PUT /users/{id}/avatar
-        GET /users/{id}/favoritegames
-        PUT /users/{id}/favoritegames/{gameid}
-        DELETE /users/{id}/favoritegames/{gameid}
-        GET /users/{id}/notifications
-        PUT /users/{id}/notifications/{notificationId}
-        DELETE /users/{id}/notifications/{notificationId}
-        GET /users/{id}/missions
-     */
-
     @GET
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces(VndType.APPLICATION_USER_LIST)
     public Response getUsers(@Valid @BeanParam UserSearchQuery userSearchQuery) {
         User loggedIn = AuthenticationHelper.getLoggedUser(us);
         final Paginated<User> users = us.getUsers(userSearchQuery.getPage(), userSearchQuery.getFilter(), userSearchQuery.getOrdering(), (loggedIn != null) ? loggedIn.getId() : null);
@@ -84,13 +71,13 @@ public class UserController {
                         .withAuthed(loggedIn)
                         .build()
         ).collect(Collectors.toList());
-        Response.ResponseBuilder response = Response.ok(PaginatedResponse.fromPaginated(uriInfo, userResponseList, users));
+        Response.ResponseBuilder response = PaginatedResponseHelper.fromPaginated(uriInfo, userResponseList, users);
         return response.build();
     }
 
     @GET
     @Path("{id:\\d+}")
-    @Produces(value = {MediaType.APPLICATION_JSON})
+    @Produces(VndType.APPLICATION_USER)
     public Response getById(@PathParam("id") final long id) {
         User loggedIn = AuthenticationHelper.getLoggedUser(us);
         final Optional<User> user = us.getUserById(id, loggedIn != null ? loggedIn.getId() : null);
@@ -106,8 +93,8 @@ public class UserController {
     }
 
     @POST
-    @Consumes(VndType.APPLICATION_USER)
-    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(VndType.APPLICATION_USER_FORM)
+    @Produces(VndType.APPLICATION_USER)
     public Response createUser(@Valid RegisterForm registerForm) throws UsernameAlreadyExistsException, EmailAlreadyExistsException {
         LOGGER.info("Creating user with username " + registerForm.getUsername() + " and email " + registerForm.getEmail());
         final User user = us.createUser(registerForm.getUsername(), registerForm.getEmail(), registerForm.getPassword(), LocaleHelper.getLocale());
@@ -119,7 +106,6 @@ public class UserController {
 
     @POST
     @Consumes(VndType.APPLICATION_PASSWORD_RESET)
-    @Produces(MediaType.APPLICATION_JSON)
     public Response changePasswordRequest(@Valid ResendEmailForm emailForm) {
         LOGGER.info("User with email " + emailForm.getEmail() + " requested password reset");
         us.sendPasswordResetToken(emailForm.getEmail());
@@ -128,30 +114,27 @@ public class UserController {
 
     @POST
     @Consumes(VndType.APPLICATION_ENABLE_USER)
-    @Produces(MediaType.APPLICATION_JSON)
     public Response validateUser(@Valid ResendEmailForm emailForm) throws UserAlreadyEnabled {
         us.resendToken(emailForm.getEmail());
         return Response.ok().build();
     }
 
     @GET
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces(VndType.APPLICATION_ENTITY_LINK_LIST)
     @Path("{id}/followers")
     public Response getFollowers(@PathParam("id") final long id, @QueryParam("page") @DefaultValue("1") final Integer page, @QueryParam("pageSize") @DefaultValue("10") final Integer pageSize) {
         Paginated<User> followers = us.getFollowers(id, Page.with(page != null ? page : 1, pageSize != null ? pageSize : 10));
         if (followers.getList().isEmpty())
             return Response.noContent().build();
-        return Response.ok(
-                PaginatedResponse.fromPaginated(uriInfo,
-                        followers.getList().stream()
-                                .map((user) -> UserResponse.getLinkFromEntity(uriInfo, user).toString())
-                                .collect(Collectors.toList()),
-                        followers)
-            ).build();
+        return PaginatedResponseHelper.fromPaginated(uriInfo,
+                followers.getList().stream()
+                        .map((user) -> UserResponse.getLinkFromEntity(uriInfo, user).toString())
+                        .collect(Collectors.toList()),
+                followers).build();
     }
 
     @GET
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces(VndType.APPLICATION_ENTITY_LINK_LIST)
     @Path("{id}/following")
     public Response getFollowing(
             @Valid @ExistentUserId @PathParam("id") final long id,
@@ -162,18 +145,15 @@ public class UserController {
         if (following.getList().isEmpty()) {
             return Response.noContent().build();
         }
-        return Response.ok(
-                PaginatedResponse
-                        .fromPaginated(uriInfo,
-                                following.getList().stream()
-                                        .map((user) -> UserResponse.getLinkFromEntity(uriInfo, user).toString())
-                                        .collect(Collectors.toList()),
-                                following)
-        ).build();
+        return PaginatedResponseHelper
+                .fromPaginated(uriInfo,
+                        following.getList().stream()
+                                .map((user) -> UserResponse.getLinkFromEntity(uriInfo, user).toString())
+                                .collect(Collectors.toList()),
+                        following).build();
     }
 
     @POST
-    @Produces(MediaType.APPLICATION_JSON)
     @Path("{id}/following")
     @PreAuthorize("@accessControl.checkAccessedUserIdIsUser(#id)")
     public Response createFollowing(@PathParam("id") String id, @Valid FollowingForm following) {
@@ -184,7 +164,6 @@ public class UserController {
     }
 
     @DELETE
-    @Produces({MediaType.APPLICATION_JSON})
     @Path("{id}/following/{followingId}")
     @PreAuthorize("@accessControl.checkAccessedUserIdIsUser(#id)")
     public Response unfollowUser(@PathParam("id") String id, @PathParam("followingId") String followingId) {
@@ -195,33 +174,15 @@ public class UserController {
         return Response.noContent().build();
     }
 
-    @PUT
-    @Path("{id: \\d+}/preferences")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    @PreAuthorize("@accessControl.checkAccessedUserIdIsUser(#id)")
-    public Response putPreferences(@ExistentUserId @PathParam(("id")) Long id, @Valid EditPreferencesForm preferencesForm) {
-        us.setPreferences(new HashSet<>(preferencesForm.getGenres()), id);
-        return Response.ok().build();
-    }
-
-    @GET
-    @Path("{id:\\d+}/preferences")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response getPreferences(@PathParam(("id")) Integer id) {
-        final Optional<User> user = us.getUserById(id);
-        if (!user.isPresent()) {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
-        return Response.ok(ListResponse.fromEntity(uriInfo, user.get().getPreferences().stream().map((genre) -> GenreResponse.getLinkFromEntity(uriInfo, genre)).collect(Collectors.toList())))
-                .build();
-    }
-
     @PATCH
     @PreAuthorize("@accessControl.checkAccessedUserIdIsUser(#id)")
     @Path("{id:\\d+}")
-    public Response patchUser(@Valid PatchUserForm patchUserForm, @PathParam("id") Integer id) {
+    @Produces(VndType.APPLICATION_PATCH_USER_FORM)
+    public Response patchUser(@Valid PatchUserForm patchUserForm, @ExistentUserId @PathParam("id") Long id) {
         us.patchUser(id, patchUserForm.getPassword(), patchUserForm.getEnabled());
+        if (patchUserForm.getGenres() != null) {
+            us.setPreferences(patchUserForm.getGenres(), id);
+        }
         return Response.noContent().build();
     }
 
@@ -230,7 +191,7 @@ public class UserController {
     @PreAuthorize("@accessControl.checkAccessedUserIdIsUser(#id)")
     @Consumes(value = {MediaType.APPLICATION_JSON})
     @Produces(value = {MediaType.APPLICATION_JSON})
-    public Response createNewFavoriteGame(@PathParam("id") final long id, @Valid FavoriteGameForm favoriteGameForm) {
+    public Response createNewFavoriteGame(@ExistentUserId @PathParam("id") final long id, @Valid FavoriteGameForm favoriteGameForm) {
         boolean added = us.addFavoriteGame(id, favoriteGameForm.getGameId());
         if (!added) throw new CustomRuntimeException(Response.Status.BAD_REQUEST, "error.game.already.favorite");
         return Response.created(
@@ -246,9 +207,7 @@ public class UserController {
     @DELETE
     @Path("{id:\\d+}/favoritegames/{gameId:\\d+}")
     @PreAuthorize("@accessControl.checkAccessedUserIdIsUser(#id)")
-    @Consumes(value = {MediaType.APPLICATION_JSON})
-    @Produces(value = {MediaType.APPLICATION_JSON})
-    public Response deleteFavoriteGame(@PathParam("id") final long id, @PathParam("gameId") final long gameId) {
+    public Response deleteFavoriteGame(@ExistentUserId @PathParam("id") final long id, @ExistentGameId @PathParam("gameId") final long gameId) {
         boolean deleted = us.deleteFavoriteGame(id, gameId);
         return deleted ? Response.ok().build() : Response.status(Response.Status.NOT_FOUND).build();
     }
@@ -256,31 +215,25 @@ public class UserController {
     @PUT
     @Path("{id:\\d+}/notifications")
     @PreAuthorize("@accessControl.checkAccessedUserIdIsUser(#id)")
-    @Consumes(value = {MediaType.APPLICATION_JSON})
-    @Produces(value = {MediaType.APPLICATION_JSON})
-    public Response putNotifications(@PathParam("id") final long id, @Valid ChangeNotificationForm changeNotificationForm) {
+    @Produces(VndType.APPLICATION_NOTIFICATION_STATUS)
+    public Response putNotifications(@ExistentUserId @PathParam("id") final long id, @Valid ChangeNotificationForm changeNotificationForm) {
         User user = us.setUserNotificationSettings(id, changeNotificationForm.getNotificationMap());
-        return Response.ok().entity(NotificationStatusResponse.fromEntity(uriInfo, user)).build();
+        return Response.ok().entity(NotificationStatusResponse.fromEntity(uriInfo, user.getId(), user.getDisabledNotifications())).build();
     }
 
     @GET
     @Path("{id:\\d+}/notifications")
     @PreAuthorize("@accessControl.checkAccessedUserIdIsUser(#id)")
-    @Consumes(value = {MediaType.APPLICATION_JSON})
-    @Produces(value = {MediaType.APPLICATION_JSON})
+    @Produces(VndType.APPLICATION_NOTIFICATION_STATUS)
     public Response getNotifications(@PathParam("id") final long id) {
-        Optional<User> user = us.getUserById(id);
-        if (!user.isPresent()) {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
-        return Response.ok().entity(NotificationStatusResponse.fromEntity(uriInfo, user.get())).build();
+        Set<NotificationType> notifications = us.getNotifications(id).orElseThrow(() -> new CustomRuntimeException(Response.Status.NOT_FOUND, "user.not.found"));
+        return Response.ok().entity(NotificationStatusResponse.fromEntity(uriInfo, id, notifications)).build();
     }
 
     @GET
     @Path("{id:\\d+}/mission-progresses")
     @PreAuthorize("@accessControl.checkAccessedUserIdIsUser(#id)")
-    @Consumes(value = {MediaType.APPLICATION_JSON})
-    @Produces(value = {MediaType.APPLICATION_JSON})
+    @Produces(VndType.APPLICATION_MISSION_PROGRESS)
     public Response getMissionProgresses(@PathParam("id") final Long id) {
         List<MissionProgress> progresses = missionService.getMissionProgresses(id);
         if (progresses.isEmpty()) {
@@ -288,161 +241,4 @@ public class UserController {
         }
         return Response.ok(ListResponse.fromEntity(uriInfo, progresses.stream().map((progress) -> MissionProgressResponse.fromEntity(uriInfo, progress)).collect(Collectors.toList()))).build();
     }
-
-//    @GET
-//    @Path("{id:\\d+}/notifications")
-//    @PreAuthorize("@accessControl.checkAccessedUserIdIsUser(#id)")
-//    @Produces(value = {MediaType.APPLICATION_JSON})
-//    public Response getNotifications() {
-//
-//    }
-
-//    @RequestMapping("/login")
-//    public ModelAndView loginForm(S
-//            @RequestParam(value = "error", defaultValue = "false") final String error,
-//            @RequestParam(value = "disabled", defaultValue = "false") final Boolean disabled
-//    ) {
-//        ModelAndView mav = new ModelAndView("user/login");
-//        mav.addObject("error", error);
-//        mav.addObject("disabled", disabled);
-//        return mav;
-//    }
-//
-//    @RequestMapping("/register")
-//    public ModelAndView registerForm(
-//            @ModelAttribute("registerForm") final RegisterForm form
-//    ) {
-//        return new ModelAndView("user/register");
-//    }
-//
-//    @RequestMapping(value="/register",method = RequestMethod.POST)
-//    public ModelAndView register(
-//            @Valid @ModelAttribute("registerForm") final RegisterForm form,
-//            final BindingResult errors
-//    ) {
-//        if(errors.hasErrors()) {
-//            return registerForm(form);
-//        }
-//        try {
-//            us.createUser(form.getUsername(), form.getEmail(), form.getPassword(), httpServletRequest.getLocale());
-//        } catch (EmailAlreadyExistsException | UsernameAlreadyExistsException e) {
-//            return registerForm(form);
-//        }
-//
-//        return new ModelAndView("redirect:/recover?registered=true");
-//    }
-//
-//    @RequestMapping(value = "/recover", method = RequestMethod.GET)
-//    public ModelAndView validateForm(
-//            @RequestParam(value = "registered", required = false) boolean registered,
-//            @RequestParam(value = "resent", required = false) boolean resent
-//    ) {
-//
-//        ModelAndView mav = new ModelAndView("user/recovery");
-//        mav.addObject("registered", registered);
-//        mav.addObject("resent", resent);
-//        return mav;
-//    }
-//
-//    @RequestMapping(value = "/resend-email", method = RequestMethod.GET)
-//    public ModelAndView resendEmailForm(
-//            @ModelAttribute("resendEmailForm") ResendEmailForm form,
-//            @RequestParam(value = "email", required = false) String email
-//    ) {
-//        if (email != null && !email.equals("")) {
-//            form.setEmail(email);
-//        }
-//        return new ModelAndView("user/resend-email");
-//    }
-//
-//    @RequestMapping(value = "/validate", method = RequestMethod.POST)
-//    public ModelAndView validateToken(@RequestParam("validationCode") String code) {
-//        Optional<User> user;
-//        try {
-//            user = us.validateToken(code);
-//        } catch (TokenExpiredException e) {
-//            LOGGER.error("Token expired " + code);
-//            return new ModelAndView("user/recovery").addObject("expiredToken", true);
-//        }
-//        if (!user.isPresent()) {
-//            return new ModelAndView("user/recovery").addObject("unknownToken", true);
-//        }
-//        authWithoutPassword(user.get());
-//        return new ModelAndView("user/validated");
-//    }
-//
-
-//
-//    @RequestMapping(value = "/validate/{token}", method = RequestMethod.GET)
-//    public ModelAndView validateByPath(@PathVariable("token") String token) {
-//        return validateToken(token);
-//    }
-//
-//    @RequestMapping(value = "/resend-email", method = RequestMethod.POST)
-//    public ModelAndView resendEmail(@Valid @ModelAttribute("resendEmailForm") ResendEmailForm form, final BindingResult errors) {
-//        if (errors.hasErrors()) {
-//            return resendEmailForm(form, form.getEmail());
-//        }
-//        try {
-//            us.resendToken(form.getEmail());
-//        } catch (UserAlreadyEnabled e) {
-//            errors.rejectValue("email", "user.already.exists");
-//            return resendEmailForm(form, form.getEmail());
-//        }
-//        return new ModelAndView("redirect:/recover?resent=true");
-//    }
-//
-//    @RequestMapping(value = "/changepassword", method = RequestMethod.GET)
-//    public ModelAndView changePasswordForm(@RequestParam(value = "token", required = true) String token,
-//                                           @ModelAttribute("passwordForm") ChangePasswordForm passwordForm) {
-//        ModelAndView mav = new ModelAndView("user/change-password");
-//        mav.addObject("token", token);
-//        return mav;
-//    }
-//
-//    @RequestMapping(value = "/recover-password", method = RequestMethod.GET)
-//    public ModelAndView recoverPasswordForm(@ModelAttribute("emailForm") ResendEmailForm emailForm) {
-//        return new ModelAndView("user/resend-recover");
-//    }
-//
-//    @RequestMapping(value = "/resend-password", method = RequestMethod.POST)
-//    public ModelAndView sendChangePasswordRequest(@Valid @ModelAttribute("emailForm") ResendEmailForm emailForm,
-//                                                  final BindingResult errors) {
-//        if (errors.hasErrors()) {
-//            return recoverPasswordForm(emailForm);
-//        }
-//        us.sendPasswordResetToken(emailForm.getEmail());
-//        return new ModelAndView("user/resend-recover").addObject("resent", true);
-//    }
-//
-//    @RequestMapping(value = "/changepassword/{token}", method = RequestMethod.POST)
-//    public ModelAndView changePassword(@PathVariable("token") String token,
-//                                       @Valid @ModelAttribute("passwordForm") ChangePasswordForm passwordForm,
-//                                       final BindingResult errors) {
-//        if (errors.hasErrors()) {
-//            return changePasswordForm(token, passwordForm);
-//        }
-//        try {
-//            us.resetPassword(token, passwordForm.getPassword());
-//        } catch (TokenExpiredException e) {
-//            LOGGER.error("Token expired " + token);
-//            errors.rejectValue("repeatPassword", "error.token.expired");
-//            return changePasswordForm(token, passwordForm);
-//        } catch (TokenNotFoundException e) {
-//            errors.rejectValue("repeatPassword", "error.token.not.found");
-//            return changePasswordForm(token, passwordForm);
-//        }
-//        return new ModelAndView("user/password-changed");
-//    }
-
 }
-
-/*
-POST /recovertoken email
-PUT /users/1/password
-POST /validatetoken email
-PUT /users/1/enabled ???
-POST /users
-PUT /users/1
-PUT /users/1/preferences
- */
