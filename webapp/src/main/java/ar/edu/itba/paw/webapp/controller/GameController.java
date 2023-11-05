@@ -1,6 +1,5 @@
 package ar.edu.itba.paw.webapp.controller;
 
-import ar.edu.itba.paw.exceptions.GameSuggestionAlreadyHandled;
 import ar.edu.itba.paw.models.Game;
 import ar.edu.itba.paw.models.Paginated;
 import ar.edu.itba.paw.models.User;
@@ -11,12 +10,12 @@ import ar.edu.itba.paw.webapp.auth.AuthenticationHelper;
 import ar.edu.itba.paw.webapp.controller.annotations.ExistentGameId;
 import ar.edu.itba.paw.webapp.controller.forms.PatchGameForm;
 import ar.edu.itba.paw.webapp.controller.forms.SubmitGameForm;
+import ar.edu.itba.paw.webapp.controller.mediatypes.VndType;
 import ar.edu.itba.paw.webapp.controller.querycontainers.GameSearchQuery;
 import ar.edu.itba.paw.webapp.controller.responses.GameResponse;
 import ar.edu.itba.paw.webapp.controller.responses.GenreResponse;
 import ar.edu.itba.paw.webapp.controller.responses.ListResponse;
-import ar.edu.itba.paw.webapp.controller.responses.PaginatedResponse;
-import ar.edu.itba.paw.webapp.exceptions.CustomRuntimeException;
+import ar.edu.itba.paw.webapp.controller.responses.PaginatedResponseHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +36,7 @@ import java.util.stream.Collectors;
 
 @Path("/games")
 @Component
-public class GameController extends UriInfoController {
+public class GameController {
     private static final Logger LOGGER = LoggerFactory.getLogger(GameController.class);
 
     private final GameService gs;
@@ -61,7 +60,7 @@ public class GameController extends UriInfoController {
     }
 
     @GET
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces(VndType.APPLICATION_GAME)
     @Path("{id:\\d+}")
     public Response getById(@PathParam("id") final long gameId) {
         User loggedUser = AuthenticationHelper.getLoggedUser(us);
@@ -76,7 +75,7 @@ public class GameController extends UriInfoController {
 
 
     @GET
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces(VndType.APPLICATION_GAME_LIST)
     @PreAuthorize("@accessControl.checkSuggestedFilterIsModerator(#gameSearchQuery.getSuggested())")
     public Response getGames(@Valid @BeanParam GameSearchQuery gameSearchQuery){
         User loggedUser = AuthenticationHelper.getLoggedUser(us);
@@ -89,23 +88,23 @@ public class GameController extends UriInfoController {
                         ,loggedUser)
                 // Que busque los gameReviewData por todos los games es medio lento
         ).collect(Collectors.toList());
-        return Response.ok(PaginatedResponse.fromPaginated(uriInfo,gameResponseList,games)).build();
+        return PaginatedResponseHelper.fromPaginated(uriInfo,gameResponseList,games).build();
     }
 
     @POST
     @Consumes(MediaType.MULTIPART_FORM_DATA)
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces(VndType.APPLICATION_GAME)
     public Response postGame(@Valid @BeanParam SubmitGameForm submitGameForm) throws IOException {
         User loggedUser = AuthenticationHelper.getLoggedUser(us);
         Game game = gs.createGame(submitGameForm.toSubmitDTO(),loggedUser.getId());
 
         return Response.
-                created(uriInfo.getAbsolutePathBuilder().path(game.getId().toString()).build()).build();
+                created(uriInfo.getAbsolutePathBuilder().path(game.getId().toString()).build()).entity(GameResponse.fromEntity(uriInfo, game, null, null)).build();
     }
 
     @PUT
     @Consumes(MediaType.MULTIPART_FORM_DATA)
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces(VndType.APPLICATION_GAME)
     @Path("{id:\\d+}")
     public Response putGame(@Valid @BeanParam SubmitGameForm submitGameForm, @Valid @ExistentGameId @PathParam("id") final long id) throws IOException {
         Game game = gs.editGame(submitGameForm.toSubmitDTO(),id);
@@ -128,7 +127,6 @@ public class GameController extends UriInfoController {
     }
 
     @PATCH
-    @Produces(MediaType.APPLICATION_JSON)
     @Path("{id:\\d+}")
     public Response patchGame(@Valid @NotNull(message = "error.body.empty") PatchGameForm patchGameForm,
                               @Valid @ExistentGameId @PathParam("id") final long id) {
@@ -140,8 +138,10 @@ public class GameController extends UriInfoController {
         }
         return Response.noContent().build();
     }
+
+    // TODO: remove ListResponse in favour of ListResponseHelper
     @GET
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces(VndType.APPLICATION_ENTITY_LINK_LIST)
     @Path("{id:\\d+}/genres")
     public Response getGameGenres(@PathParam("id") final long id) {
         User loggedUser = AuthenticationHelper.getLoggedUser(us);

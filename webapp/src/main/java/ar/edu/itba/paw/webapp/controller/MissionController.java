@@ -7,6 +7,7 @@ import ar.edu.itba.paw.servicesinterfaces.UserService;
 import ar.edu.itba.paw.webapp.auth.AuthenticationHelper;
 import ar.edu.itba.paw.webapp.controller.cache.CacheHelper;
 import ar.edu.itba.paw.webapp.controller.helpers.LocaleHelper;
+import ar.edu.itba.paw.webapp.controller.mediatypes.VndType;
 import ar.edu.itba.paw.webapp.controller.responses.MissionResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -40,7 +41,7 @@ public class MissionController {
 
     @GET
     @Path("{id}")
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces(VndType.APPLICATION_MISSION)
     public Response getMissionById(@PathParam("id") String missionName, @Context Request request) {
         return missionService.getMissionById(missionName)
                 .map(mission -> CacheHelper.buildEtagCache(
@@ -54,7 +55,7 @@ public class MissionController {
 
     @GET
     @Path("/")
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces(VndType.APPLICATION_MISSION_LIST)
     public Response getMission(@Context Request request) {
         List<Mission> missions = missionService.getMissions(AuthenticationHelper.getLoggedUser(us));
         return CacheHelper.buildEtagCache(

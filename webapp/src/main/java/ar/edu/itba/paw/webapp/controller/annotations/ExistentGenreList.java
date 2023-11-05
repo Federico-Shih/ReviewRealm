@@ -19,4 +19,6 @@ public @interface ExistentGenreList {
     Class<?>[] groups() default {};
 
     Class<? extends Payload>[] payload() default {};
+
+    boolean nullable() default false;
 }

@@ -92,4 +92,6 @@ public interface UserService {
     Paginated<User> getUsers(Page page, UserFilter filter, Ordering<UserOrderCriteria> ordering, Long currentUserId);
 
     Optional<ExpirationToken> getExpirationToken(String token);
+
+    Optional<Set<NotificationType>> getNotifications(long id);
 }

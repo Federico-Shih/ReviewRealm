@@ -12,11 +12,11 @@ import ar.edu.itba.paw.servicesinterfaces.UserService;
 import ar.edu.itba.paw.webapp.auth.AuthenticationHelper;
 
 import ar.edu.itba.paw.webapp.controller.forms.AcceptRejectReportForm;
+import ar.edu.itba.paw.webapp.controller.mediatypes.VndType;
 import ar.edu.itba.paw.webapp.controller.querycontainers.ReportSearchQuery;
-import ar.edu.itba.paw.webapp.controller.responses.PaginatedResponse;
+import ar.edu.itba.paw.webapp.controller.responses.PaginatedResponseHelper;
 import ar.edu.itba.paw.webapp.controller.responses.ReportResponse;
 import ar.edu.itba.paw.webapp.controller.forms.SubmitReportForm;
-import ar.edu.itba.paw.webapp.exceptions.CustomRuntimeException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -50,7 +50,7 @@ public class ReportController extends UriInfoController {
 
     @GET
     @Path("{id}")
-    @Produces(value = {MediaType.APPLICATION_JSON})
+    @Produces(VndType.APPLICATION_REPORT)
     public Response getById(@PathParam("id") final long id) {
         final Optional<Report> report = reportService.getReportById(id);
         User loggedIn = AuthenticationHelper.getLoggedUser(userService);
@@ -61,18 +61,18 @@ public class ReportController extends UriInfoController {
     }
 
     @GET
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces(VndType.APPLICATION_REPORT_LIST)
     public Response getReports(@Valid @BeanParam ReportSearchQuery reportSearchQuery) {
         final Paginated<Report> reports = reportService.getReports(reportSearchQuery.getPage(), reportSearchQuery.getFilter());
         if (reports.getTotalPages() == 0 || reports.getList().isEmpty()) {
             return Response.noContent().build();
         }
         List<ReportResponse> reportResponseList = reports.getList().stream().map(this.currifyUriInfo(ReportResponse::fromEntity)).collect(Collectors.toList());
-        return Response.ok(PaginatedResponse.fromPaginated(uriInfo, reportResponseList, reports)).build();
+        return PaginatedResponseHelper.fromPaginated(uriInfo, reportResponseList, reports).build();
     }
 
     @POST
-    @Produces(value = {MediaType.APPLICATION_JSON})
+    @Produces(VndType.APPLICATION_REPORT)
     public Response submitReport(@Valid SubmitReportForm reportForm) throws ReportAlreadyExistsException, ReviewNotFoundException {
         long reporterId = AuthenticationHelper.getLoggedUser(userService).getId();
         ReportReason rs = ReportReason.valueOf(reportForm.getReason().toUpperCase());
@@ -90,7 +90,7 @@ public class ReportController extends UriInfoController {
 
     @PATCH
     @Path("{id}")
-    @Produces(value = {MediaType.APPLICATION_JSON})
+    @Produces(VndType.APPLICATION_REPORT)
     public Response acceptRejectReport(@PathParam("id") final long id, @Valid AcceptRejectReportForm reportForm) throws ReportAlreadyResolvedException {
         long userId = AuthenticationHelper.getLoggedUser(userService).getId();
         Report report;

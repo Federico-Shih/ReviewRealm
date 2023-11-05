@@ -4,8 +4,8 @@ import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.servicesinterfaces.GenreService;
 import ar.edu.itba.paw.webapp.controller.cache.CacheHelper;
 import ar.edu.itba.paw.webapp.controller.helpers.LocaleHelper;
+import ar.edu.itba.paw.webapp.controller.mediatypes.VndType;
 import ar.edu.itba.paw.webapp.controller.responses.GenreResponse;
-import ar.edu.itba.paw.webapp.controller.responses.ValidationErrorResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
@@ -27,17 +27,17 @@ public class GenreController {
     @Context
     private UriInfo uriInfo;
 
-    @Autowired
-    private MessageSource messageSource;
+    private final MessageSource messageSource;
 
     @Autowired
-    public GenreController(GenreService genreService) {
+    public GenreController(GenreService genreService, MessageSource messageSource) {
         this.genreService = genreService;
+        this.messageSource = messageSource;
     }
 
     @GET()
     @Path("{id:\\d+}")
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces(VndType.APPLICATION_GENRE)
     public Response getById(@PathParam("id") Integer id, @Context Request request) {
         return genreService.getGenreById(id)
                 .map(genre -> {
@@ -52,7 +52,7 @@ public class GenreController {
 
     @GET()
     @Path("/")
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces(VndType.APPLICATION_GENRE_LIST)
     public Response getAll(@Context Request request) {
         List<Genre> genres = genreService.getGenres();
         CacheControl cacheControl = CacheHelper.buildCacheControl(cacheMaxAge);

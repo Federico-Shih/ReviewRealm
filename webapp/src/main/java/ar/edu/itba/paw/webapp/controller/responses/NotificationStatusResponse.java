@@ -5,25 +5,27 @@ import ar.edu.itba.paw.models.User;
 
 import javax.ws.rs.core.UriInfo;
 
+import java.util.Set;
+
 import static ar.edu.itba.paw.webapp.controller.responses.NotificationResponse.getLinkFromEntity;
 
 public class NotificationStatusResponse extends BaseResponse {
     private NotificationTypeResponse userIFollowWritesReview;
     private NotificationTypeResponse myReviewIsDeleted;
 
-    public static NotificationStatusResponse fromEntity(final UriInfo uri, User user) {
+    public static NotificationStatusResponse fromEntity(final UriInfo uri, long id, Set<NotificationType> notifications) {
         NotificationStatusResponse response = new NotificationStatusResponse();
         for (NotificationType type : NotificationType.values()) {
             switch (type) {
                 case USER_I_FOLLOW_WRITES_REVIEW:
-                    response.userIFollowWritesReview = NotificationTypeResponse.fromEntity(uri, type, !user.getDisabledNotifications().contains(type));
+                    response.userIFollowWritesReview = NotificationTypeResponse.fromEntity(uri, type, !notifications.contains(type));
                     break;
                 case MY_REVIEW_IS_DELETED:
-                    response.myReviewIsDeleted = NotificationTypeResponse.fromEntity(uri, type, !user.getDisabledNotifications().contains(type));
+                    response.myReviewIsDeleted = NotificationTypeResponse.fromEntity(uri, type, !notifications.contains(type));
                     break;
             }
         }
-        response.link("self", uri.getBaseUriBuilder().path("users").path(String.valueOf(user.getId())).path("notifications").build());
+        response.link("self", uri.getBaseUriBuilder().path("users").path(String.valueOf(id)).path("notifications").build());
         return response;
     }
 
@@ -35,7 +37,7 @@ public class NotificationStatusResponse extends BaseResponse {
         return myReviewIsDeleted;
     }
 
-    private static class NotificationTypeResponse extends BaseResponse {
+    public static class NotificationTypeResponse extends BaseResponse {
         private final boolean enabled;
         private final String type;
 

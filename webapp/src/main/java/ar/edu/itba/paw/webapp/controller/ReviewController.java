@@ -15,21 +15,18 @@ import ar.edu.itba.paw.webapp.controller.annotations.ExistentReviewId;
 import ar.edu.itba.paw.webapp.controller.annotations.ExistentUserId;
 import ar.edu.itba.paw.webapp.controller.forms.EditReviewForm;
 import ar.edu.itba.paw.webapp.controller.forms.SubmitReviewForm;
-import ar.edu.itba.paw.webapp.controller.helpers.LocaleHelper;
+import ar.edu.itba.paw.webapp.controller.mediatypes.VndType;
 import ar.edu.itba.paw.webapp.controller.querycontainers.ReviewSearchQuery;
 import ar.edu.itba.paw.webapp.controller.responses.FeedbackResponse;
-import ar.edu.itba.paw.webapp.controller.responses.PaginatedResponse;
+import ar.edu.itba.paw.webapp.controller.responses.PaginatedResponseHelper;
 import ar.edu.itba.paw.webapp.controller.responses.ReviewResponse;
-import ar.edu.itba.paw.webapp.controller.responses.UserResponse;
 import ar.edu.itba.paw.webapp.validators.FeedbackTypeBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.ModelAttribute;
 
-import javax.swing.text.html.Option;
 import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
@@ -79,7 +76,7 @@ public class ReviewController{
 
 
     @GET
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces(VndType.APPLICATION_REVIEW_LIST)
     public Response getReviews(@Valid @BeanParam ReviewSearchQuery reviewSearchQuery) {
         User user = AuthenticationHelper.getLoggedUser(userService);
         final Paginated<Review> reviews = reviewService.searchReviews(reviewSearchQuery.getPage(), reviewSearchQuery.getFilter(), reviewSearchQuery.getOrdering(), user!=null? user.getId() : null);
@@ -87,11 +84,11 @@ public class ReviewController{
             return Response.noContent().build();
         }
         List<ReviewResponse> reviewResponseList = reviews.getList().stream().map((review) -> ReviewResponse.fromEntity(uriInfo, review)).collect(Collectors.toList());
-        return Response.ok(PaginatedResponse.fromPaginated(uriInfo, reviewResponseList, reviews)).build();
+        return PaginatedResponseHelper.fromPaginated(uriInfo, reviewResponseList, reviews).build();
     }
 
     @POST
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces(VndType.APPLICATION_REVIEW)
     public Response createReview(@Valid final SubmitReviewForm form) throws ReviewAlreadyExistsException {
         User author = AuthenticationHelper.getLoggedUser(userService);
         Review createdReview = reviewService.createReview(
@@ -127,7 +124,7 @@ public class ReviewController{
 
     @GET
     @Path("{id}")
-    @Produces(value = {MediaType.APPLICATION_JSON})
+    @Produces(VndType.APPLICATION_REVIEW)
     public Response getReviewById(@Valid @ExistentReviewId @PathParam("id") final long id) {
         Optional<Review> possibleReview = reviewService.getReviewById(id, AuthenticationHelper.getLoggedUser(userService).getId());
         if (!possibleReview.isPresent())
@@ -139,7 +136,7 @@ public class ReviewController{
 
     @PATCH
     @Path("{id}")
-    @Consumes(value = {MediaType.APPLICATION_JSON})
+    @Consumes(VndType.APPLICATION_REVIEW_PATCH)
     @PreAuthorize("@accessControl.checkReviewAuthorOwnerOrMod(#id)")
     public Response patchReview(@Valid @ExistentReviewId @PathParam("id") final long id, @Valid final EditReviewForm form) {
         reviewService.updateReview(id, form.getReviewTitle(),
@@ -154,10 +151,10 @@ public class ReviewController{
         return Response.noContent().build();
     }
 
-    // Si no existe, devuelve null, no me parece mal
+    // Si no existe, devuelve null, no me parece mal. TODO: quiza considerar 404?
     @GET
     @Path("{reviewId}/feedback/{userId}")
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces(VndType.APPLICATION_REVIEW_FEEDBACK)
     public Response getReviewFeedback(@Valid @ExistentReviewId @PathParam("reviewId") long reviewId, @Valid @ExistentUserId @PathParam("userId") long userId) {
         Optional<Review> perhapsReview = reviewService.getReviewById(reviewId, userId);
         return Response.ok(FeedbackResponse.fromEntity(uriInfo, userId, perhapsReview.get().getId(), perhapsReview.get().getFeedback())).build();
@@ -165,7 +162,7 @@ public class ReviewController{
 
     @POST
     @Path("{reviewId}/feedback")
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces(VndType.APPLICATION_REVIEW_FEEDBACK)
     @PreAuthorize("@accessControl.checkUserIsNotAuthor(#reviewId)")
     public Response createReviewFeedback(@Valid @ExistentReviewId @PathParam("reviewId") long reviewId, @Valid @BeanParam FeedbackTypeBean feedbackType) {
         FeedbackType fb = feedbackType.transformToEnum();

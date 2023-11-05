@@ -4,6 +4,7 @@ import ar.edu.itba.paw.enums.NotificationType;
 import ar.edu.itba.paw.servicesinterfaces.NotificationService;
 import ar.edu.itba.paw.webapp.controller.cache.CacheHelper;
 import ar.edu.itba.paw.webapp.controller.helpers.LocaleHelper;
+import ar.edu.itba.paw.webapp.controller.mediatypes.VndType;
 import ar.edu.itba.paw.webapp.controller.responses.NotificationResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -36,7 +37,7 @@ public class NotificationController {
 
     @GET
     @Path("/")
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces(VndType.APPLICATION_NOTIFICATION_LIST)
     public Response getAllNotifications(@Context Request request) {
         List<NotificationType> notificationTypeList = this.notificationService.getNotifications();
         return CacheHelper.buildEtagCache(
@@ -60,7 +61,7 @@ public class NotificationController {
 
     @GET
     @Path("{id}")
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces(VndType.APPLICATION_NOTIFICATION)
     public Response getNotificationById(@PathParam("id") String id, @Context Request request) {
         return this.notificationService.getNotificationTypeById(id)
                 .map(notificationType -> CacheHelper.buildEtagCache(
