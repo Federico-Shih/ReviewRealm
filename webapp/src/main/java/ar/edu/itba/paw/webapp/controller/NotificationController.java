@@ -18,7 +18,7 @@ import javax.ws.rs.core.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Path("/notifications")
+@Path("/api/notifications")
 @Component
 public class NotificationController {
     @Context

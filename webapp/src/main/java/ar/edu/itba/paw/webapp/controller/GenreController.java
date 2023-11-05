@@ -18,7 +18,7 @@ import javax.ws.rs.core.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Path("/genres")
+@Path("/api/genres")
 @Component
 public class GenreController {
     private static final int cacheMaxAge = 86400;

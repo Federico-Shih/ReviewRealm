@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@Path("/games")
+@Path("/api/games")
 @Component
 public class GameController {
     private static final Logger LOGGER = LoggerFactory.getLogger(GameController.class);

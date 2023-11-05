@@ -37,7 +37,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@Path("reviews")
+@Path("/api/reviews")
 @Component
 public class ReviewController{
     private static final Logger LOGGER = LoggerFactory.getLogger(ReviewController.class);

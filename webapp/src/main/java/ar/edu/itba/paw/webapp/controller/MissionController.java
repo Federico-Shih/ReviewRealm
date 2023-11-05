@@ -21,7 +21,7 @@ import javax.ws.rs.core.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Path("/missions")
+@Path("/api/missions")
 @Component
 public class MissionController {
     private final MessageSource messageSource;
