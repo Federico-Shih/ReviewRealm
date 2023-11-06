@@ -22,4 +22,10 @@ public class CacheHelper {
         if (builder != null) return builder.cacheControl(cacheControl).tag(tag);
         return defaultFunction.apply(entity).cacheControl(cacheControl).tag(tag);
     }
+
+    public static void unconditionalCache(Response.ResponseBuilder responseBuilder, int maxAge) {
+        final CacheControl cacheControl = new CacheControl();
+        cacheControl.setMaxAge(maxAge);
+        responseBuilder.cacheControl(cacheControl);
+    }
 }
