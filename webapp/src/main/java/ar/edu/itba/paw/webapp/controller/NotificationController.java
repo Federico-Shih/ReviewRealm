@@ -60,7 +60,7 @@ public class NotificationController {
     }
 
     @GET
-    @Path("{id}")
+    @Path("{id:\\d+}")
     @Produces(VndType.APPLICATION_NOTIFICATION)
     public Response getNotificationById(@PathParam("id") String id, @Context Request request) {
         return this.notificationService.getNotificationTypeById(id)

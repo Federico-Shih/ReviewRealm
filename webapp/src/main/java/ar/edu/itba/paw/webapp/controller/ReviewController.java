@@ -28,6 +28,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -89,7 +90,8 @@ public class ReviewController{
 
     @POST
     @Produces(VndType.APPLICATION_REVIEW)
-    public Response createReview(@Valid final SubmitReviewForm form) throws ReviewAlreadyExistsException {
+    @Consumes(VndType.APPLICATION_REVIEW_FORM)
+    public Response createReview(@Valid @NotNull(message = "error.body.empty") final SubmitReviewForm form) throws ReviewAlreadyExistsException {
         User author = AuthenticationHelper.getLoggedUser(userService);
         Review createdReview = reviewService.createReview(
                 form.getReviewTitle(),
@@ -110,8 +112,7 @@ public class ReviewController{
     }
 
     @DELETE
-    @Produces({MediaType.APPLICATION_JSON})
-    @Path("{id}")
+    @Path("{id:\\d+}")
     @PreAuthorize("@accessControl.checkReviewAuthorOwnerOrMod(#id)")
     public Response deleteReview(@Valid @ExistentReviewId @PathParam("id") long id) { // Todo: Hace falta el valid?
         User loggedUser = AuthenticationHelper.getLoggedUser(userService);
@@ -123,7 +124,7 @@ public class ReviewController{
     }
 
     @GET
-    @Path("{id}")
+    @Path("{id:\\d+}")
     @Produces(VndType.APPLICATION_REVIEW)
     public Response getReviewById(@Valid @ExistentReviewId @PathParam("id") final long id) {
         Optional<Review> possibleReview = reviewService.getReviewById(id, AuthenticationHelper.getLoggedUser(userService).getId());
@@ -135,10 +136,10 @@ public class ReviewController{
 
 
     @PATCH
-    @Path("{id}")
+    @Path("{id:\\d+}")
     @Consumes(VndType.APPLICATION_REVIEW_PATCH)
     @PreAuthorize("@accessControl.checkReviewAuthorOwnerOrMod(#id)")
-    public Response patchReview(@Valid @ExistentReviewId @PathParam("id") final long id, @Valid final EditReviewForm form) {
+    public Response patchReview(@Valid @ExistentReviewId @PathParam("id") final long id, @Valid @NotNull(message = "error.body.empty") final EditReviewForm form) {
         reviewService.updateReview(id, form.getReviewTitle(),
                 form.getReviewContent(),
                 form.getReviewRating(),
@@ -153,7 +154,7 @@ public class ReviewController{
 
     // Si no existe, devuelve null, no me parece mal. TODO: quiza considerar 404?
     @GET
-    @Path("{reviewId}/feedback/{userId}")
+    @Path("{reviewId:\\d+}/feedback/{userId:\\d+}")
     @Produces(VndType.APPLICATION_REVIEW_FEEDBACK)
     public Response getReviewFeedback(@Valid @ExistentReviewId @PathParam("reviewId") long reviewId, @Valid @ExistentUserId @PathParam("userId") long userId) {
         Optional<Review> perhapsReview = reviewService.getReviewById(reviewId, userId);
@@ -161,8 +162,9 @@ public class ReviewController{
     }
 
     @POST
-    @Path("{reviewId}/feedback")
+    @Path("{reviewId:\\d+}/feedback")
     @Produces(VndType.APPLICATION_REVIEW_FEEDBACK)
+    @Consumes(VndType.APPLICATION_REVIEW_FEEDBACK_FORM)
     @PreAuthorize("@accessControl.checkUserIsNotAuthor(#reviewId)")
     public Response createReviewFeedback(@Valid @ExistentReviewId @PathParam("reviewId") long reviewId, @Valid @BeanParam FeedbackTypeBean feedbackType) {
         FeedbackType fb = feedbackType.transformToEnum();
@@ -177,7 +179,7 @@ public class ReviewController{
 
 
     @DELETE
-    @Path("{reviewId}/feedback/{userId}")
+    @Path("{reviewId:\\d+}/feedback/{userId:\\d+}")
     @PreAuthorize("@accessControl.checkLoggedIsCreatorOfFeedback(#reviewId, #userId)")
     public Response deleteReviewFeedback(@Valid @ExistentReviewId @PathParam("reviewId") long reviewId, @Valid @ExistentUserId @PathParam("userId") long userId) {
         return reviewService.deleteReviewFeedback(reviewId,userId) ? Response.ok().build() : Response.status(Response.Status.NOT_FOUND).build();

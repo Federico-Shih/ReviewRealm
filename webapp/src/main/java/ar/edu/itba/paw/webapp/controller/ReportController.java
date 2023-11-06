@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -48,7 +49,7 @@ public class ReportController extends UriInfoController {
     }
 
     @GET
-    @Path("{id}")
+    @Path("{id:\\d+}")
     @Produces(VndType.APPLICATION_REPORT)
     public Response getById(@PathParam("id") final long id) {
         final Optional<Report> report = reportService.getReportById(id);
@@ -71,8 +72,9 @@ public class ReportController extends UriInfoController {
     }
 
     @POST
+    @Consumes(VndType.APPLICATION_REPORT_FORM)
     @Produces(VndType.APPLICATION_REPORT)
-    public Response submitReport(@Valid SubmitReportForm reportForm) throws ReportAlreadyExistsException, ReviewNotFoundException {
+    public Response submitReport(@Valid @NotNull(message = "error.body.empty") SubmitReportForm reportForm) throws ReportAlreadyExistsException, ReviewNotFoundException {
         long reporterId = AuthenticationHelper.getLoggedUser(userService).getId();
         ReportReason rs = ReportReason.valueOf(reportForm.getReason().toUpperCase());
         final Report report;
@@ -88,9 +90,10 @@ public class ReportController extends UriInfoController {
     }
 
     @PATCH
-    @Path("{id}")
+    @Path("{id:\\d+}")
+    @Consumes(VndType.APPLICATION_REPORT_HANDLE_FORM)
     @Produces(VndType.APPLICATION_REPORT)
-    public Response acceptRejectReport(@PathParam("id") final long id, @Valid AcceptRejectReportForm reportForm) throws ReportAlreadyResolvedException {
+    public Response acceptRejectReport(@PathParam("id") final long id, @Valid @NotNull(message = "error.body.empty") AcceptRejectReportForm reportForm) throws ReportAlreadyResolvedException {
         long userId = AuthenticationHelper.getLoggedUser(userService).getId();
         Report report;
         if (reportForm.getState().equals("accepted")) {

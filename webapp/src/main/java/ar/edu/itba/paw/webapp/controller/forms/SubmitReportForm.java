@@ -3,11 +3,12 @@ package ar.edu.itba.paw.webapp.controller.forms;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
-@NotNull(message = "error.body.empty")
+
 public class SubmitReportForm {
     @NotNull(message = "NotNull.property")
     private Long reviewId;
-    @Pattern(regexp ="^(disrespectful|spam|irrelevant|spoiler|piracy|privacy)$", flags = Pattern.Flag.CASE_INSENSITIVE)
+    @Pattern(regexp ="^(disrespectful|spam|irrelevant|spoiler|piracy|privacy)$", flags = Pattern.Flag.CASE_INSENSITIVE
+    ,message = "Pattern.submitReport.cause")
     @NotNull(message = "NotNull.property")
     private String reason;
 

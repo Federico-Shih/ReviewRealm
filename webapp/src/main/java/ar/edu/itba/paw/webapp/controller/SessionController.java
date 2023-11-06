@@ -14,6 +14,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -34,7 +36,8 @@ public class SessionController {
 
     @POST
     @Produces(MediaType.APPLICATION_JSON)
-    public Response login(@Valid @RequestBody AuthForm authForm) {
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response login(@Valid @NotNull(message = "error.body.empty") AuthForm authForm) {
         Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
             authForm.getEmail(),
             authForm.getPassword()

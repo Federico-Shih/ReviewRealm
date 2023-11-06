@@ -4,7 +4,6 @@ import ar.edu.itba.paw.webapp.controller.annotations.ExistentGameId;
 
 import javax.validation.constraints.NotNull;
 
-@NotNull(message = "error.body.empty")
 public class FavoriteGameForm {
     @ExistentGameId
     private long gameId;

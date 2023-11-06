@@ -5,7 +5,6 @@ import ar.edu.itba.paw.dtos.filtering.GameFilterBuilder;
 import ar.edu.itba.paw.dtos.ordering.GameOrderCriteria;
 import ar.edu.itba.paw.dtos.ordering.OrderDirection;
 import ar.edu.itba.paw.dtos.ordering.Ordering;
-import ar.edu.itba.paw.dtos.ordering.UserOrderCriteria;
 import ar.edu.itba.paw.webapp.controller.annotations.ExistentGenreList;
 import ar.edu.itba.paw.webapp.controller.annotations.ExistentUserId;
 
@@ -29,11 +28,11 @@ public class GameSearchQuery extends PaginatedQuery{
     @QueryParam("search")
     private String search;
 
-    @Pattern(regexp ="^(name|averageRating|publishDate)$")
+    @Pattern(regexp ="^(name|averageRating|publishDate)$", message = "Pattern.searchGames.sort")
     @QueryParam("sort")
     private String orderCriteria;
 
-    @Pattern(regexp ="^(asc|desc)$")
+    @Pattern(regexp ="^(asc|desc)$", message = "Pattern.search.direction")
     @QueryParam("direction")
     private String orderDirection;
 

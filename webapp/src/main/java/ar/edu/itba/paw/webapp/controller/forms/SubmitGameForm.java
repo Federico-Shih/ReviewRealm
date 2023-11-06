@@ -17,16 +17,16 @@ import java.util.List;
 
 
 public class SubmitGameForm {
-    @Size(min = 1, max = 80)
+    @Size(min = 1, max = 80,message = "Size.submitGame.name")
     @FormDataParam("name")
     private String name;
-    @Size(max = 300)
+    @Size(max = 300,message = "Size.submitGame.description")
     @FormDataParam("description")
     private String description;
-    @Size(min = 1, max = 50)
+    @Size(min = 1, max = 50, message = "Size.submitGame.developer")
     @FormDataParam("developer")
     private String developer;
-    @Size(min = 1, max = 50)
+    @Size(min = 1, max = 50, message = "Size.submitGame.publisher")
     @FormDataParam("publisher")
     private String publisher;
 
@@ -36,6 +36,7 @@ public class SubmitGameForm {
     @CheckDateFormat(pattern = "yyyy-mm-dd")
     @FormDataParam("releaseDate")
     private String releaseDate;
+
 
     @FormDataParam("image")
     private InputStream imageStream;

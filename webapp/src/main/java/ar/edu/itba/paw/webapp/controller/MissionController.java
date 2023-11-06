@@ -40,7 +40,7 @@ public class MissionController {
     }
 
     @GET
-    @Path("{id}")
+    @Path("{id:\\d+}")
     @Produces(VndType.APPLICATION_MISSION)
     public Response getMissionById(@PathParam("id") String missionName, @Context Request request) {
         return missionService.getMissionById(missionName)

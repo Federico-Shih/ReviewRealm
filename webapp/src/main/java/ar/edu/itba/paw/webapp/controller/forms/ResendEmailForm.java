@@ -5,7 +5,6 @@ import ar.edu.itba.paw.webapp.controller.annotations.ExistentEmail;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
-@NotNull(message = "error.body.empty")
 public class ResendEmailForm {
     @ExistentEmail(message = "ExistentEmail.emailForm.email")
     @Pattern(regexp = "^[a-zA-Z0-9]+(?:\\.[a-zA-Z0-9]+)*(\\+[1-9][0-9]*)?@[a-zA-Z0-9]+(?:\\.[a-zA-Z0-9]+)*$", message = "Pattern.resendEmailForm.email")

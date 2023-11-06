@@ -3,6 +3,7 @@ package ar.edu.itba.paw.webapp.mappers;
 
 import ar.edu.itba.paw.exceptions.UsernameAlreadyExistsException;
 import ar.edu.itba.paw.webapp.controller.helpers.LocaleHelper;
+import ar.edu.itba.paw.webapp.controller.responses.ExceptionResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
@@ -19,7 +20,7 @@ public class UsernameAlreadyExistsExceptionMapper implements ExceptionMapper<Use
     private MessageSource messageSource;
     @Override
     public Response toResponse(UsernameAlreadyExistsException e) {
-        return Response.status(Response.Status.BAD_REQUEST).entity(messageSource.getMessage("username.already.exists",
-                null, LocaleHelper.getLocale())).build();
+        return Response.status(Response.Status.BAD_REQUEST).entity(ExceptionResponse.of(messageSource.getMessage("username.already.exists",
+                null, LocaleHelper.getLocale()))).build();
     }
 }

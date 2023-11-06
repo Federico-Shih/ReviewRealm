@@ -5,6 +5,7 @@ import ar.edu.itba.paw.dtos.filtering.UserFilterBuilder;
 import ar.edu.itba.paw.dtos.ordering.OrderDirection;
 import ar.edu.itba.paw.dtos.ordering.Ordering;
 import ar.edu.itba.paw.dtos.ordering.UserOrderCriteria;
+import ar.edu.itba.paw.webapp.controller.annotations.ExistentGenreList;
 import ar.edu.itba.paw.webapp.controller.annotations.ExistentUserId;
 
 import javax.validation.constraints.Pattern;
@@ -16,11 +17,11 @@ public class UserSearchQuery extends PaginatedQuery {
     @QueryParam("search")
     private String search;
 
-    @Pattern(regexp ="^(level|followers|reputation)$", flags = Pattern.Flag.CASE_INSENSITIVE)
+    @Pattern(regexp ="^(level|followers|reputation)$", flags = Pattern.Flag.CASE_INSENSITIVE, message = "Pattern.searchUsers.sort")
     @QueryParam("sort")
     private String orderCriteria;
 
-    @Pattern(regexp ="^(asc|desc)$", flags = Pattern.Flag.CASE_INSENSITIVE)
+    @Pattern(regexp ="^(asc|desc)$", flags = Pattern.Flag.CASE_INSENSITIVE, message = "Pattern.search.direction")
     @QueryParam("direction")
     private String orderDirection;
 
@@ -33,6 +34,7 @@ public class UserSearchQuery extends PaginatedQuery {
     @QueryParam("id")
     private Long id;
 
+    @ExistentGenreList
     @QueryParam("preferences")
     private List<Integer> preferences;
 

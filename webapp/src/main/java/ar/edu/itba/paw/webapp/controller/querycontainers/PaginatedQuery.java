@@ -8,11 +8,11 @@ import javax.ws.rs.QueryParam;
 public class PaginatedQuery {
     private static final int DEFAULT_PAGE_SIZE = 10;
     private static final int DEFAULT_PAGE = 1;
-    @Min(1)
+    @Min(value = 1, message = "Size.pagination")
     @QueryParam("page")
     private Integer page;
 
-    @Min(1)
+    @Min(value = 1, message = "Size.pagination")
     @QueryParam("pageSize")
     private Integer pageSize ;
 

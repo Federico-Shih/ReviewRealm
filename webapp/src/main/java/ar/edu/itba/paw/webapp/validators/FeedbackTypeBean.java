@@ -6,7 +6,7 @@ import javax.validation.constraints.Pattern;
 import javax.ws.rs.QueryParam;
 
 public class FeedbackTypeBean {
-    @Pattern(regexp ="^(LIKE|DISLIKE)$")
+    @Pattern(regexp ="^(LIKE|DISLIKE)$", message = "Pattern.reviewFeedback")
     @QueryParam("feedbackType")
     private String feedbackType;
 

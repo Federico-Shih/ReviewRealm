@@ -6,11 +6,11 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 public class AuthForm {
-    @NotNull
+    @NotNull(message = "NotNull.property")
     @Pattern(regexp = "^[a-zA-Z0-9]+(?:\\.[a-zA-Z0-9]+)*(\\+[1-9][0-9]*)?@[a-zA-Z0-9]+(?:\\.[a-zA-Z0-9]+)*$")
     private String email;
 
-    @NotNull
+    @NotNull(message = "NotNull.property")
     private String password;
 
     public String getPassword() {

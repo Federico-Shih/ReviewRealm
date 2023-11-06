@@ -2,6 +2,7 @@ package ar.edu.itba.paw.webapp.mappers;
 
 import ar.edu.itba.paw.exceptions.GenreNotFoundException;
 import ar.edu.itba.paw.webapp.controller.helpers.LocaleHelper;
+import ar.edu.itba.paw.webapp.controller.responses.ExceptionResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
@@ -19,7 +20,7 @@ public class GenreNotFoundExceptionMapper implements ExceptionMapper<GenreNotFou
 
     @Override
     public Response toResponse(GenreNotFoundException e) {
-        return Response.status(Response.Status.NOT_FOUND).entity(messageSource.getMessage("genre.not.found",
-                new Object[]{e.getGenreId()}, LocaleHelper.getLocale())).build();
+        return Response.status(Response.Status.NOT_FOUND).entity(ExceptionResponse.of(messageSource.getMessage("genre.not.found",
+                new Object[]{e.getGenreId()}, LocaleHelper.getLocale()))).build();
     }
 }

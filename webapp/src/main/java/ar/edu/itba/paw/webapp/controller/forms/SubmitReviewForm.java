@@ -3,6 +3,7 @@ package ar.edu.itba.paw.webapp.controller.forms;
 import ar.edu.itba.paw.enums.Difficulty;
 import ar.edu.itba.paw.enums.GamelengthUnit;
 import ar.edu.itba.paw.enums.Platform;
+import ar.edu.itba.paw.webapp.controller.annotations.ExistentGameId;
 import ar.edu.itba.paw.webapp.exceptions.UnitNotSelectedException;
 import javax.validation.constraints.*;
 
@@ -22,34 +23,35 @@ public class SubmitReviewForm {
                 '}';
     }
 
+    @ExistentGameId
     private long gameId;
 
-    @Size(min=8, max=100)
+    @Size(min=8, max=100, message="Size.submitReview.title")
     private String reviewTitle;
 
-    @Size(min=8)
+    @Size(min=8, message = "Size.submitReview.content")
     private String reviewContent;
 
-    @NotNull
-    @Max(value=10)
-    @Min(value=1)
+    @NotNull(message = "NotNull.property")
+    @Max(value=10, message = "Size.submitReview.reviewRatingMax")
+    @Min(value=1, message = "Size.submitReview.reviewRatingMin")
     private Integer reviewRating;
 
-    private Boolean replayability;
+    private Boolean replayability = false;
 
-    @Pattern(regexp = "pc|xbox|nintendo|ps|^$", flags = Pattern.Flag.CASE_INSENSITIVE)
+    @Pattern(regexp = "pc|xbox|nintendo|ps|^$", flags = Pattern.Flag.CASE_INSENSITIVE,message = "Pattern.submitReview.platform")
     private String platform;
 
-    @Pattern(regexp = "hard|medium|easy|^$", flags = Pattern.Flag.CASE_INSENSITIVE)
+    @Pattern(regexp = "hard|medium|easy|^$", flags = Pattern.Flag.CASE_INSENSITIVE, message = "Pattern.submitReview.difficulty")
     private String difficulty;
 
-    private Boolean completed;
+    private Boolean completed = false;
 
-    @Max(100000000)
-    @Min(0)
+    @Max(value = 100000000, message = "Size.submitReview.gameMax")
+    @Min(value = 0,message = "Size.submitReview.gameMin")
     private Double gameLength;
 
-    @Pattern(regexp = "hours|minutes", flags = Pattern.Flag.CASE_INSENSITIVE)
+    @Pattern(regexp = "hours|minutes", flags = Pattern.Flag.CASE_INSENSITIVE, message = "Pattern.submitReview.timeunit")
     private String unit;
 
     public void setReplayability(Boolean replayability) {
@@ -151,4 +153,8 @@ public class SubmitReviewForm {
     public void setUnit(String unit) {
         this.unit = unit;
     }
+
+    public SubmitReviewForm() {
+    }
+
 }

@@ -6,7 +6,7 @@ import javax.validation.constraints.NotNull;
 
 public class FollowingForm {
     @ExistentUserId
-    @NotNull
+    @NotNull(message = "NotNull.property")
     private Long userId;
 
     public Long getUserId() {

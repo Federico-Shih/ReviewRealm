@@ -93,7 +93,7 @@ public class GameController {
 
     @POST
     @Consumes(MediaType.MULTIPART_FORM_DATA)
-    public Response postGame(@Valid @BeanParam SubmitGameForm submitGameForm) throws IOException {
+    public Response postGame(@Valid @NotNull(message = "error.body.empty") @BeanParam SubmitGameForm submitGameForm) throws IOException {
         User loggedUser = AuthenticationHelper.getLoggedUser(us);
         Game game = gs.createGame(submitGameForm.toSubmitDTO(),loggedUser.getId());
 
@@ -105,7 +105,7 @@ public class GameController {
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(VndType.APPLICATION_GAME)
     @Path("{id:\\d+}")
-    public Response putGame(@Valid @BeanParam SubmitGameForm submitGameForm, @Valid @ExistentGameId @PathParam("id") final long id) throws IOException {
+    public Response  putGame(@Valid @NotNull(message = "error.body.empty") @BeanParam SubmitGameForm submitGameForm, @Valid @ExistentGameId @PathParam("id") final long id) throws IOException {
         Game game = gs.editGame(submitGameForm.toSubmitDTO(),id);
         User user = AuthenticationHelper.getLoggedUser(us);
 
@@ -126,6 +126,7 @@ public class GameController {
     }
 
     @PATCH
+    @Consumes(VndType.APPLICATION_GAME_SUGGESTION_FORM)
     @Path("{id:\\d+}")
     public Response patchGame(@Valid @NotNull(message = "error.body.empty") PatchGameForm patchGameForm,
                               @Valid @ExistentGameId @PathParam("id") final long id) {

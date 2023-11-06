@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@NotNull(message = "error.body.empty")
 public class PatchUserForm {
     @Size(min = 8, max = 100, message = "Size.passwordForm.password")
     private String password;

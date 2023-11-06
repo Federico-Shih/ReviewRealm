@@ -8,11 +8,8 @@ package ar.edu.itba.paw.webapp.controller.querycontainers;
 //            @RequestParam(value = "o-dir", defaultValue = "0") Integer orderDirection
  */
 
-import ar.edu.itba.paw.dtos.Page;
 import ar.edu.itba.paw.dtos.filtering.ReviewFilter;
 import ar.edu.itba.paw.dtos.filtering.ReviewFilterBuilder;
-import ar.edu.itba.paw.dtos.filtering.UserFilter;
-import ar.edu.itba.paw.dtos.filtering.UserFilterBuilder;
 import ar.edu.itba.paw.dtos.ordering.*;
 import ar.edu.itba.paw.enums.Difficulty;
 import ar.edu.itba.paw.enums.Platform;
@@ -20,22 +17,20 @@ import ar.edu.itba.paw.webapp.controller.annotations.ExistentGameId;
 import ar.edu.itba.paw.webapp.controller.annotations.ExistentGenreList;
 import ar.edu.itba.paw.webapp.controller.annotations.ExistentPlatformList;
 import ar.edu.itba.paw.webapp.controller.annotations.ExistentUserId;
-import org.apache.commons.lang3.builder.Diff;
-import org.springframework.security.access.method.P;
 
-import javax.validation.constraints.Min;
 import javax.validation.constraints.Pattern;
 import javax.ws.rs.QueryParam;
 import java.util.List;
 
 public class ReviewSearchQuery extends PaginatedQuery {
 
-    @Pattern(regexp ="^(asc|desc)$", flags = Pattern.Flag.CASE_INSENSITIVE)
+    @Pattern(regexp ="^(created|rating|popularity|controversial)$", flags = Pattern.Flag.CASE_INSENSITIVE,
+            message = "Pattern.searchReview.criteria")
     @QueryParam("orderCriteria")
     private String orderCriteria;
 
-    @Pattern(regexp ="^(asc|desc)$", flags = Pattern.Flag.CASE_INSENSITIVE)
-    @QueryParam("orderDirection")
+    @Pattern(regexp ="^(asc|desc)$", flags = Pattern.Flag.CASE_INSENSITIVE, message = "Pattern.search.direction")
+    @QueryParam("direction")
     private String orderDirection;
 
     @ExistentGenreList

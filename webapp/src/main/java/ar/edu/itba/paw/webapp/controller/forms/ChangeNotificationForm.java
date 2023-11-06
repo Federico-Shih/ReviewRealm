@@ -6,7 +6,6 @@ import javax.validation.constraints.NotNull;
 import java.util.HashMap;
 import java.util.Map;
 
-@NotNull(message = "error.body.empty")
 public class ChangeNotificationForm {
     @NotNull(message = "NotNull.property")
     private Boolean userIFollowWritesReview;

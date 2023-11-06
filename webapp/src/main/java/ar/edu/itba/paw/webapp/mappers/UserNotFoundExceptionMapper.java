@@ -3,6 +3,7 @@ package ar.edu.itba.paw.webapp.mappers;
 
 import ar.edu.itba.paw.exceptions.UserNotFoundException;
 import ar.edu.itba.paw.webapp.controller.helpers.LocaleHelper;
+import ar.edu.itba.paw.webapp.controller.responses.ExceptionResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
@@ -20,7 +21,7 @@ public class UserNotFoundExceptionMapper implements ExceptionMapper<UserNotFound
 
     @Override
     public Response toResponse(UserNotFoundException e) {
-        return Response.status(Response.Status.NOT_FOUND).entity(messageSource.getMessage("user.not.found", null,
-                LocaleHelper.getLocale())).build();
+        return Response.status(Response.Status.NOT_FOUND).entity(ExceptionResponse.of(messageSource.getMessage("user.not.found", null,
+                LocaleHelper.getLocale()))).build();
     }
 }
