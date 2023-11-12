@@ -45,36 +45,7 @@ http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
             org.springframework.web.context.request.RequestContextListener
         </listener-class>
     </listener>
-    <filter>
-        <filter-name>jersey-servlet</filter-name>
-        <filter-class>org.glassfish.jersey.servlet.ServletContainer</filter-class>
-        <init-param>
-            <param-name>jersey.config.server.provider.packages</param-name>
-            <param-value>ar.edu.itba.paw.webapp.controller, ar.edu.itba.paw.webapp.mappers,
-                com.fasterxml.jackson.jaxrs.json
-            </param-value>
-        </init-param>
-        <init-param>
-            <param-name>jersey.config.servlet.filter.contextPath</param-name>
-            <param-value>/</param-value>
-        </init-param>
-        <init-param>
-            <param-name>jersey.config.beanValidation.enableOutputValidationErrorEntity.server</param-name>
-            <param-value>true</param-value>
-        </init-param>
-        <init-param>
-            <param-name>jersey.config.server.provider.classnames</param-name>
-            <param-value>org.glassfish.jersey.media.multipart.MultiPartFeature</param-value>
-        </init-param>
-        <init-param>
-            <param-name>jersey.config.server.response.setStatusOverSendError</param-name>
-            <param-value>true</param-value>
-        </init-param>
-        <init-param>
-            <param-name>jersey.config.servlet.filter.forwardOn404</param-name>
-            <param-value>true</param-value>
-        </init-param>
-    </filter>
+
 <!--    <filter>-->
 <!--        <filter-name>jersey</filter-name>-->
 <!--        <filter-class>org.glassfish.jersey.servlet.ServletContainer</filter-class>-->
@@ -127,10 +98,91 @@ http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
         <filter-name>encoding-filter</filter-name>
         <url-pattern>/api/*</url-pattern>
     </filter-mapping>
-    <filter-mapping>
-        <filter-name>jersey-servlet</filter-name>
+    <servlet>
+        <servlet-name>jersey-servlet</servlet-name>
+        <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
+        <init-param>
+            <param-name>jersey.config.server.provider.packages</param-name>
+            <param-value>ar.edu.itba.paw.webapp.controller, ar.edu.itba.paw.webapp.mappers,
+                com.fasterxml.jackson.jaxrs.json
+            </param-value>
+        </init-param>
+        <init-param>
+            <param-name>jersey.config.servlet.filter.contextPath</param-name>
+            <param-value>/</param-value>
+        </init-param>
+        <init-param>
+            <param-name>jersey.config.beanValidation.enableOutputValidationErrorEntity.server</param-name>
+            <param-value>true</param-value>
+        </init-param>
+        <init-param>
+            <param-name>jersey.config.server.provider.classnames</param-name>
+            <param-value>org.glassfish.jersey.media.multipart.MultiPartFeature</param-value>
+        </init-param>
+        <init-param>
+            <param-name>jersey.config.server.response.setStatusOverSendError</param-name>
+            <param-value>true</param-value>
+        </init-param>
+
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>jersey-servlet</servlet-name>
+        <url-pattern>/api/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>default</servlet-name>
+        <url-pattern>/static/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>index</servlet-name>
+        <jsp-file>/index.html</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>index</servlet-name>
+        <url-pattern>/</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>default</servlet-name>
         <url-pattern>/*</url-pattern>
-    </filter-mapping>
+    </servlet-mapping>
+
+    <!--    <filter>-->
+    <!--        <filter-name>jersey-servlet</filter-name>-->
+    <!--        <filter-class>org.glassfish.jersey.servlet.ServletContainer</filter-class>-->
+    <!--        <init-param>-->
+    <!--            <param-name>jersey.config.server.provider.packages</param-name>-->
+    <!--            <param-value>ar.edu.itba.paw.webapp.controller, ar.edu.itba.paw.webapp.mappers,-->
+    <!--                com.fasterxml.jackson.jaxrs.json-->
+    <!--            </param-value>-->
+    <!--        </init-param>-->
+    <!--        <init-param>-->
+    <!--            <param-name>jersey.config.servlet.filter.contextPath</param-name>-->
+    <!--            <param-value>/</param-value>-->
+    <!--        </init-param>-->
+    <!--        <init-param>-->
+    <!--            <param-name>jersey.config.beanValidation.enableOutputValidationErrorEntity.server</param-name>-->
+    <!--            <param-value>true</param-value>-->
+    <!--        </init-param>-->
+    <!--        <init-param>-->
+    <!--            <param-name>jersey.config.server.provider.classnames</param-name>-->
+    <!--            <param-value>org.glassfish.jersey.media.multipart.MultiPartFeature</param-value>-->
+    <!--        </init-param>-->
+    <!--        <init-param>-->
+    <!--            <param-name>jersey.config.server.response.setStatusOverSendError</param-name>-->
+    <!--            <param-value>true</param-value>-->
+    <!--        </init-param>-->
+    <!--        <init-param>-->
+    <!--            <param-name>jersey.config.servlet.filter.forwardOn404</param-name>-->
+    <!--            <param-value>true</param-value>-->
+    <!--        </init-param>-->
+    <!--    </filter>-->
+    <!--    <filter-mapping>-->
+    <!--        <filter-name>jersey-servlet</filter-name>-->
+    <!--        <url-pattern>/*</url-pattern>-->
+    <!--    </filter-mapping>-->
     <!--    MIME-->
     <mime-mapping>
         <extension>ico</extension>

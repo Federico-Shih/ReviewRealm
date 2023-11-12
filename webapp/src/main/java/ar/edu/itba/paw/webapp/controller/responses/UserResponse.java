@@ -16,9 +16,9 @@ public class UserResponse extends BaseResponse {
     private String email;
     private Boolean enabled;
     private Long reputation;
-    private Long avatarId;
     private Locale language;
     private Float xp;
+    private URI avatar;
     private Set<URI> preferences;
 
 
@@ -31,8 +31,8 @@ public class UserResponse extends BaseResponse {
         response.setReputation(user.getReputation());
         response.setLanguage(user.getLanguage());
         response.setXp(user.getXp());
-        response.setAvatarId(user.getAvatarId());
         response.setPreferences(user.getPreferences().stream().map(preferences -> GenreResponse.getLinkFromEntity(uri, preferences)).collect(Collectors.toSet()));
+        response.setAvatar(uri.getBaseUriBuilder().replacePath(uri.getBaseUriBuilder().build().getPath().replace("/api", "/static")).path("avatars").path(String.format("%d.png", user.getAvatarId())).build());
 
         response.link("self", getLinkFromEntity(uri, user));
         response.link("followers", uri.getBaseUriBuilder().path(BASE_PATH).queryParam("followers", user.getId()).build());
@@ -70,9 +70,6 @@ public class UserResponse extends BaseResponse {
         this.reputation = reputation;
     }
 
-    public void setAvatarId(Long avatarId) {
-        this.avatarId = avatarId;
-    }
 
     public void setLanguage(Locale language) {
         this.language = language;
@@ -102,10 +99,6 @@ public class UserResponse extends BaseResponse {
         return reputation;
     }
 
-    public Long getAvatarId() {
-        return avatarId;
-    }
-
     public Locale getLanguage() {
         return language;
     }
@@ -120,6 +113,14 @@ public class UserResponse extends BaseResponse {
 
     public void setPreferences(Set<URI> preferences) {
         this.preferences = preferences;
+    }
+
+    public URI getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(URI avatar) {
+        this.avatar = avatar;
     }
 
     public static class UserResponseBuilder {

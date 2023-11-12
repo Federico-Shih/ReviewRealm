@@ -33,13 +33,12 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Path("/api/users")
+@Path("users")
 @Component
 public class UserController {
     private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);

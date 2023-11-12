@@ -31,14 +31,13 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@Path("/api/reviews")
+@Path("reviews")
 @Component
 public class ReviewController{
     private static final Logger LOGGER = LoggerFactory.getLogger(ReviewController.class);

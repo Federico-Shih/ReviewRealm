@@ -11,11 +11,11 @@ import ar.edu.itba.paw.servicesinterfaces.ReportService;
 import ar.edu.itba.paw.servicesinterfaces.UserService;
 import ar.edu.itba.paw.webapp.auth.AuthenticationHelper;
 import ar.edu.itba.paw.webapp.controller.forms.AcceptRejectReportForm;
+import ar.edu.itba.paw.webapp.controller.forms.SubmitReportForm;
 import ar.edu.itba.paw.webapp.controller.mediatypes.VndType;
 import ar.edu.itba.paw.webapp.controller.querycontainers.ReportSearchQuery;
 import ar.edu.itba.paw.webapp.controller.responses.PaginatedResponseHelper;
 import ar.edu.itba.paw.webapp.controller.responses.ReportResponse;
-import ar.edu.itba.paw.webapp.controller.forms.SubmitReportForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -23,14 +23,13 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@Path("/api/reports")
+@Path("reports")
 @Component
 public class ReportController extends UriInfoController {
 
