@@ -101,6 +101,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         return factoryBean;
     }
 
+
     @Bean(initMethod = "migrate")
     public Flyway flyway() {
         return Flyway.configure()

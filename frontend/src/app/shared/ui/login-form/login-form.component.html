@@ -1,0 +1,13 @@
+<mat-card>
+  <form>
+    <mat-form-field>
+      <input [(ngModel)]="email" matInput name="email" placeholder="Email" type="email"/>
+      <mat-error *ngIf="errorMessage !== null"></mat-error>
+    </mat-form-field>
+    <mat-form-field>
+      <input [(ngModel)]="password" matInput name="password" placeholder="Password" type="password"/>
+      <mat-error *ngIf="errorMessage !== null"></mat-error>
+    </mat-form-field>
+    <button (click)="login()" color="primary" i18n mat-raised-button>Login</button>
+  </form>
+</mat-card>

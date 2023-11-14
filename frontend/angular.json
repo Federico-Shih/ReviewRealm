@@ -7,7 +7,7 @@
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
-          "style": "scss"
+          "style": "sass"
         }
       },
       "root": "",
@@ -31,14 +31,18 @@
             "styles": [
               "src/styles.scss"
             ],
-            "baseHref": "/paw-2023a-04/",
             "scripts": [
-              "node_modules/jquery/dist/jquery.min.js",
-              "node_modules/materialize-css/dist/js/materialize.min.js"
-            ]
+            ],
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                "src/styles.scss",
+                "src/**/*.scss"
+              ]
+            }
           },
           "configurations": {
             "production": {
+              "baseHref": "/paw-2023a-04/",
               "budgets": [
                 {
                   "type": "initial",
@@ -72,6 +76,8 @@
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+          },
           "configurations": {
             "production": {
               "browserTarget": "frontend:build:production"
@@ -101,8 +107,7 @@
               "src/assets"
             ],
             "styles": [
-              "src/styles.scss",
-              "node_modules/materialize-css/dist/css/materialize.min.css"
+              "src/styles.scss"
             ],
             "scripts": []
           }

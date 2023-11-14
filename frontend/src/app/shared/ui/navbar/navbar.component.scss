@@ -1,0 +1,84 @@
+
+.navbar {
+  display: flex;
+  align-items: center;
+}
+
+.icon {
+  height: 85%;
+}
+
+.navbar-icon-container {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+
+.navbar-text {
+  font-size: 40px;
+  text-decoration: none;
+  color: white;
+  text-underline: none;
+  font-weight: bold;
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.navbar-search {
+  display: flex;
+  width: 100%;
+  margin-left: 3%;
+  padding: 8px 0;
+  height: 100%;
+  align-items: center;
+
+  input {
+    height: 80%;
+    background-color: #13112D;
+    border: 1px black solid;
+    border-radius: 0.5em;
+    color: white;
+    margin-left: 10px;
+  }
+}
+
+a {
+  color: white;
+  text-underline: none;
+  text-decoration: none;
+  cursor: pointer;
+  height: 100%;
+
+  div {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    height: 100%;
+    padding: 0 1vw;
+  }
+}
+
+.action-container {
+  display: flex;
+  flex-direction: row;
+  gap: 0.5vw;
+  height: 100%;
+}
+
+
+a div:hover {
+  background: rgba(0, 0, 0, 0.3);
+  color: white !important;
+}
+
+@media screen and (max-width: 800px) {
+  .navbar-text {
+    display: none;
+  }
+}
+
+

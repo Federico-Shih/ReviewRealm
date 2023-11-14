@@ -1,0 +1,43 @@
+<mat-toolbar class="navbar" color="primary">
+  <a class="navbar-icon-container" href="/">
+    <img alt="Review Realm" class="icon" height="630" src="/assets/review_realm_logo_white_630px.png"/>
+    <label class="navbar-text">
+      Review Realm
+    </label>
+  </a>
+
+  <div class="navbar-search">
+    <i class="material-icons prefix icon-prefix">search</i>
+    <input [placeholder]="'navbar.search' | translate" i18n-placeholder/>
+  </div>
+  <div class="spacer"></div>
+  <section class="action-container">
+    <a href="/">
+      <div i18n>
+        {{ 'navbar.games-link' | translate }}
+      </div>
+    </a>
+    <a href="/">
+      <div i18n>
+        {{ 'navbar.reviews-link' | translate }}
+      </div>
+    </a>
+    <a href="/">
+      <div i18n>
+        {{ 'navbar.community-link' | translate }}
+      </div>
+    </a>
+    <ng-container *ngIf="!isLoggedIn">
+      <a href="/">
+        <div i18n>
+          {{ 'navbar.login' | translate }}
+        </div>
+      </a>
+      <a href="/">
+        <div i18n>
+          {{ 'navbar.register' | translate }}
+        </div>
+      </a>
+    </ng-container>
+  </section>
+</mat-toolbar>

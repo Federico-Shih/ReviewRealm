@@ -1,0 +1,13 @@
+{
+  "navbar": {
+    "search": "Search...",
+    "games-link": "Games",
+    "reviews-link": "Reviews",
+    "community-link": "Community",
+    "login": "Login",
+    "register": "Register"
+  },
+  "login-form": {
+    "login-btn": "Login"
+  }
+}

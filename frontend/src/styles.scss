@@ -1,0 +1,109 @@
+@use '@angular/material' as mat;
+@use "colors" as colors;
+
+// Custom Theming for Angular Material
+// For more information: https://material.angular.io/guide/theming
+
+
+// Plus imports for other components in your app.
+
+// Include the common styles for Angular Material. We include this here so that you only
+// have to load a single css file for Angular Material in your app.
+// Be sure that you only ever include this mixin once!
+@include mat.core();
+
+$primary-pallet: (
+  50: #eaecf2,
+  100: #cacee1,
+  200: #a9afcc,
+  300: #888fb6,
+  400: #7076a7,
+  500: #35325e,
+  600: #2c294d,
+  700: #22203d,
+  800: #19172c,
+  900: #0f0f1b,
+  contrast: (
+    50: rgba(black, 0.87),
+    100: rgba(black, 0.87),
+    200: rgba(black, 0.87),
+    300: white,
+    400: white,
+    500: white,
+    600: white,
+    700: white,
+    800: white,
+    900: white
+  )
+);
+
+$accent-pallet: (
+  50: #fbe0d7,
+  100: #f7bba9,
+  200: #ee724c,
+  300: #eb6035,
+  400: #e94d1d,
+  500: #D84315,
+  600: #c13c13,
+  700: #aa3510,
+  800: #922d0e,
+  900: #7b260c,
+  contrast: (
+    50: rgba(black, 0.87),
+    100: rgba(black, 0.87),
+    200: rgba(black, 0.87),
+    300: white,
+    400: white,
+    500: white,
+    600: white,
+    700: white,
+    800: white,
+    900: white
+  )
+);
+
+
+// Define the palettes for your theme using the Material Design palettes available in palette.scss
+// (imported above). For each palette, you can optionally specify a default, lighter, and darker
+// hue. Available color palettes: https://material.io/design/color/
+$frontend-primary: mat.define-palette($primary-pallet);
+$frontend-accent: mat.define-palette($accent-pallet);
+
+// The warn palette is optional (defaults to red).
+$frontend-warn: mat.define-palette(mat.$red-palette);
+
+// Create the theme object. A theme consists of configurations for individual
+// theming systems such as "color" or "typography".
+$frontend-theme: mat.define-dark-theme((
+  color: (
+    primary: $frontend-primary,
+    accent: $frontend-accent,
+    warn: $frontend-warn,
+  )
+));
+
+@include mat.core-theme($frontend-theme);
+@include mat.button-theme($frontend-theme);
+// Include theme styles for core and each component used in your app.
+// Alternatively, you can import and @include the theme mixins for each component
+// that you are using.
+@include mat.all-component-themes($frontend-theme);
+
+/* You can add global styles to this file, and also import other style files */
+
+body {
+  background-color: colors.$background-color;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
