@@ -43,9 +43,14 @@ export type ValidationResponse = {
   value: unknown;
 }
 
-export interface RequestError {
+export class RequestError {
   status: number;
-  exceptions: ValidationResponse[] | ExceptionResponse;
+  exceptions: ValidationResponse[] | ExceptionResponse | null;
+
+  constructor(status: number, exceptions: ValidationResponse[] | ExceptionResponse | null) {
+    this.status = status;
+    this.exceptions = exceptions;
+  }
 }
 
 export type UserJwtPayload = {

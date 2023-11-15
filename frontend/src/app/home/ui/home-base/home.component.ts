@@ -12,6 +12,5 @@ export class HomeComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.auth.login({username: 'fedeshih@gmail.com', password: 'holahola'}).subscribe(console.log);
   }
 }

@@ -1,5 +1,5 @@
 <mat-toolbar class="navbar" color="primary">
-  <a class="navbar-icon-container" href="/">
+  <a class="navbar-icon-container" routerLink="/">
     <img alt="Review Realm" class="icon" height="630" src="/assets/review_realm_logo_white_630px.png"/>
     <label class="navbar-text">
       Review Realm
@@ -8,36 +8,87 @@
 
   <div class="navbar-search">
     <i class="material-icons prefix icon-prefix">search</i>
-    <input [placeholder]="'navbar.search' | translate" i18n-placeholder/>
+    <input [placeholder]="'navbar.search' | translate"/>
   </div>
   <div class="spacer"></div>
   <section class="action-container">
-    <a href="/">
+    <a *ngIf="isLoggedIn" routerLink="/">
+      <div i18n>
+        {{ 'navbar.for-you' | translate }}
+      </div>
+    </a>
+    <a routerLink="/">
       <div i18n>
         {{ 'navbar.games-link' | translate }}
       </div>
     </a>
-    <a href="/">
+    <a routerLink="/">
       <div i18n>
         {{ 'navbar.reviews-link' | translate }}
       </div>
     </a>
-    <a href="/">
+    <a routerLink="/">
       <div i18n>
         {{ 'navbar.community-link' | translate }}
       </div>
     </a>
     <ng-container *ngIf="!isLoggedIn">
-      <a href="/">
+      <a routerLink="/login">
         <div i18n>
           {{ 'navbar.login' | translate }}
         </div>
       </a>
-      <a href="/">
+      <a routerLink="/">
         <div i18n>
           {{ 'navbar.register' | translate }}
         </div>
       </a>
     </ng-container>
+    <button *ngIf="isLoggedIn" [matMenuTriggerFor]="menu" class="menu-button" color="accent" mat-raised-button>
+      {{ 'navbar.welcome' | translate:{value: user?.username} }}
+      <mat-icon>arrow_drop_down</mat-icon>
+    </button>
+    <mat-menu #menu="matMenu">
+      <div class="menu">
+        <button mat-menu-item>
+          <mat-icon>account_circle</mat-icon>
+          <span>{{ 'navbar.profile' | translate }}</span>
+        </button>
+        <button mat-menu-item>
+          <mat-icon>receipt</mat-icon>
+          <span>{{ 'navbar.missions' | translate }}</span>
+        </button>
+        <button mat-menu-item>
+          <mat-icon>create</mat-icon>
+          <span>{{ 'navbar.write-review' | translate }}</span>
+        </button>
+        <button *ngIf="user?.role === Role.USER" mat-menu-item>
+          <mat-icon>add</mat-icon>
+          <span>{{ 'navbar.suggest-game' | translate }}</span>
+        </button>
+        <ng-container *ngIf="user?.role === Role.MODERATOR">
+          <button mat-menu-item>
+            <mat-icon>add</mat-icon>
+            <span>{{ 'navbar.upload-game' | translate }}</span>
+          </button>
+          <button mat-menu-item>
+            <mat-icon>playlist_add_check</mat-icon>
+            <span>{{ 'navbar.submissions' | translate }}</span>
+          </button>
+          <button mat-menu-item>
+            <mat-icon>flag</mat-icon>
+            <span>{{ 'navbar.reports' | translate }}</span>
+          </button>
+        </ng-container>
+        <button mat-menu-item>
+          <mat-icon>settings</mat-icon>
+          <span>{{ 'navbar.settings' | translate }}</span>
+        </button>
+        <button (click)="logout.emit()" mat-menu-item>
+          <mat-icon>logout</mat-icon>
+          <span>{{ 'navbar.logout' | translate }}</span>
+        </button>
+      </div>
+    </mat-menu>
   </section>
 </mat-toolbar>

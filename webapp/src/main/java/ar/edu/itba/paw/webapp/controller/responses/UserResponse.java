@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.webapp.controller.responses;
 
+import ar.edu.itba.paw.enums.RoleType;
 import ar.edu.itba.paw.models.User;
 
 import javax.ws.rs.core.UriInfo;
@@ -20,6 +21,7 @@ public class UserResponse extends BaseResponse {
     private Float xp;
     private URI avatar;
     private Set<URI> preferences;
+    private RoleType role;
 
 
     public static UserResponse fromEntity(final UriInfo uri, User user) {
@@ -33,6 +35,7 @@ public class UserResponse extends BaseResponse {
         response.setXp(user.getXp());
         response.setPreferences(user.getPreferences().stream().map(preferences -> GenreResponse.getLinkFromEntity(uri, preferences)).collect(Collectors.toSet()));
         response.setAvatar(uri.getBaseUriBuilder().replacePath(uri.getBaseUriBuilder().build().getPath().replace("/api", "/static")).path("avatars").path(String.format("%d.png", user.getAvatarId())).build());
+        response.setRole(user.getRoles().stream().findFirst().orElse(RoleType.USER));
 
         response.link("self", getLinkFromEntity(uri, user));
         response.link("followers", uri.getBaseUriBuilder().path(BASE_PATH).queryParam("followers", user.getId()).build());
@@ -122,6 +125,15 @@ public class UserResponse extends BaseResponse {
     public void setAvatar(URI avatar) {
         this.avatar = avatar;
     }
+
+    public RoleType getRole() {
+        return role;
+    }
+
+    public void setRole(RoleType role) {
+        this.role = role;
+    }
+
 
     public static class UserResponseBuilder {
         private UserResponse userResponse;

@@ -12,12 +12,21 @@ import {UsersService} from "../users/users.service";
 export const AUTHORIZATION_TOKEN_LABEL = 'authorizationToken';
 export const REFRESH_TOKEN_LABEL = 'refreshToken';
 
-@Injectable()
+@Injectable({providedIn: 'root'})
 export class AuthenticationService {
   static AUTHENTICATION_ENDPOINT = environment.API_ENDPOINT + '/users';
   loggedUser$ = new BehaviorSubject<User | null>(null);
 
   constructor(private readonly http: HttpClient, private readonly userService: UsersService) {
+    const token = localStorage.getItem(AUTHORIZATION_TOKEN_LABEL);
+    if (token) {
+      const payload = jwtDecode<UserJwtPayload>(token);
+      if (payload.id) {
+        this.userService.getUsers(AuthenticationService.AUTHENTICATION_ENDPOINT, {id: payload.id}).subscribe(users => {
+          this.loggedUser$.next(users.content[0]);
+        });
+      }
+    }
   }
 
   login({username, password}: AuthenticationDto): Observable<User | never> {
@@ -45,12 +54,19 @@ export class AuthenticationService {
 
       return this.userService.getUsers(AuthenticationService.AUTHENTICATION_ENDPOINT, {id: payload.id}).pipe(map(users => {
         this.loggedUser$.next(users.content[0]);
+        console.log(this.loggedUser$);
         return users.content[0];
       }));
     }));
   }
 
+  logout() {
+    localStorage.removeItem(AUTHORIZATION_TOKEN_LABEL);
+    localStorage.removeItem(REFRESH_TOKEN_LABEL);
+    this.loggedUser$.next(null);
+  }
+
   getLoggedUser(): Observable<User | null> {
-    return this.loggedUser$.asObservable();
+    return this.loggedUser$;
   }
 }

@@ -43,9 +43,9 @@ export const paginatedResponseMapper = <T, K>(fromResponse: (param: T) => K) => 
 }
 
 export const exceptionMapper = (error: HttpResponse<ValidationResponse[] | ExceptionResponse>) => {
-  return throwError(() => ({status: error.status, exceptions: error.body} as RequestError));
+  return throwError(() => (new RequestError(error.status, error.body)));
 }
 
 export const customExceptionMapper = (errorCode: number, message: string) => {
-  return throwError(() => ({status: errorCode, exceptions: {message}} as RequestError));
+  return throwError(() => (new RequestError(errorCode, {message})));
 }

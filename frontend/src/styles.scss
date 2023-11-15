@@ -1,5 +1,4 @@
 @use '@angular/material' as mat;
-@use "colors" as colors;
 
 // Custom Theming for Angular Material
 // For more information: https://material.angular.io/guide/theming
@@ -11,6 +10,18 @@
 // have to load a single css file for Angular Material in your app.
 // Be sure that you only ever include this mixin once!
 @include mat.core();
+
+$background-color: #070A18; // Use for backgrounds
+$surface-color: #13112D; // Use for cards
+$primary-color: #35325E; // Main color
+$secondary-color: #FFA500; // Temp
+$accent-color: #D84315; // Use for buttons
+/*
+Add variants
+$secondary-color-variant-1: #FFA500;
+ */
+
+$error-color: #FF0000;
 
 $primary-pallet: (
   50: #eaecf2,
@@ -92,7 +103,7 @@ $frontend-theme: mat.define-dark-theme((
 /* You can add global styles to this file, and also import other style files */
 
 body {
-  background-color: colors.$background-color;
+  background-color: $background-color;
 }
 
 html, body {
@@ -106,4 +117,13 @@ body {
 
 * {
   box-sizing: border-box;
+}
+
+:root {
+  --color-primary: #35325E;
+  --color-accent: #FFA500;
+  --color-background: #070A18;
+  --color-surface: #13112D;
+  --color-error: #FF0000;
+  // Add more variants
 }

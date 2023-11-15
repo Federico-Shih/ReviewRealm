@@ -1,4 +1,5 @@
 import {UserLinksResponse, UserResponse} from "../responses";
+import {Role} from "../enums";
 
 export class UserLinks {
   self: string;
@@ -10,7 +11,6 @@ export class UserLinks {
   updateNotifications?: string;
   unfollow?: string;
   follow?: string;
-
 
   constructor(self: string, followers: string, following: string, preferences: string, favoriteGames: string, patchUser?: string, updateNotifications?: string, unfollow?: string, follow?: string) {
     this.self = self;
@@ -58,8 +58,9 @@ export class User {
   xp: number;
   preferences: string[];
   links: UserLinks;
+  role: Role;
 
-  constructor(id: number, username: string, email: string, enabled: boolean, reputation: number, avatar: string, links: UserLinks, language?: string, xp: number = 0, preferences: string[] = []) {
+  constructor(id: number, username: string, email: string, enabled: boolean, reputation: number, avatar: string, links: UserLinks, role: Role, language?: string, xp: number = 0, preferences: string[] = []) {
     this.id = id;
     this.username = username;
     this.email = email;
@@ -70,6 +71,7 @@ export class User {
     this.xp = xp;
     this.preferences = preferences;
     this.links = links;
+    this.role = role;
   }
 
   static fromResponse({
@@ -82,7 +84,8 @@ export class User {
                         language,
                         xp,
                         preferences,
-                        links
+                        links,
+                        role
                       }: UserResponse): User {
     return new User(id,
       username,
@@ -91,6 +94,7 @@ export class User {
       reputation,
       avatar,
       UserLinks.fromResponse(links),
+      role,
       language,
       xp,
       preferences);

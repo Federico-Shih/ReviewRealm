@@ -1,13 +1,33 @@
-<mat-card>
-  <form>
-    <mat-form-field>
-      <input [(ngModel)]="email" matInput name="email" placeholder="Email" type="email"/>
-      <mat-error *ngIf="errorMessage !== null"></mat-error>
-    </mat-form-field>
-    <mat-form-field>
-      <input [(ngModel)]="password" matInput name="password" placeholder="Password" type="password"/>
-      <mat-error *ngIf="errorMessage !== null"></mat-error>
-    </mat-form-field>
-    <button (click)="login()" color="primary" i18n mat-raised-button>Login</button>
-  </form>
+<mat-card class="card-container">
+  <mat-card-header class="card-header">{{'login-form.login-header' | translate }}</mat-card-header>
+  <mat-card-content class="input-container">
+    <form class="text-fields">
+      <mat-form-field>
+        <input [formControl]="email" matInput name="email" placeholder="Email" type="email"/>
+        <mat-error *ngIf="errorMessage !== null"></mat-error>
+        <mat-error *ngIf="email.invalid && email.touched">
+          <ng-container *ngIf="email.errors?.['required']">
+            {{ 'login-form.email-required' | translate }}
+          </ng-container>
+          <ng-container *ngIf="email.errors?.['email']">
+            {{ 'login-form.email-invalid' | translate }}
+          </ng-container>
+        </mat-error>
+      </mat-form-field>
+      <mat-form-field>
+        <input [formControl]="password" matInput name="password" placeholder="Password" type="password"/>
+        <mat-error *ngIf="password.invalid && password.touched">
+          <ng-container *ngIf="password.errors?.['required']">
+            {{ 'login-form.password-required' | translate }}
+          </ng-container>
+        </mat-error>
+      </mat-form-field>
+    </form>
+    <mat-error *ngIf="errorMessage !== null">{{ errorMessage | translate }}</mat-error>
+
+    <button (click)="login()" class="submit-btn" color="accent" i18n mat-raised-button>
+      {{ 'login-form.login-btn' | translate | uppercase }}
+      <mat-icon>send</mat-icon>
+    </button>
+  </mat-card-content>
 </mat-card>

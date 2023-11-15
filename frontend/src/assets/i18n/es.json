@@ -5,9 +5,25 @@
     "reviews-link": "Reseñas",
     "community-link": "Comunidad",
     "login": "Iniciar sesión",
-    "register": "Registrarse"
+    "register": "Registrarse",
+    "for-you": "Tu feed",
+    "profile": "Perfil",
+    "missions": "Misiones",
+    "logout": "Cerrar sesión",
+    "settings": "Configuración",
+    "suggest-game": "Sugerir juego",
+    "write-review": "Escribir reseña",
+    "upload-game": "Crear juego",
+    "submissions": "Sugerencias",
+    "reports": "Reportes",
+    "welcome": "Bienvenido {{value}}!"
   },
   "login-form": {
-    "login-btn": "Iniciar sesión"
+    "login-btn": "Iniciar sesión",
+    "login-header": "Iniciar sesión",
+    "email-required": "Correo electrónico es requerido.",
+    "email-invalid": "Correo electrónico no es válido.",
+    "password-required": "Contraseña es requerida.",
+    "invalid-credentials": "Correo electrónico o contraseña inválida."
   }
 }

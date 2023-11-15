@@ -1,3 +1,5 @@
+import {Role} from "./enums";
+
 export type ReviewLinksResponse = {
   feedback: string,
   game: string,
@@ -45,4 +47,5 @@ export type UserResponse = {
   xp: number;
   preferences: string[];
   links: UserLinksResponse;
+  role: Role;
 }

@@ -5,9 +5,25 @@
     "reviews-link": "Reviews",
     "community-link": "Community",
     "login": "Login",
-    "register": "Register"
+    "register": "Register",
+    "for-you": "For you",
+    "profile": "Profile",
+    "missions": "Missions",
+    "logout": "Logout",
+    "settings": "Settings",
+    "suggest-game": "Suggest new game",
+    "write-review": "Write review",
+    "upload-game": "Upload game",
+    "submissions": "Submissions",
+    "reports": "Reports",
+    "welcome": "Welcome {{value}}"
   },
   "login-form": {
-    "login-btn": "Login"
+    "login-btn": "Login",
+    "login-header": "Login",
+    "email-required": "Email is required.",
+    "email-invalid": "Email is invalid.",
+    "password-required": "Password is required.",
+    "invalid-credentials": "Invalid email or password"
   }
 }

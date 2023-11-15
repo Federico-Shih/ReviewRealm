@@ -1,5 +1,6 @@
-import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
 import {User} from "../../data-access/users/user.class";
+import {Role} from "../../data-access/enums";
 
 @Component({
   selector: 'app-navbar',
@@ -10,4 +11,8 @@ import {User} from "../../data-access/users/user.class";
 export class NavbarComponent {
   @Input() isLoggedIn: boolean = false;
   @Input() user: User | null = null;
+
+  @Output() logout = new EventEmitter<void>();
+
+  protected readonly Role = Role;
 }
