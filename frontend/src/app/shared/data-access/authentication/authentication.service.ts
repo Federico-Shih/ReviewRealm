@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {environment} from "../../../../environments/environment";
 import {BehaviorSubject, map, Observable, switchMap} from "rxjs";
-import {User} from "../users/user.class";
+import {User} from "../users/users.class";
 import {AuthenticationDto} from "./authentication.dtos";
 import {HttpClient} from "@angular/common/http";
 import {customExceptionMapper} from "../../helpers/mapper";
@@ -54,7 +54,6 @@ export class AuthenticationService {
 
       return this.userService.getUsers(AuthenticationService.AUTHENTICATION_ENDPOINT, {id: payload.id}).pipe(map(users => {
         this.loggedUser$.next(users.content[0]);
-        console.log(this.loggedUser$);
         return users.content[0];
       }));
     }));

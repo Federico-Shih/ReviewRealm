@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
-import {User} from "../../data-access/users/user.class";
+import {User} from "../../data-access/users/users.class";
 import {Role} from "../../data-access/enums";
 
 @Component({

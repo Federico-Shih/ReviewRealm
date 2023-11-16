@@ -46,6 +46,10 @@ export const exceptionMapper = (error: HttpResponse<ValidationResponse[] | Excep
   return throwError(() => (new RequestError(error.status, error.body)));
 }
 
+export const validationExceptionMapper = (errorCode: number, error: ValidationResponse[]) => {
+  return throwError(() => (new RequestError(errorCode, error)));
+}
+
 export const customExceptionMapper = (errorCode: number, message: string) => {
   return throwError(() => (new RequestError(errorCode, {message})));
 }

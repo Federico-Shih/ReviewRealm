@@ -25,5 +25,21 @@
     "email-invalid": "Email is invalid.",
     "password-required": "Password is required.",
     "invalid-credentials": "Invalid email or password"
+  },
+  "register-form": {
+    "register-btn": "Register",
+    "username": "Username",
+    "password": "Password",
+    "confirm-password": "Confirm password",
+    "email": "Email",
+    "email-placeholder": "example@email.com",
+    "username-required": "Username is required.",
+    "password-required": "Password is required.",
+    "confirm-password-required": "Password confirmation is required.",
+    "password-mismatch": "Passwords do not match.",
+    "password-minlength": "Password must be at least 8 characters long.",
+    "register-header": "Register new account",
+    "username-minlength": "Username must be at least {{value}} characters long.",
+    "username-maxlength": "Username must be at most {{value}} characters long."
   }
 }
