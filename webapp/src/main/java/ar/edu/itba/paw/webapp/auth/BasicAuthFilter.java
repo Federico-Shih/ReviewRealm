@@ -1,12 +1,12 @@
 package ar.edu.itba.paw.webapp.auth;
 
 import ar.edu.itba.paw.enums.RoleType;
+import ar.edu.itba.paw.exceptions.TokenExpiredException;
 import ar.edu.itba.paw.models.ExpirationToken;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.servicesinterfaces.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
 
 @Component
 public class BasicAuthFilter extends OncePerRequestFilter {
+    private static String REFRESH_HEADER = "X-Refresh";
 
     @Autowired
     private AuthenticationManager authenticationManager;
@@ -73,14 +74,19 @@ public class BasicAuthFilter extends OncePerRequestFilter {
                 userService.deleteToken(token);
                 return false;
             }
+            userService.validateToken(token);
             User user = expirationToken.get().getUser();
             authWithoutPassword(user);
+            response.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + jwtTokenUtil.generateAccessToken(user));
+            response.setHeader(REFRESH_HEADER, "Bearer " + jwtTokenUtil.generateRefreshToken(user));
 
             // One time use token
             userService.deleteToken(token);
             return true;
         } catch (IllegalArgumentException ignored) {
             return false;
+        } catch (TokenExpiredException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -105,7 +111,7 @@ public class BasicAuthFilter extends OncePerRequestFilter {
                 return;
 
             response.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + jwtTokenUtil.generateAccessToken(fullUser));
-            response.setHeader("X-Refresh", "Bearer " + jwtTokenUtil.generateRefreshToken(fullUser));
+            response.setHeader(REFRESH_HEADER, "Bearer " + jwtTokenUtil.generateRefreshToken(fullUser));
 
             authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 

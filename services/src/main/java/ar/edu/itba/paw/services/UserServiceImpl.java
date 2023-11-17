@@ -235,9 +235,10 @@ public class UserServiceImpl implements UserService {
             LOGGER.error("User {} already enabled", user.getId());
             throw new UserAlreadyEnabled();
         }
-        ExpirationToken token = tokenDao.findLastPasswordToken(user.getId()).orElseThrow(UserNotFoundException::new);
+        Optional<ExpirationToken> token = tokenDao.findLastPasswordToken(user.getId());
+        token.ifPresent(expirationToken -> tokenDao.delete(expirationToken.getToken()));
+
         ExpirationToken newToken = tokenDao.create(user.getId(), LocalDateTime.now().plusHours(EXPIRATION_TIME));
-        tokenDao.delete(token.getToken());
         mailingService.sendValidationTokenEmail(newToken, user);
         LOGGER.info("User {} resent token", user.getId());
         return newToken;

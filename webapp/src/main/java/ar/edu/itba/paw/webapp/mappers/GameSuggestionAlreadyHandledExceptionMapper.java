@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
 
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
@@ -20,7 +21,7 @@ public class GameSuggestionAlreadyHandledExceptionMapper implements ExceptionMap
 
     @Override
     public Response toResponse(GameSuggestionAlreadyHandled gameSuggestionAlreadyHandled) {
-        return Response.status(Response.Status.BAD_REQUEST).entity(ExceptionResponse.of(messageSource.getMessage("game.suggestion.already.handled",
+        return Response.status(Response.Status.BAD_REQUEST).type(MediaType.APPLICATION_JSON).entity(ExceptionResponse.of(messageSource.getMessage("game.suggestion.already.handled",
                 null, LocaleHelper.getLocale()))).build();
     }
 }

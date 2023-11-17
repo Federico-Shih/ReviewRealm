@@ -2,7 +2,7 @@ import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 
 import {RegisterRoutingModule} from './register-routing.module';
-import {RegisterComponent} from './feature/register.component';
+import {RegisterComponent} from './feature/register-base/register.component';
 import {RegisterFormComponent} from './ui/register-form/register-form.component';
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {MatButtonModule} from "@angular/material/button";
@@ -13,11 +13,14 @@ import {MatInputModule} from "@angular/material/input";
 import {TranslateModule} from "@ngx-translate/core";
 import {SharedModule} from "../shared/shared.module";
 import {MatSnackBarModule} from "@angular/material/snack-bar";
+import {ValidateUserComponent} from './feature/validate-user/validate-user.component';
+import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
 
 @NgModule({
   declarations: [
     RegisterComponent,
-    RegisterFormComponent
+    RegisterFormComponent,
+    ValidateUserComponent
   ],
   imports: [
     CommonModule,
@@ -31,7 +34,8 @@ import {MatSnackBarModule} from "@angular/material/snack-bar";
     ReactiveFormsModule,
     TranslateModule,
     SharedModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    MatProgressSpinnerModule
   ],
 })
 export class RegisterModule {

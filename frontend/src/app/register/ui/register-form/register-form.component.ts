@@ -13,6 +13,9 @@ export type UserCreateErrors = Partial<{
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class RegisterFormComponent implements OnInit {
+  @Input()
+  loading: boolean | null = false;
+
   @Output()
   createUser = new EventEmitter<UserCreateDto>();
   userCreateErrors: UserCreateErrors | null = {};

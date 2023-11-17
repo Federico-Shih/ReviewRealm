@@ -4,7 +4,7 @@
     <form (ngSubmit)="onSubmit()" [formGroup]="registerForm" class="text-fields">
       <mat-form-field>
         <mat-label>{{ 'register-form.username' | translate }}</mat-label>
-        <input [formControlName]="'username'" [placeholder]="'register-form.username' | translate" matInput
+        <input [formControlName]="'username'" [placeholder]="'register-form.username' | translate" matInput tabindex="1"
                name="username"/>
         <!--        <mat-error *ngIf="errorMessage !== null"></mat-error>-->
         <mat-error>
@@ -28,6 +28,7 @@
         <input
           [formControlName]="'email'"
           [placeholder]="'register-form.email-placeholder' | translate"
+          tabindex="2"
           matInput
           name="email"
           type="email"
@@ -49,6 +50,7 @@
         <mat-label>{{ 'register-form.password' | translate }}</mat-label>
         <input [formControlName]="'password'"
                [placeholder]="'register-form.password' | translate"
+               tabindex="3"
                matInput
                name="password"
                autocomplete="on"
@@ -66,6 +68,7 @@
       <mat-form-field>
         <mat-label>{{ 'register-form.confirm-password' | translate }}</mat-label>
         <input [formControlName]="'confirmPassword'" [placeholder]="'register-form.confirm-password' | translate"
+               tabindex="4"
                autocomplete="on"
                matInput
                name="password" type="password"/>
@@ -75,14 +78,20 @@
           </ng-container>
         </mat-error>
       </mat-form-field>
-      <div *ngIf="registerForm.hasError('passwordMismatch') && (registerForm.get('password')?.dirty || registerForm.get('confirmPassword')?.dirty)"
-           class="error">
+      <div
+        *ngIf="registerForm.hasError('passwordMismatch') && (registerForm.get('password')?.dirty || registerForm.get('confirmPassword')?.dirty)"
+        class="error">
         {{ 'register-form.password-mismatch' | translate }}
       </div>
 
-      <button class="submit-btn" color="accent" i18n mat-raised-button type="submit">
-        {{ 'register-form.register-btn' | translate | uppercase }}
-        <mat-icon>send</mat-icon>
+      <button class="submit-btn" color="accent" i18n mat-raised-button tabindex="5" type="submit">
+        <span *ngIf="!loading; else loadingSpinner">
+          {{ 'register-form.register-btn' | translate | uppercase }}
+          <mat-icon>send</mat-icon>
+        </span>
+        <ng-template #loadingSpinner>
+          <mat-spinner diameter="20"></mat-spinner>
+        </ng-template>
       </button>
     </form>
     <!--    <mat-error *ngIf="errorMessage !== null">{{ errorMessage | translate }}</mat-error>-->
