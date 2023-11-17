@@ -1,29 +1,61 @@
 {
-  "navbar": {
-    "search": "Buscar...",
-    "games-link": "Juegos",
-    "reviews-link": "Reseñas",
-    "community-link": "Comunidad",
-    "login": "Iniciar sesión",
-    "register": "Registrarse",
-    "for-you": "Tu feed",
-    "profile": "Perfil",
-    "missions": "Misiones",
-    "logout": "Cerrar sesión",
-    "settings": "Configuración",
-    "suggest-game": "Sugerir juego",
-    "write-review": "Escribir reseña",
-    "upload-game": "Crear juego",
-    "submissions": "Sugerencias",
-    "reports": "Reportes",
-    "welcome": "Bienvenido {{value}}!"
+  "errors": {
+    "dismiss": "Descartar",
+    "unknown": "Error desconocido, intente más tarde."
   },
   "login-form": {
+    "email-invalid": "Correo electrónico no es válido.",
+    "email-required": "Correo electrónico es requerido.",
+    "invalid-credentials": "Correo electrónico o contraseña inválida.",
     "login-btn": "Iniciar sesión",
     "login-header": "Iniciar sesión",
-    "email-required": "Correo electrónico es requerido.",
-    "email-invalid": "Correo electrónico no es válido.",
+    "password-required": "Contraseña es requerida."
+  },
+  "navbar": {
+    "community-link": "Comunidad",
+    "for-you": "Tu feed",
+    "games-link": "Juegos",
+    "login": "Iniciar sesión",
+    "logout": "Cerrar sesión",
+    "missions": "Misiones",
+    "profile": "Perfil",
+    "register": "Registrarse",
+    "reports": "Reportes",
+    "reviews-link": "Reseñas",
+    "search": "Buscar...",
+    "settings": "Configuración",
+    "submissions": "Sugerencias",
+    "suggest-game": "Sugerir juego",
+    "upload-game": "Crear juego",
+    "welcome": "Bienvenido {{value}}!",
+    "write-review": "Escribir reseña"
+  },
+  "register-form": {
+    "confirm-password": "Confirmar contraseña",
+    "confirm-password-required": "Confirmar contraseña es requerida.",
+    "email": "Correo electrónico",
+    "email-placeholder": "ejemplo@email.com",
+    "password": "Contraseña",
+    "password-minlength": "La contraseña debe tener al menos 8 caracteres.",
+    "password-mismatch": "Las contraseñas no coinciden.",
     "password-required": "Contraseña es requerida.",
-    "invalid-credentials": "Correo electrónico o contraseña inválida."
+    "register-btn": "Registrar cuenta",
+    "register-header": "Registrar cuenta nueva",
+    "used-email": "Correo electrónico ya está en uso.",
+    "used-username": "Nombre de usuario ya está en uso.",
+    "username": "Nombre de usuario",
+    "username-maxlength": "Nombre de usuario no puede tener más de {{value}} caracteres.",
+    "username-minlength": "Nombre de usuario debe tener al menos {{value}} caracteres.",
+    "username-required": "Nombre de usuario es requerido."
+  },
+  "validate-user-form": {
+    "email": "ejemplo@gmail.com",
+    "email-invalid": "Correo electrónico inválido",
+    "email-required": "Correo electrónico es requerido.",
+    "header": "Validar usuario",
+    "submit": "Validar token",
+    "token": "ABCDEFGH",
+    "token-required": "Se requiere el código de verificación",
+    "token-unknown": "Token desconocido."
   }
 }

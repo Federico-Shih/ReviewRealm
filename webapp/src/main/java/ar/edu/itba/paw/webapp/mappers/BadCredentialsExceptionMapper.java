@@ -9,7 +9,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Component;
 
-import javax.ws.rs.ForbiddenException;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
@@ -26,6 +26,6 @@ public class BadCredentialsExceptionMapper implements ExceptionMapper<BadCredent
     public Response toResponse(BadCredentialsException e) {
         System.out.println(e.getMessage());
         LOGGER.error("{}: {}", e.getClass().getName(), e.getMessage());
-        return Response.status(Response.Status.UNAUTHORIZED).entity(ExceptionResponse.of(messageSource.getMessage("unauthorized", null, LocaleHelper.getLocale()))).build();
+        return Response.status(Response.Status.UNAUTHORIZED).type(MediaType.APPLICATION_JSON).entity(ExceptionResponse.of(messageSource.getMessage("unauthorized", null, LocaleHelper.getLocale()))).build();
     }
 }

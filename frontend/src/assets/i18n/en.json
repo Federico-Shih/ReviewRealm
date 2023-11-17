@@ -1,29 +1,61 @@
 {
-  "navbar": {
-    "search": "Search...",
-    "games-link": "Games",
-    "reviews-link": "Reviews",
-    "community-link": "Community",
-    "login": "Login",
-    "register": "Register",
-    "for-you": "For you",
-    "profile": "Profile",
-    "missions": "Missions",
-    "logout": "Logout",
-    "settings": "Settings",
-    "suggest-game": "Suggest new game",
-    "write-review": "Write review",
-    "upload-game": "Upload game",
-    "submissions": "Submissions",
-    "reports": "Reports",
-    "welcome": "Welcome {{value}}"
+  "errors": {
+    "dismiss": "Dismiss",
+    "unknown": "Unknown error, please try again later."
   },
   "login-form": {
+    "email-invalid": "Email is invalid.",
+    "email-required": "Email is required.",
+    "invalid-credentials": "Invalid email or password",
     "login-btn": "Login",
     "login-header": "Login",
-    "email-required": "Email is required.",
-    "email-invalid": "Email is invalid.",
+    "password-required": "Password is required."
+  },
+  "navbar": {
+    "community-link": "Community",
+    "for-you": "For you",
+    "games-link": "Games",
+    "login": "Login",
+    "logout": "Logout",
+    "missions": "Missions",
+    "profile": "Profile",
+    "register": "Register",
+    "reports": "Reports",
+    "reviews-link": "Reviews",
+    "search": "Search...",
+    "settings": "Settings",
+    "submissions": "Submissions",
+    "suggest-game": "Suggest new game",
+    "upload-game": "Upload game",
+    "welcome": "Welcome {{value}}",
+    "write-review": "Write review"
+  },
+  "register-form": {
+    "confirm-password": "Confirm password",
+    "confirm-password-required": "Password confirmation is required.",
+    "email": "Email",
+    "email-placeholder": "example@email.com",
+    "password": "Password",
+    "password-minlength": "Password must be at least 8 characters long.",
+    "password-mismatch": "Passwords do not match.",
     "password-required": "Password is required.",
-    "invalid-credentials": "Invalid email or password"
+    "register-btn": "Register",
+    "register-header": "Register new account",
+    "used-email": "Email is already taken.",
+    "used-username": "Username is already taken.",
+    "username": "Username",
+    "username-maxlength": "Username must be at most {{value}} characters long.",
+    "username-minlength": "Username must be at least {{value}} characters long.",
+    "username-required": "Username is required."
+  },
+  "validate-user-form": {
+    "email": "example@gmail.com",
+    "email-invalid": "Invalid email",
+    "email-required": "Email is required",
+    "header": "Validar usuario",
+    "submit": "Validate token",
+    "token": "ABCDEFGH",
+    "token-required": "Token is required",
+    "token-unknown": "Unknown token. "
   }
 }

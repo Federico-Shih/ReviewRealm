@@ -9,6 +9,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Component;
 
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
@@ -24,6 +25,6 @@ public class AuthenticationExceptionMapper implements ExceptionMapper<Authentica
     @Override
     public Response toResponse(AuthenticationException e) {
         LOGGER.error("{}: {}", e.getClass().getName(), e.getMessage());
-        return Response.status(Response.Status.UNAUTHORIZED).entity(ExceptionResponse.of(messageSource.getMessage("authenticationexception", null, LocaleHelper.getLocale()))).build();
+        return Response.status(Response.Status.UNAUTHORIZED).type(MediaType.APPLICATION_JSON).entity(ExceptionResponse.of(messageSource.getMessage("authenticationexception", null, LocaleHelper.getLocale()))).build();
     }
 }

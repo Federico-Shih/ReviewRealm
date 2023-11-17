@@ -6,7 +6,6 @@ import ar.edu.itba.paw.servicesinterfaces.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -70,7 +69,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             userDetails = null;
         }
         if (jwtTokenUtil.isTokenRefresh(token) && userDetails != null) {
-            User user = userService.getUserByUsername(userDetails.getUsername()).orElse(null);
+            User user = userService.getUserByEmail(userDetails.getUsername()).orElse(null);
             if (user == null) {
                 return;
             }

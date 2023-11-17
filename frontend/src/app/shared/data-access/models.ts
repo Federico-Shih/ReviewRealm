@@ -43,11 +43,22 @@ export type ValidationResponse = {
   value: unknown;
 }
 
-export class RequestError {
+export class ValidationError {
   status: number;
-  exceptions: ValidationResponse[] | ExceptionResponse | null;
+  exceptions: ValidationResponse[] | null;
 
-  constructor(status: number, exceptions: ValidationResponse[] | ExceptionResponse | null) {
+
+  constructor(status: number, exceptions: ValidationResponse[] | null) {
+    this.status = status;
+    this.exceptions = exceptions;
+  }
+}
+
+export class RequestError {
+  exceptions: ExceptionResponse | null;
+  status: number;
+
+  constructor(status: number, exceptions: ExceptionResponse | null) {
     this.status = status;
     this.exceptions = exceptions;
   }

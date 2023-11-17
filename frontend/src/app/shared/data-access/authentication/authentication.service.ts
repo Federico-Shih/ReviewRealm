@@ -1,9 +1,9 @@
 import {Injectable} from '@angular/core';
 import {environment} from "../../../../environments/environment";
 import {BehaviorSubject, map, Observable, switchMap} from "rxjs";
-import {User} from "../users/user.class";
+import {User} from "../users/users.class";
 import {AuthenticationDto} from "./authentication.dtos";
-import {HttpClient} from "@angular/common/http";
+import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {customExceptionMapper} from "../../helpers/mapper";
 import {jwtDecode} from "jwt-decode";
 import {UserJwtPayload} from "../models";
@@ -37,27 +37,20 @@ export class AuthenticationService {
       observe: "response",
       responseType: "json"
     }).pipe(switchMap(({headers}) => {
-      const authorization = headers.get('Authorization');
-      if (!authorization) {
-        return customExceptionMapper(401, 'Unauthorized');
-      }
-      const token = authorization.split(' ')[1];
-      localStorage.setItem(AUTHORIZATION_TOKEN_LABEL, token);
-
-      const refreshToken = headers.get('X-Refresh')?.split(' ')[1];
-      localStorage.setItem(REFRESH_TOKEN_LABEL, refreshToken || '');
-
-      const payload = jwtDecode<UserJwtPayload>(token);
-      if (!payload.id) {
-        return customExceptionMapper(500, 'Invalid token');
-      }
-
-      return this.userService.getUsers(AuthenticationService.AUTHENTICATION_ENDPOINT, {id: payload.id}).pipe(map(users => {
-        this.loggedUser$.next(users.content[0]);
-        console.log(this.loggedUser$);
-        return users.content[0];
-      }));
+      return this.getAuthenticatedUserFromHeader(headers);
     }));
+  }
+
+  enableUser(email: string, token: string) {
+    return this.http.get(AuthenticationService.AUTHENTICATION_ENDPOINT, {
+      headers: {
+        'Authorization': 'Basic ' + btoa(`${email}:${token}`),
+      },
+      observe: "response",
+      responseType: "json",
+    }).pipe(switchMap(({headers}) => {
+      return this.getAuthenticatedUserFromHeader(headers);
+    }))
   }
 
   logout() {
@@ -68,5 +61,30 @@ export class AuthenticationService {
 
   getLoggedUser(): Observable<User | null> {
     return this.loggedUser$;
+  }
+
+  /*
+    If Token is invalid, returns ExceptionResponse with 401.
+   */
+  private getAuthenticatedUserFromHeader(headers: HttpHeaders): Observable<User | never> {
+    const authorization = headers.get('Authorization');
+    if (!authorization) {
+      return customExceptionMapper(401, 'Unauthorized');
+    }
+    const token = authorization.split(' ')[1];
+    localStorage.setItem(AUTHORIZATION_TOKEN_LABEL, token);
+
+    const refreshToken = headers.get('X-Refresh')?.split(' ')[1];
+    localStorage.setItem(REFRESH_TOKEN_LABEL, refreshToken || '');
+
+    const payload = jwtDecode<UserJwtPayload>(token);
+    if (!payload.id) {
+      return customExceptionMapper(500, 'Invalid token');
+    }
+
+    return this.userService.getUsers(AuthenticationService.AUTHENTICATION_ENDPOINT, {id: payload.id}).pipe(map(users => {
+      this.loggedUser$.next(users.content[0]);
+      return users.content[0];
+    }));
   }
 }

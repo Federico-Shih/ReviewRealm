@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
 
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
@@ -20,7 +21,7 @@ public class UserNotAModeratorExceptionMapper implements ExceptionMapper<UserNot
 
     @Override
     public Response toResponse(UserNotAModeratorException e) {
-        return Response.status(Response.Status.FORBIDDEN).entity(ExceptionResponse.of(messageSource.getMessage("user.not.moderator", null,
+        return Response.status(Response.Status.FORBIDDEN).type(MediaType.APPLICATION_JSON).entity(ExceptionResponse.of(messageSource.getMessage("user.not.moderator", null,
                 LocaleHelper.getLocale()))).build();
     }
 }

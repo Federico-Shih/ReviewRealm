@@ -1,11 +1,16 @@
 import {Injectable} from '@angular/core';
-import {HttpClient} from "@angular/common/http";
-import {paginatedResponseMapper, responseMapper} from "../../helpers/mapper";
-import {User} from "./user.class";
-import {map, Observable} from "rxjs";
+import {HttpClient, HttpErrorResponse} from "@angular/common/http";
+import {
+  customExceptionMapper,
+  paginatedResponseMapper,
+  responseMapper,
+  validationExceptionMapper
+} from "../../helpers/mapper";
+import {User} from "./users.class";
+import {catchError, map, Observable} from "rxjs";
 import {UserResponse} from "../responses";
-import {UserSearchDto} from "./users.dtos";
-import {Paginated} from "../models";
+import {UserCreateDto, UserMediaTypes, UserSearchDto} from "./users.dtos";
+import {Paginated, ValidationResponse} from "../models";
 
 @Injectable()
 export class UsersService {
@@ -60,5 +65,21 @@ export class UsersService {
       observe: "response",
       responseType: "json",
     }).pipe(map(paginatedResponseMapper(User.fromResponse)));
+  }
+
+  createUser(url: string, userCreateDto: UserCreateDto): Observable<User | never> {
+    return this.http.post<User>(url, userCreateDto, {
+      observe: "response",
+      responseType: "json",
+      headers: {
+        'Content-Type': UserMediaTypes.CREATEUSER
+      }
+    }).pipe(map(
+      responseMapper(User.fromResponse)
+    ), catchError((err) => {
+      if (err instanceof HttpErrorResponse && err.status === 400 && err.error?.length > 0)
+        return validationExceptionMapper(err.status as number, err.error as ValidationResponse[]);
+      return customExceptionMapper(500, 'Unknown error');
+    }));
   }
 }
