@@ -11,6 +11,7 @@ import {AuthenticationInterceptor} from "./shared/interceptors/AuthenticationInt
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {TranslateLoader, TranslateModule} from "@ngx-translate/core";
 import {TranslateHttpLoader} from "@ngx-translate/http-loader";
+import {MAT_SNACK_BAR_DEFAULT_OPTIONS} from "@angular/material/snack-bar";
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http);
@@ -41,7 +42,9 @@ export function HttpLoaderFactory(http: HttpClient) {
     provide: HTTP_INTERCEPTORS,
     useClass: AuthenticationInterceptor,
     multi: true
-  }],
+  },
+    {provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: {duration: 2000}}
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule {

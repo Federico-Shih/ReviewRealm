@@ -7,7 +7,7 @@
         <input [formControlName]="'username'" [placeholder]="'register-form.username' | translate" matInput
                name="username"/>
         <!--        <mat-error *ngIf="errorMessage !== null"></mat-error>-->
-        <mat-error *ngIf="registerForm.controls['username']?.invalid">
+        <mat-error>
           <ng-container *ngIf="registerForm.get('username')?.errors?.['required']">
             {{ 'register-form.username-required' | translate }}
           </ng-container>
@@ -17,8 +17,12 @@
           <ng-container *ngIf="registerForm.get('username')?.errors?.['maxlength'] as error">
             {{ 'register-form.username-maxlength' | translate:{value: error?.requiredLength} }}
           </ng-container>
+          <ng-container *ngIf="userCreateErrors?.username">
+            {{ userCreateErrors?.username }}
+          </ng-container>
         </mat-error>
       </mat-form-field>
+      <!-- VERIFICAR COMO FORMCONTROL TIRA ERROR -->
       <mat-form-field>
         <mat-label>{{ 'register-form.email' | translate }}</mat-label>
         <input
@@ -29,12 +33,15 @@
           type="email"
         />
         <!--        <mat-error *ngIf="errorMessage !== null"></mat-error>-->
-        <mat-error *ngIf="registerForm.controls['email']?.invalid">
+        <mat-error>
           <ng-container *ngIf="registerForm.controls['email'].errors?.['required']">
             {{ 'login-form.email-required' | translate }}
           </ng-container>
           <ng-container *ngIf="registerForm.controls['email'].errors?.['email']">
             {{ 'login-form.email-invalid' | translate }}
+          </ng-container>
+          <ng-container>
+            {{ userCreateErrors?.email }}
           </ng-container>
         </mat-error>
       </mat-form-field>
@@ -44,8 +51,10 @@
                [placeholder]="'register-form.password' | translate"
                matInput
                name="password"
-               type="password"/>
-        <mat-error *ngIf="(registerForm.controls['password'].invalid || registerForm.errors?.['mismatch'] !== null)">
+               autocomplete="on"
+               type="password"
+        />
+        <mat-error>
           <ng-container *ngIf="registerForm.controls['password'].errors?.['required']">
             {{ 'login-form.password-required' | translate }}
           </ng-container>
@@ -54,22 +63,23 @@
           </ng-container>
         </mat-error>
       </mat-form-field>
-
-      <!--TODO: FIX MISMATCH ERROR NOT SHOWING WTF MOTHERF-->
       <mat-form-field>
         <mat-label>{{ 'register-form.confirm-password' | translate }}</mat-label>
         <input [formControlName]="'confirmPassword'" [placeholder]="'register-form.confirm-password' | translate"
+               autocomplete="on"
                matInput
                name="password" type="password"/>
-        <mat-error *ngIf="(registerForm.controls['confirmPassword'].invalid) || registerForm.errors">
+        <mat-error>
           <ng-container *ngIf="registerForm.controls['confirmPassword'].errors?.['required']">
             {{ 'login-form.password-required' | translate }}
           </ng-container>
-          <ng-container *ngIf="registerForm.errors?.['mismatch']">
-            {{ 'register-form.password-mismatch' | translate }}
-          </ng-container>
         </mat-error>
       </mat-form-field>
+      <div *ngIf="registerForm.hasError('passwordMismatch') && (registerForm.get('password')?.dirty || registerForm.get('confirmPassword')?.dirty)"
+           class="error">
+        {{ 'register-form.password-mismatch' | translate }}
+      </div>
+
       <button class="submit-btn" color="accent" i18n mat-raised-button type="submit">
         {{ 'register-form.register-btn' | translate | uppercase }}
         <mat-icon>send</mat-icon>

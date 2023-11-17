@@ -19,10 +19,13 @@
 .text-fields {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 6px;
 }
 
 .submit-btn {
   font-size: 1.2rem;
-  margin-top: 5px
+}
+
+.error {
+  color: var(--color-error);
 }

@@ -12,7 +12,7 @@ import {MatIconModule} from "@angular/material/icon";
 import {MatInputModule} from "@angular/material/input";
 import {TranslateModule} from "@ngx-translate/core";
 import {SharedModule} from "../shared/shared.module";
-
+import {MatSnackBarModule} from "@angular/material/snack-bar";
 
 @NgModule({
   declarations: [
@@ -30,8 +30,9 @@ import {SharedModule} from "../shared/shared.module";
     MatFormFieldModule,
     ReactiveFormsModule,
     TranslateModule,
-    SharedModule
-  ]
+    SharedModule,
+    MatSnackBarModule
+  ],
 })
 export class RegisterModule {
 }

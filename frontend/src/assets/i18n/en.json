@@ -40,6 +40,12 @@
     "password-minlength": "Password must be at least 8 characters long.",
     "register-header": "Register new account",
     "username-minlength": "Username must be at least {{value}} characters long.",
-    "username-maxlength": "Username must be at most {{value}} characters long."
+    "username-maxlength": "Username must be at most {{value}} characters long.",
+    "used-username": "Username is already taken.",
+    "used-email": "Email is already taken."
+  },
+  "errors": {
+    "unknown": "Unknown error, please try again later.",
+    "dismiss": "Dismiss"
   }
 }

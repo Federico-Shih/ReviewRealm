@@ -40,6 +40,12 @@
     "password-minlength": "La contraseña debe tener al menos 8 caracteres.",
     "register-header": "Registrar cuenta nueva",
     "username-minlength": "Nombre de usuario debe tener al menos {{value}} caracteres.",
-    "username-maxlength": "Nombre de usuario no puede tener más de {{value}} caracteres."
+    "username-maxlength": "Nombre de usuario no puede tener más de {{value}} caracteres.",
+    "used-username": "Nombre de usuario ya está en uso.",
+    "used-email": "Correo electrónico ya está en uso."
+  },
+  "errors": {
+    "unknown": "Error desconocido, intente más tarde.",
+    "dismiss": "Descartar"
   }
 }

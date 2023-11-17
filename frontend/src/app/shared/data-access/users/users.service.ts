@@ -78,7 +78,7 @@ export class UsersService {
       responseMapper(User.fromResponse)
     ), catchError((err) => {
       if (err instanceof HttpErrorResponse && err.status === 400 && err.error?.length > 0)
-        return validationExceptionMapper(err.error, err.error as ValidationResponse[]);
+        return validationExceptionMapper(err.status as number, err.error as ValidationResponse[]);
       return customExceptionMapper(500, 'Unknown error');
     }));
   }

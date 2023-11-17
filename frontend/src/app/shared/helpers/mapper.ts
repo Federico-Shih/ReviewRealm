@@ -1,5 +1,5 @@
 import {HttpResponse} from "@angular/common/http";
-import {ExceptionResponse, Paginated, RequestError, ValidationResponse} from "../data-access/models";
+import {ExceptionResponse, Paginated, RequestError, ValidationError, ValidationResponse} from "../data-access/models";
 import {throwError} from "rxjs";
 
 const TOTAL_PAGES_HEADER = 'X-Reviewrealm-TotalPages';
@@ -42,12 +42,12 @@ export const paginatedResponseMapper = <T, K>(fromResponse: (param: T) => K) => 
   };
 }
 
-export const exceptionMapper = (error: HttpResponse<ValidationResponse[] | ExceptionResponse>) => {
+export const exceptionMapper = (error: HttpResponse<ExceptionResponse>) => {
   return throwError(() => (new RequestError(error.status, error.body)));
 }
 
 export const validationExceptionMapper = (errorCode: number, error: ValidationResponse[]) => {
-  return throwError(() => (new RequestError(errorCode, error)));
+  return throwError(() => (new ValidationError(errorCode, error)));
 }
 
 export const customExceptionMapper = (errorCode: number, message: string) => {
