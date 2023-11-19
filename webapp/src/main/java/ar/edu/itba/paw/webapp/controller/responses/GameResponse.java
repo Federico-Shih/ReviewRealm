@@ -43,8 +43,6 @@ public class GameResponse extends BaseResponse {
 
     public static GameResponse fromEntity(final UriInfo uri, Game game, GameReviewData gameReviewData, User user){
         GameResponse response = getGameResponse(game, gameReviewData);
-
-
         response.link("self",uri.getBaseUriBuilder().path(BASE_PATH).path(String.valueOf(game.getId())).build());
         //Todo: check with review paths
         response.link("reviews",uri.getBaseUriBuilder().path("reviews").queryParam("gameId",game.getId()).build());

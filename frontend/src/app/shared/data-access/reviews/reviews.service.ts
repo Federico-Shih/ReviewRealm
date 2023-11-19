@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {catchError, map, Observable} from "rxjs";
-import {ReviewResponse} from "../responses";
+import {ReviewResponse} from "../shared.responses";
 import {Review} from "./review.class";
 import {exceptionMapper, responseMapper} from "../../helpers/mapper";
 

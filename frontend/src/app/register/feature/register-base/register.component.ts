@@ -2,7 +2,7 @@ import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {UserCreateDto} from "../../../shared/data-access/users/users.dtos";
 import {UsersService} from "../../../shared/data-access/users/users.service";
 import {environment} from "../../../../environments/environment";
-import {ValidationError} from "../../../shared/data-access/models";
+import {ValidationError} from "../../../shared/data-access/shared.models";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {TranslateService} from "@ngx-translate/core";
 import {BehaviorSubject} from "rxjs";
