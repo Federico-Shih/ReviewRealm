@@ -11,7 +11,7 @@ export type RatingType = `${number}t${number}`;
 
 export type GameFiltersDto = {
   search: string;
-  excludeNoRating
+  excludeNoRating: boolean;
   suggested: boolean;
   genres: number[];
   rating: RatingType;

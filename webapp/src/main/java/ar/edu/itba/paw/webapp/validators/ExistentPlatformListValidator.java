@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.webapp.validators;
 
+import ar.edu.itba.paw.enums.Difficulty;
 import ar.edu.itba.paw.enums.Platform;
 import ar.edu.itba.paw.webapp.controller.annotations.ExistentPlatformList;
 
@@ -13,10 +14,16 @@ public class ExistentPlatformListValidator implements ConstraintValidator<Existe
         if (!(o instanceof List)) {
             return false;
         }
-        List<Integer> list = (List<Integer>) o;
-        for (Integer i : list) {
-            if (i == null || i < 0 || !Platform.getById(i).isPresent()) {
+        List<String> list = (List<String>) o;
+        for (String s : list) {
+            if (s == null) {
                 return false;
+            }else{
+                try{
+                    Platform.valueOf(s.toUpperCase());
+                }catch (IllegalArgumentException e){
+                    return false;
+                }
             }
         }
         return true;

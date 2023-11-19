@@ -13,10 +13,7 @@ import ar.edu.itba.paw.dtos.filtering.ReviewFilterBuilder;
 import ar.edu.itba.paw.dtos.ordering.*;
 import ar.edu.itba.paw.enums.Difficulty;
 import ar.edu.itba.paw.enums.Platform;
-import ar.edu.itba.paw.webapp.controller.annotations.ExistentGameId;
-import ar.edu.itba.paw.webapp.controller.annotations.ExistentGenreList;
-import ar.edu.itba.paw.webapp.controller.annotations.ExistentPlatformList;
-import ar.edu.itba.paw.webapp.controller.annotations.ExistentUserId;
+import ar.edu.itba.paw.webapp.controller.annotations.*;
 
 import javax.validation.constraints.Pattern;
 import javax.ws.rs.QueryParam;
@@ -43,6 +40,7 @@ public class ReviewSearchQuery extends PaginatedQuery {
     @QueryParam("authors")
     private List<Long> authors;
 
+    @Pattern(regexp = "^(?:[1-9]\\d*|0)?(?:\\.\\d+)?$", message = "Pattern.searchReview.timePlayedFilter")
     @QueryParam("timePlayedFilter")
     private String timePlayedFilter;
 
@@ -52,11 +50,11 @@ public class ReviewSearchQuery extends PaginatedQuery {
 
     @ExistentPlatformList
     @QueryParam("platformsFilter")
-    private List<Integer> platformsFilter;
+    private List<String> platformsFilter;
 
-    @ExistentGenreList
+    @ExistentDifficultyList
     @QueryParam("difficultyFilter")
-    private List<Integer> difficultyFilter;
+    private List<String> difficultyFilter;
 
     @QueryParam("completedFilter")
     private Boolean completedFilter;
@@ -85,10 +83,10 @@ public class ReviewSearchQuery extends PaginatedQuery {
 
     public ReviewFilter getFilter() {
         Double timePlayed = timePlayedFilter==null? null : Double.valueOf(timePlayedFilter);
-        //Los gets de los enums son seguros porque se validan en las anotaciones
-        List<Platform> platforms = platformsFilter == null ? null : platformsFilter.stream().map(p -> Platform.getById(p).get()
+        //Los ValueOf son seguros porque ya se validaron en los validators
+        List<Platform> platforms = platformsFilter == null ? null : platformsFilter.stream().map(p -> Platform.valueOf(p.toUpperCase())
         ).collect(java.util.stream.Collectors.toList());
-        List<Difficulty> difficulties = difficultyFilter == null ? null : difficultyFilter.stream().map(d -> Difficulty.getById(d).get()
+        List<Difficulty> difficulties = difficultyFilter == null ? null : difficultyFilter.stream().map(d -> Difficulty.valueOf(d.toUpperCase())
         ).collect(java.util.stream.Collectors.toList());
 
         return new ReviewFilterBuilder()

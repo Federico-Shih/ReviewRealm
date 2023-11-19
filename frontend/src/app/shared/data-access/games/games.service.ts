@@ -5,6 +5,7 @@ import {paginatedResponseMapper, queryMapper, responseMapper} from "../../helper
 import {map, Observable} from "rxjs";
 import {Paginated} from "../shared.models";
 import {Game} from "./games.class";
+import {GameResponse} from "../shared.responses";
 
 @Injectable()
 export class GamesService {
@@ -13,14 +14,14 @@ export class GamesService {
   }
 
   getGames(url: string, query: GameSearchDto): Observable<Paginated<Game>> {
-    return this.http.get(url + queryMapper(query), {
+    return this.http.get<GameResponse[]>(url + queryMapper(query), {
       responseType: "json",
       observe: "response"
     }).pipe(map(paginatedResponseMapper(Game.fromResponse)));
   }
 
   getGame(url: string): Observable<Game> {
-    return this.http.get(url, {
+    return this.http.get<GameResponse>(url, {
       responseType: "json",
       observe: "response"
     }).pipe(map(responseMapper(Game.fromResponse)));
