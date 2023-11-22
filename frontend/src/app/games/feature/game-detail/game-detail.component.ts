@@ -1,9 +1,10 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 @Component({
   selector: 'app-game-detail',
   templateUrl: './game-detail.component.html',
-  styleUrls: ['./game-detail.component.css']
+  styleUrls: ['./game-detail.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class GameDetailComponent {
 
