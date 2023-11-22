@@ -3,7 +3,6 @@ import {GameResponse, GameResponseLinks} from "../shared.responses";
 
 
 export class GameLinks {
-
   self: string;
   reviews: string;
   userReview?: string;
@@ -58,7 +57,6 @@ export class Game {
   replayability?: number;
   completability?: number;
   links: GameLinks;
-
 
   constructor(id: number,
               name: string,

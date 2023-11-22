@@ -18,6 +18,7 @@ export class RegisterFormComponent implements OnInit {
 
   @Output()
   createUser = new EventEmitter<UserCreateDto>();
+
   userCreateErrors: UserCreateErrors | null = {};
 
   @Input() set errors(value: UserCreateErrors | null) {

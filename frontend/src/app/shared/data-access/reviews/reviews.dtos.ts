@@ -1,4 +1,3 @@
-
 import {PaginatedDto, SortedDto} from "../shared.dtos";
 
 /*created|rating|popularity|controversial*/
@@ -10,21 +9,20 @@ export enum ReviewSortType {
 }
 
 export type ReviewFiltersDto = {
-    gameGenres: number[];
+  gameGenres: number[];
 
-    excludeAuthors: number[];
-    authors: number[];
-    authorPreferences: number[];
+  excludeAuthors: number[];
+  authors: number[];
+  authorPreferences: number[];
 
-    platformsFilter: string[];
-    difficultyFilter: string[];
-    completedFilter: boolean;
-    replayableFilter: boolean;
+  platforms: string[];
+  difficulty: string[];
+  completed: boolean;
+  replayable: boolean;
+  timeplayed: string;
 
-    timePlayedFilter: string;
-
-    search: string;
-    gameId: number;
+  search: string;
+  gameId: number;
 }
 
 export type ReviewRecommendedFilterDto = {

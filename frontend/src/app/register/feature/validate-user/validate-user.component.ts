@@ -18,23 +18,28 @@ export class ValidateUserComponent implements OnInit {
     token: new FormControl('', [Validators.required])
   });
 
-  constructor(private readonly authenticationService: AuthenticationService, private readonly router: Router, private readonly route: ActivatedRoute) {
+  constructor(
+    private readonly authenticationService: AuthenticationService,
+    private readonly router: Router,
+    private readonly route: ActivatedRoute
+  ) {
   }
 
   onSubmit() {
     if (!this.form.value.email || !this.form.value.token) return;
     this.loading.next(true);
-    this.authenticationService.enableUser(this.form.value.email, this.form.value.token).subscribe(
-      {
-        next: (user) => {
-          this.loading.next(false);
-          this.initialLoading.next(false);
-          this.router.navigate(['/']);
-        },
-        error: (error) => {
-          this.form.controls.token.setErrors({unknown: true});
-          this.form.setErrors({unknown: true})
-          this.loading.next(false);
+    this.authenticationService.enableUser(this.form.value.email, this.form.value.token)
+      .subscribe(
+        {
+          next: (user) => {
+            this.loading.next(false);
+            this.initialLoading.next(false);
+            this.router.navigate(['/']);
+          },
+          error: (error) => {
+            this.form.controls.token.setErrors({unknown: true});
+            this.form.setErrors({unknown: true})
+            this.loading.next(false);
           this.initialLoading.next(false);
         }
       }

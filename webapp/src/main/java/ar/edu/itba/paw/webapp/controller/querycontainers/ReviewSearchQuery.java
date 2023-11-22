@@ -10,7 +10,9 @@ package ar.edu.itba.paw.webapp.controller.querycontainers;
 
 import ar.edu.itba.paw.dtos.filtering.ReviewFilter;
 import ar.edu.itba.paw.dtos.filtering.ReviewFilterBuilder;
-import ar.edu.itba.paw.dtos.ordering.*;
+import ar.edu.itba.paw.dtos.ordering.OrderDirection;
+import ar.edu.itba.paw.dtos.ordering.Ordering;
+import ar.edu.itba.paw.dtos.ordering.ReviewOrderCriteria;
 import ar.edu.itba.paw.enums.Difficulty;
 import ar.edu.itba.paw.enums.Platform;
 import ar.edu.itba.paw.webapp.controller.annotations.*;
@@ -21,9 +23,9 @@ import java.util.List;
 
 public class ReviewSearchQuery extends PaginatedQuery {
 
-    @Pattern(regexp ="^(created|rating|popularity|controversial)$", flags = Pattern.Flag.CASE_INSENSITIVE,
+    @Pattern(regexp = "^(created|rating|popularity|controversial)$", flags = Pattern.Flag.CASE_INSENSITIVE,
             message = "Pattern.searchReview.criteria")
-    @QueryParam("orderCriteria")
+    @QueryParam("sort")
     private String orderCriteria;
 
     @Pattern(regexp ="^(asc|desc)$", flags = Pattern.Flag.CASE_INSENSITIVE, message = "Pattern.search.direction")
@@ -41,7 +43,7 @@ public class ReviewSearchQuery extends PaginatedQuery {
     private List<Long> authors;
 
     @Pattern(regexp = "^(?:[1-9]\\d*|0)?(?:\\.\\d+)?$", message = "Pattern.searchReview.timePlayedFilter")
-    @QueryParam("timePlayedFilter")
+    @QueryParam("timeplayed")
     private String timePlayedFilter;
 
     @ExistentGenreList
@@ -49,17 +51,17 @@ public class ReviewSearchQuery extends PaginatedQuery {
     private List<Integer> authorPreferences;
 
     @ExistentPlatformList
-    @QueryParam("platformsFilter")
+    @QueryParam("platforms")
     private List<String> platformsFilter;
 
     @ExistentDifficultyList
-    @QueryParam("difficultyFilter")
+    @QueryParam("difficulty")
     private List<String> difficultyFilter;
 
-    @QueryParam("completedFilter")
+    @QueryParam("completed")
     private Boolean completedFilter;
 
-    @QueryParam("replayableFilter")
+    @QueryParam("replayable")
     private Boolean replayableFilter;
 
     @QueryParam("search")
