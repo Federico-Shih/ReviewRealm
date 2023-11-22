@@ -1,6 +1,6 @@
+// TODO: add all user media types that are relevant
 import {PaginatedDto, SortedDto} from "../shared.dtos";
 
-// TODO: add all user media types that are relevant
 export enum UserMediaTypes {
   CREATEUSER = "application/vnd.user-form.v1+json",
 }
@@ -14,9 +14,9 @@ export type UserSearchDto = Partial<{
   preferences: number[];
   gamesPlayed: number[];
   following: number;
-} & SortedDto<SortCriteria> & PaginatedDto>;
+} & SortedDto<UserSortCriteria> & PaginatedDto>;
 
-export enum SortCriteria {
+export enum UserSortCriteria {
   FOLLOWERS = "followers",
   LEVEL = "level",
   REPUTATION = "reputation",

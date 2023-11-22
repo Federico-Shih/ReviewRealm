@@ -1,0 +1,20 @@
+<div class="drawer-content">
+  <h3>{{ 'filter-drawer.order-by' | translate }}</h3>
+  <mat-radio-group class="radio-group">
+    <mat-radio-button (click)="selectOrder.emit(direction.selectKey)"
+                      *ngFor="let direction of orderDirections"
+                      [value]="direction.selectKey">
+      {{ direction.translateKey | translate }}
+    </mat-radio-button>
+  </mat-radio-group>
+  <mat-divider></mat-divider>
+  <mat-radio-group>
+    <mat-radio-button (click)="selectOrderDirection.emit(direction)"
+                      *ngFor="let direction of sortDirections"
+                      [value]="direction">
+      {{ direction | translate }}
+    </mat-radio-button>
+  </mat-radio-group>
+  <mat-divider></mat-divider>
+  <ng-content></ng-content>
+</div>

@@ -116,6 +116,7 @@ public class MissionServiceImpl implements MissionService {
     @Transactional
     public void resetMissionsWeekly() {
         List<MissionProgress> missionProgresses = missionDao.findAll();
+        LOGGER.info("Resetting weekly missions");
         for (MissionProgress missionProgress : missionProgresses) {
             if (missionProgress.getMission().getFrequency() == Mission.MissionFrequency.WEEKLY && missionProgress.getMission().isRepeatable()) {
                 missionDao.resetProgress(missionProgress.getUser(), missionProgress.getMission());
@@ -127,6 +128,7 @@ public class MissionServiceImpl implements MissionService {
     @Transactional
     public void resetMissionsDaily() {
         List<MissionProgress> missionProgresses = missionDao.findAll();
+        LOGGER.info("Resetting daily missions");
         for (MissionProgress missionProgress : missionProgresses) {
             if (missionProgress.getMission().getFrequency() == Mission.MissionFrequency.DAILY && missionProgress.getMission().isRepeatable()) {
                 missionDao.resetProgress(missionProgress.getUser(), missionProgress.getMission());
@@ -138,6 +140,7 @@ public class MissionServiceImpl implements MissionService {
     @Transactional
     public void resetMissionsMonthly() {
         List<MissionProgress> missionProgresses = missionDao.findAll();
+        LOGGER.info("Resetting monthly missions");
         for (MissionProgress missionProgress : missionProgresses) {
             if (missionProgress.getMission().getFrequency() == Mission.MissionFrequency.MONTHLY && missionProgress.getMission().isRepeatable()) {
                 missionDao.resetProgress(missionProgress.getUser(), missionProgress.getMission());

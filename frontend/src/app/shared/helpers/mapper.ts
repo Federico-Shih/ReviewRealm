@@ -1,7 +1,12 @@
 import {HttpResponse} from "@angular/common/http";
-import {ExceptionResponse, Paginated, RequestError, ValidationError, ValidationResponse} from "../data-access/shared.models";
 import {throwError} from "rxjs";
-import {GameSearchDto} from "../data-access/games/games.dtos";
+import {
+  ExceptionResponse,
+  Paginated,
+  RequestError,
+  ValidationError,
+  ValidationResponse
+} from "../data-access/shared.models";
 
 const TOTAL_PAGES_HEADER = 'X-Reviewrealm-TotalPages';
 
@@ -74,6 +79,7 @@ export const queryMapper = <T extends Record<string, unknown>>(query: T): string
       value.forEach((item) => queryParams.append(key, item.toString()));
       return;
     } else {
+      // @ts-ignore
       queryParams.set(key, value.toString());
     }
   });

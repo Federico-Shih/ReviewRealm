@@ -1,0 +1,15 @@
+<mat-drawer-container autosize class="home-container">
+  <mat-drawer #drawer class="drawer-container" mode="side" opened="true">
+    <app-filter-drawer (selectOrder)="log($event)"
+                       (selectOrderDirection)="log($event)"
+                       [orderDirections]="orderDirections">
+
+    </app-filter-drawer>
+  </mat-drawer>
+
+  <mat-drawer-content>
+    <button (click)="drawer.toggle()" type="button">
+      hola
+    </button>
+  </mat-drawer-content>
+</mat-drawer-container>

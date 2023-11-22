@@ -14,12 +14,17 @@ import {TranslateModule} from "@ngx-translate/core";
 import {RouterLink} from "@angular/router";
 import {MatIconModule} from "@angular/material/icon";
 import {MatMenuModule} from "@angular/material/menu";
+import {FilterDrawerComponent} from './ui/filter-drawer/filter-drawer.component';
+import {MatSidenavModule} from "@angular/material/sidenav";
+import {MatRadioModule} from "@angular/material/radio";
+import {MatListModule} from "@angular/material/list";
 import {GamesService} from "./data-access/games/games.service";
 import {EnumsService} from "./data-access/enums/enums.service";
 
 
 @NgModule({
-  declarations: [NavbarComponent, LoginFormComponent],
+  declarations: [NavbarComponent, LoginFormComponent, FilterDrawerComponent],
+  providers: [UsersService, ReviewsService, GamesService, EnumsService],
   imports: [
     CommonModule,
     HttpClientModule,
@@ -32,13 +37,16 @@ import {EnumsService} from "./data-access/enums/enums.service";
     RouterLink,
     MatIconModule,
     ReactiveFormsModule,
-    MatMenuModule
+    MatMenuModule,
+    MatSidenavModule,
+    MatRadioModule,
+    MatListModule
   ],
-  providers: [UsersService, ReviewsService, GamesService, EnumsService],
   exports: [
     NavbarComponent,
     TranslateModule,
     LoginFormComponent,
+    FilterDrawerComponent,
   ]
 })
 export class SharedModule {

@@ -1,7 +1,7 @@
 {
-  "errors": {
-    "dismiss": "Dismiss",
-    "unknown": "Unknown error, please try again later."
+  "filter-drawer": {
+    "apply": "Apply filters",
+    "order-by": "Order by"
   },
   "login-form": {
     "email-invalid": "Email is invalid.",
@@ -10,6 +10,10 @@
     "login-btn": "Login",
     "login-header": "Login",
     "password-required": "Password is required."
+  },
+  "errors": {
+    "dismiss": "Dismiss",
+    "unknown": "Unknown error, please try again later."
   },
   "navbar": {
     "community-link": "Community",
@@ -56,6 +60,8 @@
     "submit": "Validate token",
     "token": "ABCDEFGH",
     "token-required": "Token is required",
-    "token-unknown": "Unknown token. "
+    "token-unknown": "Unknown token. ",
+    "welcome": "Welcome {{value}}",
+    "write-review": "Write review"
   }
 }

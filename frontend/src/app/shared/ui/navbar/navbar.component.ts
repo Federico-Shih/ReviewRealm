@@ -11,7 +11,6 @@ import {Role} from "../../data-access/shared.enums";
 export class NavbarComponent {
   @Input() isLoggedIn: boolean = false;
   @Input() user: User | null = null;
-
   @Output() logout = new EventEmitter<void>();
 
   protected readonly Role = Role;

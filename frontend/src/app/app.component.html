@@ -1,3 +1,5 @@
 <app-navbar (logout)="logout()" [isLoggedIn]="(loggedInUser$ | async) !== null"
             [user]="loggedInUser$ | async"></app-navbar>
-<router-outlet></router-outlet>
+<div style="top: 70px; height: calc(100vh - 70px); position: relative">
+  <router-outlet></router-outlet>
+</div>

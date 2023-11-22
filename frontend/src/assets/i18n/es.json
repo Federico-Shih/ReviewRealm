@@ -1,7 +1,7 @@
 {
-  "errors": {
-    "dismiss": "Descartar",
-    "unknown": "Error desconocido, intente más tarde."
+  "filter-drawer": {
+    "apply": "Aplicar filtros",
+    "order-by": "Ordenar por"
   },
   "login-form": {
     "email-invalid": "Correo electrónico no es válido.",
@@ -10,6 +10,10 @@
     "login-btn": "Iniciar sesión",
     "login-header": "Iniciar sesión",
     "password-required": "Contraseña es requerida."
+  },
+  "errors": {
+    "dismiss": "Descartar",
+    "unknown": "Error desconocido, intente más tarde."
   },
   "navbar": {
     "community-link": "Comunidad",
