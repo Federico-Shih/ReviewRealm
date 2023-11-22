@@ -5,11 +5,6 @@ export enum UserMediaTypes {
   CREATEUSER = "application/vnd.user-form.v1+json",
 }
 
-// TODO: add all user media types that are relevant
-export enum UserMediaTypes {
-  CREATEUSER = "application/vnd.user-form.v1+json",
-}
-
 export type UserSearchDto = Partial<{
   followers: number;
   search: string;

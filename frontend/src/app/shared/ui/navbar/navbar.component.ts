@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
 import {User} from "../../data-access/users/users.class";
-import {Role} from "../../data-access/enums";
+import {Role} from "../../data-access/shared.enums";
 
 @Component({
   selector: 'app-navbar',
