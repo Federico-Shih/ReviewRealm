@@ -14,11 +14,12 @@ import {TranslateModule} from "@ngx-translate/core";
 import {RouterLink} from "@angular/router";
 import {MatIconModule} from "@angular/material/icon";
 import {MatMenuModule} from "@angular/material/menu";
+import {GamesService} from "./data-access/games/games.service";
+import {EnumsService} from "./data-access/enums/enums.service";
 
 
 @NgModule({
   declarations: [NavbarComponent, LoginFormComponent],
-  providers: [UsersService, ReviewsService],
   imports: [
     CommonModule,
     HttpClientModule,
@@ -33,6 +34,7 @@ import {MatMenuModule} from "@angular/material/menu";
     ReactiveFormsModule,
     MatMenuModule
   ],
+  providers: [UsersService, ReviewsService, GamesService, EnumsService],
   exports: [
     NavbarComponent,
     TranslateModule,

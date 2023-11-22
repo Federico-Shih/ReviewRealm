@@ -1,6 +1,7 @@
 import {HttpResponse} from "@angular/common/http";
 import {ExceptionResponse, Paginated, RequestError, ValidationError, ValidationResponse} from "../data-access/models";
 import {throwError} from "rxjs";
+import {GameSearchDto} from "../data-access/games/games.dtos";
 
 const TOTAL_PAGES_HEADER = 'X-Reviewrealm-TotalPages';
 
@@ -24,8 +25,13 @@ const splitLinks = (links: string): Map<string, string> => {
   return map;
 }
 
+export const arrayResponseMapper = <T, K>(fromResponse: (param: T) => K) => (httpResponse: HttpResponse<T[]>): K[] => {
+  const reviewResponse = httpResponse.body as T[];
+  return reviewResponse.map(fromResponse);
+}
+
 export const paginatedResponseMapper = <T, K>(fromResponse: (param: T) => K) => (httpResponse: HttpResponse<T[]>): Paginated<K> => {
-  const paginatedResponse = httpResponse.body as T[];
+  const paginatedResponse = httpResponse.status === 204 ? [] : httpResponse.body as T[];
   const headers = httpResponse.headers;
   const pagesHeader = headers.get(TOTAL_PAGES_HEADER);
   const totalPages = pagesHeader !== null ? parseInt(pagesHeader) : 0;
@@ -52,4 +58,25 @@ export const validationExceptionMapper = (errorCode: number, error: ValidationRe
 
 export const customExceptionMapper = (errorCode: number, message: string) => {
   return throwError(() => (new RequestError(errorCode, {message})));
+}
+
+/*
+Recibe un objeto y lo convierte en un query string de esta forma:
+{a: 1, b: 2} -> ?a=1&b=2
+{a: [1, 2]} -> ?a=1&a=2
+ */
+
+export const queryMapper = <T extends Record<string, unknown>>(query: T): string => {
+  if (Object.keys(query).length === 0) return '';
+  const queryParams = new URLSearchParams();
+  Object.entries(query).forEach(([key, value]) => {
+    if (Array.isArray(value)) {
+      value.forEach((item) => queryParams.append(key, item.toString()));
+      return;
+    } else {
+      queryParams.set(key, value.toString());
+    }
+  });
+
+  return "?" + queryParams.toString();
 }

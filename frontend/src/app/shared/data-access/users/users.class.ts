@@ -1,5 +1,5 @@
-import {UserLinksResponse, UserResponse} from "../responses";
-import {Role} from "../enums";
+import {UserLinksResponse, UserResponse} from "../shared.responses";
+import {Role} from "../shared.enums";
 
 export class UserLinks {
   self: string;

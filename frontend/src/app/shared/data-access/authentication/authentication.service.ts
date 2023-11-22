@@ -6,7 +6,7 @@ import {AuthenticationDto} from "./authentication.dtos";
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {customExceptionMapper} from "../../helpers/mapper";
 import {jwtDecode} from "jwt-decode";
-import {UserJwtPayload} from "../models";
+import {UserJwtPayload} from "../shared.models";
 import {UsersService} from "../users/users.service";
 
 export const AUTHORIZATION_TOKEN_LABEL = 'authorizationToken';

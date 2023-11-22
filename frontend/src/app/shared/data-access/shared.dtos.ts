@@ -1,4 +1,4 @@
-import {SortDirection} from "./enums";
+import {SortDirection} from "./shared.enums";
 
 export type SortedDto<T> = {
   sort: T;

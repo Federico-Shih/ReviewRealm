@@ -1,4 +1,9 @@
-import {PaginatedDto, SortedDto} from "../dtos";
+import {PaginatedDto, SortedDto} from "../shared.dtos";
+
+// TODO: add all user media types that are relevant
+export enum UserMediaTypes {
+  CREATEUSER = "application/vnd.user-form.v1+json",
+}
 
 // TODO: add all user media types that are relevant
 export enum UserMediaTypes {

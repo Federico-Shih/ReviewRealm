@@ -1,23 +1,5 @@
-import {Difficulty, Platform} from "./enums";
+import {Difficulty, Platform} from "./shared.enums";
 import {JwtPayload} from "jwt-decode";
-
-
-export interface Game {
-  id: number,
-  name: string;
-  description: string;
-  developer: string;
-  publisher: string;
-  publishDate: Date;
-  ratingSum: number;
-  reviewCount: number;
-  isFavourite: boolean;
-  averageDifficulty: Difficulty;
-  averagePlatform: Platform;
-  averageGameTime: number;
-  replayability: number;
-  completability: number;
-}
 
 export type PaginatedLinks = {
   self: string;

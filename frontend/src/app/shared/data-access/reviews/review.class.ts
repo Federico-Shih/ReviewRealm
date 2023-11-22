@@ -1,5 +1,5 @@
-import {Difficulty, Platform} from "../enums";
-import {ReviewLinksResponse, ReviewResponse} from "../responses";
+import {Difficulty, Platform} from "../shared.enums";
+import {ReviewLinksResponse, ReviewResponse} from "../shared.responses";
 
 export class ReviewLinks {
   feedback: string;

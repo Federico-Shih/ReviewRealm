@@ -14,10 +14,16 @@ public class ExistentDifficultyListValidator implements ConstraintValidator<Exis
         if (!(o instanceof List)) {
             return false;
         }
-        List<Integer> list = (List<Integer>) o;
-        for (Integer i : list) {
-            if (i == null || i < 0 || !Difficulty.getById(i).isPresent()) {
-                return false;
+        List<String> list = (List<String>) o;
+        for (String s : list) {
+            if (s == null) {
+               return false;
+            }else{
+                try{
+                    Difficulty.valueOf(s.toUpperCase());
+                }catch (IllegalArgumentException e){
+                    return false;
+                }
             }
         }
         return true;
