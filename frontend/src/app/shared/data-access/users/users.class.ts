@@ -1,5 +1,6 @@
 import {UserLinksResponse, UserResponse} from "../shared.responses";
 import {Role} from "../shared.enums";
+import {Genre} from "../enums/enums.class";
 
 export class UserLinks {
   self: string;
@@ -12,7 +13,15 @@ export class UserLinks {
   unfollow?: string;
   follow?: string;
 
-  constructor(self: string, followers: string, following: string, preferences: string, favoriteGames: string, patchUser?: string, updateNotifications?: string, unfollow?: string, follow?: string) {
+  constructor(self: string,
+              followers: string,
+              following: string,
+              preferences: string,
+              favoriteGames: string,
+              patchUser?: string,
+              updateNotifications?: string,
+              unfollow?: string,
+              follow?: string) {
     this.self = self;
     this.followers = followers;
     this.following = following;
@@ -56,11 +65,21 @@ export class User {
   avatar: string;
   language?: string;
   xp: number;
-  preferences: string[];
+  preferences: Genre[];
   links: UserLinks;
   role: Role;
 
-  constructor(id: number, username: string, email: string, enabled: boolean, reputation: number, avatar: string, links: UserLinks, role: Role, language?: string, xp: number = 0, preferences: string[] = []) {
+  constructor(id: number,
+              username: string,
+              email: string,
+              enabled: boolean,
+              reputation: number,
+              avatar: string,
+              links: UserLinks,
+              role: Role,
+              language?: string,
+              xp: number = 0,
+              preferences: Genre[] = []) {
     this.id = id;
     this.username = username;
     this.email = email;
@@ -83,10 +102,9 @@ export class User {
                         avatar,
                         language,
                         xp,
-                        preferences,
                         links,
                         role
-                      }: UserResponse): User {
+                      }: UserResponse, preferences: Genre[] = []): User {
     return new User(id,
       username,
       email,

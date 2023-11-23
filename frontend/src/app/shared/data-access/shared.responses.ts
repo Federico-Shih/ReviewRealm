@@ -45,7 +45,6 @@ export type UserResponse = {
   avatar: string;
   language?: string;
   xp: number;
-  preferences: string[];
   links: UserLinksResponse;
   role: Role;
 }

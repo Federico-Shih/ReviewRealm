@@ -1,5 +1,7 @@
 import {Difficulty, Platform} from "../shared.enums";
 import {ReviewLinksResponse, ReviewResponse} from "../shared.responses";
+import {Game} from "../games/games.class";
+import {User} from "../users/users.class";
 
 export class ReviewLinks {
   feedback: string;
@@ -35,6 +37,10 @@ export class Review {
   replayable: boolean;
   links: ReviewLinks;
 
+  // Debido a que no si o si te queres pedir el juego y autor, siempre chequear si es nulo
+  game?: Game;
+  author?: User;
+
 
   private constructor(id: number,
                       title: string,
@@ -49,7 +55,7 @@ export class Review {
                       dislikes: number,
                       completed: boolean,
                       replayable: boolean,
-                      links: ReviewLinks) {
+                      links: ReviewLinks, game?: Game, author?: User) {
     this.id = id;
     this.title = title;
     this.content = content;
@@ -64,6 +70,8 @@ export class Review {
     this.completed = completed;
     this.replayable = replayable;
     this.links = links;
+    this.game = game;
+    this.author = author;
   }
 
   static fromResponse({
@@ -81,7 +89,7 @@ export class Review {
                         completed,
                         replayable,
                         links
-                      }: ReviewResponse): Review {
+                      }: ReviewResponse, game: Game, user: User): Review {
     return new Review(id,
       title,
       content,
@@ -95,6 +103,9 @@ export class Review {
       dislikes,
       completed,
       replayable,
-      ReviewLinks.fromResponse(links));
+      ReviewLinks.fromResponse(links),
+      game,
+      user
+    );
   }
 }

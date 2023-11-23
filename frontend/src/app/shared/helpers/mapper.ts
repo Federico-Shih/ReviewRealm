@@ -53,6 +53,34 @@ export const paginatedResponseMapper = <T, K>(fromResponse: (param: T) => K) => 
   };
 }
 
+export const paginatedObjectMapper = <T>(httpResponse: HttpResponse<unknown>, objectArray: T[]): Paginated<T> => {
+  const paginatedResponse = httpResponse.status === 204 ? [] : objectArray as T[];
+  const headers = httpResponse.headers;
+  const pagesHeader = headers.get(TOTAL_PAGES_HEADER);
+  const totalPages = pagesHeader !== null ? parseInt(pagesHeader) : 0;
+  const links = splitLinks(headers.get('Link') || "");
+
+  return {
+    content: paginatedResponse,
+    totalPages,
+    links: {
+      self: links.get('self') || "",
+      next: links.get('next'),
+      prev: links.get('prev')
+    }
+  };
+}
+
+export const emptyResponseMapper = <K>() => (httpResponse: HttpResponse<unknown>): Paginated<K> => {
+  return {
+    content: [],
+    totalPages: 0,
+    links: {
+      self: "",
+    }
+  }
+}
+
 export const exceptionMapper = (error: HttpResponse<ExceptionResponse>) => {
   return throwError(() => (new RequestError(error.status, error.body)));
 }

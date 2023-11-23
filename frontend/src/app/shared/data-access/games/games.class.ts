@@ -1,5 +1,6 @@
 import {Difficulty, Platform} from "../shared.enums";
 import {GameResponse, GameResponseLinks} from "../shared.responses";
+import {Genre} from "../enums/enums.class";
 
 
 export class GameLinks {
@@ -57,6 +58,7 @@ export class Game {
   replayability?: number;
   completability?: number;
   links: GameLinks;
+  genres?: Genre[];
 
   constructor(id: number,
               name: string,
@@ -72,7 +74,8 @@ export class Game {
               averagePlatform?: Platform,
               averageGameTime?: number,
               replayability?: number,
-              completability?: number) {
+              completability?: number,
+              genres?: Genre[]) {
     this.id = id;
     this.name = name;
     this.description = description;
@@ -88,9 +91,10 @@ export class Game {
     this.averageGameTime = averageGameTime;
     this.replayability = replayability;
     this.completability = completability;
+    this.genres = genres;
   }
 
-  static fromResponse(response: GameResponse): Game {
+  static fromResponse(response: GameResponse, genres: Genre[]): Game {
     return new Game(
       response.id,
       response.name,
@@ -106,7 +110,8 @@ export class Game {
       response.platform,
       response.averageGameTime,
       response.replayability,
-      response.completability
+      response.completability,
+      genres
     );
   }
 }
