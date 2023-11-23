@@ -40,7 +40,7 @@ public class UserResponse extends BaseResponse {
         response.link("self", getLinkFromEntity(uri, user));
         response.link("followers", uri.getBaseUriBuilder().path(BASE_PATH).queryParam("followers", user.getId()).build());
         response.link("following", uri.getBaseUriBuilder().path(BASE_PATH).queryParam("following", user.getId()).build());
-        response.link("preferences", uri.getBaseUriBuilder().path(BASE_PATH).path(String.valueOf(user.getId())).path("preferences").build());
+        response.link("preferences", uri.getBaseUriBuilder().path("genres").queryParam("forUser",user.getId()).build());
         response.link("favoriteGames", uri.getBaseUriBuilder().path(GameResponse.BASE_PATH).queryParam("favoriteOf", user.getId()).build());
         return response;
     }

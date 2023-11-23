@@ -41,22 +41,15 @@ public class GameController {
 
     private final GameService gs;
     private final UserService us;
-    private final ReviewService rs;
-
-    private static final int DEFAULT_REVIEW_PAGE_SIZE = 10;
-    private static final int PAGE_SIZE = 10;
-    private static final int INITIAL_PAGE = 1;
-    private static final int SMALL_LIST_PAGE_SIZE = 2;
 
     @Context
     private UriInfo uriInfo;
 
 
     @Autowired
-    public GameController(GameService gs, UserService us, ReviewService rs) {
+    public GameController(GameService gs, UserService us) {
         this.gs = gs;
         this.us = us;
-        this.rs = rs;
     }
 
     @GET
@@ -140,18 +133,18 @@ public class GameController {
     }
 
     // TODO: remove ListResponse in favour of ListResponseHelper
-    @GET
-    @Produces(VndType.APPLICATION_ENTITY_LINK_LIST)
-    @Path("{id:\\d+}/genres")
-    public Response getGameGenres(@PathParam("id") final long id) {
-        User loggedUser = AuthenticationHelper.getLoggedUser(us);
-        Optional<Game> game = gs.getGameById(id,loggedUser != null ? loggedUser.getId() : null);
-        if (game.isPresent()) {
-            return Response.ok(ListResponse.fromEntity(uriInfo,game.get().getGenres().stream().map((genre) -> GenreResponse.getLinkFromEntity(uriInfo,genre)).collect(Collectors.toList()))).build();
-        } else {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
-    }
+//    @GET
+//    @Produces(VndType.APPLICATION_ENTITY_LINK_LIST)
+//    @Path("{id:\\d+}/genres")
+//    public Response getGameGenres(@PathParam("id") final long id) {
+//        User loggedUser = AuthenticationHelper.getLoggedUser(us);
+//        Optional<Game> game = gs.getGameById(id,loggedUser != null ? loggedUser.getId() : null);
+//        if (game.isPresent()) {
+//            return Response.ok(ListResponse.fromEntity(uriInfo,game.get().getGenres().stream().map((genre) -> GenreResponse.getLinkFromEntity(uriInfo,genre)).collect(Collectors.toList()))).build();
+//        } else {
+//            return Response.status(Response.Status.NOT_FOUND).build();
+//        }
+//    }
 
     /*
         TODO:

@@ -15,11 +15,13 @@ export type GameFiltersDto = {
   suggested: boolean;
   genres: number[];
   rating: RatingType;
-  favoriteOf: number;
 }
 
 export type GameRecommendedFilterDto = {
   recommendedFor: number;
 }
+export type GameFavoriteFilterDto = {
+  favoriteOf: number;
+}
 
-export type GameSearchDto = Partial<(GameFiltersDto | GameRecommendedFilterDto) & PaginatedDto & SortedDto<GameSortType>>
+export type GameSearchDto = Partial<(GameFiltersDto | GameRecommendedFilterDto | GameFavoriteFilterDto) & PaginatedDto & SortedDto<GameSortType>>

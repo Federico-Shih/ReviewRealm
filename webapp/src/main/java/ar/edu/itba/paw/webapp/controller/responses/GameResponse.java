@@ -55,7 +55,7 @@ public class GameResponse extends BaseResponse {
             }
         }
         response.link("image",uri.getBaseUriBuilder().path("images").path(game.getImage().getId()).build());
-        response.link("genres",uri.getBaseUriBuilder().path("games").path(String.valueOf(game.getId())).path("genres").build());
+        response.link("genres",uri.getBaseUriBuilder().path("genres").queryParam("forGame",game.getId()).build());
 
 
         return response;
