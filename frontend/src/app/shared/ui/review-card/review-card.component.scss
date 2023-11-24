@@ -1,0 +1,105 @@
+.card {
+  color: white;
+  background-color: var(--color-surface);
+  border: 1px solid #444;
+  border-radius: 15px;
+  position: relative;
+}
+
+.author-container {
+  display: flex;
+  flex-direction: row;
+  position: relative;
+}
+
+.card-header {
+  position: relative;
+  padding-bottom: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  width: calc(100% - 90px);
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.review-rating {
+  font-size: 2rem;
+}
+
+.review-rating-container {
+  position: absolute;
+  right: 0;
+  top: 0;
+  padding: 0.5rem;
+  width: 90px;
+}
+
+.review-date {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  font-size: 0.9rem;
+}
+
+.card-content {
+  position: relative;
+  height: 100px;
+}
+
+.likes {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  padding: 5px;
+  gap: 5px;
+}
+
+.game-container {
+  display: flex;
+  flex-direction: row;
+  position: relative;
+  gap: 10px;
+  height: 100px;
+}
+
+.image-container {
+  position: relative;
+  width: 140px;
+  height: 100%;
+  overflow: hidden;
+
+  img {
+    object-fit: cover;
+  }
+}
+
+.review-game {
+  font-size: 1.2rem;
+}
+
+.pill {
+  background-color: var(--color-surface) !important;
+  border: 1px solid #666;
+  font-size: 0.8rem;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+.profile-card {
+  position: absolute;
+  top: 100%;
+  z-index: 100;
+  display: none;
+}
+
+.author-container:hover .profile-card {
+  display: block;
+}

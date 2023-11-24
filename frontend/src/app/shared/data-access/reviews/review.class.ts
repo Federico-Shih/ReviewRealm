@@ -35,6 +35,7 @@ export class Review {
   dislikes: number;
   completed: boolean;
   replayable: boolean;
+  created: Date;
   links: ReviewLinks;
 
   // Debido a que no si o si te queres pedir el juego y autor, siempre chequear si es nulo
@@ -55,6 +56,7 @@ export class Review {
                       dislikes: number,
                       completed: boolean,
                       replayable: boolean,
+                      created: string,
                       links: ReviewLinks, game?: Game, author?: User) {
     this.id = id;
     this.title = title;
@@ -72,6 +74,7 @@ export class Review {
     this.links = links;
     this.game = game;
     this.author = author;
+    this.created = new Date(created);
   }
 
   static fromResponse({
@@ -88,7 +91,8 @@ export class Review {
                         dislikes,
                         completed,
                         replayable,
-                        links
+                        links,
+                        created
                       }: ReviewResponse, game: Game, user: User): Review {
     return new Review(id,
       title,
@@ -103,6 +107,7 @@ export class Review {
       dislikes,
       completed,
       replayable,
+      created,
       ReviewLinks.fromResponse(links),
       game,
       user

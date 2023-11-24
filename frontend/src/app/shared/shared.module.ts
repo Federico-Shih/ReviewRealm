@@ -1,5 +1,5 @@
 import {NgModule} from '@angular/core';
-import {CommonModule} from '@angular/common';
+import {CommonModule, NgOptimizedImage} from '@angular/common';
 import {UsersService} from "./data-access/users/users.service";
 import {ReviewsService} from "./data-access/reviews/reviews.service";
 import {HttpClientModule} from "@angular/common/http";
@@ -20,10 +20,13 @@ import {MatRadioModule} from "@angular/material/radio";
 import {MatListModule} from "@angular/material/list";
 import {GamesService} from "./data-access/games/games.service";
 import {EnumsService} from "./data-access/enums/enums.service";
+import {ReviewCardComponent} from './ui/review-card/review-card.component';
+import {MatChipsModule} from "@angular/material/chips";
+import {ProfileCardComponent} from './ui/profile-card/profile-card.component';
 
 
 @NgModule({
-  declarations: [NavbarComponent, LoginFormComponent, FilterDrawerComponent],
+  declarations: [NavbarComponent, LoginFormComponent, FilterDrawerComponent, ReviewCardComponent, ProfileCardComponent],
   providers: [UsersService, ReviewsService, GamesService, EnumsService],
   imports: [
     CommonModule,
@@ -40,13 +43,16 @@ import {EnumsService} from "./data-access/enums/enums.service";
     MatMenuModule,
     MatSidenavModule,
     MatRadioModule,
-    MatListModule
+    MatListModule,
+    NgOptimizedImage,
+    MatChipsModule
   ],
   exports: [
     NavbarComponent,
     TranslateModule,
     LoginFormComponent,
     FilterDrawerComponent,
+    ReviewCardComponent,
   ]
 })
 export class SharedModule {

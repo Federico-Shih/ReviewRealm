@@ -1,0 +1,54 @@
+<mat-card class="card">
+  <mat-card-header class="card-header">
+    <div (click)="click.emit()" class="card-title">{{ review.title }}</div>
+    <div class="author-container">
+      <span>{{ 'review-card.by' | translate:{author: review.author?.username} }}</span>
+      <img [ngSrc]="review.author?.avatar || ''"
+           alt="{{ 'review-card.author-alt' | translate:{author: review.author?.username } }}" height="20"
+           style="margin-left: 5px"
+           width="20"/>
+      <div class="profile-card">
+        <app-profile-card
+          *ngIf="review.author"
+          [user]="review.author"
+        />
+      </div>
+    </div>
+    <div class="review-rating-container">
+      <span class="review-rating">{{review.rating}}</span>/10
+      <mat-icon>star</mat-icon>
+    </div>
+    <div class="review-date">
+      {{review.created | date: 'medium'}}
+    </div>
+  </mat-card-header>
+  <mat-divider/>
+  <mat-card-content class="card-content">
+    <p (click)="click.emit()">{{ review.content }}</p>
+    <div class="likes">
+      {{ review.likes - review.dislikes}}
+      <mat-icon>thumbs_up_down</mat-icon>
+    </div>
+  </mat-card-content>
+  <mat-divider/>
+  <mat-card-actions class="game-container">
+    <div class="image-container">
+      <img
+        [ngSrc]="review.game?.links?.image || ''"
+        alt="{{ 'review-card.img-alt' | translate:{game: review.game?.name } }}"
+        fill
+        priority="high"
+      />
+    </div>
+    <section>
+      <div class="review-game">
+        {{review.game?.name}}
+      </div>
+      <div>
+        <mat-chip *ngFor="let genre of review.game?.genres" class="pill">
+          {{genre.localized}}
+        </mat-chip>
+      </div>
+    </section>
+  </mat-card-actions>
+</mat-card>

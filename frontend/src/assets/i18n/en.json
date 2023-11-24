@@ -1,4 +1,8 @@
 {
+  "errors": {
+    "dismiss": "Dismiss",
+    "unknown": "Unknown error, please try again later."
+  },
   "filter-drawer": {
     "apply": "Apply filters",
     "order-by": "Order by"
@@ -10,10 +14,6 @@
     "login-btn": "Login",
     "login-header": "Login",
     "password-required": "Password is required."
-  },
-  "errors": {
-    "dismiss": "Dismiss",
-    "unknown": "Unknown error, please try again later."
   },
   "navbar": {
     "community-link": "Community",
@@ -34,6 +34,9 @@
     "welcome": "Welcome {{value}}",
     "write-review": "Write review"
   },
+  "profile-card": {
+    "whoprefers": "who prefers"
+  },
   "register-form": {
     "confirm-password": "Confirm password",
     "confirm-password-required": "Password confirmation is required.",
@@ -51,6 +54,11 @@
     "username-maxlength": "Username must be at most {{value}} characters long.",
     "username-minlength": "Username must be at least {{value}} characters long.",
     "username-required": "Username is required."
+  },
+  "review-card": {
+    "author-alt": "{{author}} profile picture",
+    "by": "by @{{author}}",
+    "img-alt": "{{game}} image preview"
   },
   "validate-user-form": {
     "email": "example@gmail.com",

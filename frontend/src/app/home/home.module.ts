@@ -7,11 +7,13 @@ import {HttpClientModule} from "@angular/common/http";
 import {MatSidenavModule} from "@angular/material/sidenav";
 import {MatDividerModule} from "@angular/material/divider";
 import {MatRadioModule} from "@angular/material/radio";
+import {ReviewSearchComponent} from './ui/review-search/review-search.component';
 
 
 @NgModule({
   declarations: [
-    HomeComponent
+    HomeComponent,
+    ReviewSearchComponent
   ],
   imports: [
     CommonModule, HomeRoutingModule, HttpClientModule,

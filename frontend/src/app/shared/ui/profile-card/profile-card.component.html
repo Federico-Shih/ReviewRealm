@@ -1,0 +1,40 @@
+<div *ngIf="_user() as user" class="profile-card level-{{userRank()}}-background">
+  <div class="profile-image">
+    <a routerLink="/">
+      <img [ngSrc]="user.avatar" height="50" width="50"/>
+    </a>
+  </div>
+  <div>
+    <a routerLink="">
+      <span class="username">{{user.username}}</span>
+    </a>
+    <div *ngIf="user.preferences.length > 0">
+      <div class="likes">
+        <mat-icon>favorite</mat-icon>
+        <span>{{ 'profile-card.whoprefers' | translate }}</span>
+      </div>
+      <div style="margin-top: 5px">
+        <mat-basic-chip
+          *ngFor="let genre of user.preferences | slice:0:2"
+          class="chip" routerLink="/"
+        >
+          {{genre.localized}}
+        </mat-basic-chip>
+        <mat-basic-chip *ngIf="user.preferences.length > 2" class="chip" routerLink="/">
+          +{{user.preferences.length - 2}}</mat-basic-chip>
+      </div>
+    </div>
+  </div>
+  <div style="flex: 1"></div>
+  <div class="level-container">
+    <div class="level-badge-container">
+      <mat-icon class="level-{{userRank()}} level-badge-icon">sports_esports</mat-icon>
+      <span class="level-badge-text">{{ user.xp / 100 | number: '1.0-0' }}</span>
+    </div>
+    <div style="position: relative; height: 20px;">
+      <mat-icon class="badge-icon">
+        engineering
+      </mat-icon>
+    </div>
+  </div>
+</div>

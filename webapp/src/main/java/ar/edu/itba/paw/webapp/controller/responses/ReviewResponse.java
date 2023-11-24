@@ -3,14 +3,14 @@ package ar.edu.itba.paw.webapp.controller.responses;
 import ar.edu.itba.paw.enums.Difficulty;
 import ar.edu.itba.paw.enums.Platform;
 import ar.edu.itba.paw.models.Review;
-import ar.edu.itba.paw.models.User;
 
 import javax.ws.rs.core.UriInfo;
 import java.net.URI;
+import java.time.format.DateTimeFormatter;
 
 public class ReviewResponse extends BaseResponse {
 
-    private static String BASE_PATH = "/reviews";
+    private final static String BASE_PATH = "/reviews";
     private long id;
     private String title;
     private String content;
@@ -24,6 +24,7 @@ public class ReviewResponse extends BaseResponse {
     private Long dislikes;
     private Boolean completed;
     private Boolean replayable;
+    private String created;
 
 
 
@@ -42,6 +43,7 @@ public class ReviewResponse extends BaseResponse {
         response.setDislikes(review.getDislikes());
         response.setCompleted(review.getCompleted());
         response.setReplayable(review.getReplayability());
+        response.setCreated(review.getCreated().format(DateTimeFormatter.ISO_DATE_TIME));
 
         response.link("self", getLinkFromEntity(uri,review));
         response.link("game", uri.getBaseUriBuilder().path("games").path(String.valueOf(review.getReviewedGame().getId())).build());
@@ -156,5 +158,13 @@ public class ReviewResponse extends BaseResponse {
 
     public Boolean getReplayable() {
         return replayable;
+    }
+
+    public String getCreated() {
+        return created;
+    }
+
+    public void setCreated(String created) {
+        this.created = created;
     }
 }

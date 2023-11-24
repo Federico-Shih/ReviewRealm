@@ -1,0 +1,3 @@
+<div *ngIf="(review$ | async) as review">
+  <app-review-card *ngIf="review !== null" [review]="review"></app-review-card>
+</div>

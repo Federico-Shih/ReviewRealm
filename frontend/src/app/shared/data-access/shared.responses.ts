@@ -21,6 +21,7 @@ export type ReviewResponse = {
   dislikes: number;
   completed: boolean;
   replayable: boolean;
+  created: string;
   links: ReviewLinksResponse;
 }
 
