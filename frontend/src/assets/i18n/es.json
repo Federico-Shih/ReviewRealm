@@ -11,6 +11,7 @@
     "apply": "Aplicar filtros",
     "order-by": "Ordenar por"
   },
+  "genres": "Generos:",
   "login-form": {
     "email-invalid": "Correo electrónico no es válido.",
     "email-required": "Correo electrónico es requerido.",
@@ -38,11 +39,11 @@
     "welcome": "Bienvenido {{value}}!",
     "write-review": "Escribir reseña"
   },
-  "publishing": {
-    "date": "Fecha de publicación: {{value}}"
-  },
   "profile-card": {
     "whoprefers": "prefiere"
+  },
+  "publishing": {
+    "date": "Fecha de publicación: {{value}}"
   },
   "register-form": {
     "confirm-password": "Confirmar contraseña",

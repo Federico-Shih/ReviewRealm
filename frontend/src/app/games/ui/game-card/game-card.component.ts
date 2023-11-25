@@ -10,4 +10,5 @@ import {Game} from "../../../shared/data-access/games/games.class";
 export class GameCardComponent {
   @Input({required: true}) game:Game | null = null;
 
+  @Input() small:boolean = false;
 }

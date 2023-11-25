@@ -6,7 +6,7 @@
   justify-content: flex-start;
   background: var(--color-surface);// #13112D;
   padding: 4%;
-  border: 1px solid var(--color-primary-pallet-500); //#444155
+  border: 1px solid var(--color-primary-variant-1); //#444155
   border-radius: 10px;
   color: white;
   margin-top: 2%;
@@ -45,6 +45,9 @@
   align-items: baseline;
   flex-wrap: nowrap;
 }
+.chip-margin{
+  margin-left: 2%;
+}
 .chip{
   background: var(--color-surface) !important; //#13112D;
   border: 1px solid var(--color-primary-variant-1) !important; //#444155
@@ -66,6 +69,11 @@ img{
   height: 200px;
   object-fit: contain;
 }
+.small-img {
+  width: 100%;
+  object-fit: contain;
+  height: 150px;
+}
 
 
 .big-number{
@@ -80,4 +88,30 @@ img{
 .rating-text{
   font-size: 16px;
   font-weight: 600; /* bold */
+}
+
+.small-game-card{
+  display: flex;
+  flex-direction: column;
+  padding: 4%;
+  overflow: hidden;
+  border-radius: 5px;
+  border: 1px solid var(--color-primary-variant-1);
+  background: var(--color-surface);
+  color: white;
+}
+
+.small-text-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  text-align: start;
+}
+.small-title{
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  font-size: 24px;
+  font-weight: 600;
+  display: block;
 }

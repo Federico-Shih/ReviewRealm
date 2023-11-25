@@ -1,29 +1,46 @@
+
 <ng-container *ngIf="game !==null">
-  <div class="game-card mat-elevation-z2">
-    <a routerLink='/games/{{game.id}}'>
-      <img mat-card-image src="{{game.links.image}}" alt="{{game.name}}">
-    </a>
-    <div class="details">
-      <div class="text-section">
-        <a routerLink='/games/{{game.id}}' class="title">
-          <span>{{game.name}}</span>
-        </a>
-        <mat-chip-set class="genres">
-          <mat-chip *ngFor="let genre of game.genres?.slice(0,2)" routerLink="/games" [queryParams]="" class="chip">
-              {{genre.localized}}
-          </mat-chip>
-          <mat-chip *ngIf="game.genres !== undefined && game.genres.length > 2  ">+{{game.genres.length }}</mat-chip>
-        </mat-chip-set>
-        <span class="text" i18n>{{ 'publishing.date'| translate:{value:  game.publishDate} }}</span>
-        <span class="text" i18n>{{ 'developer.card' | translate:{value: game.developer} }}</span>
-      </div>
-      <div class="extra-section">
-        <ng-container *ngIf="game.reviewCount > 0">
-          <span class="rating-text" i18n>{{'average-rating' | translate }}</span>
-          <span class="big-number">{{(game.ratingSum / game.reviewCount).toFixed(2)}}</span>
-          <span class="small-number">/10</span>
-        </ng-container>
+  <ng-container *ngIf="!small; else variant">
+    <div class="game-card mat-elevation-z2">
+      <img src="{{game.links.image}}" alt="{{game.name}}" routerLink='/games/{{game.id}}'>
+      <div class="details">
+        <div class="text-section">
+          <span routerLink='/games/{{game.id}}' class="title">{{game.name}}</span>
+          <mat-chip-set class="genres">
+            <mat-chip *ngFor="let genre of game.genres?.slice(0,2)" routerLink="/games" [queryParams]="" class="chip">
+                {{genre.localized}}
+            </mat-chip>
+            <mat-chip *ngIf="game.genres !== undefined && game.genres.length > 2  " class="chip">+{{game.genres.length }}</mat-chip>
+          </mat-chip-set>
+          <span class="text" i18n>{{ 'publishing.date'| translate:{value:  game.publishDate} }}</span>
+          <span class="text" i18n>{{ 'developer.card' | translate:{value: game.developer} }}</span>
+        </div>
+        <div class="extra-section">
+          <ng-container *ngIf="game.reviewCount > 0">
+            <span class="rating-text" i18n>{{'average-rating' | translate }}</span>
+            <span class="big-number">{{(game.ratingSum / game.reviewCount).toFixed(2)}}</span>
+            <span class="small-number">/10</span>
+          </ng-container>
+        </div>
       </div>
     </div>
-  </div>
+  </ng-container>
+  <ng-template #variant>
+    <div class="small-game-card mat-elevation-z2">
+      <img src="{{game.links.image}}" alt="{{game.name}}" routerLink='/games/{{game.id}}' class="small-img">
+      <div class="small-text-section">
+        <span routerLink='/games/{{game.id}}' class="title">{{game.name}}</span>
+        <span class="text" i18n>{{ 'developer.card' | translate:{value: game.developer} }}</span>
+        <div class="genres">
+          <span class="text" i18n>{{ 'genres'| translate}}</span>
+          <mat-chip-set class="chip-margin">
+            <mat-chip *ngFor="let genre of game.genres?.slice(0,2)" routerLink="/games" [queryParams]="" class="chip">
+              {{genre.localized}}
+            </mat-chip>
+            <mat-chip *ngIf="game.genres !== undefined && game.genres.length > 2  " class="chip">+{{game.genres.length }}</mat-chip>
+          </mat-chip-set>
+        </div>
+      </div>
+    </div>
+  </ng-template>
 </ng-container>
