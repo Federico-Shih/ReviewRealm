@@ -1,4 +1,8 @@
 {
+  "average-rating": "Puntuación Promedio",
+  "developer": {
+    "card": "Desarollador: {{value}}"
+  },
   "errors": {
     "dismiss": "Descartar",
     "unknown": "Error desconocido, intente más tarde."
@@ -33,6 +37,9 @@
     "upload-game": "Crear juego",
     "welcome": "Bienvenido {{value}}!",
     "write-review": "Escribir reseña"
+  },
+  "publishing": {
+    "date": "Fecha de publicación: {{value}}"
   },
   "profile-card": {
     "whoprefers": "prefiere"

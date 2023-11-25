@@ -48,7 +48,7 @@ export class Game {
   description: string;
   developer: string;
   publisher: string;
-  publishDate: Date;
+  publishDate: string;
   ratingSum: number;
   reviewCount: number;
   isFavourite: boolean;
@@ -65,7 +65,7 @@ export class Game {
               description: string,
               developer: string,
               publisher: string,
-              publishDate: Date,
+              publishDate: string,
               ratingSum: number,
               reviewCount: number,
               isFavourite: boolean,
@@ -101,7 +101,7 @@ export class Game {
       response.description,
       response.developer,
       response.publisher,
-      new Date(response.publishDate),
+      response.publishDate,
       response.ratingSum,
       response.reviewCount,
       response.isFavorite,

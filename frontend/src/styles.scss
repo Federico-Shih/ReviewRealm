@@ -109,6 +109,10 @@ body {
 html, body {
   height: 100%;
 }
+a {
+  text-decoration: none;
+  color: inherit;
+}
 
 body {
   margin: 0;
@@ -125,5 +129,6 @@ body {
   --color-background: #070A18;
   --color-surface: #13112D;
   --color-error: #FF0000;
+  --color-primary-variant-1: #444155;
   // Add more variants
 }

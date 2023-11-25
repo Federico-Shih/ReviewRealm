@@ -1,4 +1,8 @@
 {
+  "average-rating": "Average Rating",
+  "developer": {
+    "card": "Developer: {{value}}"
+  },
   "errors": {
     "dismiss": "Dismiss",
     "unknown": "Unknown error, please try again later."
@@ -36,6 +40,9 @@
   },
   "profile-card": {
     "whoprefers": "who prefers"
+  },
+  "publishing": {
+    "date": "Publishing Date: {{value}}"
   },
   "register-form": {
     "confirm-password": "Confirm password",

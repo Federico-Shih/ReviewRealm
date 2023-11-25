@@ -6,6 +6,9 @@ export enum GameSortType {
   AVERAGE_RATING = "averageRating",
   PUBLISH_DATE = "publishDate"
 }
+export function isGameSortType(sort: string): sort is GameSortType {
+  return Object.values(GameSortType).includes(sort as GameSortType);
+}
 
 export type RatingType = `${number}t${number}`;
 

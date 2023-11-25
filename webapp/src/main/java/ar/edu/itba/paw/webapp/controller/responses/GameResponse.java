@@ -9,6 +9,7 @@ import ar.edu.itba.paw.models.User;
 import javax.ws.rs.core.UriInfo;
 import java.net.URI;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 public class GameResponse extends BaseResponse {
 
@@ -24,7 +25,7 @@ public class GameResponse extends BaseResponse {
 
     private String publisher;
 
-    private LocalDate publishDate;
+    private String publishDate;
 
     private int ratingSum;
 
@@ -69,7 +70,7 @@ public class GameResponse extends BaseResponse {
         response.setDescription(game.getDescription());
         response.setDeveloper(game.getDeveloper());
         response.setPublisher(game.getPublisher());
-        response.setPublishDate(game.getPublishDate());
+        response.setPublishDate(game.getPublishDate().format(DateTimeFormatter.ISO_DATE));
         response.setRatingSum(game.getRatingSum());
         response.setReviewCount(game.getReviewCount());
         response.setFavorite(game.isFavorite());
@@ -108,7 +109,7 @@ public class GameResponse extends BaseResponse {
     }
 
 
-    public void setPublishDate(LocalDate publishDate) {
+    public void setPublishDate(String publishDate) {
         this.publishDate = publishDate;
     }
 
@@ -164,7 +165,7 @@ public class GameResponse extends BaseResponse {
         return publisher;
     }
 
-    public LocalDate getPublishDate() {
+    public String getPublishDate() {
         return publishDate;
     }
 

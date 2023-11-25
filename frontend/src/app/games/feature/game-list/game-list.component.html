@@ -1,1 +1,11 @@
-<p>game-list works!</p>
+<ng-container *ngIf="(games$ | async) as games; else loading">
+  <mat-grid-list cols="2">
+    <mat-grid-tile *ngFor="let game of games.content" [colspan]="1">
+      <app-game-card [game]="game"></app-game-card>
+    </mat-grid-tile>
+  </mat-grid-list>
+</ng-container>
+<ng-template #loading>
+  <mat-spinner mode="indeterminate"></mat-spinner>
+</ng-template>
+

@@ -66,7 +66,7 @@ export type GameResponse = {
   description: string;
   developer: string;
   publisher: string;
-  publishDate: Date;
+  publishDate: string;
   ratingSum: number;
   reviewCount: number;
   isFavorite: boolean;
