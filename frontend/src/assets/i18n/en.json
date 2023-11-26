@@ -1,5 +1,7 @@
 {
+  "asc": "Ascending",
   "average-rating": "Average Rating",
+  "desc": "Descending",
   "developer": {
     "card": "Developer: {{value}}"
   },
@@ -67,6 +69,24 @@
     "author-alt": "{{author}} profile picture",
     "by": "by @{{author}}",
     "img-alt": "{{game}} image preview"
+  },
+  "review-filter": {
+    "controversial": "Controversial",
+    "created": "Time of creation",
+    "popularity": "Popularity",
+    "rating": "Rating"
+  },
+  "review-search": {
+    "apply-filters": "Apply filters",
+    "completed": "Completed",
+    "difficulty-filter": "Perceived difficulty",
+    "filter-title": "Filter by",
+    "game-genres-filter": "Game's genres",
+    "platform-filter": "Platform",
+    "replayable": "Replayable",
+    "reset-filters": "Reset filters",
+    "timeplayed-filter": "Minimum time played",
+    "user-preference-filter": "User preferences"
   },
   "validate-user-form": {
     "email": "example@gmail.com",

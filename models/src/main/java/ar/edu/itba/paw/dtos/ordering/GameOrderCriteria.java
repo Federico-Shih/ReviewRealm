@@ -45,7 +45,7 @@ public enum GameOrderCriteria implements OrderCriteria {
     }
     public static GameOrderCriteria fromString(String string) {
         for (GameOrderCriteria orderCriteria : values()) {
-            if (orderCriteria.altName.equals(string)){
+            if (orderCriteria.altName.equalsIgnoreCase(string)) {
                 return orderCriteria;
             }
         }

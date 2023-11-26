@@ -19,15 +19,18 @@ export class GameListComponent{
       let query:GameSearchDto  = {
         search: params.get('search') || '',
         excludeNoRating: params.get('excludeNoRating') === 'true',
-        genres: params.getAll('genres').map((genre) => parseInt(genre)) || undefined,
+        genres: params.getAll('genres')
+          .filter((genre) => !isNaN(genre as unknown as number))
+          .map((genre) => parseInt(genre)) || undefined,
         rating: params.get('rating') as RatingType || '0t10',
         page: parseInt(params.get('page') || '1') || 1,
         pageSize: parseInt(params.get('pageSize') || '10') || 10,
         sort: isGameSortType(sort) ? sort : GameSortType.NAME,
         direction: isSortDirection(direction) ? direction : SortDirection.DESC
       };
-      return query;
-      }),switchMap((query) => this.gameService.getGames('http://localhost:8080/paw-2023a-04/api/games/',query)));
+        return query;
+      }),
+      switchMap((query) => this.gameService.getGames('http://localhost:8080/paw-2023a-04/api/games/', query)));
 
 
     constructor(private readonly gameService:GamesService, private route: ActivatedRoute){

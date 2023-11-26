@@ -3,8 +3,8 @@ export enum Difficulty {
   Medium = "MEDIUM",
   Easy = "EASY"
 }
-export function isDifficulty(difficulty: string): difficulty is Difficulty {
-  return Object.values(Difficulty).includes(difficulty as Difficulty);
+export function isDifficulty(difficulty: unknown): difficulty is Difficulty {
+  return Object.values(Difficulty).find((v) => v === difficulty) !== undefined;
 }
 
 export enum Platform {
@@ -13,8 +13,9 @@ export enum Platform {
   PS = "PS",
   NINTENDO = "NINTENDO"
 }
-export function isPlatform(platform: string): platform is Platform {
-  return Object.values(Platform).includes(platform as Platform);
+
+export function isPlatform(platform: unknown): platform is Platform {
+  return Object.values(Platform).find((v) => v === platform) !== undefined;
 }
 
 export enum SortDirection {
@@ -22,8 +23,8 @@ export enum SortDirection {
   DESC = "desc",
 }
 
-export function isSortDirection(direction: string): direction is SortDirection {
-  return Object.values(SortDirection).includes(direction as SortDirection);
+export function isSortDirection(direction: unknown): direction is SortDirection {
+  return Object.values(SortDirection).find((v) => v === direction) !== undefined;
 }
 
 export enum Role {

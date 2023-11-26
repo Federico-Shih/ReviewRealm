@@ -35,7 +35,7 @@ export class UsersService {
   // map(responseMapper(User.fromResponse))
 
   getUsers(url: string, searchQuery: UserSearchDto): Observable<Paginated<User>> {
-    return this.http.get<UserResponse[]>(url + queryMapper(searchQuery), {
+    return this.http.get<UserResponse[]>(url + queryMapper(searchQuery, url), {
       observe: "response",
       responseType: "json",
     }).pipe(catchError(exceptionMapper))

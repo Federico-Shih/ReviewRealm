@@ -15,7 +15,7 @@ export class GamesService {
   }
 
   getGames(url: string, query: GameSearchDto): Observable<Paginated<Game>> {
-    return this.http.get<GameResponse[]>(url + queryMapper(query), {
+    return this.http.get<GameResponse[]>(url + queryMapper(query, url), {
       responseType: "json",
       observe: "response"
     }).pipe(catchError(exceptionMapper)).pipe(

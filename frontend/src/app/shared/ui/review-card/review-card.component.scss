@@ -4,6 +4,7 @@
   border: 1px solid #444;
   border-radius: 15px;
   position: relative;
+  width: 100%;
 }
 
 .author-container {
@@ -22,7 +23,7 @@
 .card-title {
   font-size: 1.5rem;
   font-weight: bold;
-  width: calc(100% - 90px);
+  width: calc(100% - 120px);
   text-overflow: ellipsis;
   overflow: hidden;
 }
@@ -35,8 +36,9 @@
   position: absolute;
   right: 0;
   top: 0;
-  padding: 0.5rem;
-  width: 90px;
+  padding: 5px;
+  width: 120px;
+  text-align: right;
 }
 
 .review-date {

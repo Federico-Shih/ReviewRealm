@@ -132,3 +132,7 @@ body {
   --color-primary-variant-1: #444155;
   // Add more variants
 }
+
+.mat-drawer-inner-container::-webkit-scrollbar {
+  display: none;
+}

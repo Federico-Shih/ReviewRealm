@@ -43,7 +43,7 @@ public enum ReviewOrderCriteria implements OrderCriteria {
 
     public static ReviewOrderCriteria fromString(String string) {
         for (ReviewOrderCriteria orderCriteria : values()) {
-            if (orderCriteria.name().equals(string.toUpperCase())){
+            if (orderCriteria.altName.equalsIgnoreCase(string)) {
                 return orderCriteria;
             }
         }

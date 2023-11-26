@@ -1,23 +1,30 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {HomeRoutingModule} from "./home-routing.module";
-import {HomeComponent} from './ui/home-base/home.component';
 import {SharedModule} from "../shared/shared.module";
 import {HttpClientModule} from "@angular/common/http";
 import {MatSidenavModule} from "@angular/material/sidenav";
 import {MatDividerModule} from "@angular/material/divider";
 import {MatRadioModule} from "@angular/material/radio";
 import {ReviewSearchComponent} from './ui/review-search/review-search.component';
+import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
+import {MatGridListModule} from "@angular/material/grid-list";
+import {MatExpansionModule} from "@angular/material/expansion";
+import {MatIconModule} from "@angular/material/icon";
+import {MatCheckboxModule} from "@angular/material/checkbox";
+import {ReactiveFormsModule} from "@angular/forms";
+import {MatSliderModule} from "@angular/material/slider";
+import {MatFormFieldModule} from "@angular/material/form-field";
+import {MatButtonModule} from "@angular/material/button";
 
 
 @NgModule({
   declarations: [
-    HomeComponent,
     ReviewSearchComponent
   ],
   imports: [
     CommonModule, HomeRoutingModule, HttpClientModule,
-    SharedModule, MatSidenavModule, MatDividerModule, MatRadioModule
+    SharedModule, MatSidenavModule, MatDividerModule, MatRadioModule, MatProgressSpinnerModule, MatGridListModule, MatExpansionModule, MatIconModule, MatCheckboxModule, ReactiveFormsModule, MatSliderModule, MatFormFieldModule, MatButtonModule
   ]
 })
 export class HomeModule {

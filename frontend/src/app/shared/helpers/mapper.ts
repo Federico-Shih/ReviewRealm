@@ -14,6 +14,7 @@ export const responseMapper = <T, K>(fromResponse: (param: T) => K) => (httpResp
   const reviewResponse = httpResponse.body as T;
   return fromResponse(reviewResponse);
 }
+
 const linkRegex = new RegExp(/<(.*)>/);
 const linkNameRegex = new RegExp(/rel="(.*)"/);
 
@@ -99,12 +100,14 @@ Recibe un objeto y lo convierte en un query string de esta forma:
 {a: [1, 2]} -> ?a=1&a=2
  */
 
-export const queryMapper = <T extends Record<string, unknown>>(query: T): string => {
+export const queryMapper = <T extends Record<string, unknown>>(query: T, url: string): string => {
   if (Object.keys(query).length === 0) return '';
   const queryParams = new URLSearchParams();
   Object.entries(query).forEach(([key, value]) => {
     if (Array.isArray(value)) {
       value.forEach((item) => queryParams.append(key, item.toString()));
+      return;
+    } else if (value === undefined) {
       return;
     } else {
       // @ts-ignore
@@ -112,5 +115,5 @@ export const queryMapper = <T extends Record<string, unknown>>(query: T): string
     }
   });
 
-  return "?" + queryParams.toString();
+  return (url.indexOf('?') === -1 ? '?' : '&') + queryParams.toString();
 }

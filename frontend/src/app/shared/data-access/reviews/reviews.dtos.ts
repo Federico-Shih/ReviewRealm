@@ -1,11 +1,16 @@
 import {PaginatedDto, SortedDto} from "../shared.dtos";
+import {Difficulty, Platform} from "../shared.enums";
 
 /*created|rating|popularity|controversial*/
 export enum ReviewSortType {
-    CREATED = "created",
-    RATING = "rating",
-    POPULARITY = "popularity",
-    CONTROVERSIAL = "controversial"
+  CREATED = "created",
+  RATING = "rating",
+  POPULARITY = "popularity",
+  CONTROVERSIAL = "controversial"
+}
+
+export const isReviewSortType = (reviewSortType: unknown): reviewSortType is ReviewSortType => {
+  return Object.values(ReviewSortType).find((type) => type === reviewSortType) !== undefined;
 }
 
 export type ReviewFiltersDto = {
@@ -15,18 +20,15 @@ export type ReviewFiltersDto = {
   authors: number[];
   authorPreferences: number[];
 
-  platforms: string[];
-  difficulty: string[];
+  platforms: Platform[];
+  difficulty: Difficulty[];
   completed: boolean;
   replayable: boolean;
-  timeplayed: string;
+  timeplayed: number;
 
   search: string;
   gameId: number;
 }
 
-export type ReviewRecommendedFilterDto = {
-    recommendedFor: number;
-}
 
-export type ReviewSearchDto = Partial<(ReviewFiltersDto | ReviewRecommendedFilterDto) & PaginatedDto & SortedDto<ReviewSortType>>
+export type ReviewSearchDto = Partial<ReviewFiltersDto & PaginatedDto & SortedDto<ReviewSortType>>

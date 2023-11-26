@@ -38,7 +38,7 @@ export class ReviewsService {
   }
 
   getReviews(url: string, queryDto: ReviewSearchDto): Observable<Paginated<Review>> {
-    return this.http.get<ReviewResponse[]>(url + queryMapper(queryDto), {
+    return this.http.get<ReviewResponse[]>(url + queryMapper(queryDto, url), {
       observe: "response",
       responseType: "json"
     }).pipe(catchError(exceptionMapper))

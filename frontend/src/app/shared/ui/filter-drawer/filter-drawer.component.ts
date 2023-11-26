@@ -14,13 +14,20 @@ export type EnumType<T> = {
 })
 export class FilterDrawerComponent<T> {
   @Input({required: true})
-  orderDirections: EnumType<T>[] = [];
+  sortTypes: EnumType<T>[] = [];
+
+  @Input({required: true})
+  defaultSort!: T;
+
+  @Input()
+  defaultDirection: SortDirection = SortDirection.ASC;
 
   @Output()
   selectOrder = new EventEmitter<T>();
 
   @Output()
-  selectOrderDirection = new EventEmitter<string>();
+  selectOrderDirection = new EventEmitter<SortDirection>();
 
   readonly sortDirections = Object.values(SortDirection);
+  protected readonly SortDirection = SortDirection;
 }
