@@ -35,24 +35,6 @@
   flex: 1 1 auto;
 }
 
-.navbar-search {
-  display: flex;
-  width: 100%;
-  margin-left: 3%;
-  padding: 8px 0;
-  height: 100%;
-  align-items: center;
-
-  input {
-    height: 80%;
-    background-color: #13112D;
-    border: 1px black solid;
-    border-radius: 0.5em;
-    color: white;
-    margin-left: 10px;
-  }
-}
-
 a {
   color: white;
   text-underline: none;
@@ -96,6 +78,24 @@ a div:hover {
 @media screen and (max-width: 800px) {
   .navbar-text {
     display: none;
+  }
+}
+
+
+.navbar-search {
+  display: flex;
+  width: 100%;
+  padding: 8px 0;
+  height: 100%;
+  align-items: center;
+
+  input {
+    height: 80%;
+    background-color: #13112D;
+    border: 1px black solid;
+    border-radius: 0.5em;
+    color: white;
+    margin-left: 10px;
   }
 }
 

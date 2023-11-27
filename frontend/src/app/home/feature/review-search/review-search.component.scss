@@ -45,9 +45,26 @@
   align-items: center;
 }
 
+.searchbar {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 20px;
+
+  button {
+    font-size: 1.2rem;
+    padding: 5px 30px;
+  }
+
+  div {
+    flex: 1;
+  }
+}
+
 .filter-buttons-container {
   display: flex;
   gap: 10px;
   align-items: center;
   padding: 0.5rem 1rem 0 1rem;
+  width: 100%;
 }

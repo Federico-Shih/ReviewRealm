@@ -1,0 +1,22 @@
+.navbar-search {
+  display: flex;
+  width: 100%;
+  padding: 8px 0;
+  align-items: center;
+
+  input {
+    height: 80%;
+    background-color: #13112D;
+    border: 1px black solid;
+    border-radius: 0.5em;
+    color: white;
+    margin-left: 10px;
+    width: 100%;
+    font-size: 1.2rem;
+    padding: 5px 10px;
+  }
+}
+
+.clickable {
+  cursor: pointer;
+}

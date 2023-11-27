@@ -86,6 +86,7 @@
     "replayable": "Rejugable",
     "reset-filters": "Eliminar filtros",
     "timeplayed-filter": "Tiempo mínimo jugado",
+    "toggle-filters": "Filtros",
     "user-preference-filter": "Preferencias de usuarios"
   },
   "validate-user-form": {

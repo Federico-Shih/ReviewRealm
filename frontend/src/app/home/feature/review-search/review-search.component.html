@@ -2,10 +2,10 @@
   <mat-drawer #drawer #sidenav class="drawer-container" mode="side" opened="true">
     <div class="hide-filters">
       <div class="filter-buttons-container">
-        <button (click)="applyFilters()" color="accent" mat-raised-button>
+        <button (click)="applyFilters()" color="accent" mat-raised-button style="flex: 1">
           {{ 'review-search.apply-filters' | translate }}
         </button>
-        <button (click)="resetFilters()" mat-flat-button style="background-color: gray">
+        <button (click)="resetFilters()" mat-flat-button style="background-color: gray; flex: 1">
           {{ 'review-search.reset-filters' | translate }}
         </button>
       </div>
@@ -29,25 +29,25 @@
               </mat-slider>
             </div>
             <div>
-              <mat-checkbox
-                (click)="check('completed')"
-                [checked]="filter.controls['completed'].value === undefined ? false : filter.controls['completed'].value"
-                [indeterminate]="filter.controls['completed'].value === false"
+              <app-tri-checkbox
+                (checkboxClick)="check('completed', $event)"
+                [label]="'review-search.completed' | translate"
+                [value]="filter.controls['completed'].value"
               >
-                {{ 'review-search.completed' | translate }}
-              </mat-checkbox>
+
+              </app-tri-checkbox>
             </div>
             <div>
-              <mat-checkbox
-                (click)="check('replayable')"
-                [checked]="filter.controls['replayable'].value === undefined ? false : filter.controls['replayable'].value"
-                [indeterminate]="filter.controls['replayable'].value === false"
+              <app-tri-checkbox
+                (checkboxClick)="check('replayable', $event)"
+                [label]="'review-search.replayable' | translate"
+                [value]="filter.controls['replayable'].value"
               >
-                {{ 'review-search.replayable' | translate }}
-              </mat-checkbox>
+
+              </app-tri-checkbox>
             </div>
             <mat-expansion-panel *ngIf="genres$ | async as genres; else genreLoading">
-              <mat-expansion-panel-header>
+              <mat-expansion-panel-header style="width: 100%">
                 <mat-panel-title>
                   <mat-icon>sports_esports</mat-icon>
                   {{ 'review-search.game-genres-filter' | translate }}
@@ -120,22 +120,51 @@
   </mat-drawer>
 
   <mat-drawer-content class="drawer-content">
-    <mat-grid-list
-      *ngIf="(paginatedReviews$ | async) as reviews; else loading"
-      cols="2"
-      gutterSize="20px"
-      rowHeight="300px"
-      style="display: flex;"
-    >
-      <mat-grid-tile *ngFor="let review of reviews.content" colspan="1" rowspan="1" style="">
-        <app-review-card [review]="review" style="width: 100%"></app-review-card>
-      </mat-grid-tile>
-    </mat-grid-list>
-    <ng-template #loading>
-      <div class="centered-container">
-        <mat-spinner/>
+    <div class="searchbar">
+      <button (click)="drawer.toggle()"
+              color="accent"
+              mat-raised-button>
+        {{ 'review-search.toggle-filters' | translate }}
+      </button>
+      <div>
+        <app-search-bar
+          (search)="search($event)"
+          (submit)="submitSearch()"
+          [label]="'navbar.search' | translate"
+        ></app-search-bar>
       </div>
-    </ng-template>
+    </div>
+    <section>
+      <mat-grid-list
+        *ngIf="(paginatedReviews$ | async) as reviews; else loading"
+        cols="2"
+        gutterSize="20px"
+        rowHeight="300px"
+        style="display: flex;"
+      >
+        <mat-grid-tile *ngFor="let review of reviews.content" colspan="1" rowspan="1" style="">
+          <app-review-card [review]="review" style="width: 100%"></app-review-card>
+        </mat-grid-tile>
+      </mat-grid-list>
+      <div *ngIf="combinedPagination$ | async as combined">
+        <mat-paginator
+          #paginator
+          (page)="handlePageEvent($event)"
+          *ngIf="combined[1].totalPages !== 0"
+          [length]="combined[1].totalPages * (combined[0].pageSize || 10)"
+
+          [pageIndex]="((combined[0].page || 1) - 1) "
+          [pageSize]="combined[0].pageSize || 10"
+          color="primary"
+        >
+        </mat-paginator>
+      </div>
+    </section>
+    <div>
+      <ng-template #loading class="centered-container">
+        <mat-spinner/>
+      </ng-template>
+    </div>
   </mat-drawer-content>
 </mat-drawer-container>
 

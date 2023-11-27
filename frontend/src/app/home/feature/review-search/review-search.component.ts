@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, OnInit, Renderer2, RendererFactory2, ViewChild} from '@angular/core';
 import {ReviewsService} from "../../../shared/data-access/reviews/reviews.service";
-import {BehaviorSubject, combineLatest, debounceTime, map, switchMap} from "rxjs";
+import {BehaviorSubject, combineLatest, map, switchMap} from "rxjs";
 import {ActivatedRoute, Router} from "@angular/router";
 import {mapCheckedToType, paramsMapToReviewSearchDto} from "../../utils/mappers";
 import {Difficulty, Platform, SortDirection} from "../../../shared/data-access/shared.enums";
@@ -11,7 +11,7 @@ import {Genre} from "../../../shared/data-access/enums/enums.class";
 import {FormArray, FormBuilder, FormControl, FormGroup} from "@angular/forms";
 import {MatSidenav} from '@angular/material/sidenav';
 import {formatNumber} from "@angular/common";
-import {MAT_CHECKBOX_DEFAULT_OPTIONS, MatCheckboxDefaultOptions} from "@angular/material/checkbox";
+import {PageEvent} from "@angular/material/paginator";
 
 
 @Component({
@@ -19,9 +19,6 @@ import {MAT_CHECKBOX_DEFAULT_OPTIONS, MatCheckboxDefaultOptions} from "@angular/
   templateUrl: './review-search.component.html',
   styleUrls: ['./review-search.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  providers: [
-    {provide: MAT_CHECKBOX_DEFAULT_OPTIONS, useValue: {clickAction: 'noop'} as MatCheckboxDefaultOptions}
-  ],
 })
 export class ReviewSearchComponent implements OnInit {
   filtersLoaded = new BehaviorSubject<boolean>(false);
@@ -31,23 +28,15 @@ export class ReviewSearchComponent implements OnInit {
     .pipe(
       map(paramsMapToReviewSearchDto)
     );
+
   paginatedReviews$ =
     this.reviewSearchDto$
-      .pipe(debounceTime(100))
       .pipe(
         switchMap(
           (query) =>
             this.reviewsService.getReviews('http://localhost:8080/paw-2023a-04/api/reviews', query)
         ),
       );
-  orderDirections: EnumType<ReviewSortType>[] = Object.values(ReviewSortType).map((str) => ({
-    translateKey: `review-filter.${str}`,
-    selectKey: str
-  }));
-  platforms: Platform[] = Object.values(Platform);
-  difficulties: Difficulty[] = Object.values(Difficulty);
-  @ViewChild('sidenav')
-  sidenav!: MatSidenav
 
   pagination$ = this.paginatedReviews$.pipe(map((reviews) => {
     return {
@@ -55,14 +44,8 @@ export class ReviewSearchComponent implements OnInit {
       links: reviews.links
     };
   }));
-  protected readonly SortDirection = SortDirection;
-  protected readonly ReviewSortType = ReviewSortType;
-  protected readonly Object = Object;
 
-  nextPage() {
-  }
-  protected readonly formatNumber = formatNumber;
-  private renderer: Renderer2;
+  combinedPagination$ = combineLatest([this.reviewSearchDto$, this.pagination$]);
 
   constructor(private readonly reviewsService: ReviewsService,
               private readonly route: ActivatedRoute,
@@ -82,9 +65,41 @@ export class ReviewSearchComponent implements OnInit {
       mintimeplayed: new FormControl(0),
       completed: new FormControl(undefined),
       replayable: new FormControl(undefined),
+      search: new FormControl('')
     });
     this.renderer = rendererFactory.createRenderer(null, null);
   }
+
+  search(value: string) {
+    this.filter.get('search')?.setValue(value);
+  }
+
+  orderDirections: EnumType<ReviewSortType>[] = Object.values(ReviewSortType).map((str) => ({
+    translateKey: `review-filter.${str}`,
+    selectKey: str
+  }));
+  platforms: Platform[] = Object.values(Platform);
+  difficulties: Difficulty[] = Object.values(Difficulty);
+
+  @ViewChild('sidenav')
+  sidenav!: MatSidenav
+
+  submitSearch() {
+    if (this.filter.get('search')?.value) {
+      this.router.navigate([], {
+        queryParams: {
+          search: this.filter.get('search')?.value
+        },
+        queryParamsHandling: 'merge'
+      });
+    }
+  }
+
+  protected readonly SortDirection = SortDirection;
+  protected readonly ReviewSortType = ReviewSortType;
+  protected readonly Object = Object;
+  protected readonly formatNumber = formatNumber;
+  private renderer: Renderer2;
 
   ngOnInit() {
     // Carga los generes elegidos y sus selecciones
@@ -154,6 +169,24 @@ export class ReviewSearchComponent implements OnInit {
     });
   }
 
+  handlePageEvent(e: PageEvent) {
+    if (!e.previousPageIndex || e.previousPageIndex < e.pageIndex) {
+      this.router.navigate([], {
+        queryParams: {
+          page: e.pageIndex + 1
+        },
+        queryParamsHandling: 'merge'
+      });
+    } else {
+      this.router.navigate([], {
+        queryParams: {
+          page: e.pageIndex + 1,
+        },
+        queryParamsHandling: 'merge'
+      });
+    }
+  }
+
   selectSortDirection(sortDirection: SortDirection) {
     this.filter.get('direction')?.setValue(sortDirection);
   }
@@ -166,15 +199,8 @@ export class ReviewSearchComponent implements OnInit {
 
   }
 
-  check(formLabel: string) {
-    if (this.filter.get(formLabel)?.value === undefined) {
-      this.filter.get(formLabel)?.setValue(true);
-    } else if (this.filter.get(formLabel)?.value) {
-      this.filter.get(formLabel)?.setValue(false);
-    } else {
-      this.filter.get(formLabel)?.setValue(undefined);
-    }
-    const valuePost = this.filter.get(formLabel)?.value;
+  check(formLabel: string, value: boolean | undefined) {
+    this.filter.get(formLabel)?.setValue(value);
   }
 
   resetFilters() {

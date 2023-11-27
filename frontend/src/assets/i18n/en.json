@@ -86,6 +86,7 @@
     "replayable": "Replayable",
     "reset-filters": "Reset filters",
     "timeplayed-filter": "Minimum time played",
+    "toggle-filters": "Filters",
     "user-preference-filter": "User preferences"
   },
   "validate-user-form": {

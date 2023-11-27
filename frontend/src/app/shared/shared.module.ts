@@ -23,10 +23,13 @@ import {EnumsService} from "./data-access/enums/enums.service";
 import {ReviewCardComponent} from './ui/review-card/review-card.component';
 import {MatChipsModule} from "@angular/material/chips";
 import {ProfileCardComponent} from './ui/profile-card/profile-card.component';
+import {TriCheckboxComponent} from './ui/tri-checkbox/tri-checkbox.component';
+import {MatCheckboxModule} from "@angular/material/checkbox";
+import {SearchBarComponent} from './ui/searchbar/search-bar.component';
 
 
 @NgModule({
-  declarations: [NavbarComponent, LoginFormComponent, FilterDrawerComponent, ReviewCardComponent, ProfileCardComponent],
+  declarations: [NavbarComponent, LoginFormComponent, FilterDrawerComponent, ReviewCardComponent, ProfileCardComponent, TriCheckboxComponent, SearchBarComponent],
   providers: [UsersService, ReviewsService, GamesService, EnumsService],
   imports: [
     CommonModule,
@@ -45,7 +48,8 @@ import {ProfileCardComponent} from './ui/profile-card/profile-card.component';
     MatRadioModule,
     MatListModule,
     NgOptimizedImage,
-    MatChipsModule
+    MatChipsModule,
+    MatCheckboxModule
   ],
   exports: [
     NavbarComponent,
@@ -53,6 +57,8 @@ import {ProfileCardComponent} from './ui/profile-card/profile-card.component';
     LoginFormComponent,
     FilterDrawerComponent,
     ReviewCardComponent,
+    TriCheckboxComponent,
+    SearchBarComponent,
   ]
 })
 export class SharedModule {
