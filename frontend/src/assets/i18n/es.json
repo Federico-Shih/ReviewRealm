@@ -1,10 +1,14 @@
 {
+  "apply-filters": "Aplicar filtros",
   "asc": "Ascendente",
   "average-rating": "Puntuación Promedio",
+  "delete": "Borrar",
   "desc": "Descendente",
   "developer": {
     "card": "Desarollador: {{value}}"
   },
+  "edit": "Editar",
+  "edit-own-review": "Editar tu Reseña",
   "errors": {
     "dismiss": "Descartar",
     "unknown": "Error desconocido, intente más tarde."
@@ -12,6 +16,32 @@
   "filter-drawer": {
     "apply": "Aplicar filtros",
     "order-by": "Ordenar por"
+  },
+  "filter-title": "Filtrar por",
+  "game-details": {
+    "completability": "Terminación promedio",
+    "difficulty": "Dificultad percibida promedio",
+    "gametime": "Tiempo de juego promedio",
+    "no-personal-review": "¡Escribe una reseña para este juego!",
+    "no-reviews": "No hay reseñas de otros jugadores para este juego",
+    "personal-review": "Tu reseña para este juego",
+    "platform": "Plataforma más popular",
+    "rating": "Puntuación promedio",
+    "replayability": "Re-jugabilidad promedio",
+    "reviews": "Reseñas de Otros Usuarios",
+    "statistics": "Estadísticas basadas en Reseñas"
+  },
+  "game-filter": {
+    "averageRating": "Puntuación Promedio",
+    "name": "Nombre",
+    "publishDate": "Fecha de Publicación"
+  },
+  "game-genres-filter": "Géneros del juego",
+  "game-search": {
+    "avg-rating": {
+      "filter": "Puntación Promedio"
+    },
+    "exclude-no-rating": "Excluir juegos sin puntuación"
   },
   "genres": "Generos:",
   "login-form": {
@@ -41,8 +71,12 @@
     "welcome": "Bienvenido {{value}}!",
     "write-review": "Escribir reseña"
   },
+  "new-review": "Nueva Reseña",
   "profile-card": {
     "whoprefers": "prefiere"
+  },
+  "publisher": {
+    "card": "Editor: {{value}}"
   },
   "publishing": {
     "date": "Fecha de publicación: {{value}}"
@@ -65,6 +99,7 @@
     "username-minlength": "Nombre de usuario debe tener al menos {{value}} caracteres.",
     "username-required": "Nombre de usuario es requerido."
   },
+  "reset-filters": "Restablecer Filtros",
   "review-card": {
     "author-alt": "Imagen de perfil de {{author}}",
     "by": "por @{{author}}",
@@ -77,18 +112,14 @@
     "rating": "Puntaje"
   },
   "review-search": {
-    "apply-filters": "Aplicar filtros",
     "completed": "Completado",
     "difficulty-filter": "Difficultad percibida",
-    "filter-title": "Filtrar por",
-    "game-genres-filter": "Géneros del juego",
     "platform-filter": "Plataforma",
     "replayable": "Rejugable",
-    "reset-filters": "Eliminar filtros",
     "timeplayed-filter": "Tiempo mínimo jugado",
-    "toggle-filters": "Filtros",
     "user-preference-filter": "Preferencias de usuarios"
   },
+  "toggle-filters": "Filtros",
   "validate-user-form": {
     "email": "ejemplo@gmail.com",
     "email-invalid": "Correo electrónico inválido",

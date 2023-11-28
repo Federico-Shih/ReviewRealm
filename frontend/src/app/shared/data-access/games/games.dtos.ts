@@ -1,5 +1,6 @@
 /* name|averageRating|publishDate*/
 import {PaginatedDto, SortedDto} from "../shared.dtos";
+import {isFloat} from "../../helpers/utils";
 
 export enum GameSortType {
   NAME = "name",
@@ -11,6 +12,16 @@ export function isGameSortType(sort: string): sort is GameSortType {
 }
 
 export type RatingType = `${number}t${number}`;
+
+export const isRatingType = (rating: unknown): rating is RatingType => {
+  if( rating === undefined || rating === null || typeof rating !== 'string') return false;
+  const range = rating.split('t');
+  if(range.length !== 2) return false;
+  const [min, max] = range;
+  const floatMin = parseFloat(min);
+  const floatMax = parseFloat(max);
+  return isFloat(floatMin) && isFloat(floatMax) && floatMin <= floatMax;
+}
 
 export type GameFiltersDto = {
   search: string;
@@ -27,4 +38,6 @@ export type GameFavoriteFilterDto = {
   favoriteOf: number;
 }
 
-export type GameSearchDto = Partial<(GameFiltersDto | GameRecommendedFilterDto | GameFavoriteFilterDto) & PaginatedDto & SortedDto<GameSortType>>
+export type GameSearchDto = Partial<(GameFiltersDto & PaginatedDto & SortedDto<GameSortType>)>;
+
+export type GameExclusiveSearchDto = Partial<( (GameRecommendedFilterDto|GameFavoriteFilterDto ) & PaginatedDto)>;

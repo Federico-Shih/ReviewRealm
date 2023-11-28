@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
-import {Game} from "../../../shared/data-access/games/games.class";
+import {Game} from "../../data-access/games/games.class";
 
 @Component({
   selector: 'app-game-card',

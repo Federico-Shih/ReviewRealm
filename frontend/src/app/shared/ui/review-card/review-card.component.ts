@@ -11,6 +11,9 @@ export class ReviewCardComponent {
   @Input({required: true})
   review!: Review;
 
+  @Input()
+  hideActions = false;
+
   @Output()
   click = new EventEmitter();
 }

@@ -26,10 +26,12 @@ import {ProfileCardComponent} from './ui/profile-card/profile-card.component';
 import {TriCheckboxComponent} from './ui/tri-checkbox/tri-checkbox.component';
 import {MatCheckboxModule} from "@angular/material/checkbox";
 import {SearchBarComponent} from './ui/searchbar/search-bar.component';
+import {GameCardComponent} from "./ui/game-card/game-card.component";
 
 
 @NgModule({
-  declarations: [NavbarComponent, LoginFormComponent, FilterDrawerComponent, ReviewCardComponent, ProfileCardComponent, TriCheckboxComponent, SearchBarComponent],
+  declarations: [NavbarComponent, LoginFormComponent, FilterDrawerComponent, ReviewCardComponent, ProfileCardComponent, TriCheckboxComponent, SearchBarComponent,
+  GameCardComponent],
   providers: [UsersService, ReviewsService, GamesService, EnumsService],
   imports: [
     CommonModule,
@@ -59,6 +61,7 @@ import {SearchBarComponent} from './ui/searchbar/search-bar.component';
     ReviewCardComponent,
     TriCheckboxComponent,
     SearchBarComponent,
+    GameCardComponent
   ]
 })
 export class SharedModule {

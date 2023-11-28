@@ -43,10 +43,15 @@
 .slider {
   width: 90%;
 }
+.full-width{
+  width: 100%;
+}
 
 .label {
   display: flex;
   align-items: center;
+  gap: 2% !important;
+  width: 100% !important;
 }
 
 .searchbar {
@@ -71,6 +76,12 @@
   align-items: center;
   padding: 0.5rem 1rem 0 1rem;
   width: 100%;
+}
+.filter-title{
+  font-size: 20px;
+  font-weight: 700;
+  margin-top: 6%;
+  margin-bottom: 3%;
 }
 
 .paginator {

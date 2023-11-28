@@ -7,16 +7,18 @@ export class GameLinks {
   self: string;
   reviews: string;
   userReview?: string;
+  reviewsExcludingUser?: string;
   addToFavoriteGames?: string;
   deleteFromFavoriteGames?: string;
   image: string;
   genres: string;
 
-  constructor(self: string, reviews: string, image: string, genres: string, userReview?: string, addToFavoriteGames?:
+  constructor(self: string, reviews: string, image: string, genres: string, userReview?: string,reviewsExcludingUser?:string, addToFavoriteGames?:
     string, deleteFromFavoriteGames?: string) {
     this.self = self;
     this.reviews = reviews;
     this.userReview = userReview;
+    this.reviewsExcludingUser = reviewsExcludingUser;
     this.addToFavoriteGames = addToFavoriteGames;
     this.deleteFromFavoriteGames = deleteFromFavoriteGames;
     this.image = image;
@@ -27,6 +29,7 @@ export class GameLinks {
                         self,
                         reviews,
                         userReview,
+                        reviewsExcludingUser,
                         addToFavoriteGames,
                         deleteFromFavoriteGames,
                         image,
@@ -37,6 +40,7 @@ export class GameLinks {
       image,
       genres,
       userReview,
+      reviewsExcludingUser,
       addToFavoriteGames,
       deleteFromFavoriteGames);
   }

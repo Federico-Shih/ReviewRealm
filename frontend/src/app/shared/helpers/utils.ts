@@ -4,6 +4,5 @@ export const isBoolean = (value: unknown): value is boolean => {
 
 export const isFloat = (value: unknown): value is number => {
   return typeof value === 'number' &&
-    !Number.isNaN(value) &&
-    !Number.isInteger(value);
+    !Number.isNaN(value);
 }

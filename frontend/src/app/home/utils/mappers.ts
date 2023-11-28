@@ -1,7 +1,14 @@
 import {ParamMap} from "@angular/router";
 import {isReviewSortType, ReviewSearchDto} from "../../shared/data-access/reviews/reviews.dtos";
-import {isDifficulty, isPlatform, isSortDirection} from "../../shared/data-access/shared.enums";
+import {isDifficulty, isPlatform, isSortDirection, SortDirection} from "../../shared/data-access/shared.enums";
 import {isBoolean} from "../../shared/helpers/utils";
+import {
+  GameSearchDto,
+  GameSortType,
+  isGameSortType,
+  isRatingType,
+  RatingType
+} from "../../shared/data-access/games/games.dtos";
 
 // Precondición: checked.length === total.length
 export const mapCheckedToType = <T, K>(checked: boolean[], total: T[], selector: (type: T) => K): K[] => {
@@ -49,5 +56,26 @@ export const paramsMapToReviewSearchDto = (params: ParamMap): ReviewSearchDto =>
     replayable,
     timeplayed,
     search
+  };
+}
+
+export const paramsMapToGameSearchDto = (params: ParamMap): GameSearchDto => {
+  const sort = params.get('sort') || '';
+  const direction = params.get('direction') || '';
+  const ratingRaw = params.get('rating') || '';
+  const rating = isRatingType(ratingRaw) ? ratingRaw : '0t10';
+  console.log(rating);
+  const excludeNoRating = isBoolean(params.get('excludeNoRating')) ? params.get('excludeNoRating') === 'true' : undefined;
+  return {
+    search: params.get('search') ? params.get('search')! : undefined,
+    excludeNoRating: excludeNoRating,
+    genres: params.getAll('genres')
+      .filter((genre) => !isNaN(genre as unknown as number))
+      .map((genre) => parseInt(genre)) || undefined,
+    rating: rating,
+    page: parseInt(params.get('page') || '1') || 1,
+    pageSize: parseInt(params.get('pageSize') || '10') || 10,
+    sort: isGameSortType(sort) ? sort : undefined,
+    direction: isSortDirection(direction) ? direction : undefined,
   };
 }

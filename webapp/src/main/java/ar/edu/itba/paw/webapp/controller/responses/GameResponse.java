@@ -49,6 +49,7 @@ public class GameResponse extends BaseResponse {
         response.link("reviews",uri.getBaseUriBuilder().path("reviews").queryParam("gameId",game.getId()).build());
         if(user != null) {
             response.link("userReview", uri.getBaseUriBuilder().path("reviews").queryParam("authors", user.getId()).queryParam("gameId", game.getId()).build());
+            response.link("reviewsExcludingUser",uri.getBaseUriBuilder().path("reviews").queryParam("excludeAuthors",user.getId()).queryParam("gameId",game.getId()).build());
             if(!response.isFavorite()){
                 response.link("addToFavoriteGames", uri.getBaseUriBuilder().path("users").path(String.valueOf(user.getId())).path("favoritegames").build());
             }else{

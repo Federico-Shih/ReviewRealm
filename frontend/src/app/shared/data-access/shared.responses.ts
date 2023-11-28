@@ -54,6 +54,7 @@ export type GameResponseLinks = {
   self: string;
   reviews: string;
   userReview?: string;
+  reviewsExcludingUser?: string;
   addToFavoriteGames?: string;
   deleteFromFavoriteGames?: string;
   image: string;

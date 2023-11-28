@@ -32,28 +32,31 @@
       <mat-icon>thumbs_up_down</mat-icon>
     </div>
   </mat-card-content>
-  <mat-divider/>
-  <mat-card-actions class="game-container">
-    <div class="image-container">
-      <img
-        [ngSrc]="review.game?.links?.image || ''"
-        alt="{{ 'review-card.img-alt' | translate:{game: review.game?.name } }}"
-        fill
-        priority="high"
-      />
-    </div>
-    <section>
-      <div class="review-game">
-        {{review.game?.name}}
+  <ng-container *ngIf="!hideActions">
+    <mat-divider/>
+    <mat-card-actions class="game-container">
+
+      <div class="image-container">
+        <img
+          [ngSrc]="review.game?.links?.image || ''"
+          alt="{{ 'review-card.img-alt' | translate:{game: review.game?.name } }}"
+          fill
+          priority="high"
+        />
       </div>
-      <div *ngIf="review.game && review.game.genres">
-        <mat-chip *ngFor="let genre of review.game.genres | slice:0:2" class="pill">
-          {{genre.localized}}
+      <section>
+        <div class="review-game">
+          {{review.game?.name}}
+        </div>
+        <div *ngIf="review.game && review.game.genres">
+          <mat-chip *ngFor="let genre of review.game.genres | slice:0:2" class="pill">
+            {{genre.localized}}
         </mat-chip>
         <mat-chip *ngIf="review.game.genres!.length > 2" class="pill" routerLink="/">
           +{{review.game.genres!.length - 2}}
-        </mat-chip>
-      </div>
-    </section>
-  </mat-card-actions>
+          </mat-chip>
+        </div>
+      </section>
+    </mat-card-actions>
+  </ng-container>
 </mat-card>

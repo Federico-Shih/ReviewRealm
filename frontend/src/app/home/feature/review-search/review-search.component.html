@@ -3,10 +3,10 @@
     <div class="hide-filters">
       <div class="filter-buttons-container">
         <button (click)="applyFilters()" color="accent" mat-raised-button style="flex: 1">
-          {{ 'review-search.apply-filters' | translate }}
+          {{ 'apply-filters' | translate }}
         </button>
-        <button (click)="resetFilters()" mat-flat-button style="background-color: gray; flex: 1">
-          {{ 'review-search.reset-filters' | translate }}
+        <button (click)="resetFilters()" mat-flat-button style="background-color: rgb(128,128,128); flex: 1">
+          {{ 'reset-filters' | translate }}
         </button>
       </div>
       <app-filter-drawer
@@ -17,7 +17,7 @@
         [sortTypes]="orderDirections"
       >
         <section>
-          <h3>{{ 'review-search.filter-title' | translate }}</h3>
+          <span class="filter-title">{{ 'filter-title' | translate }}</span>
           <form [formGroup]="filter" class="filters">
             <div>
               <div class="label">
@@ -47,10 +47,10 @@
               </app-tri-checkbox>
             </div>
             <mat-expansion-panel *ngIf="genres$ | async as genres; else genreLoading">
-              <mat-expansion-panel-header style="width: 100%">
+              <mat-expansion-panel-header class="full-width">
                 <mat-panel-title>
                   <mat-icon>sports_esports</mat-icon>
-                  {{ 'review-search.game-genres-filter' | translate }}
+                  {{ 'game-genres-filter' | translate }}
                 </mat-panel-title>
               </mat-expansion-panel-header>
               <div formArrayName="gameGenres">
@@ -124,7 +124,7 @@
       <button (click)="drawer.toggle()"
               color="accent"
               mat-raised-button>
-        {{ 'review-search.toggle-filters' | translate }}
+        {{ 'toggle-filters' | translate }}
       </button>
       <div>
         <app-search-bar
@@ -161,11 +161,10 @@
       </div>
     </section>
     <ng-template #loading>
-      <div class="centered-container">
-        <mat-spinner/>
-      </div>
+        <div class="centered-container">
+          <mat-spinner/>
+        </div>
     </ng-template>
-
   </mat-drawer-content>
 </mat-drawer-container>
 
