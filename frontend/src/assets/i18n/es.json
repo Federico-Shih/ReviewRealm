@@ -112,14 +112,25 @@
     "rating": "Puntaje"
   },
   "review-search": {
+    "apply-filters": "Aplicar filtros",
     "completed": "Completado",
     "difficulty-filter": "Difficultad percibida",
+    "filter-title": "Filtrar por",
+    "game-genres-filter": "Géneros del juego",
     "platform-filter": "Plataforma",
     "replayable": "Rejugable",
+    "reset-filters": "Eliminar filtros",
     "timeplayed-filter": "Tiempo mínimo jugado",
+    "toggle-filters": "Filtros",
     "user-preference-filter": "Preferencias de usuarios"
   },
   "toggle-filters": "Filtros",
+  "search": {
+    "games-title": "Juegos",
+    "noresults": "No hubo resultados encontrados...",
+    "review-title": "Reseñas",
+    "users-title": "Usuarios"
+  },
   "validate-user-form": {
     "email": "ejemplo@gmail.com",
     "email-invalid": "Correo electrónico inválido",

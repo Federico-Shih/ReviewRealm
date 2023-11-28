@@ -137,3 +137,12 @@ body {
 .mat-drawer-inner-container::-webkit-scrollbar {
   display: none;
 }
+
+:host {
+  height: 100%;
+}
+
+app-root {
+  display: block;
+  height: 100%;
+}

@@ -1,0 +1,43 @@
+.title {
+  font-size: 1.4rem;
+  margin-bottom: 1rem;
+  color: white;
+  font-weight: 500;
+  letter-spacing: 2px;
+}
+
+.search-results-card {
+  background-color: var(--color-surface);
+}
+
+.results-container {
+  display: flex;
+  flex-direction: column;
+  gap: 50px;
+  padding: 0 10%;
+  padding-top: 20px;
+  overflow-y: scroll;
+  height: 100%;
+}
+
+@media (max-width: 600px) {
+  .results-container {
+    padding: 0 5%;
+  }
+}
+
+.tile {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+h1 {
+  color: white;
+}
+
+.container {
+  padding: 0 10%;
+}
+
+

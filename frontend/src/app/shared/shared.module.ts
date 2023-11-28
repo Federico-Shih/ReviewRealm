@@ -61,6 +61,7 @@ import {GameCardComponent} from "./ui/game-card/game-card.component";
     ReviewCardComponent,
     TriCheckboxComponent,
     SearchBarComponent,
+    ProfileCardComponent,
     GameCardComponent
   ]
 })

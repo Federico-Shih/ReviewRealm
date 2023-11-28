@@ -7,8 +7,8 @@
   </a>
 
   <div class="navbar-search">
-    <i class="material-icons prefix icon-prefix">search</i>
-    <input [placeholder]="'navbar.search' | translate"/>
+    <app-search-bar (search)="search.emit($event)" (submit)="submit.emit()"
+                    [label]="'navbar.search' | translate"></app-search-bar>
   </div>
   <div class="spacer"></div>
   <section class="action-container">

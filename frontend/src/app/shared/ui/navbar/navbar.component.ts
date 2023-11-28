@@ -13,5 +13,9 @@ export class NavbarComponent {
   @Input() user: User | null = null;
   @Output() logout = new EventEmitter<void>();
 
+  @Output() search = new EventEmitter<string>();
+  @Output() submit = new EventEmitter();
+
+
   protected readonly Role = Role;
 }

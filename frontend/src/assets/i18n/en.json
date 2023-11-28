@@ -112,14 +112,25 @@
     "rating": "Rating"
   },
   "review-search": {
+    "apply-filters": "Apply filters",
     "completed": "Completed",
     "difficulty-filter": "Perceived difficulty",
+    "filter-title": "Filter by",
+    "game-genres-filter": "Game's genres",
     "platform-filter": "Platform",
     "replayable": "Replayable",
+    "reset-filters": "Reset filters",
     "timeplayed-filter": "Minimum time played",
+    "toggle-filters": "Filters",
     "user-preference-filter": "User preferences"
   },
   "toggle-filters": "Filters",
+  "search": {
+    "games-title": "Games",
+    "noresults": "No results found...",
+    "review-title": "Reviews",
+    "users-title": "Users"
+  },
   "validate-user-form": {
     "email": "example@gmail.com",
     "email-invalid": "Invalid email",
