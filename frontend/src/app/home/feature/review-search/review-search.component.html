@@ -155,16 +155,17 @@
 
           [pageIndex]="((combined[0].page || 1) - 1) "
           [pageSize]="combined[0].pageSize || 10"
-          color="primary"
+          class="paginator"
         >
         </mat-paginator>
       </div>
     </section>
-    <div>
-      <ng-template #loading class="centered-container">
+    <ng-template #loading>
+      <div class="centered-container">
         <mat-spinner/>
-      </ng-template>
-    </div>
+      </div>
+    </ng-template>
+
   </mat-drawer-content>
 </mat-drawer-container>
 

@@ -28,9 +28,7 @@ export class GamesService {
           });
           return forkJoin(
             response.body.map(game =>
-              forkJoin({
-                genres: this.genreService.getGenres(game.links.genres)
-              }).pipe(map(({genres}) => Game.fromResponse(game, genres)))
+              this.genreService.getGenres(game.links.genres).pipe(map((genres) => Game.fromResponse(game, genres)))
             )
           ).pipe(map(games => paginatedObjectMapper(response, games)));
         }
@@ -48,9 +46,7 @@ export class GamesService {
         mergeMap(
           (response) => {
             const game = response.body!!;
-            return forkJoin({
-              genres: this.genreService.getGenres(game.links.genres)
-            }).pipe(map(({genres}) => Game.fromResponse(game, genres)));
+            return this.genreService.getGenres(game.links.genres).pipe(map((genres) => Game.fromResponse(game, genres)));
           }
         )
       );

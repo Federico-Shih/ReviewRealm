@@ -24,7 +24,9 @@
   </mat-card-header>
   <mat-divider/>
   <mat-card-content class="card-content">
-    <p (click)="click.emit()">{{ review.content }}</p>
+    <p (click)="click.emit()" class="clamp">
+      {{ review.content }}
+    </p>
     <div class="likes">
       {{ review.likes - review.dislikes}}
       <mat-icon>thumbs_up_down</mat-icon>
@@ -44,9 +46,12 @@
       <div class="review-game">
         {{review.game?.name}}
       </div>
-      <div>
-        <mat-chip *ngFor="let genre of review.game?.genres" class="pill">
+      <div *ngIf="review.game && review.game.genres">
+        <mat-chip *ngFor="let genre of review.game.genres | slice:0:2" class="pill">
           {{genre.localized}}
+        </mat-chip>
+        <mat-chip *ngIf="review.game.genres!.length > 2" class="pill" routerLink="/">
+          +{{review.game.genres!.length - 2}}
         </mat-chip>
       </div>
     </section>

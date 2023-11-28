@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, OnInit, Renderer2, RendererFactory2, ViewChild} from '@angular/core';
 import {ReviewsService} from "../../../shared/data-access/reviews/reviews.service";
-import {BehaviorSubject, combineLatest, map, switchMap} from "rxjs";
+import {BehaviorSubject, combineLatest, map, switchMap, tap} from "rxjs";
 import {ActivatedRoute, Router} from "@angular/router";
 import {mapCheckedToType, paramsMapToReviewSearchDto} from "../../utils/mappers";
 import {Difficulty, Platform, SortDirection} from "../../../shared/data-access/shared.enums";
@@ -12,7 +12,7 @@ import {FormArray, FormBuilder, FormControl, FormGroup} from "@angular/forms";
 import {MatSidenav} from '@angular/material/sidenav';
 import {formatNumber} from "@angular/common";
 import {PageEvent} from "@angular/material/paginator";
-
+import {environment} from "../../../../environments/environment";
 
 @Component({
   selector: 'app-review-search',
@@ -21,9 +21,11 @@ import {PageEvent} from "@angular/material/paginator";
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ReviewSearchComponent implements OnInit {
-  filtersLoaded = new BehaviorSubject<boolean>(false);
   filter: FormGroup;
-  genres$ = this.genreService.getGenres('http://localhost:8080/paw-2023a-04/api/genres');
+
+  loading = false;
+  filtersLoaded = new BehaviorSubject<boolean>(false);
+  genres$ = this.genreService.getGenres(`${environment.API_ENDPOINT}/genres`);
   reviewSearchDto$ = this.route.queryParamMap
     .pipe(
       map(paramsMapToReviewSearchDto)
@@ -31,12 +33,13 @@ export class ReviewSearchComponent implements OnInit {
 
   paginatedReviews$ =
     this.reviewSearchDto$
+      .pipe(tap(() => this.loading = true))
       .pipe(
         switchMap(
           (query) =>
-            this.reviewsService.getReviews('http://localhost:8080/paw-2023a-04/api/reviews', query)
+            this.reviewsService.getReviews(`${environment.API_ENDPOINT}/reviews`, query)
         ),
-      );
+      ).pipe(tap(() => this.loading = false));
 
   pagination$ = this.paginatedReviews$.pipe(map((reviews) => {
     return {
@@ -70,22 +73,29 @@ export class ReviewSearchComponent implements OnInit {
     this.renderer = rendererFactory.createRenderer(null, null);
   }
 
-  search(value: string) {
-    this.filter.get('search')?.setValue(value);
-  }
-
   orderDirections: EnumType<ReviewSortType>[] = Object.values(ReviewSortType).map((str) => ({
     translateKey: `review-filter.${str}`,
     selectKey: str
   }));
+
   platforms: Platform[] = Object.values(Platform);
   difficulties: Difficulty[] = Object.values(Difficulty);
+  protected readonly SortDirection = SortDirection;
+  protected readonly ReviewSortType = ReviewSortType;
+  protected readonly Object = Object;
+  protected readonly formatNumber = formatNumber;
+  private renderer: Renderer2;
+
 
   @ViewChild('sidenav')
   sidenav!: MatSidenav
 
+  search(value: string) {
+    this.filter.get('search')?.setValue(value);
+  }
+
   submitSearch() {
-    if (this.filter.get('search')?.value) {
+    if (this.filter.get('search')?.value !== undefined) {
       this.router.navigate([], {
         queryParams: {
           search: this.filter.get('search')?.value
@@ -94,12 +104,6 @@ export class ReviewSearchComponent implements OnInit {
       });
     }
   }
-
-  protected readonly SortDirection = SortDirection;
-  protected readonly ReviewSortType = ReviewSortType;
-  protected readonly Object = Object;
-  protected readonly formatNumber = formatNumber;
-  private renderer: Renderer2;
 
   ngOnInit() {
     // Carga los generes elegidos y sus selecciones
@@ -193,10 +197,6 @@ export class ReviewSearchComponent implements OnInit {
 
   selectSortType(sortType: ReviewSortType) {
     this.filter.get('sort')?.setValue(sortType);
-  }
-
-  clickGenre(genre: Genre) {
-
   }
 
   check(formLabel: string, value: boolean | undefined) {

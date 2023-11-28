@@ -51,6 +51,8 @@
 .card-content {
   position: relative;
   height: 100px;
+  overflow: hidden;
+  font-size: 0.9rem;
 }
 
 .likes {
@@ -105,3 +107,12 @@
 .author-container:hover .profile-card {
   display: block;
 }
+
+.clamp {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
