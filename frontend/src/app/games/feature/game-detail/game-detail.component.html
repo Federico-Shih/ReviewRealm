@@ -78,7 +78,7 @@
   </div>
   <div class="review-section">
     <ng-container *ngIf="(userReview$ | async) as userRev;">
-      <ng-container *ngIf="userRev !== undefined &&  userRev !== null ; else notreviewed">
+      <ng-container *ngIf="userRev !== undefined && userRev.content[0] !== undefined; else notreviewed">
         <div class="review-header">
           <span class="header"> {{'game-details.personal-review' | translate}}</span>
           <button mat-raised-button color="primary" [routerLink]=""> <!--todo: link edits-->
@@ -99,7 +99,7 @@
       </ng-template>
     </ng-container>
     <div class="review-header">
-      <span class="header"> {{'game-details.reviews' | translate}}</span>
+      <span class="header" i18n> {{'game-details.reviews' | translate}}</span>
     </div>
     <div class="full-width" *ngIf="(paginatedReviews$ | async) as reviews; else loading">
       <ng-container *ngIf="reviews.content.length > 0; else noreviews">

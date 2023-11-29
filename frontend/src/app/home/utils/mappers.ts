@@ -64,7 +64,6 @@ export const paramsMapToGameSearchDto = (params: ParamMap): GameSearchDto => {
   const direction = params.get('direction') || '';
   const ratingRaw = params.get('rating') || '';
   const rating = isRatingType(ratingRaw) ? ratingRaw : '0t10';
-  console.log(rating);
   const excludeNoRating = isBoolean(params.get('excludeNoRating')) ? params.get('excludeNoRating') === 'true' : undefined;
   return {
     search: params.get('search') ? params.get('search')! : undefined,
