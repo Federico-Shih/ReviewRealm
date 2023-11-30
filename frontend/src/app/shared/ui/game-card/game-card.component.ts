@@ -11,4 +11,5 @@ export class GameCardComponent {
   @Input({required: true}) game:Game | null = null;
 
   @Input() small:boolean = false;
+  @Input() tiny:boolean = false;
 }

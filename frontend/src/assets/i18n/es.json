@@ -72,14 +72,17 @@
     "write-review": "Escribir reseña"
   },
   "new-review": "Nueva Reseña",
+  "profile": {
+    "favgames": "Juegos Favoritos",
+    "reviews": "Reseñas",
+    "following": "Siguiendo: {{value}}",
+    "followers": "Seguidores: {{value}}"
+  },
   "profile-card": {
     "whoprefers": "prefiere"
   },
   "publisher": {
     "card": "Editor: {{value}}"
-  },
-  "publishing": {
-    "date": "Fecha de publicación: {{value}}"
   },
   "register-form": {
     "confirm-password": "Confirmar contraseña",
@@ -124,13 +127,13 @@
     "toggle-filters": "Filtros",
     "user-preference-filter": "Preferencias de usuarios"
   },
-  "toggle-filters": "Filtros",
   "search": {
     "games-title": "Juegos",
     "noresults": "No hubo resultados encontrados...",
     "review-title": "Reseñas",
     "users-title": "Usuarios"
   },
+  "toggle-filters": "Filtros",
   "validate-user-form": {
     "email": "ejemplo@gmail.com",
     "email-invalid": "Correo electrónico inválido",

@@ -1,0 +1,80 @@
+<div class="top-container">
+  <div class="profile-info-panel f-row f-jc-sbetween">
+    <div class="top-part">
+      <img src="{{userInfo?.avatar}}" alt="Profile Picture" class="profile-info-panel-image"/>
+      <div class="profile-info-panel">
+        <div class="profile-info-panel-basic-info">
+          <span class="profile-user-name white-text">
+            {{userInfo?.username}}
+          </span>
+          <div class="f-row f-ai-center f-gap-2 margin-left-2">
+            <div class="level-badge-container">
+              <i class="material-icons level-badge-icon level-gold">sports_esports</i>
+              <span class="level-badge-text">{{userInfo?.xp}}</span>
+            </div>
+          </div>
+          <ng-container *ngIf="(userInfo?.role===Role.MODERATOR)">
+            <i class="material-icons moderator-badge">
+              engineering
+            </i>
+          </ng-container>
+        </div>
+        <ng-container *ngIf="true">
+          <div class="profile-preferences">
+            <span class="no-wrap">Fan Of: </span>
+            <div class="profile-preferences-list f-gap-1 full-width">
+              <div *ngFor="let genre of userInfo?.preferences">
+                                <span class="chip-small-inverted">
+                                    {{genre.name}}
+                                </span>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+
+        <div class="profile-followers">
+          <!--<a href="<c:url value="/profile/${profile.id}/followers"/>">-->
+          <span class="no-wrap" i18n>{{ 'profile.following'| translate:{value: 'x'} }}</span>
+          <!--</a>-->
+          <div class="divider-v profile-followers-text-divider"></div>
+          <!--<a href="<c:url value="/profile/${profile.id}/following"/>">-->
+          <span class="no-wrap" i18n>{{ 'profile.followers'| translate:{value: 'y'} }}</span>
+          <!--</a>-->
+          <div class="divider-v profile-followers-text-divider"></div>
+          <span class="{{userInfo?.reputation}} > 0 ? 'green-text no-wrap' : ({{userInfo?.reputation}}== 0) ? 'white-text no-wrap' : 'red-text no-wrap'}">
+                        {{userInfo?.reputation}}
+                    </span>
+        </div>
+
+        <div>
+          <ng-container *ngIf="false">
+            <ng-container *ngIf="true">
+              <!--<c:url value="/profile/follow/${profile.id}" var="follow"/>
+              <form method="post" action="${follow}">
+                <button type="submit" class="waves-effect waves-light btn-small deep-purple">
+                  <spring:message code="profile.follow"/>
+                </button>
+              </form>-->
+            </ng-container>
+            <ng-container *ngIf="true">
+              <!--<c:url value="/profile/unfollow/${profile.id}" var="unfollow"/>
+              <form method="post" action="${unfollow}">
+                <button type="submit" class="waves-effect waves-light btn-small deep-purple">
+                  <spring:message code="profile.unfollow"/>
+                </button>
+              </form>-->
+            </ng-container>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+    <div>
+      <ng-container *ngIf="true">
+        <!--<a class="btn valign-wrapper" href="<c:url value="/profile/settings/"/>">-->
+        <i class="material-icons" aria-hidden="true">settings</i>
+        <!--</a>-->
+      </ng-container>
+    </div>
+  </div>
+</div>
+

@@ -117,7 +117,8 @@ a {
 
 body {
   margin: 0;
-  font-family: Roboto, "Helvetica Neue", sans-serif;
+  font-family: "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  color: white;
 }
 
 * {
@@ -131,6 +132,7 @@ body {
   --color-surface: #13112D;
   --color-error: #FF0000;
   --color-primary-variant-1: #444155;
+  --color-text: #FFFFFF;
   // Add more variants
 }
 

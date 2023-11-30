@@ -72,14 +72,17 @@
     "write-review": "Write review"
   },
   "new-review": "New Review",
+  "profile": {
+    "favgames": "Favorite Games",
+    "reviews": "Reviews",
+    "following": "Following: {{value}}",
+    "followers": "Followers: {{value}}"
+  },
   "profile-card": {
     "whoprefers": "who prefers"
   },
   "publisher": {
     "card": "Publisher: {{value}}"
-  },
-  "publishing": {
-    "date": "Publishing Date: {{value}}"
   },
   "register-form": {
     "confirm-password": "Confirm password",
@@ -124,13 +127,13 @@
     "toggle-filters": "Filters",
     "user-preference-filter": "User preferences"
   },
-  "toggle-filters": "Filters",
   "search": {
     "games-title": "Games",
     "noresults": "No results found...",
     "review-title": "Reviews",
     "users-title": "Users"
   },
+  "toggle-filters": "Filters",
   "validate-user-form": {
     "email": "example@gmail.com",
     "email-invalid": "Invalid email",

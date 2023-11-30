@@ -76,7 +76,7 @@ public class GameFilter {
         return gameContent == null && (gameGenres == null || gameGenres.isEmpty()) && minRating == null && maxRating == null && includeNoRating && !isSuggested && favoriteGamesOf == null;
     }
     public boolean isProperFavoriteOf(){
-        return gameContent == null && (gameGenres == null || gameGenres.isEmpty()) && minRating == null && maxRating == null && includeNoRating && !isSuggested && recommendedFor == null;
+        return gameContent == null && (gameGenres == null || gameGenres.isEmpty()) && (minRating == null || Float.compare(minRating,1.0f)==0) && (maxRating == null || Float.compare(maxRating,10.0f)==0) && includeNoRating && !isSuggested && recommendedFor == null;
     }
 
     public Boolean getDeleted() {

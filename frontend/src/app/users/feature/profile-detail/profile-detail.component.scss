@@ -1,0 +1,44 @@
+.divider-h {
+  margin-top: 20px;
+  border-top: 1px solid #444155;
+  position: relative;
+  left: 10%;
+  width: 80%;
+  display: flex;
+}
+
+.no-margin-top {
+  margin-top: 0 !important;
+}
+
+.top-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  margin-left: 15%;
+  width:70%;
+  background-color: #2c294d;
+  margin-top: 20px;
+  padding: 10px;
+}
+
+.f-jc-center{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.second-part {
+  margin-left: 10%;
+  width: 80%;
+  margin-top: 20px;
+}
+
+.titletext {
+  font-size: 1.64rem;
+  line-height: 110%;
+}
+
+.m-t {
+  margin-top: 15px;
+}

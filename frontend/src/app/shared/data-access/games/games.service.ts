@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
-import {GameSearchDto} from "./games.dtos";
+import {GameExclusiveSearchDto, GameSearchDto} from "./games.dtos";
 import {exceptionMapper, paginatedObjectMapper, queryMapper,} from "../../helpers/mapper";
 import {catchError, filter, forkJoin, map, mergeMap, Observable, of} from "rxjs";
 import {Paginated} from "../shared.models";
@@ -14,7 +14,7 @@ export class GamesService {
 
   }
 
-  getGames(url: string, query: GameSearchDto): Observable<Paginated<Game>> {
+  getGames(url: string, query: GameSearchDto| GameExclusiveSearchDto): Observable<Paginated<Game>> {
     return this.http.get<GameResponse[]>(url + queryMapper(query, url), {
       responseType: "json",
       observe: "response"
