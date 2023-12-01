@@ -32,8 +32,7 @@
             "styles": [
               "src/styles.scss"
             ],
-            "scripts": [
-            ],
+            "scripts": [],
             "stylePreprocessorOptions": {
               "includePaths": [
                 "src/styles.scss",
@@ -77,8 +76,7 @@
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
-          "options": {
-          },
+          "options": {},
           "configurations": {
             "production": {
               "browserTarget": "frontend:build:production"
