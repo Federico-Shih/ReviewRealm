@@ -1,4 +1,11 @@
 {
+  "settings": {
+    "fav-genres": "Géneros Favoritos",
+    "notifications": "Notificaciones de Email",
+    "avatar": "Avatares",
+    "fav-games": "Juegos Favoritos",
+    "title": "Configuración de Cuenta"
+  },
   "apply-filters": "Aplicar filtros",
   "asc": "Ascendente",
   "average-rating": "Puntuación Promedio",
@@ -76,13 +83,18 @@
     "favgames": "Juegos Favoritos",
     "reviews": "Reseñas",
     "following": "Siguiendo: {{value}}",
-    "followers": "Seguidores: {{value}}"
+    "followers": "Seguidores: {{value}}",
+    "fan": "Fanático de:",
+    "view-more-button": "Ver Más"
   },
   "profile-card": {
     "whoprefers": "prefiere"
   },
   "publisher": {
     "card": "Editor: {{value}}"
+  },
+  "publishing": {
+    "date": "Fecha de publicación: {{value}}"
   },
   "register-form": {
     "confirm-password": "Confirmar contraseña",

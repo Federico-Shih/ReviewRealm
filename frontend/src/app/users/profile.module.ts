@@ -9,6 +9,8 @@ import { UserDetailsComponent } from './ui/user-details/user-details.component';
 import { FavGamesComponent } from './ui/fav-games/fav-games.component';
 import {SharedModule} from "../shared/shared.module";
 import {MatPaginatorModule} from "@angular/material/paginator";
+import {MatButtonModule} from "@angular/material/button";
+import {MatChipsModule} from "@angular/material/chips";
 
 
 @NgModule({
@@ -23,7 +25,9 @@ import {MatPaginatorModule} from "@angular/material/paginator";
         MatGridListModule,
         MatProgressSpinnerModule,
         SharedModule,
-        MatPaginatorModule
+        MatPaginatorModule,
+        MatButtonModule,
+        MatChipsModule
     ]
 })
 export class ProfileModule { }

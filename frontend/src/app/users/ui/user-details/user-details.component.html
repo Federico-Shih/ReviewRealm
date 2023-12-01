@@ -21,9 +21,9 @@
         </div>
         <ng-container *ngIf="true">
           <div class="profile-preferences">
-            <span class="no-wrap">Fan Of: </span>
+            <span class="no-wrap" i18n>{{'profile.fan'|translate}}</span>
             <div class="profile-preferences-list f-gap-1 full-width">
-              <div *ngFor="let genre of userInfo?.preferences">
+              <div *ngFor="let genre of userInfo?.preferences" routerLink="/games" [queryParams]="{ genres: genre.id }" class="clickable-chip">
                                 <span class="chip-small-inverted">
                                     {{genre.name}}
                                 </span>
@@ -47,7 +47,7 @@
         </div>
 
         <div>
-          <ng-container *ngIf="false">
+          <ng-container *ngIf="loggedUser!==null && userInfo?.id!==loggedUser.id">
             <ng-container *ngIf="true">
               <!--<c:url value="/profile/follow/${profile.id}" var="follow"/>
               <form method="post" action="${follow}">

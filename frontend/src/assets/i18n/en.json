@@ -1,4 +1,11 @@
 {
+  "settings": {
+    "fav-genres": "Favorite Genres",
+    "notifications": "Email Notification ",
+    "avatar": "Avatar",
+    "fav-games": "Favorite Games",
+    "title": "Account Settings"
+  },
   "apply-filters": "Apply filters",
   "asc": "Ascending",
   "average-rating": "Average Rating",

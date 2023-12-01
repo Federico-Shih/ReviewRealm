@@ -12,4 +12,5 @@ import {Observable} from "rxjs";
 export class UserDetailsComponent {
   @Input({required: true}) userInfo:User | null = null;
   protected readonly Role = Role;
+  @Input({required: true}) loggedUser:User | null = null;
 }

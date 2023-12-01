@@ -1,7 +1,7 @@
 <div>
-  <ng-container *ngIf="(user$ | async) as user; else loading" >
+  <ng-container *ngIf="(combinedUsers$ | async) as users; else loading" >
     <mat-grid-list cols="2">
-      <app-user-details [userInfo]="user"></app-user-details>
+      <app-user-details [userInfo]="users[1]" [loggedUser]="users[0]"></app-user-details>
     </mat-grid-list>
   </ng-container>
 
@@ -11,17 +11,16 @@
     <ng-container *ngIf="(favgames$ | async) as games; else loading2" >
       <mat-grid-list cols="3" class="m-t">
         <mat-grid-tile *ngFor="let game of games.content" [colspan]="1">
-          <app-game-card [game]="game" [small]="true"></app-game-card>
+          <app-game-card [game]="game" [tiny]="true"></app-game-card>
         </mat-grid-tile>
       </mat-grid-list>
     </ng-container>
   </div>
 
   <div class="divider-h no-margin-top"></div>
-  <div class="second-part">
+  <div class="second-part" *ngIf="(userReviews$ | async) as reviews; else loading3">
     <span class="titletext" i18n>{{ 'profile.reviews'|translate }}</span>
     <mat-grid-list
-      *ngIf="(reviewsbyuser$ | async) as reviews; else loading3"
       cols="2"
       gutterSize="20px"
       rowHeight="300px"
@@ -30,15 +29,26 @@
       <mat-grid-tile *ngFor="let review of reviews.content" colspan="1" rowspan="1" style="">
         <app-review-card [review]="review" style="width: 100%"></app-review-card>
       </mat-grid-tile>
+
+
     </mat-grid-list>
+    <div *ngIf="reviews.links.next" class="centered-container view-more-button">
+      <button mat-raised-button color="accent" (click)="showMore(reviews.links.next)" i18n>{{ 'profile.view-more-button'|translate }}</button>
+    </div>
   </div>
   <ng-template #loading >
-    <mat-spinner mode="indeterminate"></mat-spinner>
+    <div class="centered-container">
+      <mat-spinner mode="indeterminate"></mat-spinner>
+    </div>
   </ng-template>
   <ng-template #loading2>
-    <mat-spinner mode="indeterminate"></mat-spinner>
+    <div class="centered-container">
+      <mat-spinner mode="indeterminate"></mat-spinner>
+    </div>
   </ng-template>
   <ng-template #loading3>
-    <mat-spinner mode="indeterminate"></mat-spinner>
+    <div class="centered-container">
+      <mat-spinner mode="indeterminate"></mat-spinner>
+    </div>
   </ng-template>
 </div>
