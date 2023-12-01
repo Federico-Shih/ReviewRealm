@@ -7,7 +7,8 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "lint": "ng lint"
+    "lint": "ng lint",
+    "pretty": "npx prettier --write \"src/**/*.ts\" \"src/**/*.scss\" \"src/**/*.html\""
   },
   "private": true,
   "dependencies": {
@@ -44,6 +45,7 @@
     "@typescript-eslint/eslint-plugin": "5.62.0",
     "@typescript-eslint/parser": "5.62.0",
     "eslint": "^8.49.0",
+    "eslint-config-prettier": "^9.0.0",
     "jasmine-core": "^5.1.1",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.2.0",
