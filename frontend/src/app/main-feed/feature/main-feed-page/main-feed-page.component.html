@@ -1,0 +1,38 @@
+<div (scroll)="nextPage($event)" class="main-container">
+  <header>
+    <mat-button-toggle-group [formControl]="selectedTab" class="tab-group">
+      <mat-button-toggle class="tab" value="following">
+        <mat-icon class="tab-icon">groups</mat-icon>
+        {{ "following" | translate | titlecase }}
+      </mat-button-toggle>
+      <mat-button-toggle class="tab" value="recommended">
+        <mat-icon class="tab-icon">local_fire_department</mat-icon>
+        {{ "recommended" | translate | titlecase }}
+      </mat-button-toggle>
+      <mat-button-toggle class="tab" value="new">
+        <mat-icon class="tab-icon">newspaper</mat-icon>
+        {{ "new" | translate | titlecase }}
+      </mat-button-toggle>
+    </mat-button-toggle-group>
+  </header>
+  <section *ngIf="(loadingReviews$ | async) as loadingReviews" class="main-section">
+    <div *ngIf="loadingReviews.loading" class="centered-container spinner">
+      <mat-spinner></mat-spinner>
+    </div>
+    <mat-grid-list
+      [style.visibility]="loadingReviews.loading ? 'hidden' : 'visible'"
+      cols="2"
+      gutterSize="20px"
+      rowHeight="300px"
+      style="display: flex;"
+    >
+      <mat-grid-tile *ngFor="let review of loadingReviews.reviews.content" colspan="1" rowspan="1" style="">
+        <app-review-card [review]="review" style="width: 100%"></app-review-card>
+      </mat-grid-tile>
+      <mat-grid-tile *ngIf="loadingReviews.loadingInfinite" colspan="2" rowspan="1">
+        <mat-spinner class="centered-container">
+        </mat-spinner>
+      </mat-grid-tile>
+    </mat-grid-list>
+  </section>
+</div>

@@ -10,7 +10,7 @@ import java.time.format.DateTimeFormatter;
 
 public class ReviewResponse extends BaseResponse {
 
-    private final static String BASE_PATH = "/reviews";
+    public final static String BASE_PATH = "/reviews";
     private long id;
     private String title;
     private String content;

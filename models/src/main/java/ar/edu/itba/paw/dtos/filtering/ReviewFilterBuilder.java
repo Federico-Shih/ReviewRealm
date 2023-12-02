@@ -2,6 +2,7 @@ package ar.edu.itba.paw.dtos.filtering;
 
 import ar.edu.itba.paw.enums.Difficulty;
 import ar.edu.itba.paw.enums.Platform;
+
 import java.util.List;
 
 // To be used between Services and Persistence
@@ -19,8 +20,9 @@ public class ReviewFilterBuilder {
     private Boolean completed = null;
     private Boolean replayable = null;
     private Boolean orBetweenGenres = null;
-
     private Long recommendedFor = null;
+    private Long fromFollowing = null;
+    private Long newForUser = null;
 
     public ReviewFilterBuilder withGameGenres(List<Integer> genres) {
         this.gameGenres = genres;
@@ -84,6 +86,7 @@ public class ReviewFilterBuilder {
         this.gamesToExclude = gamesToExclude;
         return this;
     }
+
     public ReviewFilterBuilder withRecommendedFor(Long recommendedFor) {
         this.recommendedFor = recommendedFor;
         return this;
@@ -91,8 +94,32 @@ public class ReviewFilterBuilder {
 
 
     public ReviewFilter build() {
-        return new ReviewFilter(gameGenres, authorGenres, authors, reviewContent,
-                gameId, minTimePlayed, platforms, difficulties, completed, replayable,
-                orBetweenGenres,authorsToExclude,gamesToExclude, false, recommendedFor);
+        return new ReviewFilter(gameGenres,
+                authorGenres,
+                authors,
+                reviewContent,
+                gameId,
+                minTimePlayed,
+                platforms,
+                difficulties,
+                completed,
+                replayable,
+                orBetweenGenres,
+                authorsToExclude,
+                gamesToExclude,
+                false,
+                recommendedFor,
+                fromFollowing,
+                newForUser);
+    }
+
+    public ReviewFilterBuilder withFromFollowing(Long fromFollowing) {
+        this.fromFollowing = fromFollowing;
+        return this;
+    }
+
+    public ReviewFilterBuilder withNewForUser(Long newForUser) {
+        this.newForUser = newForUser;
+        return this;
     }
 }

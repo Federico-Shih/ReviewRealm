@@ -25,6 +25,7 @@
     "order-by": "Order by"
   },
   "filter-title": "Filter by",
+  "following": "Following",
   "game-details": {
     "completability": "Average completion",
     "difficulty": "Average Perceived difficulty",
@@ -78,12 +79,13 @@
     "welcome": "Welcome {{value}}",
     "write-review": "Write review"
   },
+  "new": "New",
   "new-review": "New Review",
   "profile": {
     "favgames": "Favorite Games",
-    "reviews": "Reviews",
+    "followers": "Followers: {{value}}",
     "following": "Following: {{value}}",
-    "followers": "Followers: {{value}}"
+    "reviews": "Reviews"
   },
   "profile-card": {
     "whoprefers": "who prefers"
@@ -91,6 +93,7 @@
   "publisher": {
     "card": "Publisher: {{value}}"
   },
+  "recommended": "Recommended",
   "register-form": {
     "confirm-password": "Confirm password",
     "confirm-password-required": "Password confirmation is required.",

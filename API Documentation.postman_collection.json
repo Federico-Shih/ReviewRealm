@@ -1,12 +1,11 @@
 {
 	"info": {
-		"_postman_id": "f1347f13-d82f-479e-ab38-7c0eef885cf6",
-		"name": "API Documentation",
-		"description": "This template contains a boilerplate for documentation that you can quickly customize and reuse.\n\n### How to use this template:\n\n- Replace the content given brackets (()) with your API's details.\n- Tips are formatted in `codespan` - feel free to read and remove them.\n    \n\n---\n\n`Start with a brief overview of what your API offers.`\n\nThe ((product name)) provides many API products, tools, and resources that enable you to ((add product value here)).\n\n`You can also list the APIs you offer, link to the relevant pages, or do both in this section.`\n\n## **Getting started guide**\n\n`List the steps or points required to start using your APIs. Make sure to cover everything required to reach success with your API as quickly as possible.`\n\nTo start using the ((add APIs here)), you need to -\n\n`The points given below are from The Postman API's documentation. You can reference it to write your own getting started guide.`\n\n- You must use a valid API Key to send requests to the API endpoints. You can get your API key from Postman's [integrations dashboard](https://go.postman.co/settings/me/api-keys).\n- The API has [rate and usage limits](https://postman.postman.co/workspace/Collection-Templates~6311738d-2e70-441f-ae12-78caf078c5b7/collection/22517504-e9c28f47-1253-44af-a2f3-20dce4da1f18?ctx=documentation#rate-and-usage-limits).\n- The API only responds to HTTPS-secured communications. Any requests sent via HTTP return an HTTP 301 redirect to the corresponding HTTPS resources.\n- The API returns request responses in JSON format. When an API request returns an error, it is sent in the JSON response as an error key.\n    \n\n## Authentication\n\n`Add details on the authorization keys/tokens required, steps that cover how to get them, and the relevant error codes.`\n\nThe ((product name)) API uses ((add your API's authorization type)) for authentication.\n\n`The details given below are from the Postman API's documentation. You can reference it to write your own authentication section.`\n\nPostman uses API keys for authentication. You can generate a Postman API key in the [API keys](https://postman.postman.co/settings/me/api-keys) section of your Postman account settings.\n\nYou must include an API key in each request to the Postman API with the X-Api-Key request header.\n\n### Authentication error response\n\nIf an API key is missing, malformed, or invalid, you will receive an HTTP 401 Unauthorized response code.\n\n## Rate and usage limits\n\n`Use this section to cover your APIs' terms of use. Include API limits, constraints, and relevant error codes, so consumers understand the permitted API usage and practices.`\n\n`The example given below is from The Postman API's documentation. Use it as a reference to write your APIs' terms of use.`\n\nAPI access rate limits apply at a per-API key basis in unit time. The limit is 300 requests per minute. Also, depending on your plan, you may have usage limits. If you exceed either limit, your request will return an HTTP 429 Too Many Requests status code.\n\nEach API response returns the following set of headers to help you identify your use status:\n\n| Header | Description |\n| --- | --- |\n| `X-RateLimit-Limit` | The maximum number of requests that the consumer is permitted to make per minute. |\n| `X-RateLimit-Remaining` | The number of requests remaining in the current rate limit window. |\n| `X-RateLimit-Reset` | The time at which the current rate limit window resets in UTC epoch seconds. |\n\n### 503 response\n\nAn HTTP `503` response from our servers indicates there is an unexpected spike in API access traffic. The server is usually operational within the next five minutes. If the outage persists or you receive any other form of an HTTP `5XX` error, [contact support](https://support.postman.com/hc/en-us/requests/new/).\n\n### **Need some help?**\n\n`Add links that customers can refer to whenever they need help.`\n\nIn case you have questions, go through our tutorials ((link to your video or help documentation here)). Or visit our FAQ page ((link to the relevant page)).\n\nOr you can check out our community forum, there’s a good chance our community has an answer for you. Visit our developer forum ((link to developer forum)) to review topics, ask questions, and learn from others.\n\n`You can also document or add links to libraries, code examples, and other resources needed to make a request.`",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "23328993",
-		"_collection_link": "https://veggieclub-backend.postman.co/workspace/Review-Realm~6b2fab02-da47-47a5-a397-48dcf352b79b/collection/4463178-f1347f13-d82f-479e-ab38-7c0eef885cf6?action=share&source=collection_link&creator=23328993"
-	},
+      "_postman_id": "6d98a2ab-df65-4d50-b9e2-5e9c973067e0",
+      "name": "API Documentation",
+      "description": "This template contains a boilerplate for documentation that you can quickly customize and reuse.\n\n### How to use this template:\n\n- Replace the content given brackets (()) with your API's details.\n- Tips are formatted in `codespan` - feel free to read and remove them.\n    \n\n---\n\n`Start with a brief overview of what your API offers.`\n\nThe ((product name)) provides many API products, tools, and resources that enable you to ((add product value here)).\n\n`You can also list the APIs you offer, link to the relevant pages, or do both in this section.`\n\n## **Getting started guide**\n\n`List the steps or points required to start using your APIs. Make sure to cover everything required to reach success with your API as quickly as possible.`\n\nTo start using the ((add APIs here)), you need to -\n\n`The points given below are from The Postman API's documentation. You can reference it to write your own getting started guide.`\n\n- You must use a valid API Key to send requests to the API endpoints. You can get your API key from Postman's [integrations dashboard](https://go.postman.co/settings/me/api-keys).\n- The API has [rate and usage limits](https://postman.postman.co/workspace/Collection-Templates~6311738d-2e70-441f-ae12-78caf078c5b7/collection/22517504-e9c28f47-1253-44af-a2f3-20dce4da1f18?ctx=documentation#rate-and-usage-limits).\n- The API only responds to HTTPS-secured communications. Any requests sent via HTTP return an HTTP 301 redirect to the corresponding HTTPS resources.\n- The API returns request responses in JSON format. When an API request returns an error, it is sent in the JSON response as an error key.\n    \n\n## Authentication\n\n`Add details on the authorization keys/tokens required, steps that cover how to get them, and the relevant error codes.`\n\nThe ((product name)) API uses ((add your API's authorization type)) for authentication.\n\n`The details given below are from the Postman API's documentation. You can reference it to write your own authentication section.`\n\nPostman uses API keys for authentication. You can generate a Postman API key in the [API keys](https://postman.postman.co/settings/me/api-keys) section of your Postman account settings.\n\nYou must include an API key in each request to the Postman API with the X-Api-Key request header.\n\n### Authentication error response\n\nIf an API key is missing, malformed, or invalid, you will receive an HTTP 401 Unauthorized response code.\n\n## Rate and usage limits\n\n`Use this section to cover your APIs' terms of use. Include API limits, constraints, and relevant error codes, so consumers understand the permitted API usage and practices.`\n\n`The example given below is from The Postman API's documentation. Use it as a reference to write your APIs' terms of use.`\n\nAPI access rate limits apply at a per-API key basis in unit time. The limit is 300 requests per minute. Also, depending on your plan, you may have usage limits. If you exceed either limit, your request will return an HTTP 429 Too Many Requests status code.\n\nEach API response returns the following set of headers to help you identify your use status:\n\n| Header | Description |\n| --- | --- |\n| `X-RateLimit-Limit` | The maximum number of requests that the consumer is permitted to make per minute. |\n| `X-RateLimit-Remaining` | The number of requests remaining in the current rate limit window. |\n| `X-RateLimit-Reset` | The time at which the current rate limit window resets in UTC epoch seconds. |\n\n### 503 response\n\nAn HTTP `503` response from our servers indicates there is an unexpected spike in API access traffic. The server is usually operational within the next five minutes. If the outage persists or you receive any other form of an HTTP `5XX` error, [contact support](https://support.postman.com/hc/en-us/requests/new/).\n\n### **Need some help?**\n\n`Add links that customers can refer to whenever they need help.`\n\nIn case you have questions, go through our tutorials ((link to your video or help documentation here)). Or visit our FAQ page ((link to the relevant page)).\n\nOr you can check out our community forum, there’s a good chance our community has an answer for you. Visit our developer forum ((link to developer forum)) to review topics, ask questions, and learn from others.\n\n`You can also document or add links to libraries, code examples, and other resources needed to make a request.`",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+      "_exporter_id": "4463178"
+    },
 	"item": [
 		{
 			"name": "User",
@@ -183,18 +182,33 @@
 				{
 					"name": "Get user by id",
 					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/users/3",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"users",
-								"3"
-							]
-						}
+                      "auth": {
+                        "type": "basic",
+                        "basic": [
+                          {
+                            "key": "password",
+                            "value": "holahola",
+                            "type": "string"
+                          },
+                          {
+                            "key": "username",
+                            "value": "fedeshih@gmail.com",
+                            "type": "string"
+                          }
+                        ]
+                      },
+                      "method": "GET",
+                      "header": [],
+                      "url": {
+                        "raw": "{{baseUrl}}/users/1",
+                        "host": [
+                          "{{baseUrl}}"
+                        ],
+                        "path": [
+                          "users",
+                          "1"
+                        ]
+                      }
 					},
 					"response": []
 				},
@@ -380,9 +394,12 @@
 				{
 					"name": "Delete favorite game",
 					"request": {
-						"method": "GET",
-						"header": []
-					},
+                      "method": "GET",
+                      "header": [],
+                      "url": {
+                        "raw": ""
+                      }
+                    },
 					"response": []
 				},
 				{
@@ -435,9 +452,12 @@
 				{
 					"name": "Get user mission progresses",
 					"request": {
-						"method": "GET",
-						"header": []
-					},
+                      "method": "GET",
+                      "header": [],
+                      "url": {
+                        "raw": ""
+                      }
+                    },
 					"response": []
 				}
 			],
@@ -1579,9 +1599,12 @@
 				{
 					"name": "Create session",
 					"request": {
-						"method": "GET",
-						"header": []
-					},
+                      "method": "GET",
+                      "header": [],
+                      "url": {
+                        "raw": ""
+                      }
+                    },
 					"response": []
 				}
 			]
@@ -1764,17 +1787,23 @@
 				{
 					"name": "Get missions",
 					"request": {
-						"method": "GET",
-						"header": []
-					},
+                      "method": "GET",
+                      "header": [],
+                      "url": {
+                        "raw": ""
+                      }
+                    },
 					"response": []
 				},
 				{
 					"name": "Get notifications",
 					"request": {
-						"method": "GET",
-						"header": []
-					},
+                      "method": "GET",
+                      "header": [],
+                      "url": {
+                        "raw": ""
+                      }
+                    },
 					"response": []
 				},
 				{
@@ -2450,25 +2479,120 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/reviews",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"reviews"
-							],
-							"query": [
-								{
-									"key": "recommendedFor",
-									"value": "2",
-									"disabled": true
-								},
-								{
-									"key": "gameId",
-									"value": "2",
-									"disabled": true
-								}
-							]
+                          "raw": "{{baseUrl}}/reviews?page=1&pageSize=10&newForUser=1",
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "path": [
+                            "reviews"
+                          ],
+                          "query": [
+                            {
+                              "key": "recommendedFor",
+                              "value": "2",
+                              "disabled": true
+                            },
+                            {
+                              "key": "gameId",
+                              "value": "2",
+                              "disabled": true
+                            },
+                            {
+                              "key": "sort",
+                              "value": "created",
+                              "description": "(created|rating|popularity|controversial)",
+                              "disabled": true
+                            },
+                            {
+                              "key": "orderDirection",
+                              "value": "",
+                              "description": "asc|desc",
+                              "disabled": true
+                            },
+                            {
+                              "key": "gameGenres",
+                              "value": "1",
+                              "description": "List",
+                              "disabled": true
+                            },
+                            {
+                              "key": "authorsToExclude",
+                              "value": "1",
+                              "description": "List",
+                              "disabled": true
+                            },
+                            {
+                              "key": "authors",
+                              "value": "1",
+                              "description": "List",
+                              "disabled": true
+                            },
+                            {
+                              "key": "timePlayedFilter",
+                              "value": "100",
+                              "disabled": true
+                            },
+                            {
+                              "key": "authorPreferences",
+                              "value": "1",
+                              "description": "List genres",
+                              "disabled": true
+                            },
+                            {
+                              "key": "platforms",
+                              "value": "",
+                              "description": "PC|XBOX|PS|NINTENDO",
+                              "disabled": true
+                            },
+                            {
+                              "key": "difficulty",
+                              "value": "",
+                              "description": "EASY|MEDIUM|HARD",
+                              "disabled": true
+                            },
+                            {
+                              "key": "completed",
+                              "value": "true",
+                              "disabled": true
+                            },
+                            {
+                              "key": "replayable",
+                              "value": "true",
+                              "disabled": true
+                            },
+                            {
+                              "key": "search",
+                              "value": "",
+                              "disabled": true
+                            },
+                            {
+                              "key": "gameId",
+                              "value": "",
+                              "disabled": true
+                            },
+                            {
+                              "key": "recommendedFor",
+                              "value": "1",
+                              "disabled": true
+                            },
+                            {
+                              "key": "page",
+                              "value": "1"
+                            },
+                            {
+                              "key": "pageSize",
+                              "value": "10"
+                            },
+                            {
+                              "key": "fromFollowing",
+                              "value": "2",
+                              "disabled": true
+                            },
+                            {
+                              "key": "newForUser",
+                              "value": "1"
+                            }
+                          ]
 						}
 					},
 					"response": []
@@ -2659,21 +2783,21 @@
 									"path": [
 										"reviews",
 										"25",
-										"feedback"
-									],
-									"query": [
-										{
-											"key": "feedbackType",
-											"value": "LIKE"
-										}
-									]
-								}
-							},
-							"_postman_previewlanguage": null,
-							"header": null,
-							"cookie": [],
-							"body": null
-						},
+                                      "feedback"
+                                    ],
+                                  "query": [
+                                    {
+                                      "key": "feedbackType",
+                                      "value": "LIKE"
+                                    }
+                                  ]
+                                }
+                            },
+                          "_postman_previewlanguage": "Text",
+                          "header": [],
+                          "cookie": [],
+                          "body": ""
+                        },
 						{
 							"name": "Post negative Feedback",
 							"originalRequest": {
@@ -2687,21 +2811,21 @@
 									"path": [
 										"reviews",
 										"25",
-										"feedback"
-									],
-									"query": [
-										{
-											"key": "feedbackType",
-											"value": "DISLIKE"
-										}
-									]
-								}
-							},
-							"_postman_previewlanguage": null,
-							"header": null,
-							"cookie": [],
-							"body": null
-						}
+                                      "feedback"
+                                    ],
+                                  "query": [
+                                    {
+                                      "key": "feedbackType",
+                                      "value": "DISLIKE"
+                                    }
+                                  ]
+                                }
+                            },
+                          "_postman_previewlanguage": "Text",
+                          "header": [],
+                          "cookie": [],
+                          "body": ""
+                        }
 					]
 				},
 				{

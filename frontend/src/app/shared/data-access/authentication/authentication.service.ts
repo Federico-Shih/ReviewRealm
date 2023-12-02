@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {environment} from "../../../../environments/environment";
-import {BehaviorSubject, map, Observable, switchMap} from "rxjs";
+import {map, Observable, ReplaySubject, switchMap} from "rxjs";
 import {User} from "../users/users.class";
 import {AuthenticationDto} from "./authentication.dtos";
 import {HttpClient, HttpHeaders} from "@angular/common/http";
@@ -15,18 +15,22 @@ export const REFRESH_TOKEN_LABEL = 'refreshToken';
 @Injectable({providedIn: 'root'})
 export class AuthenticationService {
   static AUTHENTICATION_ENDPOINT = environment.API_ENDPOINT + '/users';
-  loggedUser$ = new BehaviorSubject<User | null>(null);
+  loggedUser$ = new ReplaySubject<User | null>();
 
   constructor(private readonly http: HttpClient, private readonly userService: UsersService) {
     const token = localStorage.getItem(AUTHORIZATION_TOKEN_LABEL);
     if (token) {
       const payload = jwtDecode<UserJwtPayload>(token);
       if (payload.id) {
-        this.userService.getUsers(AuthenticationService.AUTHENTICATION_ENDPOINT, {id: payload.id}).subscribe(users => {
-          this.loggedUser$.next(users.content[0]);
-        });
+        this.userService
+          .getUsers(AuthenticationService.AUTHENTICATION_ENDPOINT, {id: payload.id})
+          .subscribe(users => {
+            this.loggedUser$.next(users.content[0]);
+          });
+        return;
       }
     }
+    this.loggedUser$.next(null);
   }
 
   login({username, password}: AuthenticationDto): Observable<User | never> {

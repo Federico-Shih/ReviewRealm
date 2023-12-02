@@ -35,4 +35,8 @@ export class AppComponent implements OnInit {
       this.loggedInUser$.next(user);
     });
   }
+
+  log(value: any) {
+    console.log(value);
+  }
 }

@@ -1,0 +1,45 @@
+.mat-button-toggle {
+  width: 200px;
+  background-color: var(--color-surface) !important;
+  font-weight: 600;
+  color: #AAAAAA !important;
+  border: 0px !important;
+}
+
+.mat-button-toggle-checked {
+  background-color: #2B2A3D !important;
+  color: white !important;
+}
+
+.tab-icon {
+  margin-right: 10px;
+}
+
+.tab-group {
+  background-color: var(--color-surface);
+  border: 0 !important;
+  width: 100%;
+}
+
+.main-container {
+  padding: 2% 10%;
+  height: 100%;
+  overflow-y: scroll;
+}
+
+.centered-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  width: 100%;
+}
+
+.spinner {
+  margin-top: 20%;
+}
+
+.main-section {
+  width: 100%;
+  padding-top: 30px;
+}

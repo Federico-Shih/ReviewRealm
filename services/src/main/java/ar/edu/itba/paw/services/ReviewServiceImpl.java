@@ -119,11 +119,14 @@ public class ReviewServiceImpl implements ReviewService {
     @Transactional(readOnly = true)
     @Override
     public Paginated<Review> searchReviews(Page page, ReviewFilter filter, Ordering<ReviewOrderCriteria> ordering, Long activeUserId){
-        if(filter.getRecommendedFor() != null){
-            if(filter.isProperRecommendedFor()){
+        if (filter.getRecommendedFor() != null || filter.getFromFollowing() != null || filter.getNewForUser() != null) {
+            if (!filter.isExclusive()) throw new ExclusiveFilterException("error.game.filter.recommended");
+            if (filter.getRecommendedFor() != null) {
                 return getRecommendedReviewsByUser(filter.getRecommendedFor(), page);
-            }else{
-                throw new ExclusiveFilterException("error.game.filter.recommended");
+            } else if (filter.getFromFollowing() != null) {
+                return getReviewsFromFollowingByUser(filter.getFromFollowing(), page);
+            } else {
+                return getNewReviewsExcludingActiveUser(page, activeUserId);
             }
         }
         return reviewDao.findAll(page, filter, ordering, activeUserId);
@@ -132,10 +135,10 @@ public class ReviewServiceImpl implements ReviewService {
     @Transactional(readOnly = true)
     @Override
     public Paginated<Review> getReviewsFromFollowingByUser(long userId, Page page) {
-        // TODO: cuantos usuarios traer? 10? 100? 1000?
-        List<User> followingUsers = userService.getFollowing(userId, Page.with(1, 20)).getList();
-        if(followingUsers.isEmpty()){
-            return new Paginated<>(page.getPageNumber(),page.getPageSize(),0, new ArrayList<>());
+        FollowerFollowingCount count = userService.getFollowerFollowingCount(userId);
+        List<User> followingUsers = userService.getFollowing(userId, Page.with(1, (int) count.getFollowingCount())).getList();
+        if (followingUsers.isEmpty()) {
+            return new Paginated<>(page.getPageNumber(), page.getPageSize(), 0, new ArrayList<>());
         }
         List<Long> followingIds = followingUsers.stream().map((User::getId)).collect(Collectors.toList());
         ReviewFilterBuilder filterBuilder = new ReviewFilterBuilder()

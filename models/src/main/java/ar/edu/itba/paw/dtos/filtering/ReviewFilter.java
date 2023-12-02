@@ -2,6 +2,7 @@ package ar.edu.itba.paw.dtos.filtering;
 
 import ar.edu.itba.paw.enums.Difficulty;
 import ar.edu.itba.paw.enums.Platform;
+
 import java.util.List;
 
 // To be used between Services and Persistence
@@ -27,8 +28,25 @@ public class ReviewFilter {
     private final Boolean deleted;
 
     private final Long recommendedFor;
+    private final Long fromFollowing;
+    private final Long newForUser;
 
-    public ReviewFilter(List<Integer> filterGameGenres, List<Integer> authorPreferences, List<Long> authors, String reviewContent, Long gameId, Double minTimePlayed, List<Platform> platforms, List<Difficulty> difficulties, Boolean completed, Boolean replayable,Boolean orBetweenGenres, List<Long> authorsToExclude, List<Long> gamesToExclude,Boolean deleted, Long recommendedFor) {
+    public ReviewFilter(List<Integer> filterGameGenres,
+                        List<Integer> authorPreferences,
+                        List<Long> authors,
+                        String reviewContent,
+                        Long gameId,
+                        Double minTimePlayed,
+                        List<Platform> platforms,
+                        List<Difficulty> difficulties,
+                        Boolean completed,
+                        Boolean replayable,
+                        Boolean orBetweenGenres,
+                        List<Long> authorsToExclude,
+                        List<Long> gamesToExclude,
+                        Boolean deleted,
+                        Long recommendedFor,
+                        Long fromFollowing, Long newForUser) {
         this.filterGameGenres = filterGameGenres;
         this.authorPreferences = authorPreferences;
         this.authors = authors;
@@ -44,6 +62,8 @@ public class ReviewFilter {
         this.gamesToExclude = gamesToExclude;
         this.deleted = deleted;
         this.recommendedFor = recommendedFor;
+        this.fromFollowing = fromFollowing;
+        this.newForUser = newForUser;
     }
 
     public List<Integer> getFilterGameGenres() {
@@ -96,7 +116,7 @@ public class ReviewFilter {
         return deleted;
     }
 
-    public boolean isProperRecommendedFor(){
+    public boolean isExclusive() {
         return (filterGameGenres == null || filterGameGenres.isEmpty()) && (authorPreferences == null || authorPreferences.isEmpty())
                 && (authors == null || authors.isEmpty()) && (reviewContent == null || reviewContent.isEmpty()) &&
                 (gameId == null) && (minTimePlayed == null) &&
@@ -110,5 +130,13 @@ public class ReviewFilter {
 
     public Long getRecommendedFor() {
         return recommendedFor;
+    }
+
+    public Long getFromFollowing() {
+        return fromFollowing;
+    }
+
+    public Long getNewForUser() {
+        return newForUser;
     }
 }

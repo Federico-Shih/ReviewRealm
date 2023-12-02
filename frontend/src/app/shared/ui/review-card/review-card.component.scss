@@ -24,8 +24,11 @@
   font-size: 1.5rem;
   font-weight: bold;
   width: calc(100% - 120px);
-  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
   overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .review-rating {

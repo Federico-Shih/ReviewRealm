@@ -1,5 +1,6 @@
 import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
+import {isAuthenticatedGuard} from "./shared/guards/is-authenticated.guard";
 
 const routes: Routes = [
   {path: '', loadChildren: () => import('./home/home.module').then(m => m.HomeModule)},
@@ -9,6 +10,11 @@ const routes: Routes = [
   {path: 'search', loadChildren: () => import('./search/search.module').then(m => m.SearchModule)},
   {path: 'settings', loadChildren: () => import('./settings/settings.module').then(m => m.SettingsModule)},
   {path: 'profile', loadChildren: () => import('./users/profile.module').then(m => m.ProfileModule)},
+  {
+    path: 'for-you',
+    loadChildren: () => import('./main-feed/main-feed.module').then(m => m.MainFeedModule),
+    canActivate: [isAuthenticatedGuard]
+  },
 ];
 
 @NgModule({

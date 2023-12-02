@@ -71,9 +71,18 @@ public class ReviewSearchQuery extends PaginatedQuery {
     @QueryParam("gameId")
     private Long gameId;
 
+    // TODO: throw Forbidden if not same user
     @ExistentUserId(optional = true)
     @QueryParam("recommendedFor")
     private Long recommendedFor;
+
+    @ExistentUserId(optional = true)
+    @QueryParam("fromFollowing")
+    private Long fromFollowing;
+
+    @ExistentUserId(optional = true)
+    @QueryParam("newForUser")
+    private Long newForUser;
 
 
     public ReviewSearchQuery() {
@@ -104,6 +113,8 @@ public class ReviewSearchQuery extends PaginatedQuery {
                 .withReplayable(replayableFilter)
                 .withReviewContent(search)
                 .withRecommendedFor(recommendedFor)
+                .withFromFollowing(fromFollowing)
+                .withNewForUser(newForUser)
                 .build();
     }
 

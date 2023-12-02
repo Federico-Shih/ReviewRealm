@@ -25,6 +25,7 @@
     "order-by": "Ordenar por"
   },
   "filter-title": "Filtrar por",
+  "following": "Siguiendo",
   "game-details": {
     "completability": "Terminación promedio",
     "difficulty": "Dificultad percibida promedio",
@@ -78,14 +79,15 @@
     "welcome": "Bienvenido {{value}}!",
     "write-review": "Escribir reseña"
   },
+  "new": "Novedoso",
   "new-review": "Nueva Reseña",
   "profile": {
     "favgames": "Juegos Favoritos",
-    "reviews": "Reseñas",
-    "following": "Siguiendo: {{value}}",
     "followers": "Seguidores: {{value}}",
+    "following": "Siguiendo: {{value}}",
     "fan": "Fanático de:",
-    "view-more-button": "Ver Más"
+    "view-more-button": "Ver Más",
+    "reviews": "Reseñas"
   },
   "profile-card": {
     "whoprefers": "prefiere"
@@ -96,6 +98,7 @@
   "publishing": {
     "date": "Fecha de publicación: {{value}}"
   },
+  "recommended": "Recommendado",
   "register-form": {
     "confirm-password": "Confirmar contraseña",
     "confirm-password-required": "Confirmar contraseña es requerida.",

@@ -35,6 +35,9 @@ export type UserLinksResponse = {
   updateNotifications?: string;
   unfollow?: string;
   follow?: string;
+  recommendedReviews?: string;
+  newReviews?: string;
+  followingReviews?: string;
 }
 
 export type UserResponse = {

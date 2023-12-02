@@ -12,6 +12,9 @@ export class UserLinks {
   updateNotifications?: string;
   unfollow?: string;
   follow?: string;
+  recommendedReviews?: string;
+  newReviews?: string;
+  followingReviews?: string;
 
   constructor(self: string,
               followers: string,
@@ -21,7 +24,10 @@ export class UserLinks {
               patchUser?: string,
               updateNotifications?: string,
               unfollow?: string,
-              follow?: string) {
+              follow?: string,
+              recommendedReviews?: string,
+              newReviews?: string,
+              followingReviews?: string) {
     this.self = self;
     this.followers = followers;
     this.following = following;
@@ -31,6 +37,9 @@ export class UserLinks {
     this.updateNotifications = updateNotifications;
     this.unfollow = unfollow;
     this.follow = follow;
+    this.recommendedReviews = recommendedReviews;
+    this.newReviews = newReviews;
+    this.followingReviews = followingReviews;
   }
 
   static fromResponse({
@@ -42,7 +51,10 @@ export class UserLinks {
                         preferences,
                         self,
                         unfollow,
-                        updateNotifications
+                        updateNotifications,
+                        newReviews,
+                        recommendedReviews,
+                        followingReviews
                       }: UserLinksResponse): UserLinks {
     return new UserLinks(self,
       followers,
@@ -52,7 +64,10 @@ export class UserLinks {
       patchUser,
       updateNotifications,
       unfollow,
-      follow)
+      follow,
+      recommendedReviews,
+      newReviews,
+      followingReviews);
   }
 }
 

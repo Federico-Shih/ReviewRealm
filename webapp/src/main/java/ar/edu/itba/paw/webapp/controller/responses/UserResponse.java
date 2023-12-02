@@ -154,8 +154,25 @@ public class UserResponse extends BaseResponse {
         public UserResponseBuilder withAuthed(User currentUser) {
             if (currentUser == null) return this;
             if (user.equals(currentUser)) {
-                userResponse.link("updateNotifications", uriInfo.getBaseUriBuilder().path(BASE_PATH).path(String.valueOf(user.getId())).path("notifications").build());
-                userResponse.link("patchUser", uriInfo.getBaseUriBuilder().path(BASE_PATH).path(String.valueOf(user.getId())).build());
+                userResponse.link("updateNotifications",
+                        uriInfo.getBaseUriBuilder().path(BASE_PATH).path(String.valueOf(user.getId())).path("notifications").build());
+                userResponse.link("patchUser",
+                        uriInfo.getBaseUriBuilder().path(BASE_PATH).path(String.valueOf(user.getId())).build());
+                userResponse.link("recommendedReviews",
+                        uriInfo.getBaseUriBuilder()
+                                .path(ReviewResponse.BASE_PATH)
+                                .queryParam("recommendedFor", String.valueOf(user.getId()))
+                                .build());
+                userResponse.link("followingReviews",
+                        uriInfo.getBaseUriBuilder()
+                                .path(ReviewResponse.BASE_PATH)
+                                .queryParam("fromFollowing", String.valueOf(user.getId()))
+                                .build());
+                userResponse.link("newReviews",
+                        uriInfo.getBaseUriBuilder()
+                                .path(ReviewResponse.BASE_PATH)
+                                .queryParam("newForUser", String.valueOf(user.getId()))
+                                .build());
             } else {
                 if (user.isFollowing()) {
                     userResponse.link("unfollow", uriInfo.getBaseUriBuilder().path(BASE_PATH).path(String.valueOf(currentUser.getId())).path("following").path(String.valueOf(user.getId())).build());
