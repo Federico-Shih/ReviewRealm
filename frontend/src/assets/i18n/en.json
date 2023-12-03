@@ -1,11 +1,4 @@
 {
-  "settings": {
-    "fav-genres": "Favorite Genres",
-    "notifications": "Email Notification ",
-    "avatar": "Avatar",
-    "fav-games": "Favorite Games",
-    "title": "Account Settings"
-  },
   "apply-filters": "Apply filters",
   "asc": "Ascending",
   "average-rating": "Average Rating",
@@ -30,6 +23,10 @@
     "title": "Create a New Game"
   },
   "following": "Following",
+  "game-create": {
+    "submit": "Send Creation",
+    "title": "Create a New Game"
+  },
   "game-details": {
     "completability": "Average completion",
     "difficulty": "Average Perceived difficulty",
@@ -126,6 +123,7 @@
   },
   "new": "New",
   "new-review": "New Review",
+  "no-reports": "There are no unanalysed reports!",
   "profile": {
     "favgames": "Favorite Games",
     "followers": "Followers: {{value}}",
@@ -137,6 +135,9 @@
   },
   "publisher": {
     "card": "Publisher: {{value}}"
+  },
+  "publishing": {
+    "date": "Publishing Date: {{value}}"
   },
   "recommended": "Recommended",
   "publishing": {
@@ -159,6 +160,18 @@
     "username-maxlength": "Username must be at most {{value}} characters long.",
     "username-minlength": "Username must be at least {{value}} characters long.",
     "username-required": "Username is required."
+  },
+  "report": {
+    "accept": "Delete Review",
+    "reject": "Reject Report"
+  },
+  "report-reason": {
+    "disrespectful": "Disrespectful content towards other members",
+    "irrelevant": "Irrelevant content regarding gaming or its adjacent branches",
+    "piracy": "Sharing links to unauthorized game files, cracks, or pirated content",
+    "privacy": "Sharing personal information without consent",
+    "spam": "Spam or Self-Promotion",
+    "spoiler": "Spoilers without any warnings or in the first lines of the review"
   },
   "reset-filters": "Reset Filters",
   "review-card": {
@@ -190,6 +203,13 @@
     "noresults": "No results found...",
     "review-title": "Reviews",
     "users-title": "Users"
+  },
+  "settings": {
+    "avatar": "Avatar",
+    "fav-games": "Favorite Games",
+    "fav-genres": "Favorite Genres",
+    "notifications": "Email Notification ",
+    "title": "Account Settings"
   },
   "toggle-filters": "Filters",
   "validate-user-form": {

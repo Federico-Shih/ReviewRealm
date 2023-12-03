@@ -1,11 +1,4 @@
 {
-  "settings": {
-    "fav-genres": "Géneros Favoritos",
-    "notifications": "Notificaciones de Email",
-    "avatar": "Avatares",
-    "fav-games": "Juegos Favoritos",
-    "title": "Configuración de Cuenta"
-  },
   "apply-filters": "Aplicar filtros",
   "asc": "Ascendente",
   "average-rating": "Puntuación Promedio",
@@ -25,11 +18,11 @@
     "order-by": "Ordenar por"
   },
   "filter-title": "Filtrar por",
+  "following": "Siguiendo",
   "game-create": {
     "submit": "Enviar Creación",
     "title": "Crear un Nuevo Juego"
   },
-  "following": "Siguiendo",
   "game-details": {
     "completability": "Terminación promedio",
     "difficulty": "Dificultad percibida promedio",
@@ -126,12 +119,13 @@
   },
   "new": "Novedoso",
   "new-review": "Nueva Reseña",
+  "no-reports": "¡No quedan reportes sin analizar!",
   "profile": {
+    "fan": "Fanático de:",
     "favgames": "Juegos Favoritos",
     "followers": "Seguidores: {{value}}",
     "following": "Siguiendo: {{value}}",
     "reviews": "Reseñas",
-    "fan": "Fanático de:",
     "view-more-button": "Ver Más"
   },
   "profile-card": {
@@ -161,6 +155,18 @@
     "username-maxlength": "Nombre de usuario no puede tener más de {{value}} caracteres.",
     "username-minlength": "Nombre de usuario debe tener al menos {{value}} caracteres.",
     "username-required": "Nombre de usuario es requerido."
+  },
+  "report": {
+    "accept": "Borrar Reseña",
+    "reject": "Anular Reporte"
+  },
+  "report-reason": {
+    "disrespectful": "Contenido irrespetuoso hacia otros miembros",
+    "irrelevant": "Contenido irrelevante en lo que concierne gaming y sus ramas adyacentes",
+    "piracy": "Comparte links a archivos de juegos no autorizados, cracks, o contenido pirateado",
+    "privacy": "Comparte información personal sin consentimiento",
+    "spam": "Spam o Autopromoción",
+    "spoiler": "Spoiler sin advertencias o en las primeras líneas de la reseña"
   },
   "reset-filters": "Restablecer Filtros",
   "review-card": {
@@ -192,6 +198,13 @@
     "noresults": "No hubo resultados encontrados...",
     "review-title": "Reseñas",
     "users-title": "Usuarios"
+  },
+  "settings": {
+    "avatar": "Avatares",
+    "fav-games": "Juegos Favoritos",
+    "fav-genres": "Géneros Favoritos",
+    "notifications": "Notificaciones de Email",
+    "title": "Configuración de Cuenta"
   },
   "toggle-filters": "Filtros",
   "validate-user-form": {

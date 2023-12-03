@@ -139,3 +139,21 @@ export type NotificationTypeResponse = {
     self: string;
   }
 };
+
+export type ReportsLinksResponse = {
+  self: string;
+  reporter: string;
+  reportedReview: string;
+  reportedUser: string;
+  resolve?: string;
+  moderator?: string;
+};
+
+export type ReportResponse= {
+  id: number;
+  reason: string;
+  submissionDate:string;
+  state: string;
+  links: ReportsLinksResponse;
+  resolvedDate?: string;
+};

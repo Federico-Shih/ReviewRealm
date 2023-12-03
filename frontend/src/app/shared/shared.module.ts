@@ -27,12 +27,13 @@ import {TriCheckboxComponent} from './ui/tri-checkbox/tri-checkbox.component';
 import {MatCheckboxModule} from "@angular/material/checkbox";
 import {SearchBarComponent} from './ui/searchbar/search-bar.component';
 import {GameCardComponent} from "./ui/game-card/game-card.component";
+import {ReportsService} from "./data-access/reports/reports.service";
 
 
 @NgModule({
   declarations: [NavbarComponent, LoginFormComponent, FilterDrawerComponent, ReviewCardComponent, ProfileCardComponent, TriCheckboxComponent, SearchBarComponent,
   GameCardComponent],
-  providers: [UsersService, ReviewsService, GamesService, EnumsService],
+  providers: [UsersService, ReviewsService, GamesService, EnumsService,ReportsService],
   imports: [
     CommonModule,
     HttpClientModule,

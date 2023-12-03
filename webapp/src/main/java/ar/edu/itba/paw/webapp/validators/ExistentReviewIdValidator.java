@@ -9,6 +9,7 @@ import javax.validation.ConstraintValidatorContext;
 
 public class ExistentReviewIdValidator implements ConstraintValidator<ExistentReviewId, Long> {
     private final ReviewService reviewService;
+    private boolean optional;
 
     @Autowired
     public ExistentReviewIdValidator(ReviewService reviewService) {
@@ -19,10 +20,13 @@ public class ExistentReviewIdValidator implements ConstraintValidator<ExistentRe
     @Override
     public void initialize(ExistentReviewId constraintAnnotation) {
         ConstraintValidator.super.initialize(constraintAnnotation);
+        optional = constraintAnnotation.optional();
     }
 
     @Override
     public boolean isValid(Long aLong, ConstraintValidatorContext constraintValidatorContext) {
+        if(optional && aLong == null) return true;
+        if(aLong == null) return false;
         return reviewService.getReviewById(aLong,null).isPresent();
     }
 }

@@ -6,6 +6,7 @@ import ar.edu.itba.paw.models.User;
 
 import javax.ws.rs.core.UriInfo;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class ReportResponse extends BaseResponse{
     private static String USERS_BASE_PATH = "/users";
@@ -13,10 +14,10 @@ public class ReportResponse extends BaseResponse{
     private static String REPORTS_BASE_PATH = "/reports";
     private long id;
     private ReportReason reason;
-    private LocalDateTime submissionDate;
+    private String submissionDate;
     private String state;
 
-    private LocalDateTime resolvedDate;
+    private String resolvedDate;
 
     public static ReportResponse fromEntity(final UriInfo uri, Report report) {
         ReportResponse response = baseFromEntity(uri, report);
@@ -31,8 +32,8 @@ public class ReportResponse extends BaseResponse{
         response.setId(report.getId());
         response.setReason(report.getReason());
         response.setState(report.getState().toString());
-        response.setSubmissionDate(report.getSubmissionDate());
-        response.setResolvedDate(report.getResolvedDate());
+        response.setSubmissionDate(report.getSubmissionDate().format(DateTimeFormatter.ISO_DATE));
+        response.setResolvedDate(report.getResolvedDate() != null? report.getResolvedDate().format(DateTimeFormatter.ISO_DATE) : null);
         response.link("self", uri.getBaseUriBuilder().path(REPORTS_BASE_PATH).path(String.valueOf(report.getId())).build());
         response.link("reporter", uri.getBaseUriBuilder().path(USERS_BASE_PATH).path(String.valueOf(report.getReporter().getId())).build());
         response.link("reportedUser", uri.getBaseUriBuilder().path(USERS_BASE_PATH).path(String.valueOf(report.getReportedUser().getId())).build());
@@ -66,19 +67,19 @@ public class ReportResponse extends BaseResponse{
         this.reason = reason;
     }
 
-    public LocalDateTime getSubmissionDate() {
+    public String getSubmissionDate() {
         return submissionDate;
     }
 
-    public void setSubmissionDate(LocalDateTime submissionDate) {
+    public void setSubmissionDate(String submissionDate) {
         this.submissionDate = submissionDate;
     }
 
-    public LocalDateTime getResolvedDate() {
+    public String getResolvedDate() {
         return resolvedDate;
     }
 
-    public void setResolvedDate(LocalDateTime resolvedDate) {
+    public void setResolvedDate(String resolvedDate) {
         this.resolvedDate = resolvedDate;
     }
 
