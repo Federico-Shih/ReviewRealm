@@ -1,5 +1,10 @@
 import {PaginatedDto, SortedDto} from "../shared.dtos";
 import {Difficulty, Platform} from "../shared.enums";
+import {FeedbackType} from "./review.class";
+
+export enum ReviewMediaTypes {
+  REPORTREVIEW = "application/vnd.report-form.v1+json",
+}
 
 /*created|rating|popularity|controversial*/
 export enum ReviewSortType {
@@ -30,5 +35,9 @@ export type ReviewFiltersDto = {
   gameId: number;
 }
 
-
 export type ReviewSearchDto = Partial<ReviewFiltersDto & PaginatedDto & SortedDto<ReviewSortType>>
+
+export type ReportReviewDto = {
+  reviewId: number;
+  reason: string;
+}

@@ -27,12 +27,14 @@ import {TriCheckboxComponent} from './ui/tri-checkbox/tri-checkbox.component';
 import {MatCheckboxModule} from "@angular/material/checkbox";
 import {SearchBarComponent} from './ui/searchbar/search-bar.component';
 import {GameCardComponent} from "./ui/game-card/game-card.component";
+import { BreadcrumbsComponent } from './ui/breadcrumbs/breadcrumbs.component';
+import {MatSnackBarModule} from "@angular/material/snack-bar";
 import {ReportsService} from "./data-access/reports/reports.service";
 
 
 @NgModule({
   declarations: [NavbarComponent, LoginFormComponent, FilterDrawerComponent, ReviewCardComponent, ProfileCardComponent, TriCheckboxComponent, SearchBarComponent,
-  GameCardComponent],
+  GameCardComponent, BreadcrumbsComponent],
   providers: [UsersService, ReviewsService, GamesService, EnumsService,ReportsService],
   imports: [
     CommonModule,
@@ -52,7 +54,8 @@ import {ReportsService} from "./data-access/reports/reports.service";
     MatListModule,
     NgOptimizedImage,
     MatChipsModule,
-    MatCheckboxModule
+    MatCheckboxModule,
+    MatSnackBarModule
   ],
   exports: [
     NavbarComponent,
@@ -63,7 +66,8 @@ import {ReportsService} from "./data-access/reports/reports.service";
     TriCheckboxComponent,
     SearchBarComponent,
     ProfileCardComponent,
-    GameCardComponent
+    GameCardComponent,
+    BreadcrumbsComponent,
   ]
 })
 export class SharedModule {

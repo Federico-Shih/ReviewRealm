@@ -133,7 +133,7 @@ body {
   --color-error: #FF0000;
   --color-primary-variant-1: #444155;
   --color-text: #FFFFFF;
-  --color-accept: #00C853 ;
+  --color-green: #289C0E;
   // Add more variants
 }
 
@@ -168,4 +168,19 @@ app-root {
   border-radius: 20px;
   border: 6px solid transparent;
   background-clip: content-box;
+}
+
+.mat-mdc-snack-bar-container {
+  &.red-snackbar {
+    --mdc-snackbar-container-color: var(--color-accent);
+    --mat-mdc-snack-bar-button-color: var(--color-text);
+    --mdc-snackbar-supporting-text-color: var(--color-text);
+    --mat-snack-bar-button-color: var(--color-text);
+  }
+  &.green-snackbar {
+    --mdc-snackbar-container-color: var(--color-green);
+    --mat-mdc-snack-bar-button-color: var(--color-text);
+    --mdc-snackbar-supporting-text-color: var(--color-text);
+    --mat-snack-bar-button-color: var(--color-text);
+  }
 }

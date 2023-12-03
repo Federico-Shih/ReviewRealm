@@ -7,6 +7,12 @@ export function isDifficulty(difficulty: unknown): difficulty is Difficulty {
   return Object.values(Difficulty).find((v) => v === difficulty) !== undefined;
 }
 
+export const DifficultyToLocale = {
+  'HARD': 'difficulty.hard',
+  'MEDIUM': 'difficulty.medium',
+  'EASY': 'difficulty.easy'
+}
+
 export enum Platform {
   PC = "PC",
   XBOX = "XBOX",
@@ -36,3 +42,22 @@ export enum Role {
   MODERATOR = "MODERATOR",
   USER = "USER"
 }
+
+export enum ReportReason {
+  DISRESPECTFUL = "DISRESPECTFUL",
+  SPAM = "SPAM",
+  IRRELEVANT = "IRRELEVANT",
+  SPOILER = "SPOILER",
+  PIRACY = "PIRACY",
+  PRIVACY = "PRIVACY"
+}
+
+export const ReasonToLocale = {
+  DISRESPECTFUL: "report.reason.disrespect",
+  IRRELEVANT: "report.reason.irrelevant",
+  PIRACY: "report.reason.piracy",
+  PRIVACY: "report.reason.privacy",
+  SPAM: "report.reason.spam",
+  SPOILER: "report.reason.spoiler"
+}
+

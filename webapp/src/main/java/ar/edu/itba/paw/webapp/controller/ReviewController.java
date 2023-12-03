@@ -83,7 +83,7 @@ public class ReviewController{
         if (reviews.getTotalPages() == 0 || reviews.getList().isEmpty()) {
             return Response.noContent().build();
         }
-        List<ReviewResponse> reviewResponseList = reviews.getList().stream().map((review) -> ReviewResponse.fromEntity(uriInfo, review)).collect(Collectors.toList());
+        List<ReviewResponse> reviewResponseList = reviews.getList().stream().map((review) -> ReviewResponse.fromEntity(uriInfo, review, user == null? null: user.getId())).collect(Collectors.toList());
         return PaginatedResponseHelper.fromPaginated(uriInfo, reviewResponseList, reviews).build();
     }
 
@@ -106,7 +106,7 @@ public class ReviewController{
         );
         return Response
                 .created(uriInfo.getAbsolutePathBuilder().path("/reviews").path(createdReview.getId().toString()).build())
-                .entity(ReviewResponse.fromEntity(uriInfo, createdReview))
+                .entity(ReviewResponse.fromEntity(uriInfo, createdReview, author.getId()))
                 .build();
     }
 
@@ -130,7 +130,7 @@ public class ReviewController{
         Optional<Review> possibleReview = reviewService.getReviewById(id, activeUserId);
         if (!possibleReview.isPresent())
             return Response.status(Response.Status.NOT_FOUND).build();
-        return Response.ok(ReviewResponse.fromEntity(uriInfo, possibleReview.get())).build();
+        return Response.ok(ReviewResponse.fromEntity(uriInfo, possibleReview.get(), activeUserId)).build();
     }
 
 

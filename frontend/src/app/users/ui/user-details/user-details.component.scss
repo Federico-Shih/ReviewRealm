@@ -114,7 +114,7 @@
 }
 
 .divider-v {
-  border-left: 1px solid #444155;
+  border-left: 1px solid var(--color-primary-variant-1);
   position: relative;
   top: 2.5%;
 }
@@ -150,8 +150,8 @@
 
 .chip-small-inverted {
   background: #DDD7FF;
-  color: #13112D;
-  border: 1px solid #444155;
+  color: var(--color-surface);
+  border: 1px solid var(--color-primary-variant-1);
   border-radius: 12px;
   font-size: 12px;
   font-weight: 700;

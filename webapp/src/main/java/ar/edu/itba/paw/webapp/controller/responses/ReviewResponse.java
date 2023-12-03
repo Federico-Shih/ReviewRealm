@@ -28,7 +28,7 @@ public class ReviewResponse extends BaseResponse {
 
 
 
-    public static ReviewResponse fromEntity(final UriInfo uri, Review review) {
+    public static ReviewResponse fromEntity(final UriInfo uri, Review review, Long userId) {
         ReviewResponse response = new ReviewResponse();
         response.setId(review.getId());
         response.setTitle(review.getTitle());
@@ -48,7 +48,14 @@ public class ReviewResponse extends BaseResponse {
         response.link("self", getLinkFromEntity(uri,review));
         response.link("game", uri.getBaseUriBuilder().path("games").path(String.valueOf(review.getReviewedGame().getId())).build());
         response.link("author", uri.getBaseUriBuilder().path("users").path(String.valueOf(review.getAuthor().getId())).build());
-        response.link("feedback", uri.getBaseUriBuilder().path("reviews").path(String.valueOf(review.getId())).path("feedback").build());
+        if(userId != null) {
+            response.link("feedback", uri.getBaseUriBuilder().path("reviews").path(String.valueOf(review.getId())).path("feedback").path(String.valueOf(userId)).build());
+            if(!userId.equals(review.getAuthor().getId())) {
+                response.link("giveFeedback", uri.getBaseUriBuilder().path("reviews").path(String.valueOf(review.getId())).path("feedback").build());
+                response.link("report", uri.getBaseUriBuilder().path("reports").build());
+            }
+        }
+
         return response;
     }
 

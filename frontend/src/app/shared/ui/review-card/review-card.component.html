@@ -28,7 +28,7 @@
       {{ review.content }}
     </p>
     <div class="likes">
-      {{ review.likes - review.dislikes}}
+      {{ review.getPopularity() }}
       <mat-icon>thumbs_up_down</mat-icon>
     </div>
   </mat-card-content>

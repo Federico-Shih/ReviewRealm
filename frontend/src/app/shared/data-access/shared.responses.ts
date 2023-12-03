@@ -1,10 +1,13 @@
 import {Difficulty, Platform, Role} from "./shared.enums";
+import {FeedbackType} from "./reviews/review.class";
 
 export type ReviewLinksResponse = {
-  feedback: string,
-  game: string,
-  author: string,
-  self: string
+  feedback?: string;
+  game: string;
+  author: string;
+  self: string;
+  giveFeedback?: string;
+  report?: string;
 }
 
 export type ReviewResponse = {
@@ -23,6 +26,15 @@ export type ReviewResponse = {
   replayable: boolean;
   created: string;
   links: ReviewLinksResponse;
+}
+
+export type ReviewFeedbackResponse = {
+  links: {
+    review: string;
+    liker: string;
+    self: string;
+  }
+  feedbackType: FeedbackType | null;
 }
 
 export type UserLinksResponse = {

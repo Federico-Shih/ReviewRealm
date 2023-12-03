@@ -4,8 +4,6 @@ import {HTTP_INTERCEPTORS, HttpClient, HttpClientModule} from "@angular/common/h
 
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
-import {ReviewListComponent} from './reviews/feature/review-list/review-list.component';
-import {ReviewDetailComponent} from './reviews/feature/review-detail/review-detail.component';
 import {SharedModule} from "./shared/shared.module";
 import {AuthenticationInterceptor} from "./shared/interceptors/AuthenticationInterceptor";
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
@@ -20,8 +18,6 @@ export function HttpLoaderFactory(http: HttpClient) {
 @NgModule({
   declarations: [
     AppComponent,
-    ReviewListComponent,
-    ReviewDetailComponent,
   ],
   imports: [
     BrowserModule,

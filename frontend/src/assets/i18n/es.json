@@ -2,10 +2,16 @@
   "apply-filters": "Aplicar filtros",
   "asc": "Ascendente",
   "average-rating": "Puntuación Promedio",
+  "cancel": "Cancelar",
   "delete": "Borrar",
   "desc": "Descendente",
   "developer": {
     "card": "Desarollador: {{value}}"
+  },
+  "difficulty": {
+    "easy": "Fácil",
+    "hard": "Difícil",
+    "medium": "Medio"
   },
   "edit": "Editar",
   "edit-own-review": "Editar tu Reseña",
@@ -129,7 +135,7 @@
     "view-more-button": "Ver Más"
   },
   "profile-card": {
-    "whoprefers": "prefiere"
+    "whoprefers": "quien prefiere"
   },
   "publisher": {
     "card": "Editor: {{value}}"
@@ -157,6 +163,14 @@
     "username-required": "Nombre de usuario es requerido."
   },
   "report": {
+    "reason": {
+      "disrespect": "Contenido irrespetuoso hacia otros miembros",
+      "irrelevant": "Contenido irrelevante en lo que concierne gaming y sus ramas adyacentes",
+      "piracy": "Comparte links a archivos de juegos no autorizados, cracks, o contenido pirateado",
+      "privacy": "Comparte información personal sin consentimiento",
+      "spam": "Spam o Autopromoción",
+      "spoiler": "Spoiler sin advertencias o en las primeras líneas de la reseña"
+    },
     "accept": "Borrar Reseña",
     "reject": "Anular Reporte"
   },
@@ -169,6 +183,23 @@
     "spoiler": "Spoiler sin advertencias o en las primeras líneas de la reseña"
   },
   "reset-filters": "Restablecer Filtros",
+  "review": {
+    "delete": "Borrar Reseña",
+    "deleted": "La reseña ha sido borrada",
+    "deletedialog": {
+      "title": "¿Está seguro que desea borrar esta reseña?"
+    },
+    "edit": "Editar Reseña",
+    "found_useful?": "¿Encontraste útil esta reseña?",
+    "report": "Reportar Reseña",
+    "reportdialog": {
+      "title": "Selecciona una razón para reportar esta reseña de acuerdo con nuestros lineamientos:"
+    },
+    "reported": "¡El reporte ha sido enviado!",
+    "search": "Buscar Reseñas",
+    "tags": "Etiquetas",
+    "timeplayed": "Tiempo jugado"
+  },
   "review-card": {
     "author-alt": "Imagen de perfil de {{author}}",
     "by": "por @{{author}}",
@@ -205,6 +236,10 @@
     "fav-genres": "Géneros Favoritos",
     "notifications": "Notificaciones de Email",
     "title": "Configuración de Cuenta"
+  },
+  "time": {
+    "hours": "{{number}} horas",
+    "minutes": "{{number}} minutos"
   },
   "toggle-filters": "Filtros",
   "validate-user-form": {

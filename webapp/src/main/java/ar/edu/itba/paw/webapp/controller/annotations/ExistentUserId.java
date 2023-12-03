@@ -1,6 +1,5 @@
 package ar.edu.itba.paw.webapp.controller.annotations;
 
-import ar.edu.itba.paw.webapp.validators.ExistentEmailValidator;
 import ar.edu.itba.paw.webapp.validators.ExistentUserIdValidator;
 
 import javax.validation.Constraint;

@@ -10,6 +10,7 @@ const routes: Routes = [
   {path: 'search', loadChildren: () => import('./search/search.module').then(m => m.SearchModule)},
   {path: 'settings', loadChildren: () => import('./settings/settings.module').then(m => m.SettingsModule)},
   {path: 'profile', loadChildren: () => import('./users/profile.module').then(m => m.ProfileModule)},
+  {path: 'reviews', loadChildren: () => import('./reviews/reviews.module').then(m => m.ReviewsModule)},
   {path: 'reports', loadChildren: () => import('./reports/reports.module').then(m => m.ReportsModule)},
   {
     path: 'for-you',
