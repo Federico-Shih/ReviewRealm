@@ -35,7 +35,7 @@ export class GameDetailComponent implements OnInit {
   );
   paginatedReviews$: Observable<Paginated<Review>> = this.game$.pipe(switchMap((game) => {
     if (game.links.reviewsExcludingUser) {
-      return this.reviewService.getReviews(game.links.reviewsExcludingUser, {});
+      return this.reviewService.getReviews(game.links.reviewsExcludingUser, {});//TODO:infinite scrolling
     }
     return this.reviewService.getReviews(game.links.reviews, {});
   }));

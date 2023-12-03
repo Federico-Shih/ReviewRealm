@@ -39,16 +39,22 @@ public class GameHibernateDao implements GameDao, PaginationDao<GameFilter> {
         final Game game = em.find(Game.class, gameId);
         if(game==null || game.getDeleted())
             return Optional.empty();
-        game.setName(name);
-        game.setDescription(description);
-        game.setDeveloper(developer);
-        game.setPublisher(publisher);
+        if(name!=null)
+            game.setName(name);
+        if(description!=null)
+            game.setDescription(description);
+        if(developer!=null)
+            game.setDeveloper(developer);
+        if(publisher!=null)
+            game.setPublisher(publisher);
         if(imageid!=null) {
             final Image image = em.find(Image.class, imageid);
             game.setImage(image);
         }
-        game.setGenres(genres);
-        game.setPublishDate(publishDate);
+        if(genres!=null && !genres.isEmpty())
+            game.setGenres(genres);
+        if(publishDate!=null)
+            game.setPublishDate(publishDate);
         em.persist(game);
         return Optional.of(game);
     }
@@ -106,10 +112,10 @@ public class GameHibernateDao implements GameDao, PaginationDao<GameFilter> {
     }
 
     @Override
-    public List<Genre> getGenresByGame(long id) {
+    public Set<Genre> getGenresByGame(long id) {
         final Game game = em.find(Game.class, id);
         if(game == null || game.getDeleted()) {
-            return new ArrayList<>();
+            return new HashSet<>();
         }
         return game.getGenres();
     }

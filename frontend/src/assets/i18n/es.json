@@ -25,6 +25,10 @@
     "order-by": "Ordenar por"
   },
   "filter-title": "Filtrar por",
+  "game-create": {
+    "submit": "Enviar Creación",
+    "title": "Crear un Nuevo Juego"
+  },
   "following": "Siguiendo",
   "game-details": {
     "completability": "Terminación promedio",
@@ -39,19 +43,60 @@
     "reviews": "Reseñas de Otros Usuarios",
     "statistics": "Estadísticas basadas en Reseñas"
   },
+  "game-edit": {
+    "submit": "Terminar Edición",
+    "title": "Editar un Juego"
+  },
   "game-filter": {
     "averageRating": "Puntuación Promedio",
     "name": "Nombre",
     "publishDate": "Fecha de Publicación"
   },
+  "game-form": {
+    "description": "Descripción",
+    "description-maxlength": "Una descripción debe tener como mucho {{value}} caracteres.",
+    "description-minlength": "Una descripción debe tener por lo menos {{value}} caracteres.",
+    "description-required": "Una descripción es requerida.",
+    "developer": "Desarollador",
+    "developer-maxlength": "Un desarollador debe tener como mucho {{value}} caracteres.",
+    "developer-minlength": "Un desarollador debe tener por lo menos {{value}} caracteres.",
+    "developer-required": "Un desarollador es requerido.",
+    "genres-required": "Al menos un genero debe ser seleccionado.",
+    "image": "Imagen",
+    "image-file-size": "Imagen debe pesar menos de 128MB.",
+    "image-file-type": "Tipo de Archivo Invalido tiene que ser jpeg/gif/png.",
+    "image-required": "Una imagen es requerida.",
+    "name": "Título del Juego",
+    "name-maxlength": "Un titulo debe tener como mucho {{value}} caracteres.",
+    "name-minlength": "Un titulo debe tener por lo menos {{value}} caracteres.",
+    "name-required": "Un titulo es requerido.",
+    "placeholder": {
+      "description": "Ingresa la descripción...",
+      "developer": "Nombre del Desarollador",
+      "image": "Seleccione una Imagen",
+      "name": "Escribe el titulo del juego...",
+      "publisher": "Nombre del Editor"
+    },
+    "publisher": "Editor",
+    "publisher-maxlength": "Un editor debe tener como mucho {{value}} caracteres.",
+    "publisher-minlength": "Un editor debe tener por lo menos {{value}} caracteres.",
+    "publisher-required": "Un editor es requerido.",
+    "release-date": "Fecha de Publicación",
+    "release-date-required": "Una fecha de publicación es requerida."
+  },
   "game-genres-filter": "Géneros del juego",
+  "game-image": "Imagen subida del Juego",
   "game-search": {
     "avg-rating": {
       "filter": "Puntación Promedio"
     },
     "exclude-no-rating": "Excluir juegos sin puntuación"
   },
-  "genres": "Generos:",
+  "game-suggest": {
+    "submit": "Enviar Sugerencia",
+    "title": "Sugerir un Nuevo Juego"
+  },
+  "genres": "Géneros:",
   "login-form": {
     "email-invalid": "Correo electrónico no es válido.",
     "email-required": "Correo electrónico es requerido.",
@@ -85,9 +130,9 @@
     "favgames": "Juegos Favoritos",
     "followers": "Seguidores: {{value}}",
     "following": "Siguiendo: {{value}}",
+    "reviews": "Reseñas",
     "fan": "Fanático de:",
-    "view-more-button": "Ver Más",
-    "reviews": "Reseñas"
+    "view-more-button": "Ver Más"
   },
   "profile-card": {
     "whoprefers": "prefiere"

@@ -1,0 +1,14 @@
+<div>
+  <ng-container *ngIf="genres$ | async as genres">
+    <ng-container *ngIf="(game$ | async) as game">
+      <app-game-form
+        [gameFormType]="GameFormType.Edit"
+        [loading]="loading$ | async"
+        [genres]="genres"
+        [editGame]="game"
+        (gameFormEvent)="editGame($event)"
+      ></app-game-form>
+    </ng-container>
+  </ng-container>
+</div>
+

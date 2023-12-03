@@ -8,6 +8,7 @@ import ar.edu.itba.paw.servicesinterfaces.ReviewService;
 import ar.edu.itba.paw.servicesinterfaces.UserService;
 import ar.edu.itba.paw.webapp.auth.AuthenticationHelper;
 import ar.edu.itba.paw.webapp.controller.annotations.ExistentGameId;
+import ar.edu.itba.paw.webapp.controller.forms.EditGameForm;
 import ar.edu.itba.paw.webapp.controller.forms.PatchGameForm;
 import ar.edu.itba.paw.webapp.controller.forms.SubmitGameForm;
 import ar.edu.itba.paw.webapp.controller.mediatypes.VndType;
@@ -23,6 +24,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
@@ -94,12 +96,12 @@ public class GameController {
                 created(uriInfo.getAbsolutePathBuilder().path(game.getId().toString()).build()).build();
     }
 
-    @PUT
+    @PATCH
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(VndType.APPLICATION_GAME)
     @Path("{id:\\d+}")
-    public Response  putGame(@Valid @NotNull(message = "error.body.empty") @BeanParam SubmitGameForm submitGameForm, @Valid @ExistentGameId @PathParam("id") final long id) throws IOException {
-        Game game = gs.editGame(submitGameForm.toSubmitDTO(),id);
+    public Response  editGame(@Valid @NotNull(message = "error.body.empty") @BeanParam EditGameForm editGameForm, @Valid @ExistentGameId @PathParam("id") final long id){
+        Game game = gs.editGame(editGameForm.toSubmitDTO(),id);
         User user = AuthenticationHelper.getLoggedUser(us);
 
         return Response.ok(uriInfo.getAbsolutePathBuilder().path(game.getId().toString()).build())

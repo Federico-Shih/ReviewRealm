@@ -9,10 +9,7 @@ import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Table(name = "games")
@@ -47,7 +44,7 @@ public class Game implements Cloneable {
     @CollectionTable(name = "genreforgames", joinColumns = @JoinColumn(name = "gameid", referencedColumnName = "id"))
     @Column(name = "genreid")
     @Convert(converter = GenreAttributeConverter.class)
-    private List<Genre> genres;
+    private Set<Genre> genres;
 
     @Column(name = "publishdate", nullable = false)
     @Convert(converter = LocalDateConverter.class)
@@ -94,7 +91,7 @@ public class Game implements Cloneable {
         this.developer = developer;
         this.publisher = publisher;
         this.image = image;
-        this.genres = genres;
+        this.genres = new HashSet<>(genres);
         this.publishDate = publishDate;
         this.suggestion = suggestion;
         this.suggestedBy = suggestedBy;
@@ -126,7 +123,7 @@ public class Game implements Cloneable {
         byte[] imageBytes = new byte[0];
         this.image = new Image(imageid, "jpg", imageBytes);
         this.publishDate = LocalDate.parse(releaseDate);
-        this.genres = genres;
+        this.genres = new HashSet<>(genres);
     }
 
     public Game(long id, String name, String description, String developer, String publisher, LocalDate publishDate, int ratingsum, int reviewcount, boolean deleted) {
@@ -170,7 +167,7 @@ public class Game implements Cloneable {
         return IMAGE_PATH + image.getId();
     }
 
-    public List<Genre> getGenres() {
+    public Set<Genre> getGenres() {
         return genres;
     }
 
@@ -207,7 +204,7 @@ public class Game implements Cloneable {
     }
 
     public void setGenres(List<Genre> genres) {
-        this.genres = genres;
+        this.genres = new HashSet<>(genres);
     }
 
     @Override

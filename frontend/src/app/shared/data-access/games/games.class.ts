@@ -52,7 +52,7 @@ export class Game {
   description: string;
   developer: string;
   publisher: string;
-  publishDate: string;
+  publishDate: Date;
   ratingSum: number;
   reviewCount: number;
   isFavourite: boolean;
@@ -85,7 +85,7 @@ export class Game {
     this.description = description;
     this.developer = developer;
     this.publisher = publisher;
-    this.publishDate = publishDate;
+    this.publishDate = new Date(publishDate);
     this.ratingSum = ratingSum;
     this.reviewCount = reviewCount;
     this.isFavourite = isFavourite;

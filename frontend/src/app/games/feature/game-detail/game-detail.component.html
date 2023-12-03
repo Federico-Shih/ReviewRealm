@@ -19,18 +19,22 @@
   <div class="details-container">
     <div class="details">
       <span class="title">{{game.name}}</span>
-      <mat-chip-set class="genres">
-        <mat-chip *ngFor="let genre of game.genres" routerLink="/games" [queryParams]="" class="chip clickable">
-          {{genre.localized}}
-        </mat-chip>
-      </mat-chip-set>
+      <div class="genres-row">
+        <span class="genres-header">{{'genres' | translate}}</span>
+        <mat-chip-set class="genres">
+          <mat-chip *ngFor="let genre of game.genres" routerLink="/games" [queryParams]="{genres: [genre.id]}" class="chip clickable">
+            {{genre.localized}}
+          </mat-chip>
+        </mat-chip-set>
+      </div>
+
       <mat-divider/>
       <p class="description">{{game.description}}</p>
       <mat-divider/>
     </div>
     <div class="card">
       <img src="{{game.links.image}}" alt="{{game.name}}">
-      <span class="card-text" i18n>{{ 'publishing.date'| translate:{value:  game.publishDate} }}</span>
+      <span class="card-text" i18n>{{ 'publishing.date'| translate:{value:  game.publishDate.toLocaleDateString()} }}</span>
       <span class="card-text" i18n>{{ 'developer.card'| translate:{value:  game.developer} }}</span>
       <span class="card-text" i18n>{{ 'publisher.card'| translate:{value:  game.publisher} }}</span>
     </div>
@@ -77,7 +81,7 @@
     </div>
   </div>
   <div class="review-section">
-    <ng-container *ngIf="(userReview$ | async) as userRev;">
+    <ng-container *ngIf="(userReview$ | async) as userRev;else notlogged">
       <ng-container *ngIf="userRev !== undefined && userRev.content[0] !== undefined; else notreviewed">
         <div class="review-header">
           <span class="header"> {{'game-details.personal-review' | translate}}</span>
@@ -89,15 +93,15 @@
           <app-review-card [review]="userRev.content[0]" [hideActions]="true"></app-review-card>
         </div>
       </ng-container>
-      <ng-template #notreviewed>
-        <div class="review-header">
-          <span class="header"> {{'game-details.no-personal-review' | translate}}</span>
-          <button mat-raised-button color="primary" [routerLink]=""> <!--todo: link create-->
-            <mat-icon>add</mat-icon> {{ 'new-review' | translate }}
-          </button>
-        </div>
-      </ng-template>
     </ng-container>
+    <ng-template #notreviewed #notlogged>
+      <div class="review-header">
+        <span class="header"> {{'game-details.no-personal-review' | translate}}</span>
+        <button mat-raised-button color="primary" [routerLink]=""> <!--todo: link create-->
+          <mat-icon>add</mat-icon> {{ 'new-review' | translate }}
+        </button>
+      </div>
+    </ng-template>
     <div class="review-header">
       <span class="header" i18n> {{'game-details.reviews' | translate}}</span>
     </div>

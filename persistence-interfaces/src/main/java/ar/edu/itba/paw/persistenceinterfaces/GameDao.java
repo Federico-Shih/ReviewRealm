@@ -26,7 +26,7 @@ public interface GameDao {
 
     Paginated<Game> findAll(Page page, GameFilter filter, Ordering<GameOrderCriteria> ordering, Long currentUserId);
 
-    List<Genre> getGenresByGame(long id);
+    Set<Genre> getGenresByGame(long id);
 
     List<Game> getFavoriteGamesCandidates(long userId, int minRating);
 

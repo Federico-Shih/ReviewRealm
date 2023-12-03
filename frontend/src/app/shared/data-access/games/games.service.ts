@@ -1,9 +1,15 @@
 import {Injectable} from '@angular/core';
-import {HttpClient} from "@angular/common/http";
+import {HttpClient, HttpErrorResponse} from "@angular/common/http";
 import {GameExclusiveSearchDto, GameSearchDto} from "./games.dtos";
-import {exceptionMapper, paginatedObjectMapper, queryMapper,} from "../../helpers/mapper";
-import {catchError, filter, forkJoin, map, mergeMap, Observable, of} from "rxjs";
-import {Paginated} from "../shared.models";
+import {
+  customExceptionMapper,
+  exceptionMapper,
+  paginatedObjectMapper,
+  queryMapper,
+  validationExceptionMapper,
+} from "../../helpers/mapper";
+import {catchError, filter, forkJoin, map, mergeMap, Observable, of, pipe, switchMap} from "rxjs";
+import {Paginated, ValidationResponse} from "../shared.models";
 import {Game} from "./games.class";
 import {GameResponse} from "../shared.responses";
 import {EnumsService} from "../enums/enums.service";
@@ -50,5 +56,29 @@ export class GamesService {
           }
         )
       );
+  }
+
+  createGame(url:string,gameDto:FormData){
+    return this.http.post<boolean>(url,gameDto,{
+      responseType:"json",
+      observe:"response"
+    }).pipe(catchError(exceptionMapper),switchMap( () =>{
+      return of(true);
+    }));
+  }
+
+  editGame(url:string,gameDto:FormData){
+    return this.http.patch<GameResponse>(url,gameDto,{
+      responseType:"json",
+      observe:"response"
+    }).pipe(catchError(exceptionMapper))
+      .pipe(filter(response => response.body !== null))
+      .pipe(
+        mergeMap(
+          (response) => {
+              const game = response.body!!;
+              return this.genreService.getGenres(game.links.genres).pipe(map((genres) => Game.fromResponse(game, genres)));
+          }
+      ));
   }
 }

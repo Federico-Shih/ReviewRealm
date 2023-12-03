@@ -21,4 +21,5 @@ public @interface ExistentGenreList {
     Class<? extends Payload>[] payload() default {};
 
     boolean nullable() default false;
+    boolean emptyAllowed() default true;
 }

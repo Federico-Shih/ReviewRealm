@@ -1,13 +1,13 @@
 package ar.edu.itba.paw.webapp.controller.forms;
 
-import ar.edu.itba.paw.webapp.controller.annotations.*;
 import ar.edu.itba.paw.dtos.saving.SubmitGameDTO;
+import ar.edu.itba.paw.webapp.controller.annotations.CheckDateFormat;
+import ar.edu.itba.paw.webapp.controller.annotations.ExistentGenreList;
+import ar.edu.itba.paw.webapp.controller.annotations.ValidImage;
 import ar.edu.itba.paw.webapp.exceptions.CustomRuntimeException;
 import org.apache.commons.io.IOUtils;
 import org.glassfish.jersey.media.multipart.FormDataBodyPart;
 import org.glassfish.jersey.media.multipart.FormDataParam;
-import org.springframework.http.MediaType;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -17,40 +17,33 @@ import java.io.InputStream;
 import java.time.LocalDate;
 import java.util.List;
 
-
-public class SubmitGameForm {
+public class EditGameForm {
     @Size(min = 1, max = 80,message = "Size.submitGame.name")
-    @NotNull(message = "NotNull.property")
     @FormDataParam("name")
     private String name;
     @Size(max = 300,message = "Size.submitGame.description")
-    @NotNull(message = "NotNull.property")
     @FormDataParam("description")
     private String description;
     @Size(min = 1, max = 50, message = "Size.submitGame.developer")
-    @NotNull(message = "NotNull.property")
     @FormDataParam("developer")
     private String developer;
     @Size(min = 1, max = 50, message = "Size.submitGame.publisher")
-    @NotNull(message = "NotNull.property")
     @FormDataParam("publisher")
     private String publisher;
 
-    @ExistentGenreList(emptyAllowed = false)
-    @NotNull(message = "NotNull.property")
+    @ExistentGenreList()
     @FormDataParam("genres")
     private List<Integer> genres;
+
     @CheckDateFormat(pattern = "yyyy-mm-dd")
-    @NotNull(message = "NotNull.property")
     @FormDataParam("releaseDate")
     private String releaseDate;
 
-    @NotNull(message = "NotNull.property")
+
     @FormDataParam("image")
     private InputStream imageStream;
 
     @ValidImage
-    @NotNull(message = "NotNull.property")
     @FormDataParam("image")
     private FormDataBodyPart imageDetails;
 
@@ -120,14 +113,14 @@ public class SubmitGameForm {
     }
 
     public SubmitGameDTO toSubmitDTO(){
-            byte[] imageArray = new byte[0];
-            if(imageStream != null){
-                try {
-                    imageArray = IOUtils.toByteArray(imageStream);
-                } catch (IOException e) {
-                    throw new CustomRuntimeException(Response.Status.INTERNAL_SERVER_ERROR,"image.error");
-                }
+        byte[] imageArray = new byte[0];
+        if(imageStream != null){
+            try {
+                imageArray = IOUtils.toByteArray(imageStream);
+            } catch (IOException e) {
+                throw new CustomRuntimeException(Response.Status.INTERNAL_SERVER_ERROR,"image.error");
             }
-        return new SubmitGameDTO(name, description, developer, publisher, genres, imageArray, imageDetails.getMediaType().toString(), LocalDate.parse(releaseDate));
+        }
+        return new SubmitGameDTO(name, description, developer, publisher, genres, imageArray, imageDetails != null? imageDetails.getMediaType().toString():null, releaseDate != null? LocalDate.parse(releaseDate) : null);
     }
 }

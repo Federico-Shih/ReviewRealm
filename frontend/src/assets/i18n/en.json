@@ -25,6 +25,10 @@
     "order-by": "Order by"
   },
   "filter-title": "Filter by",
+  "game-create": {
+    "submit": "Send Creation",
+    "title": "Create a New Game"
+  },
   "following": "Following",
   "game-details": {
     "completability": "Average completion",
@@ -39,17 +43,58 @@
     "reviews": "Other Users' Reviews",
     "statistics": "Statistics based on Reviews"
   },
+  "game-edit": {
+    "submit": "Finish Editing",
+    "title": "Edit a Game"
+  },
   "game-filter": {
     "averageRating": "Average Rating",
     "name": "Name",
     "publishDate": "Publishing Date"
   },
+  "game-form": {
+    "description": "Description",
+    "description-maxlength": "A description must be at most {{value}} characters long.",
+    "description-minlength": "A description must be at least {{value}} characters long.",
+    "description-required": "A description is required.",
+    "developer": "Developer",
+    "developer-maxlength": "A developer must be at most {{value}} characters long.",
+    "developer-minlength": "A developer must be at least {{value}} characters long.",
+    "developer-required": "A developer is required.",
+    "genres-required": "At least one genre must be selected.",
+    "image": "Image",
+    "image-file-size": "Image size must weight less than 128MB.",
+    "image-file-type": "Invalid File Type must be a jpeg/gif/png.",
+    "image-required": "An Image is required.",
+    "name": "Game Title",
+    "name-maxlength": "A title must be at most {{value}} characters long.",
+    "name-minlength": "A title must be at least {{value}} characters long.",
+    "name-required": "A Title is required.",
+    "placeholder": {
+      "description": "Write the description...",
+      "developer": "Developer Name",
+      "image": "Select an Image...",
+      "name": "Write the game title...",
+      "publisher": "Publisher Name"
+    },
+    "publisher": "Publisher",
+    "publisher-maxlength": "A publisher must be at most {{value}} characters long.",
+    "publisher-minlength": "A publisher must be at least {{value}} characters long.",
+    "publisher-required": "A publisher is required.",
+    "release-date": "Release Date",
+    "release-date-required": "A release date is required."
+  },
   "game-genres-filter": "Game's genres",
+  "game-image": "Uploaded Game Image",
   "game-search": {
     "avg-rating": {
       "filter": "Average Rating"
     },
     "exclude-no-rating": "Exclude games without rating"
+  },
+  "game-suggest": {
+    "submit": "Send Suggestion",
+    "title": "Suggest a New Game"
   },
   "genres": "Genres:",
   "login-form": {
@@ -94,6 +139,9 @@
     "card": "Publisher: {{value}}"
   },
   "recommended": "Recommended",
+  "publishing": {
+    "date": "Publishing Date: {{value}}"
+  },
   "register-form": {
     "confirm-password": "Confirm password",
     "confirm-password-required": "Password confirmation is required.",

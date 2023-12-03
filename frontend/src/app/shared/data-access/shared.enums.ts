@@ -14,6 +14,11 @@ export enum Platform {
   NINTENDO = "NINTENDO"
 }
 
+export enum GameFormType{
+  Suggest= 'SUGGEST',
+  Edit= 'EDIT',
+  Create= 'CREATE'
+}
 export function isPlatform(platform: unknown): platform is Platform {
   return Object.values(Platform).find((v) => v === platform) !== undefined;
 }

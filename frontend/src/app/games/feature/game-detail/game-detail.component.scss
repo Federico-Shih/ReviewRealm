@@ -171,4 +171,15 @@ img{
       font-weight: 500;
   }
 }
+.genres-header{
+  font-size: 24px;
+  font-weight: 600;
+  white-space: nowrap;
+  margin-right: 10px;
+}
+.genres-row{
+  display: flex;
+  align-items: flex-start;
+  gap: 5px;
+}
 

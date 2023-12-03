@@ -31,6 +31,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.sql.DataSource;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Transactional
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -102,7 +103,7 @@ public class GameDaoImplTest {
         Assert.assertTrue(game.isPresent());
         Assert.assertEquals(testGame, game.get());
         Assert.assertFalse(game.get().getGenres().isEmpty());
-        List<Genre> genres = game.get().getGenres();
+        Set<Genre> genres = game.get().getGenres();
         Assert.assertEquals(new HashSet<>(testGame.getGenres()), new HashSet<>(genres));
     }
 
@@ -114,7 +115,7 @@ public class GameDaoImplTest {
                 createGame.getDeveloper(),
                 createGame.getPublisher(),
                 createGame.getImage().getId(),
-                createGame.getGenres(),
+                new ArrayList<>(createGame.getGenres()),
                 createGame.getPublishDate(),
                 createGame.getSuggestion(),
                 null);
@@ -159,7 +160,7 @@ public class GameDaoImplTest {
                 createGameNoGenres.getDeveloper(),
                 createGameNoGenres.getPublisher(),
                 createGameNoGenres.getImage().getId(),
-                createGameNoGenres.getGenres(),
+                new ArrayList<>(createGameNoGenres.getGenres()),
                 createGameNoGenres.getPublishDate(),
                 createGameNoGenres.getSuggestion(),
                 null);
@@ -273,7 +274,7 @@ public class GameDaoImplTest {
     public void testGetGenresByGame() {
         Game gameWithGenres = GameTestModels.getGameWithGenres();
         //Setup game
-        List<Genre> genres = gameDao.getGenresByGame(gameWithGenres.getId());
+        Set<Genre> genres = gameDao.getGenresByGame(gameWithGenres.getId());
 
         Assert.assertEquals(2, genres.size());
         List<Genre> expectedGenres = Arrays.asList(Genre.ACTION, Genre.ADVENTURE);

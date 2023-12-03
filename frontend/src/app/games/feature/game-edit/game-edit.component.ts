@@ -1,0 +1,68 @@
+import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
+import {BehaviorSubject, catchError, Observable, of, switchMap} from "rxjs";
+import {Role,GameFormType} from "../../../shared/data-access/shared.enums";
+import {environment} from "../../../../environments/environment";
+import {AuthenticationService} from "../../../shared/data-access/authentication/authentication.service";
+import {GamesService} from "../../../shared/data-access/games/games.service";
+import {EnumsService} from "../../../shared/data-access/enums/enums.service";
+import {ActivatedRoute, Router} from "@angular/router";
+import {MatSnackBar} from "@angular/material/snack-bar";
+import {Game} from "../../../shared/data-access/games/games.class";
+
+@Component({
+  selector: 'app-game-edit',
+  templateUrl: './game-edit.component.html',
+  styleUrls: ['./game-edit.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
+})
+export class GameEditComponent implements OnInit{
+
+  activeUser$ = this.authService.getLoggedUser();
+
+  isModerator$ = this.activeUser$.pipe(switchMap(user => {
+    return of(user !== null && user.role === Role.MODERATOR);
+  }));
+
+  genres$ = this.genreService.getGenres(`${environment.API_ENDPOINT}/genres`);
+
+  loading$ = new BehaviorSubject(false);
+
+  routeId: number | null = null;
+
+  game$: Observable<Game> = this.activatedRoute.paramMap.pipe(
+    switchMap((params) => {
+      return this.gameService.getGame(`${environment.API_ENDPOINT}/games/` + params.get('id'));
+    }), catchError((err, caught) => {
+      this.router.navigate(['/games']); //TODO:404
+      return caught;
+    }),
+  );
+
+  constructor(private readonly authService:AuthenticationService,
+              private readonly gameService:GamesService,
+              private readonly genreService:EnumsService,
+              private readonly activatedRoute:ActivatedRoute,
+              private readonly router:Router,
+              private _snackBar:MatSnackBar) {
+  }
+  ngOnInit() {
+    this.activatedRoute.paramMap.subscribe((params) => {
+      const id = params.get('id');
+      if (!(id && Number.isInteger(parseInt(id)) && parseInt(id) > 0)){
+        this.router.navigate(['/games']); //TODO:404
+      }
+      this.routeId = parseInt(id!!);
+    });
+  }
+
+    editGame(formData:FormData){
+        this.loading$.next(true);//TODO: como cambio esto para tener el game sin llamarlo 2 veces
+        this.gameService.editGame(`${environment.API_ENDPOINT}/games/${this.routeId}`,formData).subscribe((game) =>{
+            this.loading$.next(false);
+            this.router.navigate(['/games',`${game.id}`],);//TODO:success snackbar
+    });
+
+  }
+  protected readonly GameFormType = GameFormType
+
+}

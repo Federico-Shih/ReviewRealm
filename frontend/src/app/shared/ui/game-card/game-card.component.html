@@ -7,12 +7,12 @@
         <div class="text-section">
           <span routerLink='/games/{{game.id}}' class="title clickable">{{game.name}}</span>
           <mat-chip-set class="genres">
-            <mat-chip *ngFor="let genre of game.genres?.slice(0,2)" routerLink="/games" [queryParams]="" class="chip clickable">
+            <mat-chip *ngFor="let genre of game.genres?.slice(0,2)" routerLink="/games" [queryParams]="{genres: [genre.id]}" class="chip clickable">
                 {{genre.localized}}
             </mat-chip>
-            <mat-chip *ngIf="game.genres !== undefined && game.genres.length > 2  " class="chip clickable">+{{game.genres.length }}</mat-chip>
+            <mat-chip *ngIf="game.genres !== undefined && game.genres.length > 2  " class="chip clickable">+{{game.genres.length - 2 }}</mat-chip>
           </mat-chip-set>
-          <span class="text" i18n>{{ 'publishing.date'| translate:{value:  game.publishDate} }}</span>
+          <span class="text" i18n>{{ 'publishing.date'| translate:{value:  game.publishDate.toLocaleDateString()} }}</span>
           <span class="text" i18n>{{ 'developer.card' | translate:{value: game.developer} }}</span>
         </div>
         <div class="extra-section">
@@ -35,10 +35,10 @@
           <div class="genres">
             <span class="text" i18n>{{ 'genres'| translate}}</span>
             <mat-chip-set class="chip-margin">
-              <mat-chip *ngFor="let genre of game.genres?.slice(0,2)" routerLink="/games" [queryParams]="" class="chip clickable">
+              <mat-chip *ngFor="let genre of game.genres?.slice(0,2)" routerLink="/games" [queryParams]="{genres: [genre.id]}" class="chip clickable">
                 {{genre.localized}}
               </mat-chip>
-              <mat-chip *ngIf="game.genres !== undefined && game.genres.length > 2  " class="chip">+{{game.genres.length }}</mat-chip>
+              <mat-chip *ngIf="game.genres !== undefined && game.genres.length > 2  " class="chip">+{{game.genres.length - 2}}</mat-chip>
             </mat-chip-set>
           </div>
         </div>
@@ -53,10 +53,10 @@
         <span routerLink='/games/{{game.id}}' class="title clickable">{{game.name}}</span>
         <div class="genres">
           <mat-chip-set class="chip-margin">
-            <mat-chip *ngFor="let genre of game.genres?.slice(0,2)" routerLink="/games" [queryParams]="" class="chip clickable">
+            <mat-chip *ngFor="let genre of game.genres?.slice(0,2)" routerLink="/games" [queryParams]="{genres: [genre.id]}" class="chip clickable">
               {{genre.localized}}
             </mat-chip>
-            <mat-chip *ngIf="game.genres !== undefined && game.genres.length > 2  " class="chip">+{{game.genres.length }}</mat-chip>
+            <mat-chip *ngIf="game.genres !== undefined && game.genres.length > 2  " class="chip">+{{game.genres.length - 2 }}</mat-chip>
           </mat-chip-set>
         </div>
       </div>

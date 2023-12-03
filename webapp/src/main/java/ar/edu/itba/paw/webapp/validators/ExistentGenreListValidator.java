@@ -9,10 +9,12 @@ import java.util.List;
 
 public class ExistentGenreListValidator implements ConstraintValidator<ExistentGenreList, Object> {
     private boolean isNullable;
+    private boolean emptyAllowed;
     @Override
     public void initialize(ExistentGenreList constraintAnnotation) {
         ConstraintValidator.super.initialize(constraintAnnotation);
         isNullable = constraintAnnotation.nullable();
+        emptyAllowed = constraintAnnotation.emptyAllowed();
     }
 
     @Override
@@ -23,7 +25,10 @@ public class ExistentGenreListValidator implements ConstraintValidator<ExistentG
         if (!(o instanceof List)) {
             return false;
         }
-        List<Integer> list = (List<Integer>) o;
+        List<Integer> list = (List<Integer>) o;//TODO: si aca me pasan un string revienta
+        if(list.isEmpty() && !emptyAllowed){
+            return false;
+        }
         for (Integer i : list) {
             if (i == null || i < 0 || !Genre.getById(i).isPresent()) {
                 return false;

@@ -67,7 +67,7 @@
           <span>{{ 'navbar.suggest-game' | translate }}</span>
         </button>
         <ng-container *ngIf="user?.role === Role.MODERATOR">
-          <button mat-menu-item>
+          <button mat-menu-item routerLink="/games/submit">
             <mat-icon>add</mat-icon>
             <span>{{ 'navbar.upload-game' | translate }}</span>
           </button>
