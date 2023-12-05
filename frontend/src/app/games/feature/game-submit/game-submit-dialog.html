@@ -1,0 +1,20 @@
+<ng-container *ngIf="(isModerator$ | async) as mod; else user">
+  <div class="dialog">
+    <h3 class="title">{{'game.create.title' | translate}}</h3>
+    <mat-dialog-actions align="end">
+      <button mat-raised-button [mat-dialog-close]="false" class="button flat-button">{{'cancel' | translate}}</button>
+      <button mat-raised-button [mat-dialog-close]="true" cdkFocusInitial class="button accent-button">{{'game-create.submit' | translate}}</button>
+    </mat-dialog-actions>
+  </div>
+
+</ng-container>
+<ng-template #user>
+  <div class="dialog">
+    <h3 class="title">{{'game.submit.title' | translate}}</h3>
+    <mat-dialog-actions align="end">
+      <button mat-raised-button [mat-dialog-close]="false" class="button flat-button">{{'cancel' | translate}}</button>
+      <button mat-raised-button [mat-dialog-close]="true" cdkFocusInitial class="button accent-button">{{'game-suggest.submit' | translate}}</button>
+    </mat-dialog-actions>
+  </div>
+
+</ng-template>

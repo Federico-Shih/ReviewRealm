@@ -24,11 +24,30 @@
     "order-by": "Order by"
   },
   "filter-title": "Filter by",
-  "game-create": {
-    "submit": "Send Creation",
-    "title": "Create a New Game"
-  },
   "following": "Following",
+  "game": {
+    "create": {
+      "title": "Are you sure you want to create this game?"
+    },
+    "created": "The game has been created.",
+    "delete": "Delete Game",
+    "deleted": "The game has been deleted.",
+    "deletedialog": {
+      "title": "Are you sure you want to delete this game?"
+    },
+    "edit": "Edit Game",
+    "editdialog": {
+      "title": "Are you sure you want to edit this game?"
+    },
+    "edited": "Game edited succesfully.",
+    "submit": {
+      "title": "Are you sure you want to suggest this game?"
+    },
+    "submitted": "The game has been suggested.",
+    "suggest": {
+      "title": "Are you sure you want to suggest this game?"
+    }
+  },
   "game-create": {
     "submit": "Send Creation",
     "title": "Create a New Game"
@@ -99,6 +118,9 @@
     "submit": "Send Suggestion",
     "title": "Suggest a New Game"
   },
+  "games": {
+    "search": "Search Games"
+  },
   "genres": "Genres:",
   "login-form": {
     "email-invalid": "Email is invalid.",
@@ -134,7 +156,8 @@
     "favgames": "Favorite Games",
     "followers": "Followers: {{value}}",
     "following": "Following: {{value}}",
-    "reviews": "Reviews"
+    "reviews": "Reviews",
+    "view-more-button": "View More"
   },
   "profile-card": {
     "whoprefers": "who prefers"
@@ -146,9 +169,6 @@
     "date": "Publishing Date: {{value}}"
   },
   "recommended": "Recommended",
-  "publishing": {
-    "date": "Publishing Date: {{value}}"
-  },
   "register-form": {
     "confirm-password": "Confirm password",
     "confirm-password-required": "Password confirmation is required.",
@@ -168,6 +188,7 @@
     "username-required": "Username is required."
   },
   "report": {
+    "accept": "Delete Review",
     "reason": {
       "disrespect": "Disrespectful content towards other members",
       "irrelevant": "Irrelevant content regarding gaming or its adjacent branches",
@@ -176,7 +197,6 @@
       "spam": "Spam or Self-Promotion",
       "spoiler": "Spoilers without any warnings or in the first lines of the review"
     },
-    "accept": "Delete Review",
     "reject": "Reject Report"
   },
   "report-reason": {

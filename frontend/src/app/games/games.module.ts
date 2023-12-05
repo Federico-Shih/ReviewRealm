@@ -26,8 +26,8 @@ import {GameSubmitComponent} from './feature/game-submit/game-submit.component';
 import {MatSnackBarModule} from "@angular/material/snack-bar";
 import {MatNativeDateModule} from "@angular/material/core";
 import {MatFormFieldModule} from "@angular/material/form-field";
-import { GameEditComponent } from './feature/game-edit/game-edit.component';
-
+import {GameEditComponent} from './feature/game-edit/game-edit.component';
+import {MatDialogModule} from "@angular/material/dialog";
 
 @NgModule({
   declarations: [
@@ -62,6 +62,7 @@ import { GameEditComponent } from './feature/game-edit/game-edit.component';
     MatSnackBarModule,
     MatNativeDateModule,
     MatFormFieldModule,
+    MatDialogModule,
   ]
 })
 export class GamesModule { }

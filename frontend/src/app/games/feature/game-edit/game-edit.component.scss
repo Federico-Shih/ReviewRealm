@@ -1,0 +1,39 @@
+::ng-deep mat-dialog-container {
+  --mdc-dialog-container-color: var(--color-surface) !important;
+  border: 1px solid var(--color-primary-variant-1) !important;
+  border-radius: 10px !important;
+  height: fit-content !important;
+  overflow-y: clip !important;
+  .dialog {
+    padding: 1em 2em;
+  }
+  .button {
+    position: relative;
+    cursor: pointer;
+    display: inline-block;
+    overflow: hidden;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    vertical-align: middle;
+    z-index: 1;
+    transition: .3s ease-out;
+    text-decoration: none;
+    color: #fff;
+    text-align: center;
+    letter-spacing: .5px;
+    border: none;
+    border-radius: 2px;
+    height: 36px;
+    line-height: 36px;
+    padding: 0 16px;
+    text-transform: uppercase;
+  }
+  .flat-button {
+    background-color: transparent;
+  }
+  .accent-button {
+    background-color: var(--color-accent);
+  }
+}

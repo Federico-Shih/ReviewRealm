@@ -58,16 +58,17 @@ export class GamesService {
       );
   }
 
-  createGame(url:string,gameDto:FormData){
-    return this.http.post<boolean>(url,gameDto,{
-      responseType:"json",
-      observe:"response"
-    }).pipe(catchError(exceptionMapper),switchMap( () =>{
-      return of(true);
-    }));
+  createGame(url:string,gameDto:FormData) {
+    return this.http.post<boolean>(url, gameDto, {
+      responseType: "json",
+      observe: "response"
+    }).pipe(catchError(exceptionMapper),
+      map((response) => {
+      return response.status === 201;
+      }));
   }
 
-  editGame(url:string,gameDto:FormData){
+  editGame(url:string,gameDto:FormData){//TODO:Error
     return this.http.patch<GameResponse>(url,gameDto,{
       responseType:"json",
       observe:"response"
@@ -80,5 +81,14 @@ export class GamesService {
               return this.genreService.getGenres(game.links.genres).pipe(map((genres) => Game.fromResponse(game, genres)));
           }
       ));
+  }
+  deleteGame(url:string){
+    return this.http.delete<boolean>(url,{
+      responseType:"json",
+      observe:"response"
+    }).pipe(catchError(exceptionMapper),
+      map((response) => {
+      return response.status === 200;
+    }));
   }
 }

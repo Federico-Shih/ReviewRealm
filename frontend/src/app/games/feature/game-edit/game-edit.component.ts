@@ -8,6 +8,10 @@ import {EnumsService} from "../../../shared/data-access/enums/enums.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {Game} from "../../../shared/data-access/games/games.class";
+import {TranslateService} from "@ngx-translate/core";
+import {SharedModule} from "../../../shared/shared.module";
+import {MatDialog, MatDialogModule} from "@angular/material/dialog";
+import {AsyncPipe, CommonModule} from "@angular/common";
 
 @Component({
   selector: 'app-game-edit',
@@ -43,7 +47,9 @@ export class GameEditComponent implements OnInit{
               private readonly genreService:EnumsService,
               private readonly activatedRoute:ActivatedRoute,
               private readonly router:Router,
-              private _snackBar:MatSnackBar) {
+              public  dialog: MatDialog,
+              private snackBar:MatSnackBar,
+              private readonly translate:TranslateService,) {
   }
   ngOnInit() {
     this.activatedRoute.paramMap.subscribe((params) => {
@@ -56,13 +62,38 @@ export class GameEditComponent implements OnInit{
   }
 
     editGame(formData:FormData){
-        this.loading$.next(true);//TODO: como cambio esto para tener el game sin llamarlo 2 veces
-        this.gameService.editGame(`${environment.API_ENDPOINT}/games/${this.routeId}`,formData).subscribe((game) =>{
-            this.loading$.next(false);
-            this.router.navigate(['/games',`${game.id}`],);//TODO:success snackbar
-    });
-
+        const dialogRef = this.dialog.open(GameEditDialogComponent);
+        dialogRef.afterClosed().subscribe((result) => {
+          if(result){
+            console.log(formData);
+            this.loading$.next(true);//TODO: como cambio esto para tener el game sin llamarlo 2 veces o hacer el link a mano
+            this.gameService.editGame(`${environment.API_ENDPOINT}/games/${this.routeId}`,formData).subscribe((game) =>{
+              this.loading$.next(false);
+              this.snackBar.open(
+                this.translate.instant('game.edited'), undefined,
+                {
+                  panelClass: ['green-snackbar']
+                });
+              this.router.navigate(['/games',`${game.id}`],);
+            });
+          }
+        });
   }
   protected readonly GameFormType = GameFormType
 
+}
+@Component({
+  selector: 'app-game-edit-dialog',
+  templateUrl: './game-edit-dialog.html',
+  imports: [
+    MatDialogModule,
+    SharedModule,
+    AsyncPipe,
+    CommonModule,
+  ],
+  standalone: true
+})
+export class GameEditDialogComponent {
+  constructor() {
+  }
 }

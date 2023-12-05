@@ -25,6 +25,29 @@
   },
   "filter-title": "Filtrar por",
   "following": "Siguiendo",
+  "game": {
+    "create": {
+      "title": "¿Está seguro que desea crear este juego?"
+    },
+    "created": "El juego ha sido creado.",
+    "delete": "Borrar Juego",
+    "deleted": "El juego se ha borrado",
+    "deletedialog": {
+      "title": "¿Está seguro que desea borrar este juego?"
+    },
+    "edit": "Editar Juego",
+    "editdialog": {
+      "title": "¿Está seguro que desea editar este juego?"
+    },
+    "edited": "Juego editado correctamente.",
+    "submit": {
+      "title": "¿Está seguro que desea sugerir este juego?"
+    },
+    "submitted": "El juego ha sido sugerido.",
+    "suggest": {
+      "title": "¿Está seguro que desea sugerir este juego?"
+    }
+  },
   "game-create": {
     "submit": "Enviar Creación",
     "title": "Crear un Nuevo Juego"
@@ -95,6 +118,9 @@
     "submit": "Enviar Sugerencia",
     "title": "Sugerir un Nuevo Juego"
   },
+  "games": {
+    "search": "Buscar Juegos"
+  },
   "genres": "Géneros:",
   "login-form": {
     "email-invalid": "Correo electrónico no es válido.",
@@ -163,6 +189,7 @@
     "username-required": "Nombre de usuario es requerido."
   },
   "report": {
+    "accept": "Borrar Reseña",
     "reason": {
       "disrespect": "Contenido irrespetuoso hacia otros miembros",
       "irrelevant": "Contenido irrelevante en lo que concierne gaming y sus ramas adyacentes",
@@ -171,7 +198,6 @@
       "spam": "Spam o Autopromoción",
       "spoiler": "Spoiler sin advertencias o en las primeras líneas de la reseña"
     },
-    "accept": "Borrar Reseña",
     "reject": "Anular Reporte"
   },
   "report-reason": {

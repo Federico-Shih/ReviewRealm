@@ -8,8 +8,8 @@ import {GameEditComponent} from "./feature/game-edit/game-edit.component";
 const routes: Routes = [
   { path: 'submit', component: GameSubmitComponent },
   { path: ':id/edit', component: GameEditComponent },
-  { path: '', component: GameListComponent },
   { path: ':id', component: GameDetailComponent },
+  { path: '', component: GameListComponent },
 ];
 
 @NgModule({

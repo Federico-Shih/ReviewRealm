@@ -1,18 +1,18 @@
 <ng-container *ngIf="(game$ | async) as game; else loading">
   <div class="page-header">
-  <!--  todo: breadcrumb-->
-    <div class="breadcrumb">
-
-    </div>
+    <app-breadcrumbs [breadcrumbs]="[
+    {name:'games.search' | translate, link: '/games'},
+    {name: game.name, link: '/games/'+game.id}]"
+    />
     <div class="mod-buttons" *ngIf="(isModerator$ | async)">
       <button mat-icon-button color="primary" [routerLink]="['/games', game.id, 'edit']"
-      matTooltip="{{ 'edit' | translate }}"> <!--todo:check router link-->
-        <mat-icon>edit</mat-icon>
+      matTooltip="{{ 'game.edit' | translate }}"> <!--todo:check router link-->
+        <mat-icon class="icons">edit</mat-icon>
       </button>
       <button mat-icon-button color="primary"
-              matTooltip="{{ 'delete' | translate }}">
-  <!--    todo: delete y cconfirmacion de delete-->
-        <mat-icon>delete</mat-icon>
+              matTooltip="{{ 'game.delete' | translate }}"
+      (click)="openDeleteDialog()">
+        <mat-icon class="icons">delete</mat-icon>
       </button>
     </div>
   </div>
@@ -117,6 +117,9 @@
             <app-review-card class="full-width" [review]="review" [hideActions]="true" ></app-review-card>
           </mat-grid-tile>
         </mat-grid-list>
+        <div *ngIf="reviews.links.next" class="centered-container view-more-button">
+          <button mat-raised-button color="accent" (click)="showMore(reviews.links.next)" i18n>{{ 'profile.view-more-button'|translate }}</button>
+        </div>
       </ng-container>
       <ng-template #noreviews>
         <div class="no-reviews">
@@ -125,14 +128,6 @@
         </div>
       </ng-template>
     </div>
-    <ng-template #loading >
-      <div class="centered-container">
-        <mat-spinner/>
-      </div>
-    </ng-template>
-<!--    <div>-->
-<!--      todo pagination-->
-<!--    </div>-->
   </div>
 </ng-container>
 <ng-template #loading>
