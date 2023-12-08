@@ -1,0 +1,35 @@
+.f-row {
+  display: flex !important;
+  flex-direction: row;
+}
+
+.f-jc-center {
+  justify-content: center;
+}
+
+.white-text {
+  color:#fff !important
+}
+
+.center {
+  text-align: center;
+}
+
+.subtitle{
+  font-size: 1.6rem;
+}
+.titletext {
+  font-size: 2.2rem;
+  line-height: 110%;
+  align-self:center;
+}
+
+.m-b-30 {
+  margin-bottom: 30px;
+}
+
+.btn {
+  align-items: center;
+  display: flex;
+  background: var(--color-accent);
+}

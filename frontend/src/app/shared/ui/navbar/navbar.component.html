@@ -50,7 +50,7 @@
     </button>
     <mat-menu #menu="matMenu">
       <div class="menu">
-        <button mat-menu-item>
+        <button mat-menu-item routerLink="/profile/{{user?.id}}">
           <mat-icon>account_circle</mat-icon>
           <span>{{ 'navbar.profile' | translate }}</span>
         </button>

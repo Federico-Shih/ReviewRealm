@@ -1,0 +1,56 @@
+<div>
+  <div class="full-width f-column">
+    <div class="f-row f-jc-center ">
+      <span class="titletext" i18n>{{ 'settings.genres.yourfavgenres' | translate}}</span>
+    </div>
+    <div class="f-row f-jc-center margin-for-text wrap contained-width">
+      <ng-container *ngFor="let favgenre of favgenres">
+        <span class="chip-small-inverted margin-for-label">{{favgenre}}</span>
+      </ng-container>
+      <ng-container *ngIf="favgenres.length===0">
+        <span class="subtitle" i18n>{{ 'settings.genres.nofavgames' | translate }}</span>
+      </ng-container>
+    </div>
+    <div class="full-width f-row f-jc-center">
+      <span class="subtitle" i18n>{{ 'settings.genres.choose' | translate }}</span>
+    </div>
+    <div class="f-row f-jc-center contained-width margin-for-text wrap">
+      <ng-container *ngFor="let genre of favgenres">
+        <label class="margin-for-label">
+                        <span>
+                            <div class="chip-small width-fit-content">
+                                <input type="checkbox"/>
+                                <span class="">{{genre}}</span>
+                            </div>
+                        </span>
+        </label>
+      </ng-container>
+    </div>
+
+    <div class="f-row f-jc-center contained-width wrap">
+      <ng-container *ngFor="let genre of favgenres">
+        <label class="margin-for-label">
+                        <span>
+                            <div class="chip-small width-fit-content">
+                                <input type="checkbox" checked/>
+                                <span class="">{{genre}}</span>
+                            </div>
+                        </span>
+        </label>
+      </ng-container>
+    </div>
+  </div>
+
+
+ <!-- <form:errors path="genres" cssClass="error" element="p"/>-->
+
+  <div class="f-row full-width margin-for-text">
+    <div class="full-width f-row f-jc-center">
+      <button class="btn" type="submit">
+        <i class="material-icons left white">save</i>
+        <span class="white" i18n>{{ 'settings.notification.save' | translate }}</span>
+      </button>
+    </div>
+  </div>
+
+</div>

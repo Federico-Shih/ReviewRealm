@@ -1,6 +1,18 @@
-<div class="top-container">
-    <span class="titletext" i18n>{{ 'settings.notifications' | translate}}</span>
-    <div class="divider-h"></div>
+<div class="top-container f-column">
+  <span class="titletext" i18n>{{ 'settings.notifications' | translate}}</span>
+  <div class="divider-h"></div>
+  <div class="f-column f-gap-2">
+    <ng-container *ngFor="let setting of currentNotificationSettings">
+      <label class="margin-top-1">
+        <input type="checkbox" [value]="setting.val" name="notificationSettings"/>
+        <span i18n>{{ setting.key | translate }}</span>
+      </label>
+    </ng-container>
+    <button class="btn margin-top-1 width-fit-content" type="submit">
+      <i class="material-icons white">save</i>
+      <span i18n class="white">{{'settings.notification.save' | translate}}</span>
+    </button>
+  </div>
     <!--
     <form:form modelAttribute="notificationsForm" action="${saveSettings}" method="post">
         <div class="f-column f-gap-2">

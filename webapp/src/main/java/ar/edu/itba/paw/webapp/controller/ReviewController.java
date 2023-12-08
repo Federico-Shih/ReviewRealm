@@ -20,7 +20,7 @@ import ar.edu.itba.paw.webapp.controller.querycontainers.ReviewSearchQuery;
 import ar.edu.itba.paw.webapp.controller.responses.FeedbackResponse;
 import ar.edu.itba.paw.webapp.controller.responses.PaginatedResponseHelper;
 import ar.edu.itba.paw.webapp.controller.responses.ReviewResponse;
-import ar.edu.itba.paw.webapp.validators.FeedbackTypeBean;
+import ar.edu.itba.paw.webapp.validators.FeedbackTypeForm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -135,7 +135,7 @@ public class ReviewController{
 
 
 
-    @PATCH
+    @PUT
     @Path("{id:\\d+}")
     @Consumes(VndType.APPLICATION_REVIEW_PATCH)
     @PreAuthorize("@accessControl.checkReviewAuthorOwnerOrMod(#id)")
@@ -163,10 +163,10 @@ public class ReviewController{
 
     @POST
     @Path("{reviewId:\\d+}/feedback")
-    @Produces(VndType.APPLICATION_REVIEW_FEEDBACK)
     @Consumes(VndType.APPLICATION_REVIEW_FEEDBACK_FORM)
+    @Produces(VndType.APPLICATION_REVIEW_FEEDBACK)
     @PreAuthorize("@accessControl.checkUserIsNotAuthor(#reviewId)")
-    public Response createReviewFeedback(@Valid @ExistentReviewId @PathParam("reviewId") long reviewId, @Valid @BeanParam FeedbackTypeBean feedbackType) {
+    public Response createReviewFeedback(@Valid @ExistentReviewId @PathParam("reviewId") long reviewId, @Valid @NotNull(message = "error.body.empty") FeedbackTypeForm feedbackType) {
         FeedbackType fb = feedbackType.transformToEnum();
         long userId = AuthenticationHelper.getLoggedUser(userService).getId();
 

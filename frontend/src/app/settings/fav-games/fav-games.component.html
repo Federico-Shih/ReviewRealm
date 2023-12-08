@@ -1,0 +1,38 @@
+<div class="container">
+  <div>
+    <div class="m-b-30">
+      <ng-container *ngIf="favGamesCandidate.length===0">
+        <div class="f-row f-jc-center">
+          <h2 class="white-text center" i18n>{{ 'settings.fg.empty' | translate}}</h2>
+        </div>
+      </ng-container>
+      <ng-container *ngIf="favGamesCandidate.length!==0">
+        <div class="f-row f-jc-center">
+          <span class="titletext white-text" i18n>{{ 'settings.fg.choose' | translate}}</span>
+        </div>
+        <div class="f-row f-jc-center">
+          <span class="subtitle white-text center" i18n>{{ 'settings.fg.consideration' | translate}}</span>
+        </div>
+      </ng-container>
+      <div class="f-row f-jc-center">
+        <!--<form:errors path="gameIds" cssClass="error"/>-->
+      </div>
+      <ng-container *ngFor="let game of favGamesCandidate">
+
+      </ng-container>
+      <ng-container *ngFor="let game of favGames">
+
+      </ng-container>
+    </div>
+    <ng-container *ngIf="favGamesCandidate.length!==0">
+      <div class="f-row f-jc-center m-b-30">
+        <button class="btn white-text" type="submit" i18n>{{ 'settings.fg.save' | translate }}</button>
+      </div>
+    </ng-container>
+  </div>
+  <ng-container *ngIf="favGamesCandidate.length===0">
+    <div class="f-row f-jc-center">
+      <button class="btn white-text" routerLink="/games" i18n>{{ 'settings.fg.create' | translate }}</button>
+    </div>
+  </ng-container>
+</div>

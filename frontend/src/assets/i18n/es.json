@@ -1,4 +1,32 @@
 {
+  "settings": {
+    "fav-games": "Juegos Favoritos",
+    "fav-genres": "Géneros Favoritos",
+    "notifications": "Notificaciones de Correo Electrónico",
+    "title": "Configuración de Cuenta",
+    "notification": {
+      "save": "Guardar Nueva Configuración",
+      "deletion": "Cuando una de mis reseñas es eliminada por un moderador",
+      "following": "Cuando un usuario que sigo escribe una reseña"
+    },
+    "genres": {
+      "yourfavgenres": "Tus Géneros Favoritos Actuales:",
+      "nofavgames": "¡Aún no tienes géneros favoritos!",
+      "choose": "Elige otros géneros:"
+    },
+    "avatar": "Avatar de Perfil",
+    "avatarchoose": "¡Seleccione su Avatar!",
+    "fg": {
+      "create": "Crear Reseña",
+      "save": "Guardar Juegos Favoritos",
+      "empty": "No tienes reseñas con puntuación mayor a 7. ¡Añade reseñas de tus juegos favoritos para que aparezcan aquí!",
+      "choose": "¡Elige tus Juego Favoritos!",
+      "consideration": "Únicamente juegos a los que les has dado una puntuación de 7 o más aparecerán aquí..."
+    },
+    "avatars": {
+      "choose": "¡Seleccione su Avatar!"
+    }
+  },
   "apply-filters": "Aplicar filtros",
   "asc": "Ascendente",
   "average-rating": "Puntuación Promedio",
@@ -153,11 +181,11 @@
   "new-review": "Nueva Reseña",
   "no-reports": "¡No quedan reportes sin analizar!",
   "profile": {
-    "fan": "Fanático de:",
     "favgames": "Juegos Favoritos",
     "followers": "Seguidores: {{value}}",
     "following": "Siguiendo: {{value}}",
     "reviews": "Reseñas",
+    "fan": "Fanático de:",
     "view-more-button": "Ver Más"
   },
   "profile-card": {
@@ -255,13 +283,6 @@
     "noresults": "No hubo resultados encontrados...",
     "review-title": "Reseñas",
     "users-title": "Usuarios"
-  },
-  "settings": {
-    "avatar": "Avatares",
-    "fav-games": "Juegos Favoritos",
-    "fav-genres": "Géneros Favoritos",
-    "notifications": "Notificaciones de Email",
-    "title": "Configuración de Cuenta"
   },
   "time": {
     "hours": "{{number}} horas",

@@ -7,6 +7,9 @@
   display: flex;
 }
 
+.f-gap-2 {
+  gap: 2% !important;
+}
 
 
 .titletext {
@@ -25,6 +28,24 @@
   padding: 10px;
 }
 
+.margin-top-1 {
+  margin-top: 1% !important;
+}
+
+.width-fit-content {
+  width: fit-content !important;
+}
+
+.btn {
+  align-items: center;
+  display: flex;
+  background: var(--color-accent);
+}
+
+.white {
+  color: white;
+  margin-right: 10px;
+}
 
 .f-column {
   display: flex;
