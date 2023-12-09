@@ -1,5 +1,9 @@
 <section class="login-container">
   <div class="form-container">
-    <app-login-form (loginSubmit)="onLoginSubmit($event)" [errorMessage]="errorMessage | async"></app-login-form>
+    <app-login-form
+      (loginSubmit)="onLoginSubmit($event)"
+      [errorMessage]="errorMessage$ | async"
+      [loading]="loading$ | async"
+    ></app-login-form>
   </div>
 </section>

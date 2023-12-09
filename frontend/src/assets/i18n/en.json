@@ -1,29 +1,4 @@
 {
-  "settings": {
-    "fav-games": "Favorite Games",
-    "fav-genres": "Favorite Genres",
-    "notifications": "Email Notification ",
-    "title": "Account Settings",
-    "notification": {
-      "save": "Save New Settings",
-      "deletion": "When one of my reviews gets deleted by a moderator",
-      "following": "When one of the users I follow writes a review"
-    },
-    "genres": {
-      "yourfavgenres": "Your Current Favorite Genres:",
-      "nofavgames": "You have no favorite genres, yet!",
-      "choose": "Choose other genres:"
-    },
-    "avatar": "Profile Avatar",
-    "avatarchoose": "Choose your Avatar!",
-    "fg": {
-      "create": "Create Review",
-      "save": "Save Favorite Games",
-      "empty": "You have no reviews with a higher than 7 rating. Add reviews of your favorite games to see them here!",
-      "choose": "Choose your Favorite Games!",
-      "consideration": "Only games you have given a 7+ rating to will appear here..."
-    }
-  },
   "apply-filters": "Apply filters",
   "asc": "Ascending",
   "average-rating": "Average Rating",
@@ -267,9 +242,11 @@
     "difficulty-filter": "Perceived difficulty",
     "filter-title": "Filter by",
     "game-genres-filter": "Game's genres",
+    "no-results": "No reviews found.",
     "platform-filter": "Platform",
     "replayable": "Replayable",
     "reset-filters": "Reset filters",
+    "search-label": "Search",
     "timeplayed-filter": "Minimum time played",
     "toggle-filters": "Filters",
     "user-preference-filter": "User preferences"
@@ -279,6 +256,31 @@
     "noresults": "No results found...",
     "review-title": "Reviews",
     "users-title": "Users"
+  },
+  "settings": {
+    "avatar": "Profile Avatar",
+    "avatarchoose": "Choose your Avatar!",
+    "fav-games": "Favorite Games",
+    "fav-genres": "Favorite Genres",
+    "fg": {
+      "choose": "Choose your Favorite Games!",
+      "consideration": "Only games you have given a 7+ rating to will appear here...",
+      "create": "Create Review",
+      "empty": "You have no reviews with a higher than 7 rating. Add reviews of your favorite games to see them here!",
+      "save": "Save Favorite Games"
+    },
+    "genres": {
+      "choose": "Choose other genres:",
+      "nofavgames": "You have no favorite genres, yet!",
+      "yourfavgenres": "Your Current Favorite Genres:"
+    },
+    "notification": {
+      "deletion": "When one of my reviews gets deleted by a moderator",
+      "following": "When one of the users I follow writes a review",
+      "save": "Save New Settings"
+    },
+    "notifications": "Email Notification ",
+    "title": "Account Settings"
   },
   "time": {
     "hours": "{{number}} hours",

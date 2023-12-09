@@ -32,6 +32,7 @@ export class MainFeedPageComponent implements OnInit {
     },
     totalPages: 0
   });
+
   loading$ = new BehaviorSubject<boolean>(true);
   loadingInfinite$ = new BehaviorSubject<boolean>(false);
   loadingReviews$ = combineLatest({

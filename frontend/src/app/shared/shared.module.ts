@@ -27,15 +27,16 @@ import {TriCheckboxComponent} from './ui/tri-checkbox/tri-checkbox.component';
 import {MatCheckboxModule} from "@angular/material/checkbox";
 import {SearchBarComponent} from './ui/searchbar/search-bar.component';
 import {GameCardComponent} from "./ui/game-card/game-card.component";
-import { BreadcrumbsComponent } from './ui/breadcrumbs/breadcrumbs.component';
+import {BreadcrumbsComponent} from './ui/breadcrumbs/breadcrumbs.component';
 import {MatSnackBarModule} from "@angular/material/snack-bar";
 import {ReportsService} from "./data-access/reports/reports.service";
+import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
 
 
 @NgModule({
   declarations: [NavbarComponent, LoginFormComponent, FilterDrawerComponent, ReviewCardComponent, ProfileCardComponent, TriCheckboxComponent, SearchBarComponent,
-  GameCardComponent, BreadcrumbsComponent],
-  providers: [UsersService, ReviewsService, GamesService, EnumsService,ReportsService],
+    GameCardComponent, BreadcrumbsComponent],
+  providers: [UsersService, ReviewsService, GamesService, EnumsService, ReportsService],
   imports: [
     CommonModule,
     HttpClientModule,
@@ -55,7 +56,8 @@ import {ReportsService} from "./data-access/reports/reports.service";
     NgOptimizedImage,
     MatChipsModule,
     MatCheckboxModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    MatProgressSpinnerModule
   ],
   exports: [
     NavbarComponent,

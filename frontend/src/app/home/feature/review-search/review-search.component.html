@@ -123,8 +123,9 @@
     <div class="searchbar">
       <button (click)="drawer.toggle()"
               color="accent"
+              class="filter-button"
               mat-raised-button>
-        {{ 'toggle-filters' | translate }}
+        <span><mat-icon>filter_alt</mat-icon></span>
       </button>
       <div>
         <app-search-bar
@@ -133,16 +134,32 @@
           [label]="'navbar.search' | translate"
         ></app-search-bar>
       </div>
+      <button (click)="submitSearch()" class="search-button" color="accent" mat-flat-button>
+        {{ 'review-search.search-label' | translate }}
+      </button>
     </div>
     <section>
+      <div *ngIf="loading" class="centered-container">
+        <mat-spinner/>
+      </div>
       <mat-grid-list
-        *ngIf="(paginatedReviews$ | async) as reviews; else loading"
+        *ngIf="(paginatedReviews$ | async) as reviews"
         cols="2"
         gutterSize="20px"
         rowHeight="300px"
         style="display: flex;"
       >
-        <mat-grid-tile *ngFor="let review of reviews.content" colspan="1" rowspan="1" style="">
+        <mat-grid-tile *ngIf="!loading && reviews.totalPages === 0" colspan="2" rowspan="1">
+          <span>
+            {{ 'review-search.no-results' | translate }}
+            <a class="router-link" routerLink="/">{{ 'review-search.reset-filters' | translate }}</a>
+          </span>
+        </mat-grid-tile>
+        <mat-grid-tile
+          *ngFor="let review of reviews.content"
+          [style.display]="loading ? 'none': 'auto'"
+          colspan="1" rowspan="1"
+        >
           <app-review-card [review]="review" style="width: 100%"></app-review-card>
         </mat-grid-tile>
       </mat-grid-list>
@@ -160,11 +177,6 @@
         </mat-paginator>
       </div>
     </section>
-    <ng-template #loading>
-        <div class="centered-container">
-          <mat-spinner/>
-        </div>
-    </ng-template>
   </mat-drawer-content>
 </mat-drawer-container>
 

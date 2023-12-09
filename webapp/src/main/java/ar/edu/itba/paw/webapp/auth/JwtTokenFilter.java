@@ -74,6 +74,9 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 return;
             }
             response.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + jwtTokenUtil.generateAccessToken(user));
+        } else if (userDetails != null) {
+            // Devuelve el mismo token para que siga siendo válido como sesión
+            response.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + token);
         }
         UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
                 userDetails, null,

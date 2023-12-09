@@ -10,6 +10,7 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {TranslateLoader, TranslateModule} from "@ngx-translate/core";
 import {TranslateHttpLoader} from "@ngx-translate/http-loader";
 import {MAT_SNACK_BAR_DEFAULT_OPTIONS} from "@angular/material/snack-bar";
+import {RetryWithRefreshInterceptor} from "./shared/interceptors/RetryWithRefreshInterceptor";
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http);
@@ -39,6 +40,11 @@ export function HttpLoaderFactory(http: HttpClient) {
     useClass: AuthenticationInterceptor,
     multi: true
   },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: RetryWithRefreshInterceptor,
+      multi: true
+    },
     {provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: {duration: 2000}}
   ],
   bootstrap: [AppComponent]

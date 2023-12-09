@@ -11,22 +11,26 @@ import {Router} from "@angular/router";
   styleUrls: ['./login.component.scss']
 })
 export class LoginComponent {
-  errorMessage = new BehaviorSubject<string | null>(null);
+  errorMessage$ = new BehaviorSubject<string | null>(null);
+  loading$ = new BehaviorSubject(false);
 
   constructor(private readonly authService: AuthenticationService, private readonly router: Router) {
   }
 
   onLoginSubmit(authenticationDto: AuthenticationDto) {
-    this.errorMessage.next(null);
+    this.errorMessage$.next(null);
+    this.loading$.next(true);
     this.authService.login(authenticationDto).subscribe({
       next: (_) => {
         // TODO: on unauthenticated, return to previous page
         this.router.navigate(['/']);
+        this.loading$.next(false);
       },
       error: (err) => {
         if (err instanceof RequestError && err.status === 401) {
-          this.errorMessage.next('login-form.invalid-credentials');
+          this.errorMessage$.next('login-form.invalid-credentials');
         }
+        this.loading$.next(false);
       }
     });
   }

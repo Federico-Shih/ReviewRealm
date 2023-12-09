@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {environment} from "../../../../environments/environment";
-import {map, Observable, ReplaySubject, switchMap} from "rxjs";
+import {catchError, map, Observable, of, ReplaySubject, switchMap} from "rxjs";
 import {User} from "../users/users.class";
 import {AuthenticationDto} from "./authentication.dtos";
 import {HttpClient, HttpHeaders} from "@angular/common/http";
@@ -9,8 +9,8 @@ import {jwtDecode} from "jwt-decode";
 import {UserJwtPayload} from "../shared.models";
 import {UsersService} from "../users/users.service";
 
-export const AUTHORIZATION_TOKEN_LABEL = 'authorizationToken';
-export const REFRESH_TOKEN_LABEL = 'refreshToken';
+export const AUTHORIZATION_TOKEN_LABEL = 'X-RR-AUTHORIZATION';
+export const REFRESH_TOKEN_LABEL = 'X-RR-REFRESH';
 
 @Injectable({providedIn: 'root'})
 export class AuthenticationService {
@@ -18,19 +18,18 @@ export class AuthenticationService {
   loggedUser$ = new ReplaySubject<User | null>();
 
   constructor(private readonly http: HttpClient, private readonly userService: UsersService) {
-    const token = localStorage.getItem(AUTHORIZATION_TOKEN_LABEL);
+    const token = localStorage.getItem(AUTHORIZATION_TOKEN_LABEL)
+    console.log(token);
     if (token) {
-      const payload = jwtDecode<UserJwtPayload>(token);
-      if (payload.id) {
-        this.userService
-          .getUsers(AuthenticationService.AUTHENTICATION_ENDPOINT, {id: payload.id})
-          .subscribe(users => {
-            this.loggedUser$.next(users.content[0]);
-          });
-        return;
-      }
+      this.isValidSession().pipe((catchError((err) => {
+        this.logout();
+        return of(null);
+      }))).subscribe((user) => {
+        this.loggedUser$.next(user);
+      });
+    } else {
+      this.loggedUser$.next(null);
     }
-    this.loggedUser$.next(null);
   }
 
   login({username, password}: AuthenticationDto): Observable<User | never> {
@@ -38,6 +37,15 @@ export class AuthenticationService {
       headers: {
         'Authorization': 'Basic ' + btoa(`${username}:${password}`),
       },
+      observe: "response",
+      responseType: "json"
+    }).pipe(switchMap(({headers}) => {
+      return this.getAuthenticatedUserFromHeader(headers);
+    }));
+  }
+
+  isValidSession(): Observable<User | never> {
+    return this.http.get<unknown>(AuthenticationService.AUTHENTICATION_ENDPOINT, {
       observe: "response",
       responseType: "json"
     }).pipe(switchMap(({headers}) => {

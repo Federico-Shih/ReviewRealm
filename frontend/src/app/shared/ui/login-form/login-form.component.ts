@@ -14,6 +14,9 @@ export class LoginFormComponent {
   @Input()
   errorMessage: string | null = null;
 
+  @Input()
+  loading: boolean | null = false;
+
   @Output()
   loginSubmit = new EventEmitter<AuthenticationDto>();
 

@@ -24,5 +24,15 @@
 
 .submit-btn {
   font-size: 1.2rem;
-  margin-top: 5px
+  margin-top: 5px;
+
+  padding: 10px 0 !important;
+  height: 50px;
+}
+
+.btn-label {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
 }
