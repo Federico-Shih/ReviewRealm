@@ -173,6 +173,11 @@ public class UserResponse extends BaseResponse {
                                 .path(ReviewResponse.BASE_PATH)
                                 .queryParam("newForUser", String.valueOf(user.getId()))
                                 .build());
+                userResponse.link("recommendedGames",
+                        uriInfo.getBaseUriBuilder()
+                                .path(GameResponse.BASE_PATH)
+                                .queryParam("recommendedFor", String.valueOf(user.getId()))
+                                .build());
             } else {
                 if (user.isFollowing()) {
                     userResponse.link("unfollow", uriInfo.getBaseUriBuilder().path(BASE_PATH).path(String.valueOf(currentUser.getId())).path("following").path(String.valueOf(user.getId())).build());

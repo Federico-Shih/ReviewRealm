@@ -4,17 +4,15 @@ import {ReviewsService} from "../../../shared/data-access/reviews/reviews.servic
 import {AuthenticationService} from "../../../shared/data-access/authentication/authentication.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {Game} from "../../../shared/data-access/games/games.class";
-import {BehaviorSubject, catchError, map, Observable, of, pipe, Subject, switchMap, tap} from "rxjs";
+import {BehaviorSubject, catchError, combineLatest, map, Observable, of, switchMap} from "rxjs";
 import {Review} from "../../../shared/data-access/reviews/review.class";
-import {Paginated, PaginatedLinks} from "../../../shared/data-access/shared.models";
+import {Paginated} from "../../../shared/data-access/shared.models";
 import {environment} from "../../../../environments/environment";
 import {Role} from "../../../shared/data-access/shared.enums";
-import {PageEvent} from "@angular/material/paginator";
-import {DeleteConfirmationDialogComponent} from "../../../reviews/feature/review-detail/review-detail.component";
 import {MatSnackBar} from "@angular/material/snack-bar";
-import {MatDialog, MatDialogModule} from "@angular/material/dialog";
+import {MatDialog} from "@angular/material/dialog";
 import {TranslateService} from "@ngx-translate/core";
-import {SharedModule} from "../../../shared/shared.module";
+import {GameDeleteDialogComponent} from "../../ui/game-delete-dialog/game-delete-dialog.component";
 
 @Component({
   selector: 'app-game-detail',
@@ -27,7 +25,7 @@ export class GameDetailComponent implements OnInit {
   loggedUser$ = this.authService.getLoggedUser();
 
   isModerator$ = this.loggedUser$.pipe(map((user) => {
-    return user && user.role === Role.MODERATOR;
+    return !!user && user.role === Role.MODERATOR;
   }));
 
   game$: Observable<Game> = this.activatedRoute.paramMap.pipe(
@@ -46,14 +44,27 @@ export class GameDetailComponent implements OnInit {
     return this.reviewService.getReviews(game.links.reviews, {});
   }));
 
-  paginatedReviews$: BehaviorSubject<Paginated<Review>|null> = new BehaviorSubject<Paginated<Review> | null>(null);
+  isLoadingReviews$ = new BehaviorSubject<boolean>(false);
 
-  userReview$: Observable<Paginated<Review> | null> = this.game$.pipe(switchMap((game) => {
+  paginatedReviews$: BehaviorSubject<Paginated<Review> | null> = new BehaviorSubject<Paginated<Review> | null>(null);
+
+  userReview$: Observable<Review | null> = this.game$.pipe(switchMap((game) => {
     if (game.links.userReview) {
-      return this.reviewService.getReviews(game.links.userReview, {});
+      return this.reviewService.getReviews(game.links.userReview, {})
+        .pipe((map((paginated) => paginated.content[0])));
     }
     return of(null);
   }));
+
+  state$ = combineLatest(
+    {
+      isModerator: this.isModerator$,
+      game: this.game$,
+      userReview: this.userReview$,
+      initialReviews: this.initialReviews$,
+      isLoadingReviews: this.isLoadingReviews$,
+    }
+  );
 
   constructor(private readonly gameService: GamesService,
               private readonly reviewService: ReviewsService,
@@ -65,15 +76,18 @@ export class GameDetailComponent implements OnInit {
               private readonly translate: TranslateService
   ) {
   }
+
   showMore(next: string): void {
-    this.reviewService.getReviews(next,{}).subscribe((pageInfo) => {
-      const currentReviews = this.paginatedReviews$.getValue();
-      if (currentReviews!== null)
-      {
-        const newReviews = currentReviews.content.concat(pageInfo.content)
-        this.paginatedReviews$.next({content: newReviews, links: pageInfo.links, totalPages: pageInfo.totalPages})
-      }
-    });
+    this.isLoadingReviews$.next(true);
+    this.reviewService.getReviews(next, {})
+      .subscribe((pageInfo) => {
+        const currentReviews = this.paginatedReviews$.getValue();
+        if (currentReviews !== null) {
+          const newReviews = currentReviews.content.concat(pageInfo.content)
+          this.paginatedReviews$.next({content: newReviews, links: pageInfo.links, totalPages: pageInfo.totalPages})
+          this.isLoadingReviews$.next(false);
+        }
+      });
   }
 
   ngOnInit(): void {
@@ -119,14 +133,6 @@ export class GameDetailComponent implements OnInit {
     });
   }
 }
-@Component({
-  selector: 'app-game-delete-dialog',
-  templateUrl: './game-delete-dialog.html',
-  imports: [
-    MatDialogModule,
-    SharedModule
-  ],
-  standalone: true
-})
-export class GameDeleteDialogComponent {}
+
+
 

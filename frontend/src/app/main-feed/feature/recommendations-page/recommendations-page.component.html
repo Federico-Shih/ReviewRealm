@@ -1,0 +1,47 @@
+<div class="main-container">
+  <ng-container *ngIf="state$ | async as state; else loading">
+    <app-game-detail-page
+      (showMoreReviews)="showMore($event)"
+      *ngIf="state?.gameState?.game !== null"
+      [game]="state.gameState.game"
+      [isModerator]="false"
+      [loadingReviews]="state.isLoadingReviews"
+      [paginatedReviews]="state.initialReviews"
+      [userReview]="state.userReview"
+    >
+
+    </app-game-detail-page>
+    <button *ngIf="!state.gameState.links.prev"
+            class="left-button"
+            color="accent"
+            mat-flat-button
+            routerLink="/for-you">
+      <mat-icon>chevron_left</mat-icon>
+      {{ 'recommendations.backtofeed' | translate | uppercase }}
+    </button>
+    <button (click)="changeLink(state.gameState.links.prev, false)"
+            *ngIf="state.gameState.links.prev"
+            class="left-button"
+            color="accent"
+            mat-flat-button
+    >
+      <mat-icon>chevron_left</mat-icon>
+      {{ 'recommendations.prev' | translate | uppercase }}
+    </button>
+    <button (click)="changeLink(state.gameState.links.next, true)"
+            *ngIf="state.gameState.links.next"
+            class="right-button"
+            color="accent"
+            mat-flat-button
+    >
+      {{ 'recommendations.next' | translate | uppercase }}
+      <mat-icon>chevron_right</mat-icon>
+    </button>
+  </ng-container>
+  <ng-template #loading>
+    <div class="centered-container">
+      <mat-spinner></mat-spinner>
+    </div>
+  </ng-template>
+
+</div>

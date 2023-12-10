@@ -1,4 +1,31 @@
 <div (scroll)="nextPage($event)" class="main-container">
+  <div class="for-you-section">
+    <div *ngIf="(hasPreferences$ | async)" class="row has-preference-bg">
+      <mat-icon class="icon-size">videogame_asset</mat-icon>
+      <div class="card-cta">
+        <span class="card-title">{{ 'mainfeed.preferences.title' | translate}}</span>
+        <div>
+          <button class="button-cta" mat-stroked-button routerLink="/for-you/discover">
+            <span>{{ 'mainfeed.preferences.cta' | translate | uppercase }}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div *ngIf="(hasPreferences$ | async) === false" class="row no-preference-bg">
+      <mat-icon class="icon-size">warning</mat-icon>
+      <div class="card-cta">
+          <span class="card-title">
+            {{ 'mainfeed.nopreferencesset.title' | translate }}
+          </span>
+        <div>
+          <button class="button-cta" mat-stroked-button routerLink=""> <!--TODO: link to preferences -->
+            <span>{{ 'mainfeed.nopreferencesset.cta' | translate }}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <h1>{{ getTabLabel(selectedTab.value) | translate }}</h1>
   <header>
     <mat-button-toggle-group [formControl]="selectedTab" class="tab-group">
       <mat-button-toggle class="tab" value="following">
@@ -18,6 +45,10 @@
   <section *ngIf="(loadingReviews$ | async) as loadingReviews" class="main-section">
     <div *ngIf="loadingReviews.loading" class="centered-container spinner">
       <mat-spinner></mat-spinner>
+    </div>
+    <!--TODO: cuando haya # de followers en User, agregar "seguir a gente" -->
+    <div *ngIf="!loadingReviews.loading && loadingReviews.reviews.totalPages === 0" class="centered-container">
+      <h2>{{ 'mainfeed.noReviews' | translate }}</h2>
     </div>
     <mat-grid-list
       [style.visibility]="loadingReviews.loading ? 'hidden' : 'visible'"

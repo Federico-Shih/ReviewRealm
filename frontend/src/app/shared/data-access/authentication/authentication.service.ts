@@ -15,7 +15,7 @@ export const REFRESH_TOKEN_LABEL = 'X-RR-REFRESH';
 @Injectable({providedIn: 'root'})
 export class AuthenticationService {
   static AUTHENTICATION_ENDPOINT = environment.API_ENDPOINT + '/users';
-  loggedUser$ = new ReplaySubject<User | null>();
+  private loggedUser$ = new ReplaySubject<User | null>();
 
   constructor(private readonly http: HttpClient, private readonly userService: UsersService) {
     const token = localStorage.getItem(AUTHORIZATION_TOKEN_LABEL)

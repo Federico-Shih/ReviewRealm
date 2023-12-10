@@ -50,6 +50,7 @@ export type UserLinksResponse = {
   recommendedReviews?: string;
   newReviews?: string;
   followingReviews?: string;
+  recommendedGames?: string;
 }
 
 export type UserResponse = {

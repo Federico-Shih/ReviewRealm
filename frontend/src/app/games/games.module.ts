@@ -28,6 +28,7 @@ import {MatNativeDateModule} from "@angular/material/core";
 import {MatFormFieldModule} from "@angular/material/form-field";
 import {GameEditComponent} from './feature/game-edit/game-edit.component';
 import {MatDialogModule} from "@angular/material/dialog";
+import {GameDetailPageComponent} from "./ui/game-detail-page/game-detail-page.component";
 
 @NgModule({
   declarations: [
@@ -35,7 +36,11 @@ import {MatDialogModule} from "@angular/material/dialog";
     GameFormComponent,
     GameListComponent,
     GameSubmitComponent,
-    GameEditComponent
+    GameEditComponent,
+    GameDetailPageComponent
+  ],
+  exports: [
+    GameDetailPageComponent
   ],
   imports: [
     CommonModule,

@@ -15,6 +15,7 @@ export class UserLinks {
   recommendedReviews?: string;
   newReviews?: string;
   followingReviews?: string;
+  recommendedGames?: string;
 
   constructor(self: string,
               followers: string,
@@ -27,7 +28,8 @@ export class UserLinks {
               follow?: string,
               recommendedReviews?: string,
               newReviews?: string,
-              followingReviews?: string) {
+              followingReviews?: string,
+              recommendedGames?: string) {
     this.self = self;
     this.followers = followers;
     this.following = following;
@@ -40,6 +42,7 @@ export class UserLinks {
     this.recommendedReviews = recommendedReviews;
     this.newReviews = newReviews;
     this.followingReviews = followingReviews;
+    this.recommendedGames = recommendedGames;
   }
 
   static fromResponse({
@@ -54,7 +57,8 @@ export class UserLinks {
                         updateNotifications,
                         newReviews,
                         recommendedReviews,
-                        followingReviews
+                        followingReviews,
+                        recommendedGames
                       }: UserLinksResponse): UserLinks {
     return new UserLinks(self,
       followers,
@@ -67,7 +71,8 @@ export class UserLinks {
       follow,
       recommendedReviews,
       newReviews,
-      followingReviews);
+      followingReviews,
+      recommendedGames);
   }
 }
 

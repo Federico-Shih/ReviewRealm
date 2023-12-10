@@ -130,6 +130,22 @@
     "login-header": "Login",
     "password-required": "Password is required."
   },
+  "mainfeed": {
+    "header": {
+      "following": "Reviews from people who you follow",
+      "new": "Reviews that were written recently",
+      "recommended": "Reviews we recommend based on your preferences "
+    },
+    "noReviews": "No reviews found...",
+    "nopreferencesset": {
+      "cta": "Lets do it!",
+      "title": "Whoops! Looks like you haven't set your preferences yet!"
+    },
+    "preferences": {
+      "cta": "Discovery queue",
+      "title": "Check out our new game recommendations!"
+    }
+  },
   "navbar": {
     "community-link": "Community",
     "for-you": "For you",
@@ -167,6 +183,11 @@
   },
   "publishing": {
     "date": "Publishing Date: {{value}}"
+  },
+  "recommendations": {
+    "backtofeed": "Back to for you",
+    "next": "Next game",
+    "prev": "Previous game"
   },
   "recommended": "Recommended",
   "register-form": {

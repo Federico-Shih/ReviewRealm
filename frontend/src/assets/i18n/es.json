@@ -130,6 +130,22 @@
     "login-header": "Iniciar sesión",
     "password-required": "Contraseña es requerida."
   },
+  "mainfeed": {
+    "header": {
+      "following": "Reseñas de usuarios que sigues",
+      "new": "Reseñas que fueron escritas recientemente ",
+      "recommended": "Reseñas que recomendamos en base a tus preferencias"
+    },
+    "noReviews": "No se encontraron reseñas...",
+    "nopreferencesset": {
+      "cta": "¡Hagámoslo!",
+      "title": "¡Oops! ¿Parece que todavía no tenes preferencias seleccionadas!"
+    },
+    "preferences": {
+      "cta": "Cola de descubrimiento",
+      "title": "¡Mirá los juegos que elegimos con base en tus preferencias! "
+    }
+  },
   "navbar": {
     "community-link": "Comunidad",
     "for-you": "Tu feed",
@@ -168,6 +184,11 @@
   },
   "publishing": {
     "date": "Fecha de publicación: {{value}}"
+  },
+  "recommendations": {
+    "backtofeed": "Volver a para ti",
+    "next": "Siguiente juego",
+    "prev": "Anterior juego"
   },
   "recommended": "Recommendado",
   "register-form": {

@@ -40,6 +40,7 @@ public class GameSearchQuery extends PaginatedQuery{
     @QueryParam("genres")
     private List<Integer> genres;
 
+    @Pattern(regexp = "^([0-9]+t[0-9]+)$", message = "Pattern.searchGames.rating")
     @QueryParam("rating")
     private String rating;
 
@@ -69,20 +70,22 @@ public class GameSearchQuery extends PaginatedQuery{
                 criteria != null ? criteria : GameOrderCriteria.PUBLISH_DATE
         );
     }
-    public GameFilter getFilter(){
-        float minRating = 1f;
-        float maxRating = 10f;
-        try {
-            String [] ratingFilterArray = rating.split("t");
-            minRating = Float.parseFloat(ratingFilterArray[0]);
-            maxRating = Float.parseFloat(ratingFilterArray[1]);
-        } catch (Exception ignored) {}
-
+    public GameFilter getFilter() {
+        Float minRating = null;
+        Float maxRating = null;
+        if (rating != null) {
+            try {
+                String[] ratingFilterArray = rating.split("t");
+                minRating = Float.parseFloat(ratingFilterArray[0]);
+                maxRating = Float.parseFloat(ratingFilterArray[1]);
+            } catch (Exception ignored) {
+            }
+        }
         return new GameFilterBuilder().
                 withGameContent(search).
                 withGameGenres(genres).
                 withSuggestion(suggested).
-                withRatingRange(minRating,maxRating,excludeNoRating == null || !excludeNoRating)
+                withRatingRange(minRating, maxRating, excludeNoRating == null || !excludeNoRating)
                 .withFavoriteGamesOf(favoriteOf)
                 .withRecommendedFor(recommendedFor)
                 .build();

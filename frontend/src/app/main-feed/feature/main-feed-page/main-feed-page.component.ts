@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
 import {FormControl} from "@angular/forms";
-import {BehaviorSubject, combineLatest} from "rxjs";
+import {BehaviorSubject, combineLatest, map} from "rxjs";
 import {Review} from "../../../shared/data-access/reviews/review.class";
 import {Paginated} from "../../../shared/data-access/shared.models";
 import {ReviewsService} from "../../../shared/data-access/reviews/reviews.service";
@@ -33,6 +33,11 @@ export class MainFeedPageComponent implements OnInit {
     totalPages: 0
   });
 
+  loggedInUser$ = this.authService.getLoggedUser();
+  hasPreferences$ = this.loggedInUser$.pipe(
+    map(user => !!user && user.preferences.length > 0)
+  );
+
   loading$ = new BehaviorSubject<boolean>(true);
   loadingInfinite$ = new BehaviorSubject<boolean>(false);
   loadingReviews$ = combineLatest({
@@ -44,7 +49,7 @@ export class MainFeedPageComponent implements OnInit {
   constructor(private readonly router: Router,
               private readonly route: ActivatedRoute,
               private readonly reviewService: ReviewsService,
-              private readonly authService: AuthenticationService) {
+              private readonly authService: AuthenticationService,) {
   }
 
   getLinkFromTab(tab: string, user: User): string {
@@ -55,6 +60,18 @@ export class MainFeedPageComponent implements OnInit {
         return user.links.recommendedReviews || '';
       case Tabs.NEW:
         return user.links.newReviews || '';
+    }
+    return '';
+  }
+
+  getTabLabel(tab: Tabs | null): string {
+    switch (tab) {
+      case Tabs.FOLLOWING:
+        return 'mainfeed.header.following';
+      case Tabs.RECOMMENDED:
+        return 'mainfeed.header.recommended';
+      case Tabs.NEW:
+        return 'mainfeed.header.new';
     }
     return '';
   }
@@ -73,19 +90,17 @@ export class MainFeedPageComponent implements OnInit {
       if (params['tab'] && this.tabs.includes(params['tab'])) {
         this.selectedTab.setValue(params['tab']);
         this.loading$.next(true);
-        this.authService.loggedUser$.subscribe(user => {
+        this.loggedInUser$.subscribe(user => {
           if (user) {
             this.reviewService.getReviews(this.getLinkFromTab(params['tab'], user), {
               pageSize: MainFeedPageComponent.INITIAL_LOAD_COUNT
             }).subscribe({
               next: reviews => {
                 this.reviews$.next(reviews);
+                this.loading$.next(false);
               },
               error: () => {
 
-              },
-              complete: () => {
-                this.loading$.next(false);
               }
             });
           }

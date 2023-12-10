@@ -10,11 +10,15 @@ import {ReactiveFormsModule} from "@angular/forms";
 import {MatGridListModule} from "@angular/material/grid-list";
 import {SharedModule} from "../shared/shared.module";
 import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
+import {RecommendationsPageComponent} from './feature/recommendations-page/recommendations-page.component';
+import {GamesModule} from "../games/games.module";
+import {MatButtonModule} from "@angular/material/button";
 
 
 @NgModule({
   declarations: [
-    MainFeedPageComponent
+    MainFeedPageComponent,
+    RecommendationsPageComponent
   ],
   imports: [
     CommonModule,
@@ -25,7 +29,9 @@ import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
     ReactiveFormsModule,
     MatGridListModule,
     SharedModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    GamesModule,
+    MatButtonModule
   ]
 })
 export class MainFeedModule {
