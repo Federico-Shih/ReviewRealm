@@ -139,7 +139,7 @@ public class ReviewHibernateDao implements ReviewDao, PaginationDao<ReviewFilter
                 "SELECT reviewid FROM ("+ "SELECT distinct r.id as reviewid, r.createddate, r.rating, r.likes + r.dislikes as controversial, r.likes - r.dislikes as popularity FROM "
                         + toTableString(filter)
                         + queryBuilder.toQuery() + ") as review"
-                        + DaoUtils.toOrderString(ordering, true));
+                        + DaoUtils.toOrderString(ordering, true,"reviewid"));
 
         DaoUtils.setNativeParameters(queryBuilder, nativeQuery);
         nativeQuery.setMaxResults(pagination.getPageSize());
@@ -148,7 +148,7 @@ public class ReviewHibernateDao implements ReviewDao, PaginationDao<ReviewFilter
         @SuppressWarnings("unchecked")
         final List<Long> idlist = (List<Long>) nativeQuery.getResultList().stream().map(n -> ((Number) n).longValue()).collect(Collectors.toList());
 
-        final TypedQuery<Review> query = em.createQuery("from Review WHERE id IN :ids " + DaoUtils.toOrderString(ordering, false), Review.class);
+        final TypedQuery<Review> query = em.createQuery("from Review WHERE id IN :ids " + DaoUtils.toOrderString(ordering, false,null), Review.class);
         query.setParameter("ids", idlist);
         User currentUser = em.find(User.class, activeUserId != null ? activeUserId : -1);
         List<Review> reviewList = query.getResultList();

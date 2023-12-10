@@ -89,7 +89,7 @@ public class GameHibernateDao implements GameDao, PaginationDao<GameFilter> {
                         toTableString(filter) +
                         queryBuilder.toQuery() +
                         ") as games" +
-                        DaoUtils.toOrderString(ordering, true));
+                        DaoUtils.toOrderString(ordering, true,"gameid"));
         DaoUtils.setNativeParameters(queryBuilder, nativeQuery);
 
         nativeQuery.setMaxResults(page.getPageSize());
@@ -98,7 +98,7 @@ public class GameHibernateDao implements GameDao, PaginationDao<GameFilter> {
         @SuppressWarnings("unchecked")
         final List<Long> idlist = (List<Long>) nativeQuery.getResultList().stream().map(n -> ((Number) n).longValue()).collect(Collectors.toList());
 
-        final TypedQuery<Game> query = em.createQuery("from Game WHERE id IN :ids " + DaoUtils.toOrderString(ordering, true), Game.class);
+        final TypedQuery<Game> query = em.createQuery("from Game WHERE id IN :ids " + DaoUtils.toOrderString(ordering, true,null), Game.class);
         query.setParameter("ids", idlist);
         final List<Game> games = query.getResultList();
         if(currentUserId != null){

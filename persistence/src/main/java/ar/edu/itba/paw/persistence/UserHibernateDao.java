@@ -131,7 +131,7 @@ public class UserHibernateDao implements UserDao, PaginationDao<UserFilter> {
                 "SELECT mainuserid FROM " +
                         "(" +
                         "SELECT distinct u.id as mainuserid,u.xp,u.reputation, coalesce((SELECT count(distinct f.userid) FROM followers as f WHERE f.following=u.id GROUP BY f.following), 0) as follower_count FROM " + toTableString(userFilter) + queryBuilder.toQuery() + ") as users"
-                        + DaoUtils.toOrderString(ordering, true));
+                        + DaoUtils.toOrderString(ordering, true,"mainuserid"));
         DaoUtils.setNativeParameters(queryBuilder, nativeQuery);
         nativeQuery.setMaxResults(page.getPageSize());
         nativeQuery.setFirstResult(page.getOffset().intValue());
@@ -142,7 +142,7 @@ public class UserHibernateDao implements UserDao, PaginationDao<UserFilter> {
             return new Paginated<>(page.getPageNumber(), page.getPageSize(), pages, new ArrayList<>());
         }
 
-        final TypedQuery<User> userQuery = em.createQuery("from User where id IN :ids" + DaoUtils.toOrderString(ordering, false), User.class);
+        final TypedQuery<User> userQuery = em.createQuery("from User where id IN :ids" + DaoUtils.toOrderString(ordering, false,null), User.class);
         userQuery.setParameter("ids", idlist);
         List<User> users = userQuery.getResultList();
 
