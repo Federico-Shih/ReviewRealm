@@ -127,22 +127,19 @@ export class Review {
       return this.likes - this.dislikes;
   }
 
-  getGameLengthInUnits(): GameLength {
+  getGameLengthInUnits(): GameLength | null {
       if (this.gameLength === null) {
-          return {
-              units: '',
-              value: 0
-          }
+          return null
       }
       let ans: GameLength;
       if (this.gameLength > 3600) {
           ans = {
-              units: 'time.hours',
+              units: 'hours',
               value: this.gameLength / 3600.0
           }
       } else {
           ans = {
-              units: 'time.minutes',
+              units: 'minutes',
               value: this.gameLength / 60.0
           }
       }

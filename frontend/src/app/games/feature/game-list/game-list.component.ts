@@ -163,7 +163,7 @@ export class GameListComponent implements OnInit{
     this.filter.get('search')?.setValue(value);
   }
   submitSearch() {
-    if (this.filter.get('search')?.value) {
+    if (this.filter.get('search')?.value !== undefined) {
       this.router.navigate([], {
         queryParams: {
           search: this.filter.get('search')?.value

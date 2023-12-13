@@ -25,6 +25,12 @@ export enum GameFormType{
   Edit= 'EDIT',
   Create= 'CREATE'
 }
+
+export enum ReviewFormType {
+  Edit= 'EDIT',
+  Create= 'CREATE'
+}
+
 export function isPlatform(platform: unknown): platform is Platform {
   return Object.values(Platform).find((v) => v === platform) !== undefined;
 }

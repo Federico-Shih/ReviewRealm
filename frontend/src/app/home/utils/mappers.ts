@@ -3,6 +3,7 @@ import {isReviewSortType, ReviewSearchDto} from "../../shared/data-access/review
 import {isDifficulty, isPlatform, isSortDirection, SortDirection} from "../../shared/data-access/shared.enums";
 import {isBoolean} from "../../shared/helpers/utils";
 import {
+  GameNotReviewedBySearchDto,
   GameSearchDto,
   GameSortType,
   isGameSortType,
@@ -76,5 +77,14 @@ export const paramsMapToGameSearchDto = (params: ParamMap): GameSearchDto => {
     pageSize: parseInt(params.get('pageSize') || '10') || 10,
     sort: isGameSortType(sort) ? sort : undefined,
     direction: isSortDirection(direction) ? direction : undefined,
+  };
+}
+
+export const gameSearchForSubmitReviewParamsToDto = (params: ParamMap, userid: number | undefined): GameNotReviewedBySearchDto => {
+  return {
+    search: params.get('search') ? params.get('search')! : undefined,
+    page: parseInt(params.get('page') || '1') || 1,
+    pageSize: parseInt(params.get('pageSize') || '6') || 6,
+    notReviewedBy: userid
   };
 }

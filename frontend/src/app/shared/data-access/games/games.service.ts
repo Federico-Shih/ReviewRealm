@@ -1,6 +1,10 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpErrorResponse} from "@angular/common/http";
-import {GameExclusiveSearchDto, GameSearchDto} from "./games.dtos";
+import {
+  GameExclusiveSearchDto,
+  GameNotReviewedBySearchDto,
+  GameSearchDto
+} from "./games.dtos";
 import {
   customExceptionMapper,
   exceptionMapper,
@@ -20,7 +24,7 @@ export class GamesService {
 
   }
 
-  getGames(url: string, query: GameSearchDto| GameExclusiveSearchDto): Observable<Paginated<Game>> {
+  getGames(url: string, query: GameSearchDto| GameExclusiveSearchDto | GameNotReviewedBySearchDto): Observable<Paginated<Game>> {
     return this.http.get<GameResponse[]>(url + queryMapper(query, url), {
       responseType: "json",
       observe: "response"

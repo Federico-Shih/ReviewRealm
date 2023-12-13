@@ -59,6 +59,10 @@ public class GameSearchQuery extends PaginatedQuery{
     @QueryParam("favoriteOf")
     private Long favoriteOf;
 
+    @ExistentUserId(optional = true)
+    @QueryParam("notReviewedBy")
+    private Long notReviewedBy;
+
     public GameSearchQuery() {
     }
 
@@ -88,6 +92,7 @@ public class GameSearchQuery extends PaginatedQuery{
                 withRatingRange(minRating, maxRating, excludeNoRating == null || !excludeNoRating)
                 .withFavoriteGamesOf(favoriteOf)
                 .withRecommendedFor(recommendedFor)
+                .withNotReviewedBy(notReviewedBy)
                 .build();
     }
 

@@ -122,6 +122,16 @@
     "search": "Buscar Juegos"
   },
   "genres": "Géneros:",
+  "guidelines": {
+    "disrespect": "Sé Respetuoso: trata a todos los miembros de la comunidad con respeto y cortesía. Evita los ataques personales, el acoso y la discriminación hacia otros.",
+    "irrelevant": "Contenido Relevante: el contenido compartido en una reseña deber ser relevante para la industria de los videojuegos y sus ramas adyacentes.",
+    "piracy": "Propiedad Intelectual y Piratería: aunque esté permitido discutir y mencionar la pirateria de juegos, debes evitar compartir enlaces a archivos de juegos no autorizados, cracks o contenido pirateado.",
+    "privacy": "Privacidad e Información Personal: debes respetar la privacidad de los demás y no compartir información personal sin consentimiento.",
+    "spam": "Sin Spam ni Autopromoción: promocionar otros sitios está totalmente prohibido y la autopromoción debe mantenerse al minimo.",
+    "spoiler": "Sin Spoilers: evitar publicar spoilers sin advertencias adecuadas, estas mismas deben estar en el título y las primeras líneas de la reseña no deberían contener spoilers.",
+    "title": "Lineamientos de la Comunidad"
+  },
+  "hours": "{{number}} horas",
   "login-form": {
     "email-invalid": "Correo electrónico no es válido.",
     "email-required": "Correo electrónico es requerido.",
@@ -146,6 +156,7 @@
       "title": "¡Mirá los juegos que elegimos con base en tus preferencias! "
     }
   },
+  "minutes": "{{number}} minutos",
   "navbar": {
     "community-link": "Comunidad",
     "for-you": "Tu feed",
@@ -168,6 +179,12 @@
   "new": "Novedoso",
   "new-review": "Nueva Reseña",
   "no-reports": "¡No quedan reportes sin analizar!",
+  "platform": {
+    "nintendo": "Nintendo",
+    "pc": "PC",
+    "ps": "PlayStation",
+    "xbox": "XBox"
+  },
   "profile": {
     "fan": "Fanático de:",
     "favgames": "Juegos Favoritos",
@@ -221,22 +238,19 @@
     },
     "reject": "Anular Reporte"
   },
-  "report-reason": {
-    "disrespectful": "Contenido irrespetuoso hacia otros miembros",
-    "irrelevant": "Contenido irrelevante en lo que concierne gaming y sus ramas adyacentes",
-    "piracy": "Comparte links a archivos de juegos no autorizados, cracks, o contenido pirateado",
-    "privacy": "Comparte información personal sin consentimiento",
-    "spam": "Spam o Autopromoción",
-    "spoiler": "Spoiler sin advertencias o en las primeras líneas de la reseña"
-  },
   "reset-filters": "Restablecer Filtros",
   "review": {
+    "created": "La reseña ha sido creada",
     "delete": "Borrar Reseña",
     "deleted": "La reseña ha sido borrada",
     "deletedialog": {
       "title": "¿Está seguro que desea borrar esta reseña?"
     },
     "edit": "Editar Reseña",
+    "edited": "La reseña ha sido editada",
+    "form": {
+      "searchgame": "Nueva Reseña - Por favor, busque un juego primero"
+    },
     "found_useful?": "¿Encontraste útil esta reseña?",
     "report": "Reportar Reseña",
     "reportdialog": {
@@ -244,6 +258,52 @@
     },
     "reported": "¡El reporte ha sido enviado!",
     "search": "Buscar Reseñas",
+    "submit": {
+      "button": {
+        "create": "Crear Reseña",
+        "edit": "Editar Reseña"
+      },
+      "completed": {
+        "label": "Completado"
+      },
+      "content": {
+        "charcount": "{{count}} caracteres",
+        "label": "Contenido",
+        "minlength": "El contenido de la reseña debe tener {{value}} caracteres como mínimo.",
+        "placeholder": "Contanos qué te pareció...",
+        "required": "Se requiere un contenido de la reseña"
+      },
+      "difficulty": {
+        "label": "Dificultad Percibida",
+        "placeholder": "Seleccione una dificultad"
+      },
+      "gameLength": {
+        "label": "Tiempo jugado",
+        "max": "El tiempo jugado no debe ser mayor a {{value}}",
+        "min": "El tiempo jugado debe ser como mínimo {{value}}"
+      },
+      "platform": {
+        "label": "Plataforma",
+        "placeholder": "Seleccione una plataforma"
+      },
+      "rating": {
+        "label": "Puntuación",
+        "max": "La puntuación debe ser menor o igual a 10",
+        "min": "La puntuación debe ser mayor o igual a 1",
+        "required": "Se requiere una puntuación"
+      },
+      "replayability": {
+        "label": "¿Rejugable?"
+      },
+      "reviewtitle": {
+        "label": "Título",
+        "maxlength": "Un título debe tener como máximo {{value}} caracteres.",
+        "minlength": "Un título debe tener {{value}} caracteres como mínimo",
+        "placeholder": "¡Danos un título llamativo!",
+        "required": "Se requiere un título"
+      },
+      "title": "Reseña sobre {{game}}"
+    },
     "tags": "Etiquetas",
     "timeplayed": "Tiempo jugado"
   },
@@ -307,11 +367,11 @@
     "notifications": "Notificaciones de Correo Electrónico",
     "title": "Configuración de Cuenta"
   },
-  "time": {
-    "hours": "{{number}} horas",
-    "minutes": "{{number}} minutos"
-  },
   "toggle-filters": "Filtros",
+  "unit": {
+    "hours": "Horas",
+    "minutes": "Minutos"
+  },
   "validate-user-form": {
     "email": "ejemplo@gmail.com",
     "email-invalid": "Correo electrónico inválido",

@@ -9,6 +9,7 @@ import {Game} from "../../data-access/games/games.class";
 })
 export class GameCardComponent {
   @Input({required: true}) game:Game | null = null;
+  @Input() nolink:boolean = false;
 
   @Input() small:boolean = false;
   @Input() tiny:boolean = false;

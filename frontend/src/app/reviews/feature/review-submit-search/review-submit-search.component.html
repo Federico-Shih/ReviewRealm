@@ -1,0 +1,24 @@
+<ng-container *ngIf="(games$ | async) as games; else loading">
+  <div class="all-container">
+    <h3>{{'review.form.searchgame' | translate}}</h3>
+    <div>
+      <app-search-bar
+        (search)="setSearch($event)"
+        (submit)="submitSearch()"
+        [label]="'games.search' | translate"
+      ></app-search-bar>
+    </div>
+    <div class="games-container">
+      <ng-container *ngFor="let game of games.content">
+        <div class="game-card-container" routerLink="/reviews/submit/{{game.id}}">
+          <app-game-card [game]="game" [nolink]="true"></app-game-card>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+</ng-container>
+<ng-template #loading>
+  <div class="loading-container">
+    <mat-spinner mode="indeterminate"></mat-spinner>
+  </div>
+</ng-template>

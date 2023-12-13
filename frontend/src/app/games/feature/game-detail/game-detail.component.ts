@@ -31,10 +31,7 @@ export class GameDetailComponent implements OnInit {
   game$: Observable<Game> = this.activatedRoute.paramMap.pipe(
     switchMap((params) => {
       return this.gameService.getGame(`${environment.API_ENDPOINT}/games/` + params.get('id'));
-    }), catchError((err, caught) => {
-      this.router.navigate(['/games']); //TODO:404
-      return caught;
-    }),
+    })
   );
 
   initialReviews$: Observable<Paginated<Review>> = this.game$.pipe(switchMap((game) => {
@@ -99,6 +96,13 @@ export class GameDetailComponent implements OnInit {
     });
     this.initialReviews$.subscribe(
         (pageInfo) => this.paginatedReviews$.next(pageInfo)
+    )
+    this.game$.subscribe(
+      {
+        error: (err) => {
+          this.router.navigate(['/games']); //TODO:404
+        }
+      }
     )
   }
   openDeleteDialog() {

@@ -12,7 +12,7 @@ public class VndType {
     public static final String APPLICATION_REPORT_LIST = "application/vnd.report-list.v1+json";
     public static final String APPLICATION_REVIEW_LIST = "application/vnd.review-list.v1+json";
     public static final String APPLICATION_REVIEW = "application/vnd.review.v1+json";
-    public static final String APPLICATION_REVIEW_PATCH = "application/vnd.review-patch.v1+json";
+    public static final String APPLICATION_REVIEW_UPDATE = "application/vnd.review-update.v1+json";
     public static final String APPLICATION_REVIEW_FEEDBACK = "application/vnd.review-feedback.v1+json";
     public static final String APPLICATION_GAME= "application/vnd.game.v1+json";
     public static final String APPLICATION_USER = "application/vnd.users.v1+json";

@@ -30,12 +30,14 @@ import {GameCardComponent} from "./ui/game-card/game-card.component";
 import {BreadcrumbsComponent} from './ui/breadcrumbs/breadcrumbs.component';
 import {MatSnackBarModule} from "@angular/material/snack-bar";
 import {ReportsService} from "./data-access/reports/reports.service";
+import {CommunityGuidelinesComponent} from './ui/community-guidelines/community-guidelines.component';
+import {MatExpansionModule} from "@angular/material/expansion";
 import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
 
 
 @NgModule({
   declarations: [NavbarComponent, LoginFormComponent, FilterDrawerComponent, ReviewCardComponent, ProfileCardComponent, TriCheckboxComponent, SearchBarComponent,
-    GameCardComponent, BreadcrumbsComponent],
+  GameCardComponent, BreadcrumbsComponent, CommunityGuidelinesComponent],
   providers: [UsersService, ReviewsService, GamesService, EnumsService, ReportsService],
   imports: [
     CommonModule,
@@ -57,7 +59,8 @@ import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
     MatChipsModule,
     MatCheckboxModule,
     MatSnackBarModule,
-    MatProgressSpinnerModule
+    MatExpansionModule,
+    MatProgressSpinnerModule,
   ],
   exports: [
     NavbarComponent,
@@ -70,6 +73,7 @@ import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
     ProfileCardComponent,
     GameCardComponent,
     BreadcrumbsComponent,
+    CommunityGuidelinesComponent,
   ]
 })
 export class SharedModule {

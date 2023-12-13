@@ -15,9 +15,10 @@ public class GameFilter {
     private final List<Long> gamesToExclude;
     private final Long favoriteGamesOf;
     private final Long recommendedFor;
+    private final Long notReviewedBy;
     private final Boolean deleted;
 
-    public GameFilter(List<Integer> gameGenres, String gameContent, String developer, String publisher, Float minRating, Float maxRating, boolean includeNoRating, Boolean isSuggested, List<Long> gamesToExclude, Long favoriteGamesOf, Long recommendedFor, Boolean deleted) {
+    public GameFilter(List<Integer> gameGenres, String gameContent, String developer, String publisher, Float minRating, Float maxRating, boolean includeNoRating, Boolean isSuggested, List<Long> gamesToExclude, Long favoriteGamesOf, Long recommendedFor, Long notReviewedBy, Boolean deleted) {
         this.gameGenres = gameGenres;
         this.gameContent = gameContent;
         this.developer = developer;
@@ -29,6 +30,7 @@ public class GameFilter {
         this.gamesToExclude = gamesToExclude;
         this.favoriteGamesOf = favoriteGamesOf;
         this.recommendedFor = recommendedFor;
+        this.notReviewedBy = notReviewedBy;
         this.deleted = deleted;
     }
 
@@ -72,11 +74,19 @@ public class GameFilter {
         return recommendedFor;
     }
 
+    public Long getNotReviewedBy() {
+        return notReviewedBy;
+    }
+
     public boolean isProperRecommendedFor(){
-        return gameContent == null && (gameGenres == null || gameGenres.isEmpty()) && minRating == null && maxRating == null && includeNoRating && !isSuggested && favoriteGamesOf == null;
+        return gameContent == null && (gameGenres == null || gameGenres.isEmpty()) && minRating == null && maxRating == null && includeNoRating && !isSuggested && favoriteGamesOf == null && notReviewedBy == null;
     }
     public boolean isProperFavoriteOf(){
-        return gameContent == null && (gameGenres == null || gameGenres.isEmpty()) && (minRating == null || Float.compare(minRating,1.0f)==0) && (maxRating == null || Float.compare(maxRating,10.0f)==0) && includeNoRating && !isSuggested && recommendedFor == null;
+        return gameContent == null && (gameGenres == null || gameGenres.isEmpty()) && (minRating == null || Float.compare(minRating,1.0f)==0) && (maxRating == null || Float.compare(maxRating,10.0f)==0) && includeNoRating && !isSuggested && recommendedFor == null && notReviewedBy == null;
+    }
+
+    public boolean isProperNotReviewedBy() {
+        return (gameGenres == null || gameGenres.isEmpty()) && (minRating == null || Float.compare(minRating,1.0f)==0) && (maxRating == null || Float.compare(maxRating,10.0f)==0) && includeNoRating && !isSuggested && favoriteGamesOf == null && recommendedFor == null;
     }
 
     public Boolean getDeleted() {

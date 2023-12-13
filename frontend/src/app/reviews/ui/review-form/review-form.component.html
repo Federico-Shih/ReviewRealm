@@ -1,0 +1,125 @@
+<div class="form-container">
+  <form [formGroup]="reviewForm" (ngSubmit)="submitReview()">
+    <h2>{{'review.submit.title' | translate:{ game:game?.name } }}</h2>
+    <mat-divider/>
+    <div class="title-rating-section">
+      <mat-form-field class="input-field" appearance="outline">
+        <mat-label>{{'review.submit.reviewtitle.label' | translate }}</mat-label>
+        <input matInput [placeholder]="'review.submit.reviewtitle.placeholder' | translate" formControlName="reviewTitle">
+        <mat-error>
+          <ng-container *ngIf="reviewForm.controls['reviewTitle'].errors?.['required']">
+            {{'review.submit.reviewtitle.required' | translate}}</ng-container>
+          <ng-container *ngIf="reviewForm.controls['reviewTitle'].errors?.['minlength'] as error">
+            {{'review.submit.reviewtitle.minlength' | translate: {value: error?.requiredLength} }}
+          </ng-container>
+          <ng-container *ngIf="reviewForm.controls['reviewTitle'].errors?.['maxlength'] as error">
+            {{'review.submit.reviewtitle.maxlength' | translate: {value: error?.requiredLength} }}
+          </ng-container>
+        </mat-error>
+      </mat-form-field>
+      <mat-form-field class="input-field" appearance="outline">
+        <mat-label>
+          {{'review.submit.rating.label' | translate}}
+        </mat-label>
+        <input matInput placeholder="10" formControlName="reviewRating" type="number">
+        <span matSuffix class="suffix">/10</span>
+        <mat-error>
+          <ng-container *ngIf="reviewForm.controls['reviewRating'].errors?.['required']">
+            {{'review.submit.rating.required' | translate}}</ng-container>
+          <ng-container *ngIf="reviewForm.controls['reviewRating'].errors?.['min'] as error">
+            {{'review.submit.rating.min' | translate: {value: error?.min} }}
+          </ng-container>
+          <ng-container *ngIf="reviewForm.controls['reviewRating'].errors?.['max'] as error">
+            {{'review.submit.rating.max' | translate: {value: error?.max} }}
+          </ng-container>
+        </mat-error>
+      </mat-form-field>
+    </div>
+    <mat-form-field class="input-field" appearance="outline">
+      <mat-label>
+        {{'review.submit.content.label' | translate}}
+      </mat-label>
+      <textarea matInput [placeholder]="'review.submit.content.placeholder' | translate" formControlName="reviewContent"></textarea>
+      <mat-hint align="end">{{'review.submit.content.charcount' | translate: {count: reviewForm.controls['reviewContent'].value?.length || 0} }}</mat-hint>
+      <mat-error>
+        <ng-container *ngIf="reviewForm.controls['reviewContent'].errors?.['required']">
+          {{'review.submit.content.required' | translate}}</ng-container>
+        <ng-container *ngIf="reviewForm.controls['reviewContent'].errors?.['minlength'] as error">
+          {{'review.submit.content.minlength' | translate: {value: error?.requiredLength} }}
+        </ng-container>
+      </mat-error>
+    </mat-form-field>
+    <mat-form-field class="input-field" appearance="outline">
+      <mat-label>
+        {{'review.submit.platform.label' | translate}}
+      </mat-label>
+      <mat-select formControlName="platform">
+        <mat-option value="">
+          {{'review.submit.platform.placeholder' | translate}}
+        </mat-option>
+        <mat-option value="PC">{{'platform.pc' | translate}}</mat-option>
+        <mat-option value="PS">{{'platform.ps' | translate}}</mat-option>
+        <mat-option value="XBOX">{{'platform.xbox' | translate}}</mat-option>
+        <mat-option value="NINTENDO">{{'platform.nintendo' | translate}}</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field class="input-field" appearance="outline">
+      <mat-label>
+        {{'review.submit.difficulty.label' | translate}}
+      </mat-label>
+      <mat-select formControlName="difficulty">
+        <mat-option value="null">
+          {{'review.submit.difficulty.placeholder' | translate}}
+        </mat-option>
+        <mat-option value="EASY">{{'difficulty.easy' | translate}}</mat-option>
+        <mat-option value="MEDIUM">{{'difficulty.medium' | translate}}</mat-option>
+        <mat-option value="HARD">{{'difficulty.hard' | translate}}</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <div class="time-section">
+      <mat-form-field class="input-field" appearance="outline">
+        <mat-label>
+          {{'review.submit.gameLength.label' | translate}}
+        </mat-label>
+        <input matInput formControlName="gameLength" type="number">
+        <mat-error>
+          <ng-container *ngIf="reviewForm.controls['gameLength'].errors?.['min'] as error">
+            {{'review.submit.gameLength.min' | translate: {value: error?.min} }}
+          </ng-container>
+          <ng-container *ngIf="reviewForm.controls['gameLength'].errors?.['max'] as error">
+            {{'review.submit.gameLength.max' | translate: {value: error?.max} }}
+          </ng-container>
+        </mat-error>
+      </mat-form-field>
+      <mat-form-field class="input-field" appearance="outline">
+        <mat-select formControlName="unit">
+          <mat-option value="hours">{{ 'unit.hours' | translate }}</mat-option>
+          <mat-option value="minutes">{{ 'unit.minutes' | translate }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <div class="checkbox-section">
+      <mat-checkbox formControlName="completed">
+        {{'review.submit.completed.label' | translate}}
+      </mat-checkbox>
+      <mat-checkbox formControlName="replayability">
+        {{'review.submit.replayability.label' | translate}}
+      </mat-checkbox>
+    </div>
+    <div class="footer-button">
+      <button class="cancel-btn" color="warn" mat-raised-button type="button" (click)="cancel()">
+        {{'cancel' | translate | uppercase}}
+      </button>
+      <button class="submit-btn" color="accent" i18n mat-raised-button type="submit" [disabled]="reviewForm.status !== 'VALID'">
+          <span *ngIf="!loading; else loadingSpinner">
+            {{ ((reviewFormType === ReviewFormType.Edit) ? 'review.submit.button.edit' :  'review.submit.button.create') | translate | uppercase }}
+          </span>
+          <mat-icon iconPositionEnd>send</mat-icon>
+        <ng-template #loadingSpinner>
+          <mat-spinner diameter="20"></mat-spinner>
+        </ng-template>
+      </button>
+    </div>
+  </form>
+</div>
+

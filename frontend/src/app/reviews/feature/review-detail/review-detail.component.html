@@ -15,7 +15,7 @@
                 <span>/10</span>
               </div>
               <ng-container *ngIf="canEdit$ | async">
-                <button mat-icon-button [matTooltip]="'review.edit' | translate">
+                <button mat-icon-button [matTooltip]="'review.edit' | translate" routerLink="/reviews/{{review.id}}/edit">
                   <mat-icon fontIcon="edit" class="icons"/>
                 </button>
               </ng-container>
@@ -40,9 +40,9 @@
           <mat-divider/>
           <div class="review-middle">
             <div>
-              <ng-container *ngIf="review.gameLength">
+              <ng-container *ngIf="review.getGameLengthInUnits()">
                 <span>
-                  {{'review.timeplayed' | translate}}: {{review.getGameLengthInUnits().units | translate:{number: (review.getGameLengthInUnits().value.toFixed(2))} }}
+                  {{'review.timeplayed' | translate}}: {{review.getGameLengthInUnits()?.units! | translate:{number: (review.getGameLengthInUnits()?.value!.toFixed(2))} }}
                 </span>
               </ng-container>
             </div>

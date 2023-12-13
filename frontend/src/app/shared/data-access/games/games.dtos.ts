@@ -38,6 +38,15 @@ export type GameFavoriteFilterDto = {
   favoriteOf: number;
 }
 
+export type GameNotReviewedByFilterDto = {
+  notReviewedBy: number;
+  search: string;
+}
+
 export type GameSearchDto = Partial<(GameFiltersDto & PaginatedDto & SortedDto<GameSortType>)>;
 
+export type GameNotReviewedBySearchDto = Partial<(GameNotReviewedByFilterDto & PaginatedDto & SortedDto<GameSortType>)>;
+
 export type GameExclusiveSearchDto = Partial<( (GameRecommendedFilterDto|GameFavoriteFilterDto ) & PaginatedDto)>;
+
+

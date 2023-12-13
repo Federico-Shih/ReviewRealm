@@ -4,6 +4,8 @@ import {FeedbackType} from "./review.class";
 
 export enum ReviewMediaTypes {
   REPORTREVIEW = "application/vnd.report-form.v1+json",
+  CREATEREVIEW = "application/vnd.review-form.v1+json",
+  EDITREVIEW = "application/vnd.review-update.v1+json"
 }
 
 /*created|rating|popularity|controversial*/
@@ -40,4 +42,17 @@ export type ReviewSearchDto = Partial<ReviewFiltersDto & PaginatedDto & SortedDt
 export type ReportReviewDto = {
   reviewId: number;
   reason: string;
+}
+
+export type ReviewSubmitDto = {
+  reviewTitle: string;
+  reviewContent: string;
+  replayability: boolean;
+  completed: boolean;
+  reviewRating: number;
+  platform?: string;
+  difficulty?: string;
+  gameLength?: number;
+  unit?: string;
+  gameId?: number;
 }

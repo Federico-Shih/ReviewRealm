@@ -113,7 +113,7 @@ public class ReviewController{
     @DELETE
     @Path("{id:\\d+}")
     @PreAuthorize("@accessControl.checkReviewAuthorOwnerOrMod(#id)")
-    public Response deleteReview(@Valid @ExistentReviewId @PathParam("id") long id) { // Todo: Hace falta el valid?
+    public Response deleteReview(@Valid @PathParam("id") long id) { // Todo: Hace falta el valid?
         User loggedUser = AuthenticationHelper.getLoggedUser(userService);
 
         if (!reviewService.deleteReviewById(id, loggedUser.getId())) {
@@ -125,7 +125,7 @@ public class ReviewController{
     @GET
     @Path("{id:\\d+}")
     @Produces(VndType.APPLICATION_REVIEW)
-    public Response getReviewById(@Valid @ExistentReviewId @PathParam("id") final long id) {
+    public Response getReviewById(@Valid @PathParam("id") final long id) {
         Long activeUserId = AuthenticationHelper.getLoggedUser(userService) == null ? null: AuthenticationHelper.getLoggedUser(userService).getId();
         Optional<Review> possibleReview = reviewService.getReviewById(id, activeUserId);
         if (!possibleReview.isPresent())
@@ -137,9 +137,9 @@ public class ReviewController{
 
     @PUT
     @Path("{id:\\d+}")
-    @Consumes(VndType.APPLICATION_REVIEW_PATCH)
+    @Consumes(VndType.APPLICATION_REVIEW_UPDATE)
     @PreAuthorize("@accessControl.checkReviewAuthorOwnerOrMod(#id)")
-    public Response patchReview(@Valid @ExistentReviewId @PathParam("id") final long id, @Valid @NotNull(message = "error.body.empty") final EditReviewForm form) {
+    public Response editReview(@Valid @ExistentReviewId @PathParam("id") final long id, @Valid @NotNull(message = "error.body.empty") final EditReviewForm form) {
         reviewService.updateReview(id, form.getReviewTitle(),
                 form.getReviewContent(),
                 form.getReviewRating(),

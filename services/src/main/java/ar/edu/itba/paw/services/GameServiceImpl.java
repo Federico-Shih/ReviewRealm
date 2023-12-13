@@ -155,6 +155,12 @@ public class GameServiceImpl implements GameService {
             }
             throw new ExclusiveFilterException("error.game.filter.recommended");
         }
+        if(searchFilter.getNotReviewedBy() != null){
+            if(searchFilter.isProperNotReviewedBy()){
+                return searchGamesNotReviewedByUser(page, searchFilter.getGameContent(), ordering, searchFilter.getNotReviewedBy());
+            }
+            throw new ExclusiveFilterException("error.game.filter.notreviewed");
+        }
         return gameDao.findAll(page, searchFilter, ordering,userId);
     }
 
