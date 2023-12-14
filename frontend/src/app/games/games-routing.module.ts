@@ -4,10 +4,12 @@ import {GameListComponent} from "./feature/game-list/game-list.component";
 import {GameDetailComponent} from "./feature/game-detail/game-detail.component";
 import {GameSubmitComponent} from "./feature/game-submit/game-submit.component";
 import {GameEditComponent} from "./feature/game-edit/game-edit.component";
+import {isAuthenticatedGuard} from "../shared/guards/is-authenticated.guard";
+import {isModeratorGuard} from "../shared/guards/is-moderator.guard";
 
 const routes: Routes = [
-  { path: 'submit', component: GameSubmitComponent },
-  { path: ':id/edit', component: GameEditComponent },
+  { path: 'submit', component: GameSubmitComponent, canActivate: [isAuthenticatedGuard]},
+  { path: ':id/edit', component: GameEditComponent, canActivate: [isModeratorGuard] },
   { path: ':id', component: GameDetailComponent },
   { path: '', component: GameListComponent },
 ];
