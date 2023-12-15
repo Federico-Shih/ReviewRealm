@@ -70,13 +70,13 @@ export class ReviewDetailComponent {
     this.route.paramMap.subscribe((params) => {
       const id = params.get('id');
       if (!(id && Number.isInteger(parseInt(id)) && parseInt(id) > 0)){
-        this.router.navigate(['/404']);
+        this.router.navigate(['/errors/not-found']);
       }
     });
     this.review$.subscribe(
       {
         error: (err) => {
-          this.router.navigate(['/404']);
+          this.router.navigate(['/errors/not-found']);
         }
       }
     )

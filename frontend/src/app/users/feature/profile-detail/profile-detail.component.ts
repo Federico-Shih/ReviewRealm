@@ -29,7 +29,7 @@ export class ProfileDetailComponent implements OnInit{
       switchMap((params) => {
           return this.userService.getUserById(`${environment.API_ENDPOINT}/users/` + params.get('id'));
       }), catchError((err, caught) => {
-          this.router.navigate(['/']); //TODO:404
+          this.router.navigate(['errors/not-found']);
           return caught;
       }),
   );

@@ -37,7 +37,7 @@ export class GameEditComponent implements OnInit{
     switchMap((params) => {
       return this.gameService.getGame(`${environment.API_ENDPOINT}/games/` + params.get('id'));
     }), catchError((err, caught) => {
-      this.router.navigate(['/games']); //TODO:404
+      this.router.navigate(['errors/not-found']);
       return caught;
     }),
   );
@@ -55,7 +55,7 @@ export class GameEditComponent implements OnInit{
     this.activatedRoute.paramMap.subscribe((params) => {
       const id = params.get('id');
       if (!(id && Number.isInteger(parseInt(id)) && parseInt(id) > 0)){
-        this.router.navigate(['/games']); //TODO:404
+        this.router.navigate(['/errors/not-found']);
       }
       this.routeId = parseInt(id!!);
     });

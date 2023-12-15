@@ -33,6 +33,12 @@
   },
   "filter-title": "Filtrar por",
   "following": "Siguiendo",
+  "forbidden": {
+    "description": "No tienes permiso para acceder a esta página",
+    "header": "Acceso denegado",
+    "image": "Prohibido",
+    "solution": "Contacta a un administrador para obtener acceso"
+  },
   "game": {
     "accept": "Aceptar",
     "create": {
@@ -200,6 +206,12 @@
   "new-review": "Nueva Reseña",
   "no-reports": "¡No quedan reportes sin analizar!",
   "no-submissions": "¡No hay sugerencias de nuevos juegos provistas por los usuarios!",
+  "not-found": {
+    "description": "No queda nada en este desolado lugar...",
+    "header": "Nada por aquí, ¡Sigue buscando!",
+    "image": "¡Éste es el portal Naranja!",
+    "solution": "¡Pero no te preocupes, dejé un portal Azul en la página principal!"
+  },
   "platform": {
     "nintendo": "Nintendo",
     "pc": "PC",

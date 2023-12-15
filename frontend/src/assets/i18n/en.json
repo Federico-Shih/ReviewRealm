@@ -33,6 +33,12 @@
   },
   "filter-title": "Filter by",
   "following": "Following",
+  "forbidden": {
+    "description": "You do not have enough clearance",
+    "header": "Access denied",
+    "image": "Prohibited",
+    "solution": "Contact an admin if you think this is incorrect"
+  },
   "game": {
     "accept": "Accept",
     "create": {
@@ -200,6 +206,12 @@
   "new-review": "New Review",
   "no-reports": "There are no unanalysed reports!",
   "no-submissions": "There are no suggestions of new games provided by users!",
+  "not-found": {
+    "description": "Nothing to see in this wasteland...",
+    "header": "Nothing to see here, keep moving!",
+    "image": "This is the Orange Portal",
+    "solution": "But don't worry! I left a Blue portal in the main page"
+  },
   "platform": {
     "nintendo": "Nintendo",
     "pc": "PC",

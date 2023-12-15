@@ -91,7 +91,7 @@ export class GameDetailComponent implements OnInit {
     this.activatedRoute.paramMap.subscribe((params) => {
       const id = params.get('id');
       if (!(id && Number.isInteger(parseInt(id)) && parseInt(id) > 0)){
-        this.router.navigate(['/games']); //TODO:404
+        this.router.navigate(['errors/not-found']);
       }
     });
     this.initialReviews$.subscribe(
@@ -100,7 +100,7 @@ export class GameDetailComponent implements OnInit {
     this.game$.subscribe(
       {
         error: (err) => {
-          this.router.navigate(['/games']); //TODO:404
+          this.router.navigate(['errors/not-found']);
         }
       }
     )

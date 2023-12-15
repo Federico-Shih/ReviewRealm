@@ -2,10 +2,10 @@
 <ng-container *ngIf="game !==null">
   <ng-container *ngIf="!small && !tiny; else variant">
     <div class="game-card mat-elevation-z2">
-      <img src="{{game.links.image}}" alt="{{game.name}}" [routerLink]="nolink? null :'/games/{{game.id}}'" class="clickable">
+      <img src="{{game.links.image}}" alt="{{game.name}}" [routerLink]="nolink? null :'/games/'+ game.id " class="clickable">
       <div class="details">
         <div class="text-section">
-          <span [routerLink]="nolink? null :'/games/{{game.id}}'" class="title clickable">{{game.name}}</span>
+          <span [routerLink]="nolink? null :'/games/'+ game.id" class="title clickable">{{game.name}}</span>
           <mat-chip-set class="genres">
             <mat-chip *ngFor="let genre of game.genres?.slice(0,2)" routerLink="/games" [queryParams]="{genres: [genre.id]}" class="chip clickable">
                 {{genre.localized}}
@@ -28,9 +28,9 @@
   <ng-template #variant>
     <ng-container *ngIf="!tiny; else tinyvariant">
       <div class="small-game-card mat-elevation-z2">
-        <img src="{{game.links.image}}" alt="{{game.name}}" [routerLink]="nolink? null :'/games/{{game.id}}'" class="small-img clickable">
+        <img src="{{game.links.image}}" alt="{{game.name}}" [routerLink]="nolink? null :'/games/'+ game.id" class="small-img clickable">
         <div class="small-text-section">
-          <span [routerLink]="nolink? null :'/games/{{game.id}}'" class="title clickable">{{game.name}}</span>
+          <span [routerLink]="nolink? null :'/games/'+ game.id" class="title clickable">{{game.name}}</span>
           <span class="text" i18n>{{ 'developer.card' | translate:{value: game.developer} }}</span>
           <div class="genres">
             <span class="text" i18n>{{ 'genres'| translate}}</span>
@@ -48,9 +48,9 @@
 
   <ng-template #tinyvariant>
     <div class="small-game-card mat-elevation-z2">
-      <img src="{{game.links.image}}" alt="{{game.name}}" [routerLink]="nolink? null :'/games/{{game.id}}'" class="small-img clickable">
+      <img src="{{game.links.image}}" alt="{{game.name}}" [routerLink]="nolink? null :'/games/'+ game.id" class="small-img clickable">
       <div class="small-text-section">
-        <span [routerLink]="nolink? null :'/games/{{game.id}}'" class="title clickable">{{game.name}}</span>
+        <span [routerLink]="nolink? null :'/games/'+ game.id" class="title clickable">{{game.name}}</span>
         <div class="genres">
           <mat-chip-set class="chip-margin">
             <mat-chip *ngFor="let genre of game.genres?.slice(0,2)" routerLink="/games" [queryParams]="{genres: [genre.id]}" class="chip clickable">

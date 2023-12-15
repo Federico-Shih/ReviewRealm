@@ -14,7 +14,7 @@ export const isModeratorGuard: CanActivateFn = (route, state):Observable<boolean
   }
   return user.pipe(map( (user)  => {
     if (user === null || user.role !== Role.MODERATOR) {
-      router.navigate(['/403']);
+      router.navigate(['/errors/forbidden']);
       return false;
     }
     return true;

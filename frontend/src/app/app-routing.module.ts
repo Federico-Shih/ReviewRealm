@@ -39,6 +39,10 @@ const routes: Routes = [
     loadChildren: () => import('./main-feed/main-feed.module').then(m => m.MainFeedModule),
     canActivate: [isAuthenticatedGuard]
   },
+  {
+    path: 'errors',
+    loadChildren : () => import('./errors/errors.module').then(m => m.ErrorsModule),
+  }
 ];
 
 @NgModule({

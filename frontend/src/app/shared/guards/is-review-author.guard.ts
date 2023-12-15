@@ -15,7 +15,7 @@ export const isReviewAuthorGuard: CanActivateFn = (route, state): Observable<boo
   const reviewService = inject(ReviewsService);
   const reviewId = route.paramMap.get('id');
   if (reviewId === null) {
-    router.navigate(['/404']);
+    router.navigate(['/errors/not-found']);
     return of(false);
   }
   const review$ = reviewService.getReviewById(`${environment.API_ENDPOINT}/reviews/${reviewId}`);
@@ -23,7 +23,7 @@ export const isReviewAuthorGuard: CanActivateFn = (route, state): Observable<boo
     map(([review, user]) => {
       const isAuthor = user !== null && review.authorId === user.id;
       if(!isAuthor)
-        router.navigate(['/403']);
+        router.navigate(['/errors/forbidden']);
       return isAuthor;
     })
   );
