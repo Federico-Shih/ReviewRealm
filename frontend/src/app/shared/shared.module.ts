@@ -33,11 +33,12 @@ import {ReportsService} from "./data-access/reports/reports.service";
 import {CommunityGuidelinesComponent} from './ui/community-guidelines/community-guidelines.component';
 import {MatExpansionModule} from "@angular/material/expansion";
 import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
+import {HeaderBannerComponent} from './ui/header-banner/header-banner.component';
 
 
 @NgModule({
   declarations: [NavbarComponent, LoginFormComponent, FilterDrawerComponent, ReviewCardComponent, ProfileCardComponent, TriCheckboxComponent, SearchBarComponent,
-  GameCardComponent, BreadcrumbsComponent, CommunityGuidelinesComponent],
+    GameCardComponent, BreadcrumbsComponent, HeaderBannerComponent, BreadcrumbsComponent, CommunityGuidelinesComponent],
   providers: [UsersService, ReviewsService, GamesService, EnumsService, ReportsService],
   imports: [
     CommonModule,
@@ -73,6 +74,7 @@ import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
     ProfileCardComponent,
     GameCardComponent,
     BreadcrumbsComponent,
+    HeaderBannerComponent,
     CommunityGuidelinesComponent,
   ]
 })

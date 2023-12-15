@@ -23,10 +23,22 @@
         </mat-error>
       </mat-form-field>
     </form>
-    <mat-error [style.visibility]="errorMessage !== null ? 'visible' : 'hidden'">
+
+    <mat-error [style.display]="errorMessage !== null ? 'flex' : 'none'">
       <ng-container *ngIf="errorMessage !== null">{{ errorMessage | translate }}</ng-container>
     </mat-error>
-
+    <span>
+      {{ 'login-form.register-label' | translate }}
+      <a class="router-link" routerLink="/register">
+        {{ 'login-form.register-link' | translate}}
+      </a>
+    </span>
+    <span>
+      {{ 'login-form.forgot-password-label' | translate }}
+      <a class="router-link" routerLink="/login/recover-password">
+        {{ 'login-form.forgot-password' | translate}}
+      </a>
+    </span>
     <button (click)="login()" class="submit-btn" color="accent" i18n mat-raised-button>
       <ng-container *ngIf="!loading else loadingTemplate">
         <span class="btn-label">

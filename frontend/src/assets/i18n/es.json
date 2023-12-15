@@ -3,6 +3,14 @@
   "asc": "Ascendente",
   "average-rating": "Puntuación Promedio",
   "cancel": "Cancelar",
+  "change-password": {
+    "button": "Cambiar contraseña",
+    "confirmPassword": "Confirmar contraseña",
+    "dismiss": "Cerrar",
+    "header": "Cambiar contraseña",
+    "password": "Contraseña",
+    "success": "Cambio de contraseña realizado correctamente"
+  },
   "delete": "Borrar",
   "desc": "Descendente",
   "developer": {
@@ -135,10 +143,14 @@
   "login-form": {
     "email-invalid": "Correo electrónico no es válido.",
     "email-required": "Correo electrónico es requerido.",
+    "forgot-password": "Cambia tu contraseña acá.",
+    "forgot-password-label": "¿Te olvidaste tu contraseña?",
     "invalid-credentials": "Correo electrónico o contraseña inválida.",
     "login-btn": "Iniciar sesión",
     "login-header": "Iniciar sesión",
-    "password-required": "Contraseña es requerida."
+    "password-required": "Contraseña es requerida.",
+    "register-label": "No tenés una cuenta?",
+    "register-link": "Registrar acá."
   },
   "mainfeed": {
     "header": {
@@ -208,6 +220,13 @@
     "prev": "Anterior juego"
   },
   "recommended": "Recommendado",
+  "recover-password": {
+    "button": "Recuperar contraseña",
+    "description": "Cambia tu contraseña clickeando el link enviado en el email. Puede que tengas que revisar tu carpeta de spam.  ",
+    "email-not-found": "Usuario no existe",
+    "header": "Recuperar contraseña",
+    "title": "¡Email de recuperación de contraseña enviado! "
+  },
   "register-form": {
     "confirm-password": "Confirmar contraseña",
     "confirm-password-required": "Confirmar contraseña es requerida.",

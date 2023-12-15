@@ -1,8 +1,8 @@
 import {Component} from '@angular/core';
-import {AuthenticationDto} from "../../shared/data-access/authentication/authentication.dtos";
-import {AuthenticationService} from "../../shared/data-access/authentication/authentication.service";
+import {AuthenticationDto} from "../../../shared/data-access/authentication/authentication.dtos";
+import {AuthenticationService} from "../../../shared/data-access/authentication/authentication.service";
 import {BehaviorSubject} from "rxjs";
-import {RequestError} from "../../shared/data-access/shared.models";
+import {RequestError} from "../../../shared/data-access/shared.models";
 import {Router} from "@angular/router";
 
 @Component({

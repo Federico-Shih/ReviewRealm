@@ -1,29 +1,23 @@
 <div (scroll)="nextPage($event)" class="main-container">
   <div class="for-you-section">
-    <div *ngIf="(hasPreferences$ | async)" class="row has-preference-bg">
-      <mat-icon class="icon-size">videogame_asset</mat-icon>
-      <div class="card-cta">
-        <span class="card-title">{{ 'mainfeed.preferences.title' | translate}}</span>
-        <div>
-          <button class="button-cta" mat-stroked-button routerLink="/for-you/discover">
-            <span>{{ 'mainfeed.preferences.cta' | translate | uppercase }}</span>
-          </button>
-        </div>
-      </div>
-    </div>
-    <div *ngIf="(hasPreferences$ | async) === false" class="row no-preference-bg">
-      <mat-icon class="icon-size">warning</mat-icon>
-      <div class="card-cta">
-          <span class="card-title">
-            {{ 'mainfeed.nopreferencesset.title' | translate }}
-          </span>
-        <div>
-          <button class="button-cta" mat-stroked-button routerLink=""> <!--TODO: link to preferences -->
-            <span>{{ 'mainfeed.nopreferencesset.cta' | translate }}</span>
-          </button>
-        </div>
-      </div>
-    </div>
+    <app-header-banner
+      *ngIf="(hasPreferences$ | async)"
+      [buttonLabel]="'mainfeed.preferences.cta' | translate | uppercase"
+      [title]="'mainfeed.preferences.title' | translate"
+      icon="videogame_asset"
+      routerLink="/for-you/discover"
+    >
+    </app-header-banner>
+    <app-header-banner
+      *ngIf="(hasPreferences$ | async) === false"
+      [bannerType]="'warning'"
+      [buttonLabel]="'mainfeed.nopreferencesset.cta' | translate  | uppercase"
+      [title]="'mainfeed.nopreferencesset.title' | translate"
+      icon="warning"
+      routerLink="/"
+    >
+    </app-header-banner>
+    <!--TODO: link to preferences -->
   </div>
   <h1>{{ getTabLabel(selectedTab.value) | translate }}</h1>
   <header>

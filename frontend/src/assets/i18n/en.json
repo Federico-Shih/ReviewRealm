@@ -3,6 +3,14 @@
   "asc": "Ascending",
   "average-rating": "Average Rating",
   "cancel": "Cancel",
+  "change-password": {
+    "button": "Change password",
+    "confirmPassword": "Confirm password",
+    "dismiss": "Dismiss",
+    "header": "Change password",
+    "password": "Password",
+    "success": "Password change was a success!"
+  },
   "delete": "Delete",
   "desc": "Descending",
   "developer": {
@@ -135,10 +143,14 @@
   "login-form": {
     "email-invalid": "Email is invalid.",
     "email-required": "Email is required.",
+    "forgot-password": "Change your password here.",
+    "forgot-password-label": "Forgot password?",
     "invalid-credentials": "Invalid email or password",
     "login-btn": "Login",
     "login-header": "Login",
-    "password-required": "Password is required."
+    "password-required": "Password is required.",
+    "register-label": "Don't have an account yet?",
+    "register-link": "Register here!"
   },
   "mainfeed": {
     "header": {
@@ -207,6 +219,13 @@
     "prev": "Previous game"
   },
   "recommended": "Recommended",
+  "recover-password": {
+    "button": "Recover password",
+    "description": "Change your password using the link in your email. Check your spam folder.",
+    "email-not-found": "User does not exist",
+    "header": "Recover password",
+    "title": "Password recovery email sent!"
+  },
   "register-form": {
     "confirm-password": "Confirm password",
     "confirm-password-required": "Password confirmation is required.",

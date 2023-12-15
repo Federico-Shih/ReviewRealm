@@ -17,6 +17,8 @@ import {ReviewsService} from "../../../shared/data-access/reviews/reviews.servic
 export class RecommendationsPageComponent implements OnInit {
   loggedInUser$ = this.authService.getLoggedUser();
   gameRecommendationLink$ = new ReplaySubject<string>();
+  isLoadingReviews$ = new BehaviorSubject<boolean>(true);
+
   game$: Observable<{ game: Game | null, links: PaginatedLinks }> = this.gameRecommendationLink$
     .pipe(tap(() => this.isLoadingReviews$.next(true)))
     .pipe(
@@ -26,6 +28,7 @@ export class RecommendationsPageComponent implements OnInit {
         links: games.links
       }))
     );
+
   initialReviews$: Observable<Paginated<Review> | null> = this.game$.pipe(switchMap(({game}) => {
     if (!game) return of(null);
     if (game.links.reviewsExcludingUser) {
@@ -33,7 +36,7 @@ export class RecommendationsPageComponent implements OnInit {
     }
     return this.reviewService.getReviews(game.links.reviews, {});
   }));
-  isLoadingReviews$ = new BehaviorSubject<boolean>(true);
+
   paginatedReviews$: BehaviorSubject<Paginated<Review> | null> = new BehaviorSubject<Paginated<Review> | null>(null);
   userReview$: Observable<Review | null> = this.game$.pipe(switchMap(({game}) => {
     if (game && game.links.userReview) {

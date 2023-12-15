@@ -11,9 +11,10 @@ import {
 import {User} from "./users.class";
 import {catchError, forkJoin, map, mergeMap, Observable, of} from "rxjs";
 import {UserResponse} from "../shared.responses";
-import {UserCreateDto, UserMediaTypes, UserSearchDto} from "./users.dtos";
+import {CredentialsDto, UserCreateDto, UserMediaTypes, UserPatchDto, UserSearchDto} from "./users.dtos";
 import {Paginated, ValidationResponse} from "../shared.models";
 import {EnumsService} from "../enums/enums.service";
+import {AuthenticationService} from "../authentication/authentication.service";
 
 @Injectable()
 export class UsersService {
@@ -55,6 +56,16 @@ export class UsersService {
       }));
   }
 
+  changePasswordRequest(email: string): Observable<boolean> {
+    return this.http.post<void>(AuthenticationService.AUTHENTICATION_ENDPOINT, {
+      email
+    }, {
+      headers: {
+        'Content-Type': UserMediaTypes.CHANGE_PASSWORD
+      }
+    }).pipe(map(() => true), catchError(() => of(false)));
+  }
+
   createUser(url: string, userCreateDto: UserCreateDto): Observable<User | never> {
     return this.http.post<User>(url, userCreateDto, {
       observe: "response",
@@ -69,5 +80,25 @@ export class UsersService {
     }), map(
       responseMapper(User.fromResponse)
     ));
+  }
+
+  patchUser(url: string, userPatchDto: UserPatchDto, credentials?: CredentialsDto): Observable<void | never> {
+    let headers: Record<string, string> = {};
+    if (credentials) {
+      headers['Authorization'] = `Basic ${btoa(`${credentials?.email}:${credentials?.token}`)}`
+    }
+    return this.http.patch<void>(url, userPatchDto, {
+      headers,
+      observe: "response",
+      responseType: "json",
+    }).pipe(catchError((err) => {
+      if (err instanceof HttpErrorResponse) {
+        if (err.status === 400) return validationExceptionMapper(err.status as number, err.error as ValidationResponse[]);
+        if (err.status === 401) return customExceptionMapper(401, err.error);
+        if (err.status === 403) return customExceptionMapper(403, err.error);
+      }
+      return customExceptionMapper(500, 'Unknown error');
+    })).pipe(map(() => {
+    }));
   }
 }

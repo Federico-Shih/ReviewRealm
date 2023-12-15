@@ -1,0 +1,46 @@
+.default {
+  background-color: #263238;
+}
+
+.warning {
+  background-color: var(--color-warning);
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+  width: 100%;
+  align-items: center;
+  padding: 20px 20px;
+  gap: 10px;
+  border-radius: 15px;
+}
+
+.icon-size {
+  font-size: 50px;
+  width: 80px;
+  height: 50px;
+}
+
+.card-title {
+  font-size: 1.4rem;
+  margin-bottom: 5px;
+}
+
+.card-cta {
+  display: flex;
+  flex-direction: column;
+  padding: 0 10px;
+}
+
+.button-cta {
+  font-size: 1.02rem;
+  margin-top: 5px;
+  border: white 1px solid !important;
+}
+
+.description {
+  font-size: 1.02rem;
+  margin-top: 5px;
+}

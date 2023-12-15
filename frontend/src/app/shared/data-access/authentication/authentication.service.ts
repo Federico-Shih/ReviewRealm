@@ -19,7 +19,6 @@ export class AuthenticationService {
 
   constructor(private readonly http: HttpClient, private readonly userService: UsersService) {
     const token = localStorage.getItem(AUTHORIZATION_TOKEN_LABEL)
-    console.log(token);
     if (token) {
       this.isValidSession().pipe((catchError((err) => {
         this.logout();
