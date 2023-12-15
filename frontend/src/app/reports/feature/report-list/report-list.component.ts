@@ -6,6 +6,8 @@ import {Report} from "../../../shared/data-access/reports/reports.class";
 import {environment} from "../../../../environments/environment";
 import {STATE_CHANGE} from "../../../shared/data-access/reports/reports.dtos";
 import {ReportEvent} from "../../ui/report-card/report-card.component";
+import {MatSnackBar} from "@angular/material/snack-bar";
+import {TranslateService} from "@ngx-translate/core";
 
 @Component({
   selector: 'app-report-list',
@@ -33,7 +35,9 @@ export class ReportListComponent implements OnInit{
   });
 
 
-  constructor(private reportsService:ReportsService) {
+  constructor(private reportsService:ReportsService,
+              private snackBar:MatSnackBar,
+              private readonly translate:TranslateService,) {
   }
   ngOnInit() {
     this.reloadReports();
@@ -67,6 +71,11 @@ export class ReportListComponent implements OnInit{
     if(event.report.links.resolve) {
       this.reportsService.handleReport(event.report.links.resolve,{state: event.new_status}).subscribe(() => {
         this.loading$.next(true);
+        this.snackBar.open(
+          this.translate.instant('report.handled'), undefined,
+          {
+            panelClass: ['green-snackbar']
+          });
         this.reloadReports();
       });
     }

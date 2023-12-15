@@ -49,4 +49,13 @@ export type GameNotReviewedBySearchDto = Partial<(GameNotReviewedByFilterDto & P
 
 export type GameExclusiveSearchDto = Partial<( (GameRecommendedFilterDto|GameFavoriteFilterDto ) & PaginatedDto)>;
 
+export type GameSubmissionHandleDto = {
+  accept: boolean;
+}
 
+export enum GameMediaTypes {
+  APPLICATION_GAME_SUGGESTION_FORM = "application/vnd.game-suggestion-form.v1+json",
+  APPLICATION_GAME= "application/vnd.game.v1+json",
+  APPLICATION_FAVORITE_GAME_FORM = "application/vnd.favorite-game-form.v1+json",
+  APPLICATION_GAME_LIST = "application/vnd.game-list.v1+json"
+}

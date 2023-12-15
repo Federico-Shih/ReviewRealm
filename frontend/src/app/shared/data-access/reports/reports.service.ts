@@ -44,9 +44,7 @@ export class ReportsService {
       headers:{
         'Content-Type': ReportMediaTypes.APPLICATION_REPORT_HANDLE_FORM
       }
-    }).pipe(catchError(exceptionMapper), switchMap(()=>{
-      return of(true);
-    }));
+    }).pipe(catchError(exceptionMapper), map(response => response.status === 200));
   }
 
 }

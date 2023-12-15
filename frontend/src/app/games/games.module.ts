@@ -29,6 +29,8 @@ import {MatFormFieldModule} from "@angular/material/form-field";
 import {GameEditComponent} from './feature/game-edit/game-edit.component';
 import {MatDialogModule} from "@angular/material/dialog";
 import {GameDetailPageComponent} from "./ui/game-detail-page/game-detail-page.component";
+import { GameSubmissionsComponent } from './feature/game-submissions/game-submissions.component';
+import { GameSubmissionCardComponent } from './ui/game-submission-card/game-submission-card.component';
 
 @NgModule({
   declarations: [
@@ -37,7 +39,9 @@ import {GameDetailPageComponent} from "./ui/game-detail-page/game-detail-page.co
     GameListComponent,
     GameSubmitComponent,
     GameEditComponent,
-    GameDetailPageComponent
+    GameDetailPageComponent,
+    GameSubmissionsComponent,
+    GameSubmissionCardComponent
   ],
   exports: [
     GameDetailPageComponent

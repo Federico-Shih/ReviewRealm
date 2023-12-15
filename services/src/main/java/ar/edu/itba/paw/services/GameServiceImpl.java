@@ -251,6 +251,7 @@ public class GameServiceImpl implements GameService {
         if(!game.getSuggestion()){
             throw new GameSuggestionAlreadyHandled();
         }
+        gameDao.setSuggestedFalse(gameId);
         User suggester = game.getSuggestedBy();
         if(suggester != null) {
             mailingService.sendAcceptedSuggestionEmail(game, suggester);

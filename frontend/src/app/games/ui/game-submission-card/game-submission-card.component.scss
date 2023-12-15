@@ -1,0 +1,27 @@
+.container{
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: center;
+  justify-content: space-between;
+}
+.accept{
+  background-color: var(--color-green);
+}
+.reject{
+  background-color: var(--color-error);
+}
+.handlers{
+  display:flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 3px;
+}
+.submission-card{
+  background: var(--color-primary);// #13112D;
+  padding: 4%;
+  border: 1px solid var(--color-primary-variant-1); //#444155
+  border-radius: 10px;
+  color: white;
+}

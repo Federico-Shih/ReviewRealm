@@ -1,9 +1,9 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpErrorResponse} from "@angular/common/http";
 import {
-  GameExclusiveSearchDto,
+  GameExclusiveSearchDto, GameMediaTypes,
   GameNotReviewedBySearchDto,
-  GameSearchDto
+  GameSearchDto, GameSubmissionHandleDto
 } from "./games.dtos";
 import {
   customExceptionMapper,
@@ -95,4 +95,12 @@ export class GamesService {
       return response.status === 200;
     }));
   }
+  handleGameSubmission(url:string,state:GameSubmissionHandleDto):Observable<boolean>{
+    return this.http.patch<boolean>(url,state,{
+      responseType:"json",
+      observe:"response",
+      headers:{
+        'Content-Type': GameMediaTypes.APPLICATION_GAME_SUGGESTION_FORM
+      }
+    }).pipe(catchError(exceptionMapper), map(response => response.status === 204))};
 }

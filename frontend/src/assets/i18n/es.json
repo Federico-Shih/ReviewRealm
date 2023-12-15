@@ -34,6 +34,7 @@
   "filter-title": "Filtrar por",
   "following": "Siguiendo",
   "game": {
+    "accept": "Aceptar",
     "create": {
       "title": "¿Está seguro que desea crear este juego?"
     },
@@ -48,6 +49,7 @@
       "title": "¿Está seguro que desea editar este juego?"
     },
     "edited": "Juego editado correctamente.",
+    "reject": "Rechazar",
     "submit": {
       "title": "¿Está seguro que desea sugerir este juego?"
     },
@@ -127,7 +129,13 @@
     "title": "Sugerir un Nuevo Juego"
   },
   "games": {
-    "search": "Buscar Juegos"
+    "search": {
+      "non-submitted": {
+        "button": "¡Busca juegos ya disponibles!",
+        "header": "¿Quiere saber si un juego ya está en la plataforma?"
+      },
+      "title": "Buscar Juegos"
+    }
   },
   "genres": "Géneros:",
   "guidelines": {
@@ -191,6 +199,7 @@
   "new": "Novedoso",
   "new-review": "Nueva Reseña",
   "no-reports": "¡No quedan reportes sin analizar!",
+  "no-submissions": "¡No hay sugerencias de nuevos juegos provistas por los usuarios!",
   "platform": {
     "nintendo": "Nintendo",
     "pc": "PC",
@@ -247,6 +256,7 @@
   },
   "report": {
     "accept": "Borrar Reseña",
+    "handled": "Reporte resuelto.",
     "reason": {
       "disrespect": "Contenido irrespetuoso hacia otros miembros",
       "irrelevant": "Contenido irrelevante en lo que concierne gaming y sus ramas adyacentes",
@@ -385,6 +395,9 @@
     },
     "notifications": "Notificaciones de Correo Electrónico",
     "title": "Configuración de Cuenta"
+  },
+  "submission": {
+    "handled": "Sugerencia resuelta."
   },
   "toggle-filters": "Filtros",
   "unit": {

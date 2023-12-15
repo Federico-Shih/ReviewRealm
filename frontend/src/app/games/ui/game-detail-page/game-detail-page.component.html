@@ -1,7 +1,7 @@
 <ng-container *ngIf="game != null">
   <div class="page-header">
     <app-breadcrumbs [breadcrumbs]="[
-    {name:'games.search' | translate, link: '/games'},
+    {name:'games.search.title' | translate, link: '/games'},
     {name: game.name, link: '/games/'+game.id}]"
     />
     <div *ngIf="isModerator" class="mod-buttons">
