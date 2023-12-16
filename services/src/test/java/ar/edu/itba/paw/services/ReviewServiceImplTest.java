@@ -58,12 +58,12 @@ public class ReviewServiceImplTest {
     @Test
     public void testCreateReview() {
         Mockito.when(reviewDao.create(any(), any(), anyInt(), any(), any(), any(), anyDouble(), any(), anyBoolean(), anyBoolean())).thenReturn(getReview1());
-        Mockito.when(userService.getFollowers(anyLong(), any())).thenReturn(new Paginated<>(1,1,1, Arrays.asList(getUser2(), getUser3())));
+        Mockito.when(userService.getFollowers(anyLong(), any())).thenReturn(new Paginated<>(1,1,1, 2, Arrays.asList(getUser2(), getUser3())));
         Mockito.when(userService.isNotificationEnabled(eq(getUser2().getId()), any())).thenReturn(true);
         Mockito.when(userService.isNotificationEnabled(eq(getUser3().getId()), any())).thenReturn(false);
         Mockito.when(gameService.getGameById(anyLong(),anyLong())).thenReturn(Optional.of(getSuperGameA()));
         Mockito.when(userService.getUserById(anyLong())).thenReturn(Optional.of(getUser1()));
-        Mockito.when(reviewDao.findAll(any(), any(), any(), any())).thenReturn(new Paginated<>(1,1,1, new ArrayList<>()));
+        Mockito.when(reviewDao.findAll(any(), any(), any(), any())).thenReturn(new Paginated<>(1,1,1, 0, new ArrayList<>()));
 
         Review review = rs.createReview(
                 getReview1().getTitle(),
@@ -126,7 +126,7 @@ public class ReviewServiceImplTest {
     @Test
     public void testGetUserReviews() {
         Mockito.when(reviewDao.findAll(any(), any(), any(), any()))
-                .thenReturn(new Paginated<>(1, 1, 1, new ArrayList<>()));
+                .thenReturn(new Paginated<>(1, 1, 1, 0, new ArrayList<>()));
 
         Paginated<Review> reviews = rs.getUserReviews(Page.with(1, 1), getUser1().getId(), null);
         Assert.assertEquals(1, reviews.getTotalPages());
@@ -138,9 +138,9 @@ public class ReviewServiceImplTest {
         Review r1 = getReview1();
         Review r2 = getReview2();
         Review r3 = getReview3();
-        Mockito.when(userService.getFollowing(anyLong(), any())).thenReturn(new Paginated<>(1, 3, 1, Arrays.asList(getUser2(), getUser3())));
+        Mockito.when(userService.getFollowing(anyLong(), any())).thenReturn(new Paginated<>(1, 3, 1, 2, Arrays.asList(getUser2(), getUser3())));
         Mockito.when(reviewDao.findAll(any(), any(), any(), any()))
-                .thenReturn(new Paginated<>(1, 3, 1, Arrays.asList(r1, r2, r3)));
+                .thenReturn(new Paginated<>(1, 3, 1, 3, Arrays.asList(r1, r2, r3)));
 
         Paginated<Review> reviews = rs.getReviewsFromFollowingByUser(getUser1().getId(), Page.with(1, 10));
         Assert.assertEquals(3, reviews.getList().size());

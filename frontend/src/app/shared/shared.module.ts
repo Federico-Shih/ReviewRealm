@@ -34,11 +34,12 @@ import {CommunityGuidelinesComponent} from './ui/community-guidelines/community-
 import {MatExpansionModule} from "@angular/material/expansion";
 import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
 import {HeaderBannerComponent} from './ui/header-banner/header-banner.component';
+import {LoadingSpinnerComponent} from './ui/loading-spinner/loading-spinner.component';
 
 
 @NgModule({
   declarations: [NavbarComponent, LoginFormComponent, FilterDrawerComponent, ReviewCardComponent, ProfileCardComponent, TriCheckboxComponent, SearchBarComponent,
-    GameCardComponent, BreadcrumbsComponent, HeaderBannerComponent, BreadcrumbsComponent, CommunityGuidelinesComponent],
+    GameCardComponent, BreadcrumbsComponent, HeaderBannerComponent, BreadcrumbsComponent, CommunityGuidelinesComponent, LoadingSpinnerComponent],
   providers: [UsersService, ReviewsService, GamesService, EnumsService, ReportsService],
   imports: [
     CommonModule,
@@ -76,6 +77,7 @@ import {HeaderBannerComponent} from './ui/header-banner/header-banner.component'
     BreadcrumbsComponent,
     HeaderBannerComponent,
     CommunityGuidelinesComponent,
+    LoadingSpinnerComponent,
   ]
 })
 export class SharedModule {

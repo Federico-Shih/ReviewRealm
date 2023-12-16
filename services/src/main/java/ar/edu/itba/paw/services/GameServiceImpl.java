@@ -227,7 +227,7 @@ public class GameServiceImpl implements GameService {
     public Paginated<Game> getRecommendationsOfGamesForUser(Page page,long userId) {
         User user = userService.getUserById(userId).orElseThrow(UserNotFoundException::new);
         if(!user.hasPreferencesSet()){
-            return new Paginated<>(1,0,0,new ArrayList<>());
+            return new Paginated<>(1,0,0,0,new ArrayList<>());
         }
         Set <Genre> userPreferences = user.getPreferences();
         List<Integer> preferencesIds = userPreferences.stream().map(Genre::getId).collect(Collectors.toList());

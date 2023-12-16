@@ -39,6 +39,7 @@ const routes: Routes = [
     loadChildren: () => import('./main-feed/main-feed.module').then(m => m.MainFeedModule),
     canActivate: [isAuthenticatedGuard]
   },
+  {path: 'community', loadChildren: () => import('./community/community.module').then(m => m.CommunityModule)},
   {
     path: 'errors',
     loadChildren : () => import('./errors/errors.module').then(m => m.ErrorsModule),

@@ -11,6 +11,18 @@
     "password": "Password",
     "success": "Password change was a success!"
   },
+  "community": {
+    "no-gamesplayed": "Review some games, so we can recommend you other profiles who played the same games.",
+    "no-preferences": "Set your preferences to finde players that share your likings.",
+    "no-recommendations": "Sorry, we could not find any players to recommend you yet.",
+    "no-results": "We found no results for your search",
+    "other-users": "Other people in Review Realm",
+    "review-game": "Write a Review",
+    "same-games": "Others who have played the same games as you",
+    "same-preferences": "Players who share your preferences",
+    "search": "Looking for someone in particular?",
+    "set-preferences": "Set your preferences"
+  },
   "delete": "Delete",
   "desc": "Descending",
   "developer": {
@@ -411,6 +423,11 @@
   "unit": {
     "hours": "Hours",
     "minutes": "Minutes"
+  },
+  "user": {
+    "followers": "Followers",
+    "level": "Level",
+    "reputation": "Reputation"
   },
   "validate-user-form": {
     "email": "example@gmail.com",

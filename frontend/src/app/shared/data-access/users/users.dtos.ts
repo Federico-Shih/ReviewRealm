@@ -1,5 +1,6 @@
 // TODO: add all user media types that are relevant
 import {PaginatedDto, SortedDto} from "../shared.dtos";
+import {ReviewSortType} from "../reviews/reviews.dtos";
 
 export enum UserMediaTypes {
   CREATEUSER = "application/vnd.user-form.v1+json",
@@ -15,12 +16,18 @@ export type UserSearchDto = Partial<{
   preferences: number[];
   gamesPlayed: number[];
   following: number;
+  samePreferencesAs: number;
+  sameGamesPlayedAs: number;
 } & SortedDto<UserSortCriteria> & PaginatedDto>;
 
 export enum UserSortCriteria {
   FOLLOWERS = "followers",
   LEVEL = "level",
   REPUTATION = "reputation",
+}
+
+export const isUserSortType = (userSortType: unknown): userSortType is UserSortCriteria => {
+  return Object.values(UserSortCriteria).find((type) => type === userSortType) !== undefined;
 }
 
 export type UserPatchDto = Partial<{

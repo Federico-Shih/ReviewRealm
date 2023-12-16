@@ -1,6 +1,9 @@
 package ar.edu.itba.paw.dtos.filtering;
 
+import org.apache.commons.lang3.ObjectUtils;
+
 import java.util.List;
+import java.util.Objects;
 
 // To be used between Services and Persistence
 public class UserFilter {
@@ -15,8 +18,10 @@ public class UserFilter {
     private final List<Long> gamesPlayed;
     private final Long followingQueryId;
     private final Long followersQueryId;
+    private final Long samePreferencesQueryId;
+    private final Long sameGamesPlayedQueryId;
 
-    public UserFilter(Long id, String username, String email, Boolean enabled, Long reputation, Long notId, String search, List<Integer> preferences, List<Long> gamesPlayed, Long followingQueryId, Long followersQueryId) {
+    public UserFilter(Long id, String username, String email, Boolean enabled, Long reputation, Long notId, String search, List<Integer> preferences, List<Long> gamesPlayed, Long followingQueryId, Long followersQueryId, Long samePreferencesQueryId, Long sameGamesPlayedQueryId) {
         this.id = id;
         this.username = username;
         this.email = email;
@@ -28,6 +33,8 @@ public class UserFilter {
         this.gamesPlayed = gamesPlayed;
         this.followingQueryId = followingQueryId;
         this.followersQueryId = followersQueryId;
+        this.samePreferencesQueryId = samePreferencesQueryId;
+        this.sameGamesPlayedQueryId = sameGamesPlayedQueryId;
     }
 
     public String getUsername() {
@@ -74,11 +81,48 @@ public class UserFilter {
         return followersQueryId != null;
     }
 
+    public boolean hasSamePreferencesQuery() {
+        return samePreferencesQueryId != null;
+    }
+
+    public boolean hasSameGamesPlayedQuery() {
+        return sameGamesPlayedQueryId != null;
+    }
+
     public Long getFollowingQueryId() {
         return followingQueryId;
     }
 
     public Long getFollowersQueryId() {
         return followersQueryId;
+    }
+
+    public Long getSamePreferencesQueryId() {
+        return samePreferencesQueryId;
+    }
+
+    public Long getSameGamesPlayedQueryId() {
+        return sameGamesPlayedQueryId;
+    }
+
+    private boolean allBasicPropertiesNull() {
+        return ObjectUtils.allNull(this.username, this.email, this.reputation, this.enabled, this.id,
+                this.notId, this.search) && (this.preferences == null || this.preferences.isEmpty()) && (this.gamesPlayed == null || this.gamesPlayed.isEmpty());
+    }
+
+    public boolean isProperFollowersQuery() {
+        return allBasicPropertiesNull() && ObjectUtils.allNull(this.samePreferencesQueryId, this.followingQueryId, this.sameGamesPlayedQueryId);
+    }
+
+    public boolean isProperFollowingQuery() {
+        return allBasicPropertiesNull() && ObjectUtils.allNull(this.samePreferencesQueryId, this.followersQueryId, this.sameGamesPlayedQueryId);
+    }
+
+    public boolean isProperSamePreferencesAs() {
+        return allBasicPropertiesNull() && ObjectUtils.allNull(this.followersQueryId, this.followingQueryId, this.sameGamesPlayedQueryId);
+    }
+
+    public boolean isProperSameGamesPlayedAs() {
+        return allBasicPropertiesNull() && ObjectUtils.allNull(this.followersQueryId, this.followingQueryId, this.samePreferencesQueryId);
     }
 }

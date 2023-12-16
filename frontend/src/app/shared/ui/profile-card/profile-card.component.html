@@ -1,11 +1,11 @@
 <div *ngIf="_user() as user" class="profile-card level-{{userRank()}}-background">
   <div class="profile-image">
-    <a routerLink="/">
+    <a routerLink="/profile/{{user.id}}">
       <img [ngSrc]="user.avatar" height="50" width="50"/>
     </a>
   </div>
   <div>
-    <a routerLink="">
+    <a routerLink="/profile/{{user.id}}">
       <span class="username">{{user.username}}</span>
     </a>
     <div *ngIf="user.preferences.length > 0">

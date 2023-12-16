@@ -6,6 +6,7 @@
         (search)="setSearch($event)"
         (submit)="submitSearch()"
         [label]="'games.search.title' | translate"
+        [value]="search.value!"
       ></app-search-bar>
     </div>
     <div class="games-container">
@@ -18,7 +19,5 @@
   </div>
 </ng-container>
 <ng-template #loading>
-  <div class="loading-container">
-    <mat-spinner mode="indeterminate"></mat-spinner>
-  </div>
+  <app-loading-spinner/>
 </ng-template>

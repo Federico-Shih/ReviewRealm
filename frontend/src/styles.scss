@@ -186,3 +186,7 @@ app-root {
     --mat-snack-bar-button-color: var(--color-text);
   }
 }
+
+.hidden {
+  display: none !important;
+}

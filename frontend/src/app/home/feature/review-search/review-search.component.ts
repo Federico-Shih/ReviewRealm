@@ -44,6 +44,7 @@ export class ReviewSearchComponent implements OnInit {
   pagination$ = this.paginatedReviews$.pipe(map((reviews) => {
     return {
       totalPages: reviews.totalPages,
+      totalElements: reviews.totalElements,
       links: reviews.links,
     };
   }));

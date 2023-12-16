@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.dtos.Page;
+import ar.edu.itba.paw.dtos.PaginationTotals;
 import ar.edu.itba.paw.dtos.filtering.GameFilter;
 import ar.edu.itba.paw.dtos.ordering.GameOrderCriteria;
 import ar.edu.itba.paw.dtos.ordering.Ordering;
@@ -78,9 +79,10 @@ public class GameHibernateDao implements GameDao, PaginationDao<GameFilter> {
 
     @Override
     public Paginated<Game> findAll(Page page, GameFilter filter, Ordering<GameOrderCriteria> ordering, Long currentUserId) {
-        int totalPages = getPageCount(filter, page.getPageSize());
-        if (page.getPageNumber() > totalPages || page.getPageNumber() <= 0) {
-            return new Paginated<>(page.getPageNumber(), page.getPageSize(), totalPages, new ArrayList<>());
+        PaginationTotals totals = getPaginationTotals(filter, page.getPageSize());
+
+        if (page.getPageNumber() > totals.getTotalPages() || page.getPageNumber() <= 0) {
+            return new Paginated<>(page.getPageNumber(), page.getPageSize(), totals.getTotalPages(), totals.getTotalElements(), new ArrayList<>());
         }
         QueryBuilder queryBuilder = getQueryBuilderFromFilter(filter);
         Query nativeQuery = em.createNativeQuery(
@@ -108,7 +110,7 @@ public class GameHibernateDao implements GameDao, PaginationDao<GameFilter> {
             games.forEach(g -> g.setFavorite(favoriteIds.contains(g.getId())));
         }
 
-        return new Paginated<>(page.getPageNumber(), page.getPageSize(), totalPages, games);
+        return new Paginated<>(page.getPageNumber(), page.getPageSize(), totals.getTotalPages(), totals.getTotalElements(), games);
     }
 
     @Override
@@ -220,7 +222,7 @@ public class GameHibernateDao implements GameDao, PaginationDao<GameFilter> {
     }
 
     @Override
-    public Long count(GameFilter filter) {
+    public long count(GameFilter filter) {
         QueryBuilder queryBuilder = getQueryBuilderFromFilter(filter);
         Query nativeQuery = em.createNativeQuery("SELECT count(distinct g.id) FROM " + toTableString(filter) + queryBuilder.toQuery());
         DaoUtils.setNativeParameters(queryBuilder, nativeQuery);

@@ -10,6 +10,9 @@ export class SearchBarComponent {
   @Input()
   label: string = '';
 
+  @Input()
+  value: string = '';
+
   @Output()
   search = new EventEmitter<string>();
 
@@ -17,7 +20,9 @@ export class SearchBarComponent {
   submit = new EventEmitter();
 
   onChange(event: Event) {
-    this.search.emit((event.target as HTMLInputElement).value);
+    const value = (event.target as HTMLInputElement).value;
+    this.value = value;
+    this.search.emit(value);
   }
 
   onSubmit() {

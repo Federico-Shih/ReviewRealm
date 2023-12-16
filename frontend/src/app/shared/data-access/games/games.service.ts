@@ -34,6 +34,7 @@ export class GamesService {
           if (response.status === 202 || response.body === null) return of({
             content: [],
             totalPages: 0,
+            totalElements: 0,
             links: {self: ""}
           });
           return forkJoin(

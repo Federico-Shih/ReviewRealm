@@ -14,7 +14,7 @@ public class PaginatedQuery {
 
     @Min(value = 1, message = "Size.pagination")
     @QueryParam("pageSize")
-    private Integer pageSize ;
+    private Integer pageSize;
 
     public Page getPage() {
         return Page.with(page != null ? page : DEFAULT_PAGE , pageSize != null ? pageSize : DEFAULT_PAGE_SIZE);

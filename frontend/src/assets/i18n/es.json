@@ -11,6 +11,18 @@
     "password": "Contraseña",
     "success": "Cambio de contraseña realizado correctamente"
   },
+  "community": {
+    "no-gamesplayed": "Reseña algunos juegos, así podremos recomendarte personas que jugaron a lo mismo que ti.",
+    "no-preferences": "Establece tus preferencias para encontrar jugadores que compartan tus gustos.",
+    "no-recommendations": "Disculpas, no encontramos jugadores para recomendarte por el momento.",
+    "no-results": "No encontramos resultados para tu búsqueda",
+    "other-users": "Otras personas en Review Realm",
+    "review-game": "Escribe una reseña",
+    "same-games": "Otros que jugaron los mismos juegos que tú",
+    "same-preferences": "Jugadores que comparten tus preferencias",
+    "search": "¿Buscas a alguien en particular?",
+    "set-preferences": "Elige tus preferencias"
+  },
   "delete": "Borrar",
   "desc": "Descendente",
   "developer": {
@@ -415,6 +427,11 @@
   "unit": {
     "hours": "Horas",
     "minutes": "Minutos"
+  },
+  "user": {
+    "followers": "Seguidores",
+    "level": "Nivel",
+    "reputation": "Reputación"
   },
   "validate-user-form": {
     "email": "ejemplo@gmail.com",

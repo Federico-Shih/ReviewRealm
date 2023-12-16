@@ -54,7 +54,7 @@ public class ReportServiceImplTest {
         Mockito.when(userService.getUserById(eq(getUser2().getId()))).thenReturn(Optional.of(getUser2()));
         Mockito.when(reviewService.getReviewById(eq(getReview1().getId()), any())).thenReturn(Optional.of(getReview1()));
         Mockito.when(reportDao.create(eq(getUser2().getId()),eq(getReview1().getId()),eq(ReportReason.SPAM))).thenReturn(getReport1());
-        Mockito.when(reportDao.findAll(any(), any())).thenReturn(new Paginated<>(1,10,0, Collections.emptyList()));
+        Mockito.when(reportDao.findAll(any(), any())).thenReturn(new Paginated<>(1,10,0, 0, Collections.emptyList()));
 
         Report report = reportService.createReport(getUser2().getId(),getReview1().getId(),ReportReason.SPAM);
 
@@ -82,7 +82,7 @@ public class ReportServiceImplTest {
     public void testCreateReportAlreadyExists() throws ReportAlreadyExistsException{
         Mockito.when(userService.getUserById(eq(getUser2().getId()))).thenReturn(Optional.of(getUser2()));
         Mockito.when(reviewService.getReviewById(eq(getReview1().getId()), any())).thenReturn(Optional.of(getReview1()));
-        Mockito.when(reportDao.findAll(any(), any())).thenReturn(new Paginated<Report>(1,10,1, Collections.singletonList(getReport1())));
+        Mockito.when(reportDao.findAll(any(), any())).thenReturn(new Paginated<Report>(1,10,1, 1, Collections.singletonList(getReport1())));
 
         reportService.createReport(getUser2().getId(),getReview1().getId(),ReportReason.SPAM);
     }

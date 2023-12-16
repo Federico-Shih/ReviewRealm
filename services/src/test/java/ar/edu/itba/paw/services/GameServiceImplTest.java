@@ -138,7 +138,7 @@ public class GameServiceImplTest {
         Mockito.when(user.getPreferences()).thenReturn(new HashSet<>(Arrays.asList(Genre.ACTION, Genre.ADVENTURE)));
         Mockito.when(user.hasPreferencesSet()).thenReturn(true);
         Mockito.when(gameDao.getGamesReviewedByUser(anyLong())).thenReturn(Optional.of(new HashSet<>(Arrays.asList(getSuperGameA()))));
-        Mockito.when(gameDao.findAll(any(), any(),any(),any())).thenReturn(new Paginated<>(1,10,1,Arrays.asList(getSuperGameB())));
+        Mockito.when(gameDao.findAll(any(), any(),any(),any())).thenReturn(new Paginated<>(1,10,1, 1, Arrays.asList(getSuperGameB())));
 
         List<Game> games = gs.getRecommendationsOfGamesForUser(Page.with(1,10),getUser1().getId()).getList();
 

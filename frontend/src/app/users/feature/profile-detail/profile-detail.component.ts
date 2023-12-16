@@ -78,7 +78,7 @@ export class ProfileDetailComponent implements OnInit{
          if (currentReviews!== null)
          {
              const newReviews = currentReviews.content.concat(pageInfo.content)
-             this.userReviews$.next({content: newReviews, links: pageInfo.links, totalPages: pageInfo.totalPages})
+             this.userReviews$.next({content: newReviews, links: pageInfo.links, totalPages: pageInfo.totalPages, totalElements: pageInfo.totalElements})
          }
       });
     }

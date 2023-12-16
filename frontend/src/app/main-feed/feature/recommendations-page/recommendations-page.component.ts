@@ -87,7 +87,7 @@ export class RecommendationsPageComponent implements OnInit {
         const currentReviews = this.paginatedReviews$.getValue();
         if (currentReviews !== null) {
           const newReviews = currentReviews.content.concat(pageInfo.content)
-          this.paginatedReviews$.next({content: newReviews, links: pageInfo.links, totalPages: pageInfo.totalPages})
+          this.paginatedReviews$.next({content: newReviews, links: pageInfo.links, totalPages: pageInfo.totalPages, totalElements: pageInfo.totalElements})
           this.isLoadingReviews$.next(false);
         }
       });

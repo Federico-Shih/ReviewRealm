@@ -30,7 +30,8 @@ export class MainFeedPageComponent implements OnInit {
     links: {
       self: ''
     },
-    totalPages: 0
+    totalPages: 0,
+    totalElements: 0
   });
 
   loggedInUser$ = this.authService.getLoggedUser();
@@ -127,7 +128,8 @@ export class MainFeedPageComponent implements OnInit {
             this.reviews$.next({
               content: this.reviews$.value.content.concat(reviews.content),
               links: reviews.links,
-              totalPages: reviews.totalPages
+              totalPages: reviews.totalPages,
+              totalElements: reviews.totalElements
             });
           },
           error: () => {

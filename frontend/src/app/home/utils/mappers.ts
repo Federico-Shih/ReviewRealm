@@ -10,6 +10,7 @@ import {
   isRatingType,
   RatingType
 } from "../../shared/data-access/games/games.dtos";
+import {isUserSortType, UserSearchDto} from "../../shared/data-access/users/users.dtos";
 
 // Precondición: checked.length === total.length
 export const mapCheckedToType = <T, K>(checked: boolean[], total: T[], selector: (type: T) => K): K[] => {
@@ -78,6 +79,19 @@ export const paramsMapToGameSearchDto = (params: ParamMap): GameSearchDto => {
     sort: isGameSortType(sort) ? sort : undefined,
     direction: isSortDirection(direction) ? direction : undefined,
   };
+}
+
+export const paramsMapToUserSearchDto = (params: ParamMap, defaultSort = '', defaultDirection = ''): UserSearchDto => {
+  const sort = params.get('sort') || defaultSort;
+  const direction = params.get('direction') || defaultDirection;
+  const search = params.get('search') ? params.get('search')! : undefined;
+  return {
+    search: search,
+    page: parseInt(params.get('page') || '1') || 1,
+    pageSize: parseInt(params.get('pageSize') || '6') || 6,
+    sort: isUserSortType(sort) ? sort : undefined,
+    direction: isSortDirection(direction) ? direction : undefined,
+  }
 }
 
 export const gameSearchForSubmitReviewParamsToDto = (params: ParamMap, userid: number | undefined): GameNotReviewedBySearchDto => {

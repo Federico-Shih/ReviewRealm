@@ -15,6 +15,8 @@ public class UserFilterBuilder {
     private List<Long> gamesPlayed = null;
     private Long followingId = null;
     private Long followersId = null;
+    private Long samePreferencesAs = null;
+    private Long sameGamesPlayedAs = null;
 
     public UserFilterBuilder withUsername(String username) {
         this.username = username;
@@ -71,8 +73,18 @@ public class UserFilterBuilder {
         return this;
     }
 
+    public UserFilterBuilder withSamePreferencesAs(Long samePreferencesAs) {
+        this.samePreferencesAs = samePreferencesAs;
+        return this;
+    }
+
+    public UserFilterBuilder withSameGamesPlayedAs(Long sameGamesPlayedAs) {
+        this.sameGamesPlayedAs = sameGamesPlayedAs;
+        return this;
+    }
+
     public UserFilter build() {
-        return new UserFilter(id, username, email, enabled, reputation, notId, search, preferences, gamesPlayed, followingId, followersId);
+        return new UserFilter(id, username, email, enabled, reputation, notId, search, preferences, gamesPlayed, followingId, followersId, samePreferencesAs, sameGamesPlayedAs);
     }
 
     public Long getFollowingId() {

@@ -138,7 +138,7 @@ public class ReviewServiceImpl implements ReviewService {
         FollowerFollowingCount count = userService.getFollowerFollowingCount(userId);
         List<User> followingUsers = userService.getFollowing(userId, Page.with(1, (int) count.getFollowingCount())).getList();
         if (followingUsers.isEmpty()) {
-            return new Paginated<>(page.getPageNumber(), page.getPageSize(), 0, new ArrayList<>());
+            return new Paginated<>(page.getPageNumber(), page.getPageSize(), 0, 0, new ArrayList<>());
         }
         List<Long> followingIds = followingUsers.stream().map((User::getId)).collect(Collectors.toList());
         ReviewFilterBuilder filterBuilder = new ReviewFilterBuilder()

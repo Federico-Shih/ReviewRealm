@@ -44,6 +44,7 @@ export class UsersService {
         if (response.body === null || response.status === 202) return of({
           content: [],
           totalPages: 0,
+          totalElements: 0,
           links: {self: ""}
         });
         return forkJoin(response.body.map((user) => forkJoin({

@@ -32,6 +32,7 @@ export class GameListComponent implements OnInit{
     pagination$ = this.paginatedGames$.pipe(map((games) => {
       return {
         totalPages: games.totalPages,
+        totalElements: games.totalElements,
         links: games.links
       };
     }));

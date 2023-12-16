@@ -460,11 +460,30 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     @Override
     public Paginated<User> getUsers(Page page, UserFilter filter, Ordering<UserOrderCriteria> ordering, Long currentUserId) {
+
         if (filter.hasFollowersQuery()) {
-            return userDao.getFollowers(filter.getFollowersQueryId(), page).orElseThrow(UserNotFoundException::new);
+            if (filter.isProperFollowersQuery()) {
+                return userDao.getFollowers(filter.getFollowersQueryId(), page).orElseThrow(UserNotFoundException::new);
+            }
+            throw new ExclusiveFilterException("error.user.filter.followers");
         }
         if (filter.hasFollowingQuery()) {
-            return userDao.getFollowing(filter.getFollowingQueryId(), page).orElseThrow(UserNotFoundException::new);
+            if (filter.isProperFollowingQuery()) {
+                return userDao.getFollowing(filter.getFollowingQueryId(), page).orElseThrow(UserNotFoundException::new);
+            }
+            throw new ExclusiveFilterException("error.user.filter.following");
+        }
+        if (filter.hasSameGamesPlayedQuery()) {
+            if (filter.isProperSameGamesPlayedAs()) {
+                return this.getUsersWhoReviewedSameGames(page, filter.getSameGamesPlayedQueryId(), ordering, currentUserId);
+            }
+            throw new ExclusiveFilterException("error.user.filter.gamesplayed");
+        }
+        if (filter.hasSamePreferencesQuery()) {
+            if (filter.isProperSamePreferencesAs()) {
+                return this.getUsersWithSamePreferences(page, filter.getSamePreferencesQueryId(), ordering, currentUserId);
+            }
+            throw new ExclusiveFilterException("error.user.filter.preferences");
         }
         return userDao.findAll(page, filter, ordering, currentUserId);
     }

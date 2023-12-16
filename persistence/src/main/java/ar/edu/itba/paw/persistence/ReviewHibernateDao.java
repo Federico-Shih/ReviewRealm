@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.dtos.Page;
+import ar.edu.itba.paw.dtos.PaginationTotals;
 import ar.edu.itba.paw.dtos.SaveReviewDTO;
 import ar.edu.itba.paw.dtos.filtering.ReviewFilter;
 import ar.edu.itba.paw.dtos.ordering.Ordering;
@@ -130,9 +131,9 @@ public class ReviewHibernateDao implements ReviewDao, PaginationDao<ReviewFilter
 
     @Override
     public Paginated<Review> findAll(Page pagination, ReviewFilter filter, Ordering<ReviewOrderCriteria> ordering, Long activeUserId) {
-        int totalPages = getPageCount(filter, pagination.getPageSize());
-        if (pagination.getPageNumber() > totalPages || pagination.getPageNumber() <= 0) {
-            return new Paginated<>(pagination.getPageNumber(), pagination.getPageSize(), totalPages, new ArrayList<>());
+        PaginationTotals totals = getPaginationTotals(filter, pagination.getPageSize());
+        if (pagination.getPageNumber() > totals.getTotalPages() || pagination.getPageNumber() <= 0) {
+            return new Paginated<>(pagination.getPageNumber(), pagination.getPageSize(), totals.getTotalPages(), totals.getTotalElements(), new ArrayList<>());
         }
         QueryBuilder queryBuilder = getQueryBuilderFromFilter(filter);
         Query nativeQuery = em.createNativeQuery(
@@ -161,11 +162,11 @@ public class ReviewHibernateDao implements ReviewDao, PaginationDao<ReviewFilter
                 review.setFeedback(feedbackTypeMap.get(review.getId()));
             }
         }
-        return new Paginated<>(pagination.getPageNumber(), pagination.getPageSize(), totalPages, reviewList);
+        return new Paginated<>(pagination.getPageNumber(), pagination.getPageSize(), totals.getTotalPages(), totals.getTotalElements(), reviewList);
     }
 
     public List<Review> findAll(ReviewFilter filter, Ordering<ReviewOrderCriteria> ordering, Long activeUserId) {
-        Page page = Page.with(1, count(filter).intValue());
+        Page page = Page.with(1, (int) count(filter));
         if (page.getPageSize() <= 0) {
             return new ArrayList<>();
         }
@@ -173,7 +174,7 @@ public class ReviewHibernateDao implements ReviewDao, PaginationDao<ReviewFilter
     }
 
     @Override
-    public Long count(ReviewFilter filter) {
+    public long count(ReviewFilter filter) {
         QueryBuilder queryBuilder = getQueryBuilderFromFilter(filter);
         Query nativeQuery = em.createNativeQuery("SELECT count(distinct r.id) FROM " + toTableString(filter) + queryBuilder.toQuery());
         DaoUtils.setNativeParameters(queryBuilder, nativeQuery);

@@ -24,7 +24,8 @@ export class ReportListComponent implements OnInit{
     links: {
       self: ''
     },
-    totalPages: 0
+    totalPages: 0,
+    totalElements: 0
   });
   loading$ = new BehaviorSubject<boolean>(true);
   loadingInfinite$ = new BehaviorSubject<boolean>(false);
@@ -60,7 +61,8 @@ export class ReportListComponent implements OnInit{
           next:reviews => {this.reports$.next({
             content: this.reports$.value.content.concat(reviews.content),
             links: reviews.links,
-            totalPages: reviews.totalPages
+            totalPages: reviews.totalPages,
+            totalElements: reviews.totalElements
           });},
           error: () => {},
           complete: () => {this.loadingInfinite$.next(false);}

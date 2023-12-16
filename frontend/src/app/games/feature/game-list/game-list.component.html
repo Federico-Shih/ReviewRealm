@@ -84,7 +84,7 @@
           #paginator
           (page)="handlePageEvent($event)"
           *ngIf="combined[1].totalPages !== 0"
-          [length]="combined[1].totalPages * (combined[0].pageSize || 10)"
+          [length]="combined[1].totalElements"
 
           [pageIndex]="((combined[0].page || 1) - 1) "
           [pageSize]="combined[0].pageSize || 10"
@@ -93,9 +93,7 @@
         </mat-paginator>
       </div>
     <ng-template #loading>
-      <div class="centered-container">
-        <mat-spinner mode="indeterminate"></mat-spinner>
-      </div>
+      <app-loading-spinner/>
     </ng-template>
   </mat-drawer-content>
 </mat-drawer-container>

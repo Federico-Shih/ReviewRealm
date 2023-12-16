@@ -9,6 +9,7 @@ import java.util.List;
 
 public class PaginatedResponseHelper extends BaseResponse {
     private static final String TOTAL_PAGES_HEADER_NAME = "X-Reviewrealm-TotalPages";
+    private static final String TOTAL_ELEMENTS_HEADER_NAME = "X-Reviewrealm-TotalElements";
 
     private PaginatedResponseHelper() {
     }
@@ -23,6 +24,7 @@ public class PaginatedResponseHelper extends BaseResponse {
             response.link(info.getRequestUriBuilder().replaceQueryParam("page", pagination.getPage() + 1).build(), "next");
         }
         response.header(TOTAL_PAGES_HEADER_NAME, pagination.getTotalPages());
+        response.header(TOTAL_ELEMENTS_HEADER_NAME, pagination.getTotalElements());
         return response;
     }
 

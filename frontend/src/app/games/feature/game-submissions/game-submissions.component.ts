@@ -27,7 +27,8 @@ export class GameSubmissionsComponent implements OnInit{
     links: {
       self: ''
     },
-    totalPages: 0
+    totalPages: 0,
+    totalElements: 0
   });
   loading$ = new BehaviorSubject<boolean>(true);
   loadingInfinite$ = new BehaviorSubject<boolean>(false);
@@ -64,7 +65,8 @@ export class GameSubmissionsComponent implements OnInit{
           next:submissions => {this.submissions$.next({
             content: this.submissions$.value.content.concat(submissions.content),
             links: submissions.links,
-            totalPages: submissions.totalPages
+            totalPages: submissions.totalPages,
+            totalElements: submissions.totalElements
           });},
           error: () => {},
           complete: () =>{this.loadingInfinite$.next(false);}
@@ -118,7 +120,8 @@ export class GameSubmissionSearchDialog{
     links: {
       self: ''
     },
-    totalPages: 0
+    totalPages: 0,
+    totalElements: 0
   });
 
   setSearch(value: string) {

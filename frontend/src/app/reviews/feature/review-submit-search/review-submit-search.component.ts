@@ -38,8 +38,15 @@ export class ReviewSubmitSearchComponent {
     this.search.setValue(value);
   }
 
+  ngOnInit(): void {
+    this.route.queryParamMap.subscribe((qpm) => {
+      this.setSearch(qpm.get('search') || '');
+
+    })
+  }
+
   submitSearch() {
-    if (this.search.value) {
+    if (this.search.value !== null) {
       this.router.navigate([], {
         queryParams: {
           search: this.search.value

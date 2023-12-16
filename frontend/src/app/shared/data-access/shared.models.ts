@@ -10,6 +10,7 @@ export type PaginatedLinks = {
 export type Paginated<T> = {
   content: T[];
   totalPages: number;
+  totalElements: number;
   links: PaginatedLinks;
 }
 

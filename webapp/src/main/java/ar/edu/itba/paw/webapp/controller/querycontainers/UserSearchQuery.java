@@ -49,6 +49,14 @@ public class UserSearchQuery extends PaginatedQuery {
     @QueryParam("followers")
     private Long followers;
 
+    @ExistentUserId(optional = true)
+    @QueryParam("samePreferencesAs")
+    private Long samePreferencesAs;
+
+    @ExistentUserId(optional = true)
+    @QueryParam("sameGamesPlayedAs")
+    private Long sameGamesPlayedAs;
+
     public UserSearchQuery() {
     }
 
@@ -66,6 +74,8 @@ public class UserSearchQuery extends PaginatedQuery {
                 .withUsername(username)
                 .withFollowers(followers)
                 .withFollowing(following)
+                .withSamePreferencesAs(samePreferencesAs)
+                .withSameGamesPlayedAs(sameGamesPlayedAs)
                 .build();
     }
 

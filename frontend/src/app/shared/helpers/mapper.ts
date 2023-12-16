@@ -9,6 +9,7 @@ import {
 } from "../data-access/shared.models";
 
 const TOTAL_PAGES_HEADER = 'X-Reviewrealm-TotalPages';
+const TOTAL_ELEMENTS_HEADER = 'X-Reviewrealm-TotalElements';
 
 export const responseMapper = <T, K>(fromResponse: (param: T) => K) => (httpResponse: HttpResponse<T>): K => {
   const reviewResponse = httpResponse.body as T;
@@ -40,12 +41,15 @@ export const paginatedResponseMapper = <T, K>(fromResponse: (param: T) => K) => 
   const paginatedResponse = httpResponse.status === 204 ? [] : httpResponse.body as T[];
   const headers = httpResponse.headers;
   const pagesHeader = headers.get(TOTAL_PAGES_HEADER);
+  const elementsHeader = headers.get(TOTAL_ELEMENTS_HEADER);
   const totalPages = pagesHeader !== null ? parseInt(pagesHeader) : 0;
+  const totalElements = elementsHeader !== null ? parseInt(elementsHeader) : 0;
   const links = splitLinks(headers.get('Link') || "");
 
   return {
     content: paginatedResponse.map(fromResponse),
     totalPages,
+    totalElements,
     links: {
       self: links.get('self') || "",
       next: links.get('next'),
@@ -58,12 +62,15 @@ export const paginatedObjectMapper = <T>(httpResponse: HttpResponse<unknown>, ob
   const paginatedResponse = httpResponse.status === 204 ? [] : objectArray as T[];
   const headers = httpResponse.headers;
   const pagesHeader = headers.get(TOTAL_PAGES_HEADER);
+  const elementsHeader = headers.get(TOTAL_ELEMENTS_HEADER);
   const totalPages = pagesHeader !== null ? parseInt(pagesHeader) : 0;
+  const totalElements = elementsHeader !== null ? parseInt(elementsHeader) : 0;
   const links = splitLinks(headers.get('Link') || "");
 
   return {
     content: paginatedResponse,
     totalPages,
+    totalElements,
     links: {
       self: links.get('self') || "",
       next: links.get('next'),
@@ -76,6 +83,7 @@ export const emptyResponseMapper = <K>() => (httpResponse: HttpResponse<unknown>
   return {
     content: [],
     totalPages: 0,
+    totalElements: 0,
     links: {
       self: "",
     }

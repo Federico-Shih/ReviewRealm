@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.dtos.Page;
+import ar.edu.itba.paw.dtos.PaginationTotals;
 import ar.edu.itba.paw.dtos.filtering.ReportFilter;
 import ar.edu.itba.paw.enums.ReportReason;
 import ar.edu.itba.paw.enums.ReportState;
@@ -42,15 +43,17 @@ public class ReportHibernateDao implements ReportDao, PaginationDao<ReportFilter
 
 
     @Override
-    public Long count(ReportFilter filter) {
+    public long count(ReportFilter filter) {
         final CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
         final CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         final Root<Report> root = criteriaQuery.from(Report.class);
         criteriaQuery.select(criteriaBuilder.count(root));
         addReportFilterQuery(filter, criteriaQuery, criteriaBuilder, root);
         final TypedQuery<Long> query = em.createQuery(criteriaQuery);
-        return query.getSingleResult();
+        Long result = query.getSingleResult();
+        return result == null? 0: result;
     }
+
     private <T> void addReportFilterQuery(ReportFilter filter, CriteriaQuery<T> criteriaQuery, CriteriaBuilder criteriaBuilder, Root<Report> root) {
         if(filter.getReporterId() != null) {
             criteriaQuery.where(criteriaBuilder.equal(root.get("reporter"), filter.getReporterId()));
@@ -85,9 +88,9 @@ public class ReportHibernateDao implements ReportDao, PaginationDao<ReportFilter
     }
     @Override
     public Paginated<Report> findAll(Page page, ReportFilter filter) {
-        int pages = getPageCount(filter, page.getPageSize());
-        if(page.getPageNumber() > pages) {
-            return new Paginated<>(page.getPageNumber(), page.getPageSize(), pages, Collections.emptyList());
+        PaginationTotals totals = getPaginationTotals(filter, page.getPageSize());
+        if(page.getPageNumber() > totals.getTotalPages()) {
+            return new Paginated<>(page.getPageNumber(), page.getPageSize(), totals.getTotalPages(), totals.getTotalElements(), Collections.emptyList());
         }
         QueryBuilder queryBuilder = getQueryBuilderFromFilter(filter);
         Query nativeQuery = em.createNativeQuery("SELECT id from reports " + queryBuilder.toQuery());
@@ -99,12 +102,12 @@ public class ReportHibernateDao implements ReportDao, PaginationDao<ReportFilter
         List<Long> ids = (List<Long>) nativeQuery.getResultList().stream().map(n -> ((Number) n).longValue()).collect(Collectors.toList());
 
         if(ids.isEmpty()) {
-            return new Paginated<>(page.getPageNumber(), page.getPageSize(), pages, Collections.emptyList());
+            return new Paginated<>(page.getPageNumber(), page.getPageSize(), totals.getTotalPages(), totals.getTotalElements(), Collections.emptyList());
         }
         final TypedQuery<Report> query = em.createQuery("from Report where id in :ids ORDER BY submissionDate ASC ", Report.class);
         query.setParameter("ids", ids);
 
-        return new Paginated<>(page.getPageNumber(), page.getPageSize(), pages, query.getResultList());
+        return new Paginated<>(page.getPageNumber(), page.getPageSize(), totals.getTotalPages(), totals.getTotalElements(), query.getResultList());
     }
 
 
