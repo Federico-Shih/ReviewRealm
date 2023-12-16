@@ -49,21 +49,3 @@ export enum Role {
   USER = "USER"
 }
 
-export enum ReportReason {
-  DISRESPECTFUL = "DISRESPECTFUL",
-  SPAM = "SPAM",
-  IRRELEVANT = "IRRELEVANT",
-  SPOILER = "SPOILER",
-  PIRACY = "PIRACY",
-  PRIVACY = "PRIVACY"
-}
-
-export const ReasonToLocale = {
-  DISRESPECTFUL: "report.reason.disrespect",
-  IRRELEVANT: "report.reason.irrelevant",
-  PIRACY: "report.reason.piracy",
-  PRIVACY: "report.reason.privacy",
-  SPAM: "report.reason.spam",
-  SPOILER: "report.reason.spoiler"
-}
-

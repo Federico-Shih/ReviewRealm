@@ -4,7 +4,7 @@ import {ReviewsService} from "../../../shared/data-access/reviews/reviews.servic
 import {Feedback, Review} from "../../../shared/data-access/reviews/review.class";
 import {catchError, combineLatest, map, Observable, of, switchMap} from "rxjs";
 import {AuthenticationService} from "../../../shared/data-access/authentication/authentication.service";
-import {DifficultyToLocale, ReasonToLocale, ReportReason, Role} from "../../../shared/data-access/shared.enums";
+import {DifficultyToLocale,Role} from "../../../shared/data-access/shared.enums";
 import {environment} from "../../../../environments/environment";
 import {MatDialog, MatDialogModule} from "@angular/material/dialog";
 import {SharedModule} from "../../../shared/shared.module";
@@ -13,6 +13,7 @@ import {MatRadioModule} from "@angular/material/radio";
 import {NgForOf} from "@angular/common";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {TranslateService} from "@ngx-translate/core";
+import {getMessageFromReason, ReportReason} from "../../../shared/data-access/reports/reports.class";
 
 @Component({
   selector: 'app-review-detail',
@@ -182,5 +183,5 @@ export class ReportDialogComponent {
   reportReason: ReportReason = ReportReason.IRRELEVANT;
   reasons: ReportReason[] = Object.values(ReportReason)
 
-  protected readonly ReasonToLocale = ReasonToLocale;
+  protected readonly ReasonToLocale = getMessageFromReason;
 }
