@@ -33,7 +33,11 @@
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
+  width: 70%;
   gap: 30px;
+}
+.full-width{
+  width: 80%;
 }
 ::ng-deep mat-dialog-container {
   .mat-mdc-dialog-content{
@@ -66,16 +70,14 @@
   .games-container {
     display: flex;
     flex-direction: row;
-    justify-content: start;
+    justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
     gap: 20px;
+    width: 100%;
   }
   .game-container{
-    height: 100%;
+    width: 45%;
     margin: auto 0;
   }
-
-
-
 }

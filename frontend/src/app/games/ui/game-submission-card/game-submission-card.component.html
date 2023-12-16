@@ -1,6 +1,9 @@
 <ng-container *ngIf="game !== null">
   <div class="container submission-card">
-    <app-game-card [game]="game" [nolink]="true"></app-game-card>
+    <div class="full-width">
+      <app-game-card [game]="game" [nolink]="true"></app-game-card>
+    </div>
+
     <div class="handlers">
       <button mat-raised-button class="accept" (click)="handleSubmission.emit({game:game, accept:true})">{{'game.accept'| translate}}</button>
       <button mat-raised-button class="reject" (click)="handleSubmission.emit({game:game, accept:false})">{{'game.reject'| translate}}</button>
