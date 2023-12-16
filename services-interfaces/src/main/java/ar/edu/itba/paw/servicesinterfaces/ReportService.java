@@ -15,7 +15,7 @@ public interface ReportService {
     Optional<Report> getReportById(long id);
 
 
-    Boolean isReported(long reviewId, long reporterId);
+    boolean isReported(long reviewId, long reporterId);
 
     Paginated<Report> getReports(Page page, ReportFilter filter);
 
@@ -26,5 +26,5 @@ public interface ReportService {
 
     void deleteReviewOfReports(long reviewid);
 
-    Boolean deleteReport(long reportId);
+    boolean deleteReport(long reportId);
 }

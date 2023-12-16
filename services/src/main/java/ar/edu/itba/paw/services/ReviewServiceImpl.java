@@ -103,6 +103,7 @@ public class ReviewServiceImpl implements ReviewService {
                         platform,
                         completed,
                         replayable)).orElseThrow(ReviewNotFoundException::new);
+        LOGGER.info("Updating review - Game: {}, Author: {}, Title: {}, Rating: {}",review.getReviewedGame().getName(),review.getAuthor().getUsername(),title,rating);
         gameService.updateReviewFromGame(review.getReviewedGame().getId(), review.getRating(), rating);
         if(rating <= MINFAVORITEGAMERATING)
             userService.deleteFavoriteGame(review.getAuthor().getId(), review.getReviewedGame().getId());
@@ -194,6 +195,7 @@ public class ReviewServiceImpl implements ReviewService {
             if(userService.isNotificationEnabled(author.getId(), NotificationType.MY_REVIEW_IS_DELETED) && author.getId() != reporterUserId) {
                 mailingService.sendReviewDeletedEmail(game, author);
             }
+            LOGGER.info("User {} deleted Review {} ",reporterUserId,id);
             return true;
         }
         return false;
@@ -207,6 +209,7 @@ public class ReviewServiceImpl implements ReviewService {
         for (Review review : gameReviews) {
             deleteReview(review);
         }
+        LOGGER.info("Deleting reviews of game: {}", gameId);
     }
 
     @Transactional(readOnly = true)

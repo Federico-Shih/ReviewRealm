@@ -2,6 +2,8 @@ package ar.edu.itba.paw.webapp.mappers;
 
 import ar.edu.itba.paw.webapp.controller.helpers.LocaleHelper;
 import ar.edu.itba.paw.webapp.controller.responses.ValidationErrorResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
@@ -18,10 +20,12 @@ import java.util.stream.Collectors;
 @Component
 @Provider
 public class ValidationExceptionMapper implements ExceptionMapper<ConstraintViolationException> {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ValidationExceptionMapper.class);
     @Autowired
     private MessageSource messageSource;
     @Override
     public Response toResponse(ConstraintViolationException e) {
+        LOGGER.error("{} : {}", e.getClass().getName(), e.getMessage());
         List<ValidationErrorResponse> errors = e.getConstraintViolations().stream()
                 .map(ValidationErrorResponse::fromValidationException)
                 .peek(error -> error.setMessage(

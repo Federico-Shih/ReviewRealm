@@ -138,6 +138,7 @@ public class ReviewServiceImplTest {
         Review r1 = getReview1();
         Review r2 = getReview2();
         Review r3 = getReview3();
+        Mockito.when(userService.getFollowerFollowingCount(anyLong())).thenReturn(new FollowerFollowingCount(1, 2));
         Mockito.when(userService.getFollowing(anyLong(), any())).thenReturn(new Paginated<>(1, 3, 1, 2, Arrays.asList(getUser2(), getUser3())));
         Mockito.when(reviewDao.findAll(any(), any(), any(), any()))
                 .thenReturn(new Paginated<>(1, 3, 1, 3, Arrays.asList(r1, r2, r3)));

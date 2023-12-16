@@ -59,6 +59,7 @@ public class ReportServiceImpl implements ReportService {
         ).getList().isEmpty())
             throw new ReportAlreadyExistsException();
         Report report = reportDao.create(reporterId, reviewToReport,reason);
+        LOGGER.info("User {} reported Review {} with reason {} ",reporterId,reviewToReport,reason);
         return report;
     }
 
@@ -75,9 +76,9 @@ public class ReportServiceImpl implements ReportService {
 
     @Transactional
     @Override
-    public Boolean isReported(long reviewId, long reporterId){
+    public boolean isReported(long reviewId, long reporterId){
         ReportFilter filter = new ReportFilterBuilder().withReviewId(reviewId).withReporterId(reporterId).withState(ReportState.UNRESOLVED).build();
-        return reportDao.findAll(Page.with(1,1),filter).getList().size()>0;
+        return !reportDao.findAll(Page.with(1, 1), filter).getList().isEmpty();
     }
 
 
@@ -89,6 +90,7 @@ public class ReportServiceImpl implements ReportService {
             throw new ReportAlreadyResolvedException();
         long reviewId = report.getReportedReview().getId();
         Report toReturn = updateReportStatus(report,moderatorId,true);
+        LOGGER.info("Moderator {} resolved Report {} ",moderatorId,reportid);
         reviewService.deleteReviewById(reviewId,moderatorId);
         return toReturn;
     }
@@ -99,12 +101,14 @@ public class ReportServiceImpl implements ReportService {
         Report report = reportDao.get(reportid).orElseThrow(ReportNotFoundException::new);
         if (report.isResolved())
             throw new ReportAlreadyResolvedException();
+        LOGGER.info("Moderator {} rejected Report {} ",moderatorId,reportid);
         return updateReportStatus(report,moderatorId,false);
     }
 
     @Transactional
     @Override
     public void deleteReviewOfReports(long reviewid) {
+        LOGGER.info("Deleting Reports of Review {} ",reviewid);
         reportDao.deleteReportsFromReview(reviewid);
     }
 
@@ -120,7 +124,8 @@ public class ReportServiceImpl implements ReportService {
 
     @Transactional
     @Override
-    public Boolean deleteReport(long reportId){
+    public boolean deleteReport(long reportId){
+        LOGGER.info("Deleting Report {} ",reportId);
         return reportDao.delete(reportId);
     }
 }

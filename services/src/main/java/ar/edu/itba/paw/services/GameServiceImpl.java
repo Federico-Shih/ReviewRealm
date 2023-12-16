@@ -52,7 +52,7 @@ public class GameServiceImpl implements GameService {
     public Game createGame(SubmitGameDTO gameDTO, long userId) {
         Image img = imgService.uploadImage(gameDTO.getImageData(), gameDTO.getMediatype());
         if (img == null) {
-            throw new RuntimeException("Error creating image");
+            throw new RuntimeException("Error creating image"); //TODO:Cambiarlo a otra exception
         }
 
         User user = userService
@@ -121,18 +121,11 @@ public class GameServiceImpl implements GameService {
             return game;
         }
         if(game.get().getSuggestion()){
-            //Todo: revisar la logica de devolver empty o tirar excepcion
             if(userId == null){
-//                throw new AuthenticationNeededException();
                 return Optional.empty();
             }
             Optional<User> user = userService.getUserById(userId);
-            if(!user.isPresent()){
-//                throw new UserNotFoundException();
-                return Optional.empty();
-            }
-            if(!user.get().getRoles().contains(RoleType.MODERATOR)){
-//                throw new UserNotAModeratorException();
+            if(!user.isPresent() || !user.get().getRoles().contains(RoleType.MODERATOR)){
                 return Optional.empty();
             }
         }
@@ -253,6 +246,7 @@ public class GameServiceImpl implements GameService {
         }
         gameDao.setSuggestedFalse(gameId);
         User suggester = game.getSuggestedBy();
+        LOGGER.info("Accepting game - id: {} ; name: {}",gameId, game.getName());
         if(suggester != null) {
             mailingService.sendAcceptedSuggestionEmail(game, suggester);
             missionService.addMissionProgress(suggester.getId(), Mission.ACCEPTED_GAMES, 1f);
@@ -269,6 +263,7 @@ public class GameServiceImpl implements GameService {
         if(!rejectedGame.getSuggestion()){
             throw new GameSuggestionAlreadyHandled();
         }
+        LOGGER.info("Rejecting game - id: {} ; name: {}",gameId, rejectedGame.getName());
         boolean deleted = gameDao.deleteGame(gameId);
         if(deleted && rejectedGame.getSuggestedBy() != null) {
             mailingService.sendDeclinedSuggestionEmail(rejectedGame, suggester);

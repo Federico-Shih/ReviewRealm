@@ -4,6 +4,8 @@ import ar.edu.itba.paw.models.Image;
 import ar.edu.itba.paw.servicesinterfaces.ImageService;
 import ar.edu.itba.paw.webapp.controller.cache.CacheHelper;
 import ar.edu.itba.paw.webapp.exceptions.CustomRuntimeException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -25,6 +27,7 @@ import java.io.IOException;
 @Component
 public class ImageController {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(ImageController.class);
     private final ImageService imageService;
     @Autowired
     public ImageController(ImageService imageService) {
@@ -43,6 +46,7 @@ public class ImageController {
             try{
                 image = imageService.getImage(id, height, width);
             }catch (IOException e){
+                LOGGER.error("Error resizing image", e);
                 throw new CustomRuntimeException(Response.Status.INTERNAL_SERVER_ERROR, "image.resizing.error");
             }
         }
