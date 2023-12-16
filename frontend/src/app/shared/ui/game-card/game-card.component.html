@@ -2,7 +2,9 @@
 <ng-container *ngIf="game !==null">
   <ng-container *ngIf="!small && !tiny; else variant">
     <div class="game-card mat-elevation-z2">
-      <img src="{{game.links.image}}" alt="{{game.name}}" [routerLink]="nolink? null :'/games/'+ game.id " class="clickable">
+      <div class="img-container">
+        <img ngSrc="{{game.links.image}}" alt="{{game.name}}" fill="true" [routerLink]="nolink? null :'/games/'+ game.id " class="clickable">
+      </div>
       <div class="details">
         <div class="text-section">
           <span [routerLink]="nolink? null :'/games/'+ game.id" class="title clickable">{{game.name}}</span>
@@ -28,7 +30,9 @@
   <ng-template #variant>
     <ng-container *ngIf="!tiny; else tinyvariant">
       <div class="small-game-card mat-elevation-z2">
-        <img src="{{game.links.image}}" alt="{{game.name}}" [routerLink]="nolink? null :'/games/'+ game.id" class="small-img clickable">
+        <div class="small-img-container">
+          <img ngSrc="{{game.links.image}}" alt="{{game.name}}" fill="true" [routerLink]="nolink? null :'/games/'+ game.id" class="clickable">
+        </div>
         <div class="small-text-section">
           <span [routerLink]="nolink? null :'/games/'+ game.id" class="title clickable">{{game.name}}</span>
           <span class="text" i18n>{{ 'developer.card' | translate:{value: game.developer} }}</span>
@@ -48,7 +52,9 @@
 
   <ng-template #tinyvariant>
     <div class="small-game-card mat-elevation-z2">
-      <img src="{{game.links.image}}" alt="{{game.name}}" [routerLink]="nolink? null :'/games/'+ game.id" class="small-img clickable">
+      <div class="small-img-container">
+        <img ngSrc="{{game.links.image}}" alt="{{game.name}}" fill="true" [routerLink]="nolink? null :'/games/'+ game.id" class="clickable">
+      </div>
       <div class="small-text-section">
         <span [routerLink]="nolink? null :'/games/'+ game.id" class="title clickable">{{game.name}}</span>
         <div class="genres">

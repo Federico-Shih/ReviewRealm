@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
-import {BehaviorSubject, catchError, Observable, of, switchMap} from "rxjs";
+import {BehaviorSubject, catchError, Observable, of, switchMap, tap} from "rxjs";
 import {Role,GameFormType} from "../../../shared/data-access/shared.enums";
 import {environment} from "../../../../environments/environment";
 import {AuthenticationService} from "../../../shared/data-access/authentication/authentication.service";
@@ -39,8 +39,11 @@ export class GameEditComponent implements OnInit{
     }), catchError((err, caught) => {
       this.router.navigate(['errors/not-found']);
       return caught;
+    }),tap((game) => {
+      this.game = game;
     }),
   );
+  game: Game | null = null;
 
   constructor(private readonly authService:AuthenticationService,
               private readonly gameService:GamesService,
@@ -64,10 +67,10 @@ export class GameEditComponent implements OnInit{
     editGame(formData:FormData){
         const dialogRef = this.dialog.open(GameEditDialogComponent);
         dialogRef.afterClosed().subscribe((result) => {
-          if(result){
+          if(result && this.game !== null){
             console.log(formData);
-            this.loading$.next(true);//TODO: como cambio esto para tener el game sin llamarlo 2 veces o hacer el link a mano
-            this.gameService.editGame(`${environment.API_ENDPOINT}/games/${this.routeId}`,formData).subscribe((game) =>{
+            this.loading$.next(true);
+            this.gameService.editGame(this.game.links.self,formData).subscribe((game) =>{
               this.loading$.next(false);
               this.snackBar.open(
                 this.translate.instant('game.edited'), undefined,

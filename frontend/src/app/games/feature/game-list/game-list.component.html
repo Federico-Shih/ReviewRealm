@@ -76,7 +76,9 @@
     </div>
     <mat-grid-list *ngIf="(paginatedGames$ | async) as games; else loading" cols="2" gutterSize="20px">
       <mat-grid-tile *ngFor="let game of games.content" [colspan]="1">
-        <app-game-card [game]="game"></app-game-card>
+        <div class="full-width">
+          <app-game-card [game]="game"></app-game-card>
+        </div>
       </mat-grid-tile>
     </mat-grid-list>
       <div *ngIf="combinedPagination$ | async as combined">
