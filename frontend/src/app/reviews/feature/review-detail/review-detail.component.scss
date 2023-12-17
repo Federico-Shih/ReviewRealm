@@ -52,7 +52,7 @@
   .top-right {
     display: flex;
     flex-direction: row;
-    justify-content: end;
+    justify-content: flex-end;
     align-items: center;
     .score {
       display: flex;
