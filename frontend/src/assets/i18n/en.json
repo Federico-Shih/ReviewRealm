@@ -39,6 +39,20 @@
     "dismiss": "Dismiss",
     "unknown": "Unknown error, please try again later."
   },
+  "fav-games": {
+    "errors": {
+      "add": "Unknown error when adding favorite game",
+      "delete": "Unknown error deleting favorite game"
+    },
+    "no-favorites-label": "You have no favorite games selected yet!",
+    "no-results-label": "There are no more unfavorited games",
+    "selection-label": "Select your favorite game",
+    "success": {
+      "add": "Favorite game added successfully",
+      "delete": "Favorite game deleted"
+    },
+    "title": "Your favorite games"
+  },
   "filter-drawer": {
     "apply": "Apply filters",
     "order-by": "Order by"
@@ -420,6 +434,10 @@
   "submission": {
     "handled": "Submission handled."
   },
+  "time": {
+    "hours": "{{number}} hours",
+    "minutes": "{{number}} minutes"
+  },
   "toggle-filters": "Filters",
   "unit": {
     "hours": "Hours",
@@ -441,5 +459,12 @@
     "token-unknown": "Unknown token. ",
     "welcome": "Welcome {{value}}",
     "write-review": "Write review"
+  },
+  "missions": {
+    "yourprogress": "Your Progress",
+    "exp": "Total Experience: {{value}}",
+    "lvl": "LVL. {{value}}",
+    "completedtimes": "Times Completed: {{value}}",
+    "yourmissions": "Your Missions"
   }
 }

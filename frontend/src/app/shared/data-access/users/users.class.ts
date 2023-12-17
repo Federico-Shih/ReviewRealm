@@ -16,12 +16,14 @@ export class UserLinks {
   newReviews?: string;
   followingReviews?: string;
   recommendedGames?: string;
+  reviews: string;
 
   constructor(self: string,
               followers: string,
               following: string,
               preferences: string,
               favoriteGames: string,
+              reviews: string,
               patchUser?: string,
               updateNotifications?: string,
               unfollow?: string,
@@ -30,6 +32,7 @@ export class UserLinks {
               newReviews?: string,
               followingReviews?: string,
               recommendedGames?: string) {
+    this.reviews = reviews;
     this.self = self;
     this.followers = followers;
     this.following = following;
@@ -54,6 +57,7 @@ export class UserLinks {
                         preferences,
                         self,
                         unfollow,
+                        reviews,
                         updateNotifications,
                         newReviews,
                         recommendedReviews,
@@ -65,6 +69,7 @@ export class UserLinks {
       following,
       preferences,
       favoriteGames,
+      reviews,
       patchUser,
       updateNotifications,
       unfollow,

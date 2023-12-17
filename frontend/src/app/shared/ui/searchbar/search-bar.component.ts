@@ -7,6 +7,8 @@ import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SearchBarComponent {
+  text: string = '';
+
   @Input()
   label: string = '';
 

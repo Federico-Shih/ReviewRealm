@@ -10,7 +10,7 @@ import {Observable} from "rxjs";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class UserDetailsComponent {
-  @Input({required: true}) userInfo:User | null = null;
+  @Input({required: true}) userInfo!:User;
   protected readonly Role = Role;
   @Input({required: true}) loggedUser:User | null = null;
 }

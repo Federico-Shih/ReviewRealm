@@ -2,9 +2,7 @@ package ar.edu.itba.paw.webapp.controller.forms;
 
 import ar.edu.itba.paw.webapp.controller.annotations.ExistentGenreList;
 
-import javax.validation.constraints.AssertTrue;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -20,6 +18,10 @@ public class PatchUserForm {
 
     @ExistentGenreList(nullable = true)
     private List<Integer> genres;
+
+    @Min(value = 1, message = "Min.avatarid")
+    @Max(value = 6, message = "Max.avatarid")
+    private Long avatarId;
 
     public Set<Integer> getGenres() {
         if(genres == null)
@@ -45,5 +47,13 @@ public class PatchUserForm {
 
     public void setEnabled(Boolean enabled) {
         this.enabled = enabled;
+    }
+
+    public Long getAvatarId() {
+        return avatarId;
+    }
+
+    public void setAvatarId(Long avatarId) {
+        this.avatarId = avatarId;
     }
 }

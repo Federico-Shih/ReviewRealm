@@ -3,6 +3,7 @@ package ar.edu.itba.paw.webapp.controller;
 import ar.edu.itba.paw.dtos.Page;
 import ar.edu.itba.paw.enums.NotificationType;
 import ar.edu.itba.paw.exceptions.EmailAlreadyExistsException;
+import ar.edu.itba.paw.exceptions.InvalidAvatarException;
 import ar.edu.itba.paw.exceptions.UserAlreadyEnabled;
 import ar.edu.itba.paw.exceptions.UsernameAlreadyExistsException;
 import ar.edu.itba.paw.models.MissionProgress;
@@ -29,10 +30,7 @@ import org.springframework.stereotype.Component;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.core.*;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -179,10 +177,13 @@ public class UserController {
     @PreAuthorize("@accessControl.checkAccessedUserIdIsUser(#id)")
     @Path("{id:\\d+}")
     @Produces(VndType.APPLICATION_PATCH_USER_FORM)
-    public Response patchUser(@Valid @NotNull(message = "error.body.empty") PatchUserForm patchUserForm, @ExistentUserId @PathParam("id") Long id) {
+    public Response patchUser(@Valid @NotNull(message = "error.body.empty") PatchUserForm patchUserForm, @ExistentUserId @PathParam("id") Long id) throws InvalidAvatarException {
         us.patchUser(id, patchUserForm.getPassword(), patchUserForm.getEnabled());
-        if (patchUserForm.getGenres() != null) {
+        if (!patchUserForm.getGenres().isEmpty()) {
             us.setPreferences(patchUserForm.getGenres(), id);
+        }
+        if (patchUserForm.getAvatarId() != null) {
+            us.changeUserAvatar(id, patchUserForm.getAvatarId());
         }
         return Response.noContent().build();
     }
@@ -228,9 +229,34 @@ public class UserController {
     @PreAuthorize("@accessControl.checkAccessedUserIdIsUser(#id)")
     @Produces(VndType.APPLICATION_NOTIFICATION_STATUS)
     public Response getNotifications(@PathParam("id") final long id) {
-        Set<NotificationType> notifications = us.getNotifications(id).orElseThrow(() -> new CustomRuntimeException(Response.Status.NOT_FOUND, "user.not.found"));
-        return Response.ok().entity(NotificationStatusResponse.fromEntity(uriInfo, id, notifications)).build();
+        Optional<User> user = us.getUserById(id);
+        if(!user.isPresent()){
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        return Response.ok().entity(
+                new GenericEntity<List<NotificationStatusResponse.NotificationTypeResponse>>(
+                        NotificationStatusResponse.getAllNotifications(uriInfo, user.get().getDisabledNotifications())
+                ){}
+        ).build();
     }
+
+    /*
+    @GET
+    @Path("{id:\\d+}/notifications")
+    @PreAuthorize("@accessControl.checkAccessedUserIdIsUser(#id)")
+    @Produces(VndType.APPLICATION_NOTIFICATION_STATUS)
+    public Response getNotifications(@PathParam("id") final long id) {
+        Set<NotificationType> notifications = us.getNotifications(id).orElseThrow(() -> new CustomRuntimeException(Response.Status.NOT_FOUND, "user.not.found"));
+        return Response.ok().entity(
+                new GenericEntity<List<NotificationStatusResponse.NotificationTypeResponse>>(
+                        notifications.stream()
+                                .map((notification) -> NotificationStatusResponse.fromEntity(uriInfo, id, notification).getInfo())
+                                .collect(Collectors.toList())
+                ){}
+        ).build();
+        //return Response.ok().entity(NotificationStatusResponse.fromEntity(uriInfo, id, notifications)).build();
+    }
+    */
 
     @GET
     @Path("{id:\\d+}/mission-progresses")
@@ -241,6 +267,12 @@ public class UserController {
         if (progresses.isEmpty()) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
-        return Response.ok(ListResponse.fromEntity(uriInfo, progresses.stream().map((progress) -> MissionProgressResponse.fromEntity(uriInfo, progress)).collect(Collectors.toList()))).build();
+        return Response.ok().entity(
+                new GenericEntity<List<MissionProgressResponse>>(
+                        progresses.stream()
+                                .map((mission) -> MissionProgressResponse.fromEntity(uriInfo, mission))
+                                .collect(Collectors.toList())
+                ){}
+        ).build();
     }
 }

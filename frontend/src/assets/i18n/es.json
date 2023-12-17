@@ -39,6 +39,20 @@
     "dismiss": "Descartar",
     "unknown": "Error desconocido, intente más tarde."
   },
+  "fav-games": {
+    "errors": {
+      "add": "Error desconocido a la hora de agregar juego favorito",
+      "delete": "Error desconocido borrando juego favorito"
+    },
+    "no-favorites-label": "Todavía no tienes juegos favoritos",
+    "no-results-label": "Te quedaste sin juegos para hacer favoritos",
+    "selection-label": "Seleccione sus juegos favoritos",
+    "success": {
+      "add": "Se agregó correctamente el juego a tus favoritos",
+      "delete": "Juego favorito borrado correctamente"
+    },
+    "title": "Tus juegos favoritos"
+  },
   "filter-drawer": {
     "apply": "Aplicar filtros",
     "order-by": "Ordenar por"
@@ -232,12 +246,12 @@
     "xbox": "XBox"
   },
   "profile": {
-    "fan": "Fanático de:",
     "favgames": "Juegos Favoritos",
     "followers": "Seguidores: {{value}}",
     "following": "Siguiendo: {{value}}",
     "reviews": "Reseñas",
-    "view-more-button": "Ver Más"
+    "view-more-button": "Ver Más",
+    "fan": "Fanático de:"
   },
   "profile-card": {
     "whoprefers": "quien prefiere"
@@ -396,9 +410,6 @@
   "settings": {
     "avatar": "Avatar de Perfil",
     "avatarchoose": "¡Seleccione su Avatar!",
-    "avatars": {
-      "choose": "¡Seleccione su Avatar!"
-    },
     "fav-games": "Juegos Favoritos",
     "fav-genres": "Géneros Favoritos",
     "fg": {
@@ -419,10 +430,17 @@
       "save": "Guardar Nueva Configuración"
     },
     "notifications": "Notificaciones de Correo Electrónico",
-    "title": "Configuración de Cuenta"
+    "title": "Configuración de Cuenta",
+    "avatars": {
+      "choose": "¡Seleccione su Avatar!"
+    }
   },
   "submission": {
     "handled": "Sugerencia resuelta."
+  },
+  "time": {
+    "hours": "{{number}} horas",
+    "minutes": "{{number}} minutos"
   },
   "toggle-filters": "Filtros",
   "unit": {
@@ -443,5 +461,12 @@
     "token": "Código de Verificación",
     "token-required": "Se requiere el código de verificación",
     "token-unknown": "Token desconocido."
+  },
+  "missions": {
+    "yourprogress": "Tu Progreso",
+    "exp": "Experiencia Total: {{value}}",
+    "lvl": "NIVEL {{value}}",
+    "completedtimes": "Veces Completada: {{value}}",
+    "yourmissions": "Sus Misiones"
   }
 }

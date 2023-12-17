@@ -40,7 +40,7 @@ public class MissionController {
     }
 
     @GET
-    @Path("{id:\\d+}")
+    @Path("{id}")
     @Produces(VndType.APPLICATION_MISSION)
     public Response getMissionById(@PathParam("id") String missionName, @Context Request request) {
         return missionService.getMissionById(missionName)
@@ -54,7 +54,6 @@ public class MissionController {
     }
 
     @GET
-    @Path("/")
     @Produces(VndType.APPLICATION_MISSION_LIST)
     public Response getMission(@Context Request request) {
         List<Mission> missions = missionService.getMissions(AuthenticationHelper.getLoggedUser(us));

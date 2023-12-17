@@ -34,6 +34,7 @@ const splitLinks = (links: string): Map<string, string> => {
 
 export const arrayResponseMapper = <T, K>(fromResponse: (param: T) => K) => (httpResponse: HttpResponse<T[]>): K[] => {
   const reviewResponse = httpResponse.body as T[];
+  console.log(reviewResponse)
   return reviewResponse.map(fromResponse);
 }
 

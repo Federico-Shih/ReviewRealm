@@ -46,6 +46,7 @@ public class UserResponse extends BaseResponse {
         response.link("following", uri.getBaseUriBuilder().path(BASE_PATH).queryParam("following", user.getId()).build());
         response.link("preferences", uri.getBaseUriBuilder().path("genres").queryParam("forUser", user.getId()).build());
         response.link("favoriteGames", uri.getBaseUriBuilder().path(GameResponse.BASE_PATH).queryParam("favoriteOf", user.getId()).build());
+        response.link("reviews", uri.getBaseUriBuilder().path(ReviewResponse.BASE_PATH).queryParam("authors", user.getId()).build());
         return response;
     }
 

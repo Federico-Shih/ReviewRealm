@@ -3,7 +3,9 @@
     search
   </i>
   <input
-    (change)="onChange($event)"
+    (ngModelChange)="onChange($event)"
+    [ngModel]="text"
+    type="text"
     (keyup.enter)="onSubmit()"
     (submit)="onSubmit()"
     [placeholder]="label"

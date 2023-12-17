@@ -1,10 +1,10 @@
 
 
-.game-card{
+.game-card-container {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  background: var(--color-surface);// #13112D;
+  background: var(--color-surface); // #13112D;
   padding: 4%;
   border: 1px solid var(--color-primary-variant-1); //#444155
   border-radius: 10px;

@@ -108,7 +108,7 @@ export class Game {
       response.publishDate,
       response.ratingSum,
       response.reviewCount,
-      response.isFavorite,
+      response.favorite,
       GameLinks.fromResponse(response.links),
       response.averageDifficulty,
       response.platform,

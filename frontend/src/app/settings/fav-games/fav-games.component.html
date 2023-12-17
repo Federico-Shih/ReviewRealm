@@ -1,38 +1,59 @@
 <div class="container">
-  <div>
-    <div class="m-b-30">
-      <ng-container *ngIf="favGamesCandidate.length===0">
-        <div class="f-row f-jc-center">
-          <h2 class="white-text center" i18n>{{ 'settings.fg.empty' | translate}}</h2>
-        </div>
-      </ng-container>
-      <ng-container *ngIf="favGamesCandidate.length!==0">
-        <div class="f-row f-jc-center">
-          <span class="titletext white-text" i18n>{{ 'settings.fg.choose' | translate}}</span>
-        </div>
-        <div class="f-row f-jc-center">
-          <span class="subtitle white-text center" i18n>{{ 'settings.fg.consideration' | translate}}</span>
-        </div>
-      </ng-container>
-      <div class="f-row f-jc-center">
-        <!--<form:errors path="gameIds" cssClass="error"/>-->
-      </div>
-      <ng-container *ngFor="let game of favGamesCandidate">
+  <div class="main-fav">
+    <h2 class="center">{{ 'fav-games.title' | translate}}</h2>
+    <ng-container *ngIf="favGames$ | async as favGames">
+      <div (scrollend)="loadNextPage(favGames.links.next)" class="favorite-game-container">
+        <ng-container *ngFor="let game of favGames.content">
+          <div (click)="deleteFavoriteGame(game)" class="game-card-container favorite-container">
+            <div class="cover">
 
-      </ng-container>
-      <ng-container *ngFor="let game of favGames">
+            </div>
+            <mat-icon class="delete-icon">
+              delete
+            </mat-icon>
+            <app-game-card [game]="game" [tiny]="true" class="game-card">
 
-      </ng-container>
-    </div>
-    <ng-container *ngIf="favGamesCandidate.length!==0">
-      <div class="f-row f-jc-center m-b-30">
-        <button class="btn white-text" type="submit" i18n>{{ 'settings.fg.save' | translate }}</button>
+            </app-game-card>
+          </div>
+        </ng-container>
+        <ng-container *ngIf="favGames.content.length === 0">
+          <p class="center">{{ 'fav-games.no-favorites-label' | translate }}</p>
+        </ng-container>
       </div>
     </ng-container>
   </div>
-  <ng-container *ngIf="favGamesCandidate.length===0">
-    <div class="f-row f-jc-center">
-      <button class="btn white-text" routerLink="/games" i18n>{{ 'settings.fg.create' | translate }}</button>
+
+  <div class="search-results">
+    <h3 [style.text-align]="'center'">{{ 'fav-games.selection-label' | translate }}</h3>
+    <app-search-bar
+      (search)="search$.next($event)"
+      [label]="'navbar.search' | translate"
+    >
+
+    </app-search-bar>
+    <div *ngIf="searchedGames$ | async as results" class="search-container">
+      <ng-container *ngFor="let game of results.content">
+        <div
+          (click)="addFavoriteGame(game)"
+          *ngIf="!game.isFavourite"
+          class="game-card-container"
+        >
+          <div class="cover">
+
+          </div>
+          <mat-icon class="add-icon">add</mat-icon>
+          <app-game-card
+            [game]="game"
+            [tiny]="true"
+            class="game-card"
+          >
+          </app-game-card>
+        </div>
+      </ng-container>
     </div>
-  </ng-container>
+    <ng-container *ngIf="loadingSearch$ | async">
+      <!-- TODO: replace with spinner modern -->
+      <mat-spinner></mat-spinner>
+    </ng-container>
+  </div>
 </div>

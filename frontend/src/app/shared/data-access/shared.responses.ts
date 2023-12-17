@@ -51,6 +51,7 @@ export type UserLinksResponse = {
   newReviews?: string;
   followingReviews?: string;
   recommendedGames?: string;
+  reviews: string;
 }
 
 export type UserResponse = {
@@ -88,7 +89,7 @@ export type GameResponse = {
   publishDate: string;
   ratingSum: number;
   reviewCount: number;
-  isFavorite: boolean;
+  favorite: boolean;
   averageDifficulty?: Difficulty;
   platform?: Platform;
   averageGameTime?: number;
@@ -137,6 +138,13 @@ export type MissionResponse = {
   };
 }
 
+export type MissionProgressResponse = {
+  progress: number;
+  mission: string;
+  startDate: string;
+  completedTimes: number;
+}
+
 /*
     {
         "links": {
@@ -152,6 +160,14 @@ export type NotificationTypeResponse = {
   localized: string;
   links: {
     self: string;
+  }
+};
+
+export type NotificationValueResponse = {
+  enabled: boolean;
+  type: string;
+  links: {
+    notification: string;
   }
 };
 

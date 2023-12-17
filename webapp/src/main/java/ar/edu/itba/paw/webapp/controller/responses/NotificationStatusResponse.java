@@ -5,11 +5,28 @@ import ar.edu.itba.paw.models.User;
 
 import javax.ws.rs.core.UriInfo;
 
-import java.util.Set;
+import java.util.*;
 
 import static ar.edu.itba.paw.webapp.controller.responses.NotificationResponse.getLinkFromEntity;
 
 public class NotificationStatusResponse extends BaseResponse {
+
+    /*
+    private NotificationTypeResponse info;
+
+
+    public static NotificationStatusResponse fromEntity(final UriInfo uri, long id, NotificationType notification) {
+        NotificationStatusResponse response = new NotificationStatusResponse();
+        response.info = NotificationTypeResponse.fromEntity(uri, notification, true);
+        response.link("self", uri.getBaseUriBuilder().path("users").path(String.valueOf(id)).path("notifications").build());
+        return response;
+    }
+
+    public NotificationTypeResponse getInfo() {
+        return info;
+    }
+    */
+
     private NotificationTypeResponse userIFollowWritesReview;
     private NotificationTypeResponse myReviewIsDeleted;
 
@@ -27,6 +44,15 @@ public class NotificationStatusResponse extends BaseResponse {
         }
         response.link("self", uri.getBaseUriBuilder().path("users").path(String.valueOf(id)).path("notifications").build());
         return response;
+    }
+
+    public static List<NotificationTypeResponse> getAllNotifications(final UriInfo uri, Set<NotificationType> notifications) {
+        List<NotificationTypeResponse> setWithNotifications = new ArrayList<>();
+        for (NotificationType type : NotificationType.values()) {
+            // No hace falta el switch, no?
+            setWithNotifications.add(NotificationTypeResponse.fromEntity(uri, type, !notifications.contains(type)));
+        }
+        return setWithNotifications;
     }
 
     public NotificationTypeResponse getUserIFollowWritesReview() {
@@ -48,7 +74,7 @@ public class NotificationStatusResponse extends BaseResponse {
 
         public static NotificationTypeResponse fromEntity(UriInfo uri, NotificationType type, boolean enabled) {
             NotificationTypeResponse response = new NotificationTypeResponse(enabled, type.getTypeName());
-            response.link("self", getLinkFromEntity(uri, type));
+            response.link("notification", getLinkFromEntity(uri, type));
             return response;
         }
 

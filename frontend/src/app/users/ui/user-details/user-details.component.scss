@@ -54,7 +54,7 @@
   font-weight: 700;
   text-align: center;
   position: absolute;
-  width: 36px;
+  width: 42px;
   height: 36px;
   margin-top: 5px;
 }
@@ -152,6 +152,10 @@
 }
 
 .clickable-chip{
+  cursor: pointer;
+}
+
+.settings {
   cursor: pointer;
 }
 

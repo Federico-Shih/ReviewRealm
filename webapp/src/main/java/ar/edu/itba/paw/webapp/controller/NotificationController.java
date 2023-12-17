@@ -1,21 +1,23 @@
 package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.enums.NotificationType;
+import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.servicesinterfaces.NotificationService;
+import ar.edu.itba.paw.servicesinterfaces.UserService;
 import ar.edu.itba.paw.webapp.controller.cache.CacheHelper;
 import ar.edu.itba.paw.webapp.controller.helpers.LocaleHelper;
 import ar.edu.itba.paw.webapp.controller.mediatypes.VndType;
+import ar.edu.itba.paw.webapp.controller.responses.GenreResponse;
 import ar.edu.itba.paw.webapp.controller.responses.NotificationResponse;
+import ar.edu.itba.paw.webapp.controller.responses.NotificationStatusResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Path("notifications")
@@ -25,20 +27,35 @@ public class NotificationController {
     private UriInfo uriInfo;
 
     private final MessageSource messageSource;
-
+    private final UserService userService;
     private final NotificationService notificationService;
     private static final int cacheMaxAge = 86400;
 
     @Autowired
-    public NotificationController(NotificationService notificationService, MessageSource messageSource) {
+    public NotificationController(NotificationService notificationService, MessageSource messageSource, UserService userService) {
         this.notificationService = notificationService;
         this.messageSource = messageSource;
+        this.userService = userService;
     }
 
+
+    // TODO: Esto está horrible lol, hay que sacarlo (No lo saco porque se van a preguntar dónde está el endpoint)
     @GET
-    @Path("/")
     @Produces(VndType.APPLICATION_NOTIFICATION_LIST)
-    public Response getAllNotifications(@Context Request request) {
+    public Response getAllNotifications(@Context Request request,
+                                        @QueryParam("forUser") Long userId) {
+        if(userId != null){
+            Optional<User> user = userService.getUserById(userId);
+            if(!user.isPresent()){
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
+            return Response.ok().entity(
+                    new GenericEntity<List<NotificationStatusResponse.NotificationTypeResponse>>(
+                            NotificationStatusResponse.getAllNotifications(uriInfo, user.get().getDisabledNotifications())
+                    ){}
+            ).build();
+        }
+
         List<NotificationType> notificationTypeList = this.notificationService.getNotifications();
         return CacheHelper.buildEtagCache(
                 request,
@@ -60,7 +77,7 @@ public class NotificationController {
     }
 
     @GET
-    @Path("{id:\\d+}")
+    @Path("{id}")
     @Produces(VndType.APPLICATION_NOTIFICATION)
     public Response getNotificationById(@PathParam("id") String id, @Context Request request) {
         return this.notificationService.getNotificationTypeById(id)

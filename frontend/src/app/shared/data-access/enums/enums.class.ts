@@ -1,4 +1,10 @@
-import {Frequency, GenreResponse, MissionResponse, NotificationTypeResponse} from "../shared.responses";
+import {
+  Frequency,
+  GenreResponse,
+  MissionProgressResponse,
+  MissionResponse,
+  NotificationTypeResponse, NotificationValueResponse
+} from "../shared.responses";
 
 export class Genre {
   id: number;
@@ -58,6 +64,40 @@ export class Mission {
   }
 }
 
+export class MissionProgress {
+  progress: number;
+  mission: string;
+  startDate: string;
+  completedTimes: number;
+
+  constructor(progress: number,
+              mission: string,
+              startDate: string,
+              completedTimes: number,
+              ) {
+    this.progress = progress;
+    this.mission = mission;
+    this.startDate = startDate;
+    this.completedTimes = completedTimes;
+  }
+
+  static fromResponse({progress, mission, startDate, completedTimes}: MissionProgressResponse) {
+    return new MissionProgress(progress,mission,startDate,completedTimes);
+  }
+}
+
+export class MissionComplete {
+  progress: MissionProgress;
+  missionInfo: Mission;
+
+  constructor(progress: MissionProgress, missionInfo: Mission) {
+    this.progress = progress;
+    this.missionInfo = missionInfo;
+  }
+
+
+}
+
 
 export class NotificationType {
   id: string;
@@ -76,4 +116,37 @@ export class NotificationType {
   static fromResponse({id, links, localized}: NotificationTypeResponse) {
     return new NotificationType(id, localized, links);
   }
+}
+
+
+export class NotificationValue {
+  enabled: boolean;
+  type: string;
+  links: {
+    notification: string;
+  }
+
+
+  constructor(enabled: boolean, type: string, links: { notification: string }) {
+    this.enabled = enabled;
+    this.type = type;
+    this.links = links;
+  }
+
+  static fromResponse({enabled, type, links}: NotificationValueResponse) {
+    return new NotificationValue(enabled, type, links);
+  }
+}
+
+
+export class NotificationComplete {
+  value: NotificationValue;
+  notifInfo: NotificationType;
+
+  constructor(notifInfo: NotificationType, value: NotificationValue) {
+    this.value = value;
+    this.notifInfo = notifInfo;
+  }
+
+
 }

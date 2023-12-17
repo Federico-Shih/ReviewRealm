@@ -7,6 +7,10 @@
   display: flex;
 }
 
+.clickable {
+  cursor: pointer;
+}
+
 .f-gap-2 {
   gap: 2% !important;
 }
@@ -30,6 +34,10 @@
 
 .margin-top-1 {
   margin-top: 1% !important;
+}
+
+.margin-top-bot {
+  margin: 12px 0 !important;
 }
 
 .width-fit-content {

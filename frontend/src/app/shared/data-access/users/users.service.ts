@@ -11,10 +11,23 @@ import {
 import {User} from "./users.class";
 import {catchError, forkJoin, map, mergeMap, Observable, of} from "rxjs";
 import {UserResponse} from "../shared.responses";
-import {CredentialsDto, UserCreateDto, UserMediaTypes, UserPatchDto, UserSearchDto} from "./users.dtos";
+import {
+  AvatarDto,
+  FavoriteGameCreateDto,
+  GenresDto,
+  CredentialsDto,
+  UserCreateDto,
+  UserMediaTypes,
+  UserPatchDto,
+  UserSearchDto,
+  NotificationsDto
+} from "./users.dtos";
 import {Paginated, ValidationResponse} from "../shared.models";
 import {EnumsService} from "../enums/enums.service";
+import {Genre, NotificationValue} from "../enums/enums.class";
+
 import {AuthenticationService} from "../authentication/authentication.service";
+import {ReviewMediaTypes} from "../reviews/reviews.dtos";
 
 @Injectable()
 export class UsersService {
@@ -82,6 +95,50 @@ export class UsersService {
       responseMapper(User.fromResponse)
     ));
   }
+
+  editUserGenres(url: string, genres: GenresDto) {//TODO:Error y Devolver algo?
+    return this.http.patch<Genre[]>(url, genres, {
+      responseType: "json",
+      observe: "response"
+    }).pipe(catchError(exceptionMapper))
+      .pipe(map(() => true));
+  }
+
+  deleteFavoriteGame(url: string): Observable<unknown> {
+    return this.http.delete(url, {
+      observe: "response",
+      responseType: "json"
+    }).pipe(catchError(exceptionMapper));
+  }
+
+  addFavoriteGame(url: string, game: FavoriteGameCreateDto): Observable<unknown> {
+    return this.http.post(url, game, {
+      observe: "response",
+      responseType: "json",
+      headers: {
+        'Content-Type': UserMediaTypes.CREATE_FAVORITE_GAME
+      }
+    }).pipe(catchError(exceptionMapper));
+  }
+  editUserAvatar(url:string,avatar:AvatarDto){//TODO:Error y Devolver algo?
+    return this.http.patch<AvatarDto>(url,avatar,{
+      responseType:"json",
+      observe:"response"
+    }).pipe(catchError(exceptionMapper));
+  }
+
+
+  editUserNotifications(url: string, notifs: NotificationsDto) {//TODO:Error y Devolver algo?
+    return this.http.put<boolean>(url, notifs, {
+      responseType: "json",
+      observe: "response",
+      headers: {
+        'Content-Type': "application/vnd.notifications-form.v1+json"
+      }
+    }).pipe(catchError(exceptionMapper))
+      .pipe(map(() => true));
+  }
+
 
   patchUser(url: string, userPatchDto: UserPatchDto, credentials?: CredentialsDto): Observable<void | never> {
     let headers: Record<string, string> = {};
