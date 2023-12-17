@@ -139,6 +139,7 @@ public class UserServiceImpl implements UserService {
         return userDao.getFollowing(id, page).orElseThrow(UserNotFoundException::new);
     }
 
+    // TODO: remove
     @Transactional(readOnly = true)
     @Override
     public FollowerFollowingCount getFollowerFollowingCount(long id) {
@@ -154,6 +155,8 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public User followUserById(long userId, long otherId) {
+        if (userId == otherId) throw new UserIsSameException();
+        if (userDao.follows(userId, otherId)) throw new UserAlreadyFollowing();
         User toReturn = userDao.createFollow(userId, otherId).orElseThrow(UserNotFoundException::new);
         LOGGER.info("User {} followed user {}", userId, otherId);
         missionService.addMissionProgress(userId, Mission.FOLLOWING_GOAL, 1);

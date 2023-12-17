@@ -88,6 +88,8 @@ export class User {
   preferences: Genre[];
   links: UserLinks;
   role: Role;
+  followers: number;
+  following: number;
 
   constructor(id: number,
               username: string,
@@ -97,6 +99,8 @@ export class User {
               avatar: string,
               links: UserLinks,
               role: Role,
+              followers: number,
+              following: number,
               language?: string,
               xp: number = 0,
               preferences: Genre[] = []) {
@@ -111,6 +115,8 @@ export class User {
     this.preferences = preferences;
     this.links = links;
     this.role = role;
+    this.followers = followers;
+    this.following = following;
   }
 
   static fromResponse({
@@ -123,7 +129,9 @@ export class User {
                         language,
                         xp,
                         links,
-                        role
+                        role,
+                        following,
+                        followers
                       }: UserResponse, preferences: Genre[] = []): User {
     return new User(id,
       username,
@@ -133,6 +141,8 @@ export class User {
       avatar,
       UserLinks.fromResponse(links),
       role,
+      followers,
+      following,
       language,
       xp,
       preferences);

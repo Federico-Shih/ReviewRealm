@@ -64,6 +64,8 @@ export type UserResponse = {
   xp: number;
   links: UserLinksResponse;
   role: Role;
+  followers: number;
+  following: number;
 }
 
 export type GameResponseLinks = {

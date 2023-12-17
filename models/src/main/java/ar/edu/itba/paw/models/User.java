@@ -70,6 +70,12 @@ public class User {
     @Column(name = "language")
     private Locale language;
 
+    @Column(name = "followers")
+    private int followersCount;
+
+    @Column(name = "following")
+    private int followingCount;
+
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
     private List<ReviewFeedback> reviewFeedbackList;
 
@@ -355,6 +361,22 @@ public class User {
 
     public void setFollowing(boolean following) {
         isFollowing = following;
+    }
+
+    public int getFollowersCount() {
+        return followersCount;
+    }
+
+    public void setFollowersCount(int followersCount) {
+        this.followersCount = followersCount;
+    }
+
+    public int getFollowingCount() {
+        return followingCount;
+    }
+
+    public void setFollowingCount(int followingCount) {
+        this.followingCount = followingCount;
     }
 }
 

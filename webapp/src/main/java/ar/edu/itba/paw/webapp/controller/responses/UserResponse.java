@@ -22,6 +22,8 @@ public class UserResponse extends BaseResponse {
     private URI avatar;
     private Set<URI> preferences;
     private RoleType role;
+    private int followers;
+    private int following;
 
 
     public static UserResponse fromEntity(final UriInfo uri, User user) {
@@ -36,11 +38,13 @@ public class UserResponse extends BaseResponse {
         response.setPreferences(user.getPreferences().stream().map(preferences -> GenreResponse.getLinkFromEntity(uri, preferences)).collect(Collectors.toSet()));
         response.setAvatar(uri.getBaseUriBuilder().replacePath(uri.getBaseUriBuilder().build().getPath().replace("/api", "/static")).path("avatars").path(String.format("%d.png", user.getAvatarId())).build());
         response.setRole(user.getRoles().stream().findFirst().orElse(RoleType.USER));
+        response.setFollowers(user.getFollowersCount());
+        response.setFollowing(user.getFollowingCount());
 
         response.link("self", getLinkFromEntity(uri, user));
         response.link("followers", uri.getBaseUriBuilder().path(BASE_PATH).queryParam("followers", user.getId()).build());
         response.link("following", uri.getBaseUriBuilder().path(BASE_PATH).queryParam("following", user.getId()).build());
-        response.link("preferences", uri.getBaseUriBuilder().path("genres").queryParam("forUser",user.getId()).build());
+        response.link("preferences", uri.getBaseUriBuilder().path("genres").queryParam("forUser", user.getId()).build());
         response.link("favoriteGames", uri.getBaseUriBuilder().path(GameResponse.BASE_PATH).queryParam("favoriteOf", user.getId()).build());
         return response;
     }
@@ -132,6 +136,22 @@ public class UserResponse extends BaseResponse {
 
     public void setRole(RoleType role) {
         this.role = role;
+    }
+
+    public int getFollowers() {
+        return followers;
+    }
+
+    public void setFollowers(int followers) {
+        this.followers = followers;
+    }
+
+    public int getFollowing() {
+        return following;
+    }
+
+    public void setFollowing(int following) {
+        this.following = following;
     }
 
 

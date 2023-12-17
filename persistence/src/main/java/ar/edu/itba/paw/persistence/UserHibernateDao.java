@@ -245,20 +245,24 @@ public class UserHibernateDao implements UserDao, PaginationDao<UserFilter> {
     }
 
     @Override
-    public Optional<User>  createFollow(long userId, long id) {
+    public Optional<User> createFollow(long userId, long id) {
         User user = em.find(User.class, userId);
-        User userToFollow = em.getReference(User.class, id);
-        if(user == null || userToFollow == null) return Optional.empty();
+        User userToFollow = em.find(User.class, id);
+        if (user == null || userToFollow == null || follows(userId, id)) return Optional.empty();
         user.getFollowing().add(userToFollow);
+        user.setFollowingCount(user.getFollowingCount() + 1);
+        userToFollow.setFollowersCount(userToFollow.getFollowersCount() + 1);
         return Optional.of(user);
     }
 
     @Override
     public Optional<User> deleteFollow(long userId, long id) {
         User user = em.find(User.class, userId);
-        User followedUser = em.getReference(User.class, id);
-        if (user == null || followedUser == null) return Optional.empty();
+        User followedUser = em.find(User.class, id);
+        if (user == null || followedUser == null || !follows(userId, id)) return Optional.empty();
         user.getFollowing().remove(followedUser);
+        user.setFollowingCount(user.getFollowingCount() - 1);
+        followedUser.setFollowersCount(followedUser.getFollowersCount() - 1);
         return Optional.of(user);
     }
 
