@@ -160,7 +160,7 @@
           [style.display]="loading ? 'none': 'auto'"
           colspan="1" rowspan="1"
         >
-          <app-review-card [review]="review" style="width: 100%"></app-review-card>
+          <app-review-card (click)="navigateToReview(review)" [review]="review" style="width: 100%"></app-review-card>
         </mat-grid-tile>
       </mat-grid-list>
       <div *ngIf="combinedPagination$ | async as combined">

@@ -13,6 +13,7 @@ import {MatSidenav} from '@angular/material/sidenav';
 import {formatNumber} from "@angular/common";
 import {PageEvent} from "@angular/material/paginator";
 import {environment} from "../../../../environments/environment";
+import {Review} from "../../../shared/data-access/reviews/review.class";
 
 @Component({
   selector: 'app-review-search',
@@ -104,6 +105,10 @@ export class ReviewSearchComponent implements OnInit {
         queryParamsHandling: 'merge'
       });
     }
+  }
+
+  navigateToReview(review: Review) {
+    this.router.navigate(['/reviews', review.id]);
   }
 
   ngOnInit() {

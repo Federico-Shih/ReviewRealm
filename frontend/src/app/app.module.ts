@@ -11,6 +11,7 @@ import {TranslateLoader, TranslateModule} from "@ngx-translate/core";
 import {TranslateHttpLoader} from "@ngx-translate/http-loader";
 import {MAT_SNACK_BAR_DEFAULT_OPTIONS} from "@angular/material/snack-bar";
 import {RetryWithRefreshInterceptor} from "./shared/interceptors/RetryWithRefreshInterceptor";
+import {IMAGE_LOADER, ImageLoaderConfig} from "@angular/common";
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http);
@@ -45,7 +46,13 @@ export function HttpLoaderFactory(http: HttpClient) {
       useClass: RetryWithRefreshInterceptor,
       multi: true
     },
-    {provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: {duration: 2000}}
+    {provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: {duration: 2000}},
+    {
+      provide: IMAGE_LOADER,
+      useValue: (config: ImageLoaderConfig) => {
+        return config.src;
+      }
+    }
   ],
   bootstrap: [AppComponent]
 })

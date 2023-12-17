@@ -1,6 +1,5 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {UsersService} from "../../shared/data-access/users/users.service";
-import {ReasonToLocale} from "../../shared/data-access/shared.enums";
 
 @Component({
   selector: 'app-notifications',
@@ -15,5 +14,4 @@ export class NotificationsComponent {
   constructor(userService: UsersService) {
   }
 
-  protected readonly ReasonToLocale = ReasonToLocale;
 }

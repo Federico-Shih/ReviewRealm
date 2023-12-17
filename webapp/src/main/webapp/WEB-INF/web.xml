@@ -131,6 +131,15 @@ http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
         <url-pattern>/api/*</url-pattern>
     </servlet-mapping>
 
+    <filter>
+        <filter-name>StaticCacheFilter</filter-name>
+        <filter-class>ar.edu.itba.paw.webapp.config.filters.UnconditionalCacheFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>StaticCacheFilter</filter-name>
+        <url-pattern>/static/*</url-pattern>
+    </filter-mapping>
+
     <servlet-mapping>
         <servlet-name>default</servlet-name>
         <url-pattern>/static/*</url-pattern>

@@ -1,23 +1,14 @@
 import {Injectable} from '@angular/core';
-import {HttpClient, HttpErrorResponse} from "@angular/common/http";
-import {catchError, combineLatest, filter, forkJoin, map, mergeMap, Observable, of, pipe, switchMap} from "rxjs";
-import {GameResponse, ReviewFeedbackResponse, ReviewResponse} from "../shared.responses";
+import {HttpClient} from "@angular/common/http";
+import {catchError, filter, forkJoin, map, mergeMap, Observable, of, switchMap} from "rxjs";
+import {ReviewFeedbackResponse, ReviewResponse} from "../shared.responses";
 import {Feedback, Review} from "./review.class";
-import {
-    customExceptionMapper,
-    exceptionMapper,
-    paginatedObjectMapper,
-    queryMapper, responseMapper,
-    validationExceptionMapper,
-} from "../../helpers/mapper";
-import {Paginated, ValidationResponse} from "../shared.models";
+import {customExceptionMapper, exceptionMapper, paginatedObjectMapper, queryMapper,} from "../../helpers/mapper";
+import {Paginated} from "../shared.models";
 import {ReportReviewDto, ReviewMediaTypes, ReviewSearchDto, ReviewSubmitDto} from "./reviews.dtos";
 import {GamesService} from "../games/games.service";
 import {UsersService} from "../users/users.service";
-import {UserCreateDto, UserMediaTypes} from "../users/users.dtos";
-import {User} from "../users/users.class";
-import {ReportReason} from "../shared.enums";
-import {Game} from "../games/games.class";
+import {ReportReason} from "../reports/reports.class";
 
 @Injectable()
 export class ReviewsService {

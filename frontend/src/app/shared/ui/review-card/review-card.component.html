@@ -24,7 +24,7 @@
   </mat-card-header>
   <mat-divider/>
   <mat-card-content class="card-content">
-    <p (click)="click.emit()" class="clamp">
+    <p (click)="click.emit()" class="clamp card-text">
       {{ review.content }}
     </p>
     <div class="likes">
@@ -35,12 +35,11 @@
   <ng-container *ngIf="!hideActions">
     <mat-divider/>
     <mat-card-actions class="game-container">
-
       <div class="image-container">
         <img
           [ngSrc]="review.game?.links?.image || ''"
+          fill="true"
           alt="{{ 'review-card.img-alt' | translate:{game: review.game?.name } }}"
-          fill
           priority="high"
         />
       </div>

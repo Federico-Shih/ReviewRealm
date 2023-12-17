@@ -21,6 +21,7 @@
 }
 
 .card-title {
+  cursor: pointer;
   font-size: 1.5rem;
   font-weight: bold;
   width: calc(100% - 120px);
@@ -109,6 +110,10 @@
 
 .author-container:hover .profile-card {
   display: block;
+}
+
+.card-text {
+  cursor: pointer;
 }
 
 .clamp {
