@@ -8,7 +8,7 @@ describe('ReviewDetailComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [ReviewDetailComponent]
+      declarations: [ReviewDetailComponent],
     });
     fixture = TestBed.createComponent(ReviewDetailComponent);
     component = fixture.componentInstance;

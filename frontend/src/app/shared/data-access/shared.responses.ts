@@ -1,5 +1,5 @@
-import {Difficulty, Platform, Role} from "./shared.enums";
-import {FeedbackType} from "./reviews/review.class";
+import { Difficulty, Platform, Role } from './shared.enums';
+import { FeedbackType } from './reviews/review.class';
 
 export type ReviewLinksResponse = {
   feedback?: string;
@@ -8,7 +8,7 @@ export type ReviewLinksResponse = {
   self: string;
   giveFeedback?: string;
   report?: string;
-}
+};
 
 export type ReviewResponse = {
   id: number;
@@ -26,16 +26,16 @@ export type ReviewResponse = {
   replayable: boolean;
   created: string;
   links: ReviewLinksResponse;
-}
+};
 
 export type ReviewFeedbackResponse = {
   links: {
     review: string;
     liker: string;
     self: string;
-  }
+  };
   feedbackType: FeedbackType | null;
-}
+};
 
 export type UserLinksResponse = {
   self: string;
@@ -52,7 +52,7 @@ export type UserLinksResponse = {
   followingReviews?: string;
   recommendedGames?: string;
   reviews: string;
-}
+};
 
 export type UserResponse = {
   id: number;
@@ -67,7 +67,7 @@ export type UserResponse = {
   role: Role;
   followers: number;
   following: number;
-}
+};
 
 export type GameResponseLinks = {
   self: string;
@@ -78,7 +78,7 @@ export type GameResponseLinks = {
   deleteFromFavoriteGames?: string;
   image: string;
   genres: string;
-}
+};
 
 export type GameResponse = {
   id: number;
@@ -96,15 +96,14 @@ export type GameResponse = {
   replayability?: number;
   completability?: number;
   links: GameResponseLinks;
-}
-
+};
 
 export type GenreResponse = {
   id: number;
   name: string;
   localized: string;
-  links: { self: string; };
-}
+  links: { self: string };
+};
 /*
 {
         "links": {
@@ -123,7 +122,7 @@ export type GenreResponse = {
 export type Frequency = {
   localized: string;
   name: string;
-}
+};
 
 export type MissionResponse = {
   id: string;
@@ -136,14 +135,14 @@ export type MissionResponse = {
   links: {
     self: string;
   };
-}
+};
 
 export type MissionProgressResponse = {
   progress: number;
   mission: string;
   startDate: string;
   completedTimes: number;
-}
+};
 
 /*
     {
@@ -160,7 +159,7 @@ export type NotificationTypeResponse = {
   localized: string;
   links: {
     self: string;
-  }
+  };
 };
 
 export type NotificationValueResponse = {
@@ -168,7 +167,7 @@ export type NotificationValueResponse = {
   type: string;
   links: {
     notification: string;
-  }
+  };
 };
 
 export type ReportsLinksResponse = {
@@ -180,10 +179,10 @@ export type ReportsLinksResponse = {
   moderator?: string;
 };
 
-export type ReportResponse= {
+export type ReportResponse = {
   id: number;
   reason: string;
-  submissionDate:string;
+  submissionDate: string;
   state: string;
   links: ReportsLinksResponse;
   resolvedDate?: string;

@@ -1,35 +1,33 @@
-import {Difficulty, Platform} from "./shared.enums";
-import {JwtPayload} from "jwt-decode";
+import { JwtPayload } from 'jwt-decode';
 
 export type PaginatedLinks = {
   self: string;
   next?: string;
   prev?: string;
-}
+};
 
 export type Paginated<T> = {
   content: T[];
   totalPages: number;
   totalElements: number;
   links: PaginatedLinks;
-}
+};
 
 // Sucede cuando error 400 y es solo un valor
 export type ExceptionResponse = {
   message: string;
-}
+};
 
 // Sucede cuando error 400 y es multiples valores
 export type ValidationResponse = {
   message: string;
   property: string;
   value: unknown;
-}
+};
 
 export class ValidationError {
   status: number;
   exceptions: ValidationResponse[] | null;
-
 
   constructor(status: number, exceptions: ValidationResponse[] | null) {
     this.status = status;

@@ -1,6 +1,6 @@
-import {UserLinksResponse, UserResponse} from "../shared.responses";
-import {Role} from "../shared.enums";
-import {Genre} from "../enums/enums.class";
+import { UserLinksResponse, UserResponse } from '../shared.responses';
+import { Role } from '../shared.enums';
+import { Genre } from '../enums/enums.class';
 
 export class UserLinks {
   self: string;
@@ -18,20 +18,22 @@ export class UserLinks {
   recommendedGames?: string;
   reviews: string;
 
-  constructor(self: string,
-              followers: string,
-              following: string,
-              preferences: string,
-              favoriteGames: string,
-              reviews: string,
-              patchUser?: string,
-              updateNotifications?: string,
-              unfollow?: string,
-              follow?: string,
-              recommendedReviews?: string,
-              newReviews?: string,
-              followingReviews?: string,
-              recommendedGames?: string) {
+  constructor(
+    self: string,
+    followers: string,
+    following: string,
+    preferences: string,
+    favoriteGames: string,
+    reviews: string,
+    patchUser?: string,
+    updateNotifications?: string,
+    unfollow?: string,
+    follow?: string,
+    recommendedReviews?: string,
+    newReviews?: string,
+    followingReviews?: string,
+    recommendedGames?: string
+  ) {
     this.reviews = reviews;
     this.self = self;
     this.followers = followers;
@@ -49,22 +51,23 @@ export class UserLinks {
   }
 
   static fromResponse({
-                        favoriteGames,
-                        follow,
-                        followers,
-                        following,
-                        patchUser,
-                        preferences,
-                        self,
-                        unfollow,
-                        reviews,
-                        updateNotifications,
-                        newReviews,
-                        recommendedReviews,
-                        followingReviews,
-                        recommendedGames
-                      }: UserLinksResponse): UserLinks {
-    return new UserLinks(self,
+    favoriteGames,
+    follow,
+    followers,
+    following,
+    patchUser,
+    preferences,
+    self,
+    unfollow,
+    reviews,
+    updateNotifications,
+    newReviews,
+    recommendedReviews,
+    followingReviews,
+    recommendedGames,
+  }: UserLinksResponse): UserLinks {
+    return new UserLinks(
+      self,
       followers,
       following,
       preferences,
@@ -77,7 +80,8 @@ export class UserLinks {
       recommendedReviews,
       newReviews,
       followingReviews,
-      recommendedGames);
+      recommendedGames
+    );
   }
 }
 
@@ -96,19 +100,21 @@ export class User {
   followers: number;
   following: number;
 
-  constructor(id: number,
-              username: string,
-              email: string,
-              enabled: boolean,
-              reputation: number,
-              avatar: string,
-              links: UserLinks,
-              role: Role,
-              followers: number,
-              following: number,
-              language?: string,
-              xp: number = 0,
-              preferences: Genre[] = []) {
+  constructor(
+    id: number,
+    username: string,
+    email: string,
+    enabled: boolean,
+    reputation: number,
+    avatar: string,
+    links: UserLinks,
+    role: Role,
+    followers: number,
+    following: number,
+    language?: string,
+    xp = 0,
+    preferences: Genre[] = []
+  ) {
     this.id = id;
     this.username = username;
     this.email = email;
@@ -124,21 +130,25 @@ export class User {
     this.following = following;
   }
 
-  static fromResponse({
-                        id,
-                        username,
-                        email,
-                        enabled,
-                        reputation,
-                        avatar,
-                        language,
-                        xp,
-                        links,
-                        role,
-                        following,
-                        followers
-                      }: UserResponse, preferences: Genre[] = []): User {
-    return new User(id,
+  static fromResponse(
+    {
+      id,
+      username,
+      email,
+      enabled,
+      reputation,
+      avatar,
+      language,
+      xp,
+      links,
+      role,
+      following,
+      followers,
+    }: UserResponse,
+    preferences: Genre[] = []
+  ): User {
+    return new User(
+      id,
       username,
       email,
       enabled,
@@ -150,6 +160,7 @@ export class User {
       following,
       language,
       xp,
-      preferences);
+      preferences
+    );
   }
 }

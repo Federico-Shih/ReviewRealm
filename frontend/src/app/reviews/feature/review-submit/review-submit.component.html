@@ -5,8 +5,7 @@
         [reviewFormType]="ReviewFormType.Create"
         [loading]="loading$ | async"
         [game]="game"
-        (reviewFormEvent)="createReview($event)"
-      ></app-review-form>
+        (reviewFormEvent)="createReview($event)"></app-review-form>
     </div>
     <ng-container *ngIf="game">
       <div class="game-section">

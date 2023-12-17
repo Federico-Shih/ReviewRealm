@@ -8,7 +8,7 @@ describe('GenresViewComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [GenresViewComponent]
+      declarations: [GenresViewComponent],
     });
     fixture = TestBed.createComponent(GenresViewComponent);
     component = fixture.componentInstance;

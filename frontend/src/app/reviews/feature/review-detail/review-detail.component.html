@@ -1,87 +1,130 @@
-<ng-container *ngIf="!(loadingReview$ | async) && (review$ | async) as review; else loading">
-  <app-breadcrumbs [breadcrumbs]="[
-  {name: 'review.search' | translate, link: '/'},
-  {name: review.game?.name, link: null}
-  ]"/>
-  <div class="review-detail">
+<ng-container
+  *ngIf="loadingReview$ | async as loadingReview">
+  <app-breadcrumbs
+    *ngIf='loadingReview.review !== null && loadingReview.review.game'
+    [breadcrumbs]="[
+      { name: 'review.search' | translate, link: '/' },
+      { name: loadingReview.review.game.name, link: null }
+    ]" />
+  <ng-container *ngIf='loadingReview.loading'>
+    <app-loading-spinner />
+  </ng-container>
+  <div class="review-detail" *ngIf="loadingReview.review" [style.visibility]="loadingReview.loading ? 'hidden' : 'visible' ">
     <div class="review-section">
       <div class="main-card">
         <div class="review-card-content">
           <div class="review-header">
-            <span class="title">{{review.title}}</span>
+            <span class="title">{{ loadingReview.review.title }}</span>
             <div class="top-right">
               <div class="score">
-                <span class="actual-score">{{review.rating}}</span>
+                <span class="actual-score">{{ loadingReview.review.rating }}</span>
                 <span>/10</span>
               </div>
               <ng-container *ngIf="canEdit$ | async">
-                <button mat-icon-button [matTooltip]="'review.edit' | translate" routerLink="/reviews/{{review.id}}/edit">
-                  <mat-icon fontIcon="edit" class="icons"/>
+                <button
+                  mat-icon-button
+                  [matTooltip]="'review.edit' | translate"
+                  routerLink="/reviews/{{ loadingReview.review.id }}/edit">
+                  <mat-icon fontIcon="edit" class="icons" />
                 </button>
               </ng-container>
               <ng-container *ngIf="canDelete$ | async">
-                <button mat-icon-button [matTooltip]="'review.delete' | translate"
-                        (click)="openDeleteDialog()">
-                  <mat-icon fontIcon="delete" class="icons"/>
+                <button
+                  mat-icon-button
+                  [matTooltip]="'review.delete' | translate"
+                  (click)="openDeleteDialog()">
+                  <mat-icon fontIcon="delete" class="icons" />
                 </button>
               </ng-container>
               <ng-container *ngIf="canReport$ | async">
-                <button mat-icon-button [matTooltip]="'review.report' | translate"
-                        (click)="openReportDialog()">
-                  <mat-icon fontIcon="flag" class="red-icon"/>
+                <button
+                  mat-icon-button
+                  [matTooltip]="'review.report' | translate"
+                  (click)="openReportDialog()">
+                  <mat-icon fontIcon="flag" class="red-icon" />
                 </button>
               </ng-container>
             </div>
           </div>
-          <mat-divider/>
+          <mat-divider />
           <p class="review-body">
-            {{review.content}}
+            {{ loadingReview.review.content }}
           </p>
-          <mat-divider/>
+          <mat-divider />
           <div class="review-middle">
             <div>
-              <ng-container *ngIf="review.getGameLengthInUnits()">
+              <ng-container *ngIf="loadingReview.review.getGameLengthInUnits()">
                 <span>
-                  {{'review.timeplayed' | translate}}: {{review.getGameLengthInUnits()?.units! | translate:{number: (review.getGameLengthInUnits()?.value!.toFixed(2))} }}
+                  {{ 'review.timeplayed' | translate }}:
+                  {{
+                    loadingReview.review.getGameLengthInUnits()?.units!
+                      | translate
+                        : {
+                            number: loadingReview.review
+                              .getGameLengthInUnits()
+                              ?.value!.toFixed(2)
+                          }
+                  }}
                 </span>
               </ng-container>
             </div>
             <span>
-              {{review.created | date: 'yyyy-MM-dd HH:mm'}}
+              {{ loadingReview.review.created | date: 'yyyy-MM-dd HH:mm' }}
             </span>
           </div>
-          <mat-divider/>
+          <mat-divider />
           <div class="review-footer">
             <div class="tags">
-              <span>
-                {{'review.tags' | translate}}:
-              </span>
+              <span> {{ 'review.tags' | translate }}: </span>
               <div class="tag-group">
-                <span *ngIf="review.platform" routerLink="/" [queryParams]="{ platform: review.platform }" class="chip">
-                  {{review.platform}}
+                <span
+                  *ngIf="loadingReview.review.platform"
+                  routerLink="/"
+                  [queryParams]="{ platform: loadingReview.review.platform }"
+                  class="chip">
+                  {{ loadingReview.review.platform }}
                 </span>
-                <span *ngIf="review.difficulty" routerLink="/" [queryParams]="{ difficulty: review.difficulty }" class="chip">
-                  {{DifficultyToLocale[review.difficulty] | translate}}
+                <span
+                  *ngIf="loadingReview.review.difficulty"
+                  routerLink="/"
+                  [queryParams]="{ difficulty: loadingReview.review.difficulty }"
+                  class="chip">
+                  {{ DifficultyToLocale[loadingReview.review.difficulty] | translate }}
                 </span>
-                <span *ngIf="review.completed" routerLink="/" [queryParams]="{ completed: true }" class="chip">
-                  {{'review-search.completed' | translate }}
+                <span
+                  *ngIf="loadingReview.review.completed"
+                  routerLink="/"
+                  [queryParams]="{ completed: true }"
+                  class="chip">
+                  {{ 'review-search.completed' | translate }}
                 </span>
-                <span *ngIf="review.replayable" routerLink="/" [queryParams]="{ replayable: true }" class="chip">
-                  {{'review-search.replayable' | translate }}
+                <span
+                  *ngIf="loadingReview.review.replayable"
+                  routerLink="/"
+                  [queryParams]="{ replayable: true }"
+                  class="chip">
+                  {{ 'review-search.replayable' | translate }}
                 </span>
               </div>
             </div>
             <div class="author">
-              <a routerLink="/profile/{{review.authorId}}" class="name">{{'review-card.by' | translate:{author: review.author?.username} }}</a>
+              <a routerLink="/profile/{{ loadingReview.review.authorId }}" class="name">{{
+                'review-card.by'
+                  | translate: { author: loadingReview.review.author?.username }
+              }}</a>
               <div class="author-preferences">
-                <span>{{'profile-card.whoprefers' | translate}}:</span>
-                  <div class="tag-group">
-                    <ng-container *ngFor="let genre of review.author?.preferences">
-                      <span routerLink="/" [queryParams]="{ gameGenres: genre.id }" class="chip">
-                        {{genre.localized}}
-                      </span>
-                    </ng-container>
-                  </div>
+                <span>{{ 'profile-card.whoprefers' | translate }}:</span>
+                <div class="tag-group">
+                  <ng-container
+                    *ngFor="let genre of loadingReview.review.author?.preferences">
+                    <span
+                      routerLink="/"
+                      [queryParams]="{ gameGenres: genre.id }"
+                      class="chip">
+                      {{ genre.localized }}
+                    </span>
+                  </ng-container>
+                </div>
               </div>
             </div>
           </div>
@@ -90,17 +133,39 @@
       <div class="main-card">
         <div class="popularity-section">
           <div class="left">
-            <span class="popularity-tag">{{'review-filter.popularity' | translate}}:</span>
-            <span class="popularity-value">{{ review.getPopularity() }}</span>
+            <span class="popularity-tag"
+              >{{ 'review-filter.popularity' | translate }}:</span
+            >
+            <span class="popularity-value">{{ loadingReview.review.getPopularity() }}</span>
           </div>
           <div class="right">
-            <ng-container *ngIf="(reviewFeedback$ | async) as feedback">
-              <span>{{'review.found_useful?' | translate }}</span>
-              <button mat-icon-button [disabled]="(currentUser$ | async) === null" >
-                <mat-icon fontIcon="thumb_up" [class]="(currentUser$ | async) === null?'disabled-icons':(feedback.isLike()? 'highlighted-icons': 'icons')"/>
+            <ng-container *ngIf="reviewFeedback$ | async as feedback">
+              <span>{{ 'review.found_useful?' | translate }}</span>
+              <button
+                mat-icon-button
+                [disabled]="(currentUser$ | async) === null">
+                <mat-icon
+                  fontIcon="thumb_up"
+                  [class]="
+                    (currentUser$ | async) === null
+                      ? 'disabled-icons'
+                      : feedback.isLike()
+                        ? 'highlighted-icons'
+                        : 'icons'
+                  " />
               </button>
-              <button mat-icon-button [disabled]="(currentUser$ | async) === null" >
-                <mat-icon fontIcon="thumb_down" [class]="(currentUser$ | async) === null?'disabled-icons':(feedback.isDislike()? 'highlighted-icons': 'icons')"/>
+              <button
+                mat-icon-button
+                [disabled]="(currentUser$ | async) === null">
+                <mat-icon
+                  fontIcon="thumb_down"
+                  [class]="
+                    (currentUser$ | async) === null
+                      ? 'disabled-icons'
+                      : feedback.isDislike()
+                        ? 'highlighted-icons'
+                        : 'icons'
+                  " />
               </button>
             </ng-container>
           </div>
@@ -109,11 +174,8 @@
     </div>
     <ng-container *ngIf="review.game">
       <div class="game-section">
-        <app-game-card [game]="review.game" [small]="true"/>
+        <app-game-card [game]="game" [small]="true" />
       </div>
     </ng-container>
   </div>
 </ng-container>
-<ng-template #loading>
-  <app-loading-spinner/>
-</ng-template>

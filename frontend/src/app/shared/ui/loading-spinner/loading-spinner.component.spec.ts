@@ -8,7 +8,7 @@ describe('LoadingSpinnerComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [LoadingSpinnerComponent]
+      declarations: [LoadingSpinnerComponent],
     });
     fixture = TestBed.createComponent(LoadingSpinnerComponent);
     component = fixture.componentInstance;

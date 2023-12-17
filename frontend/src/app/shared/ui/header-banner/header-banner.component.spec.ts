@@ -1,6 +1,6 @@
-import {ComponentFixture, TestBed} from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import {HeaderBannerComponent} from './header-banner.component';
+import { HeaderBannerComponent } from './header-banner.component';
 
 describe('HeaderBannerComponent', () => {
   let component: HeaderBannerComponent;
@@ -8,7 +8,7 @@ describe('HeaderBannerComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [HeaderBannerComponent]
+      declarations: [HeaderBannerComponent],
     });
     fixture = TestBed.createComponent(HeaderBannerComponent);
     component = fixture.componentInstance;

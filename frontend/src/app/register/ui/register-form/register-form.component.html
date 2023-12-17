@@ -1,21 +1,43 @@
 <mat-card class="card-container">
-  <mat-card-header class="card-header">{{'register-form.register-header' | translate }}</mat-card-header>
+  <mat-card-header class="card-header">{{
+    'register-form.register-header' | translate
+  }}</mat-card-header>
   <mat-card-content class="input-container">
-    <form (ngSubmit)="onSubmit()" [formGroup]="registerForm" class="text-fields">
+    <form
+      (ngSubmit)="onSubmit()"
+      [formGroup]="registerForm"
+      class="text-fields">
       <mat-form-field>
         <mat-label>{{ 'register-form.username' | translate }}</mat-label>
-        <input [formControlName]="'username'" [placeholder]="'register-form.username' | translate" matInput tabindex="1"
-               name="username"/>
+        <input
+          [formControlName]="'username'"
+          [placeholder]="'register-form.username' | translate"
+          matInput
+          tabindex="1"
+          name="username" />
         <!--        <mat-error *ngIf="errorMessage !== null"></mat-error>-->
         <mat-error>
-          <ng-container *ngIf="registerForm.get('username')?.errors?.['required']">
+          <ng-container
+            *ngIf="registerForm.get('username')?.errors?.['required']">
             {{ 'register-form.username-required' | translate }}
           </ng-container>
-          <ng-container *ngIf="registerForm.get('username')?.errors?.['minlength'] as error">
-            {{ 'register-form.username-minlength' | translate: {value: error?.requiredLength} }}
+          <ng-container
+            *ngIf="
+              registerForm.get('username')?.errors?.['minlength'] as error
+            ">
+            {{
+              'register-form.username-minlength'
+                | translate: { value: error?.requiredLength }
+            }}
           </ng-container>
-          <ng-container *ngIf="registerForm.get('username')?.errors?.['maxlength'] as error">
-            {{ 'register-form.username-maxlength' | translate:{value: error?.requiredLength} }}
+          <ng-container
+            *ngIf="
+              registerForm.get('username')?.errors?.['maxlength'] as error
+            ">
+            {{
+              'register-form.username-maxlength'
+                | translate: { value: error?.requiredLength }
+            }}
           </ng-container>
           <ng-container *ngIf="userCreateErrors?.username">
             {{ userCreateErrors?.username }}
@@ -30,14 +52,15 @@
           tabindex="2"
           matInput
           name="email"
-          type="email"
-        />
+          type="email" />
         <!--        <mat-error *ngIf="errorMessage !== null"></mat-error>-->
         <mat-error>
-          <ng-container *ngIf="registerForm.controls['email'].errors?.['required']">
+          <ng-container
+            *ngIf="registerForm.controls['email'].errors?.['required']">
             {{ 'login-form.email-required' | translate }}
           </ng-container>
-          <ng-container *ngIf="registerForm.controls['email'].errors?.['email']">
+          <ng-container
+            *ngIf="registerForm.controls['email'].errors?.['email']">
             {{ 'login-form.email-invalid' | translate }}
           </ng-container>
           <ng-container>
@@ -47,43 +70,64 @@
       </mat-form-field>
       <mat-form-field>
         <mat-label>{{ 'register-form.password' | translate }}</mat-label>
-        <input [formControlName]="'password'"
-               [placeholder]="'register-form.password' | translate"
-               tabindex="3"
-               matInput
-               name="password"
-               autocomplete="on"
-               type="password"
-        />
+        <input
+          [formControlName]="'password'"
+          [placeholder]="'register-form.password' | translate"
+          tabindex="3"
+          matInput
+          name="password"
+          autocomplete="on"
+          type="password" />
         <mat-error>
-          <ng-container *ngIf="registerForm.controls['password'].errors?.['required']">
+          <ng-container
+            *ngIf="registerForm.controls['password'].errors?.['required']">
             {{ 'login-form.password-required' | translate }}
           </ng-container>
-          <ng-container *ngIf="registerForm.controls['password'].errors?.['minlength']">
+          <ng-container
+            *ngIf="registerForm.controls['password'].errors?.['minlength']">
             {{ 'register-form.password-minlength' | translate }}
           </ng-container>
         </mat-error>
       </mat-form-field>
       <mat-form-field>
-        <mat-label>{{ 'register-form.confirm-password' | translate }}</mat-label>
-        <input [formControlName]="'confirmPassword'" [placeholder]="'register-form.confirm-password' | translate"
-               tabindex="4"
-               autocomplete="on"
-               matInput
-               name="password" type="password"/>
+        <mat-label>{{
+          'register-form.confirm-password' | translate
+        }}</mat-label>
+        <input
+          [formControlName]="'confirmPassword'"
+          [placeholder]="'register-form.confirm-password' | translate"
+          tabindex="4"
+          autocomplete="on"
+          matInput
+          name="password"
+          type="password" />
         <mat-error>
-          <ng-container *ngIf="registerForm.controls['confirmPassword'].errors?.['required']">
+          <ng-container
+            *ngIf="
+              registerForm.controls['confirmPassword'].errors?.['required']
+            ">
             {{ 'login-form.password-required' | translate }}
           </ng-container>
         </mat-error>
       </mat-form-field>
       <div
-        *ngIf="registerForm.hasError('passwordMismatch') && (registerForm.get('password')?.dirty || registerForm.get('confirmPassword')?.dirty)"
+        *ngIf="
+          registerForm.hasError('passwordMismatch') &&
+          (registerForm.get('password')?.dirty ||
+            registerForm.get('confirmPassword')?.dirty)
+        "
         class="error">
         {{ 'register-form.password-mismatch' | translate }}
       </div>
 
-      <button class="submit-btn" color="accent" i18n mat-raised-button tabindex="5" type="submit" [disabled]="loading === true">
+      <button
+        class="submit-btn"
+        color="accent"
+        i18n
+        mat-raised-button
+        tabindex="5"
+        type="submit"
+        [disabled]="loading === true">
         <span *ngIf="!loading; else loadingSpinner">
           {{ 'register-form.register-btn' | translate | uppercase }}
           <mat-icon>send</mat-icon>
@@ -94,7 +138,5 @@
       </button>
     </form>
     <!--    <mat-error *ngIf="errorMessage !== null">{{ errorMessage | translate }}</mat-error>-->
-
-
   </mat-card-content>
 </mat-card>

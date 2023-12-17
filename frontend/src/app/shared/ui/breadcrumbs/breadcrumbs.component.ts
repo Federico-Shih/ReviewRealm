@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 
 type Breadcrumb = {
   name: string | undefined;
@@ -9,9 +9,9 @@ type Breadcrumb = {
   selector: 'app-breadcrumbs',
   templateUrl: './breadcrumbs.component.html',
   styleUrls: ['./breadcrumbs.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BreadcrumbsComponent {
-  @Input({required: true})
+  @Input({ required: true })
   breadcrumbs: Breadcrumb[] = [];
 }

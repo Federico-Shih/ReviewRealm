@@ -1,8 +1,7 @@
+import { ReportResponse, ReportsLinksResponse } from '../shared.responses';
+import { Review } from '../reviews/review.class';
 
-import {ReportResponse, ReportsLinksResponse} from "../shared.responses";
-import {Review} from "../reviews/review.class";
-
-export class ReportLinks{
+export class ReportLinks {
   self: string;
   reporter: string;
   reportedReview: string;
@@ -10,7 +9,14 @@ export class ReportLinks{
   resolve?: string;
   moderator?: string;
 
-  private constructor(self: string, reporter: string, reportedReview: string, reportedUser: string, resolve?: string, moderator?: string) {
+  private constructor(
+    self: string,
+    reporter: string,
+    reportedReview: string,
+    reportedUser: string,
+    resolve?: string,
+    moderator?: string
+  ) {
     this.self = self;
     this.reporter = reporter;
     this.reportedReview = reportedReview;
@@ -18,26 +24,40 @@ export class ReportLinks{
     this.resolve = resolve;
     this.moderator = moderator;
   }
-  static fromResponse({self, reporter, reportedReview, reportedUser, resolve, moderator}: ReportsLinksResponse): ReportLinks {
-    return new ReportLinks(self, reporter, reportedReview, reportedUser, resolve, moderator);
+  static fromResponse({
+    self,
+    reporter,
+    reportedReview,
+    reportedUser,
+    resolve,
+    moderator,
+  }: ReportsLinksResponse): ReportLinks {
+    return new ReportLinks(
+      self,
+      reporter,
+      reportedReview,
+      reportedUser,
+      resolve,
+      moderator
+    );
   }
 }
 export enum ReportReason {
-  DISRESPECTFUL= "DISRESPECTFUL",
-  SPAM = "SPAM",
-  IRRELEVANT = "IRRELEVANT",
-  SPOILER = "SPOILER",
-  PIRACY = "PIRACY",
-  PRIVACY = "PRIVACY"
+  DISRESPECTFUL = 'DISRESPECTFUL',
+  SPAM = 'SPAM',
+  IRRELEVANT = 'IRRELEVANT',
+  SPOILER = 'SPOILER',
+  PIRACY = 'PIRACY',
+  PRIVACY = 'PRIVACY',
 }
 export enum ReportState {
-  UNRESOLVED= "UNRESOLVED",
-  ACCEPTED = "ACCEPTED",
-  REJECTED = "REJECTED",
-  DELETED_REVIEW = "DELETED_REVIEW",
+  UNRESOLVED = 'UNRESOLVED',
+  ACCEPTED = 'ACCEPTED',
+  REJECTED = 'REJECTED',
+  DELETED_REVIEW = 'DELETED_REVIEW',
 }
-export function getMessageFromReason(reason:ReportReason):string{
-  switch (reason){
+export function getMessageFromReason(reason: ReportReason): string {
+  switch (reason) {
     case ReportReason.DISRESPECTFUL:
       return 'report.reason.disrespectful';
     case ReportReason.SPAM:
@@ -52,7 +72,7 @@ export function getMessageFromReason(reason:ReportReason):string{
       return 'report.reason.privacy';
   }
 }
-export class Report{
+export class Report {
   id: number;
   reason: ReportReason;
   submissionDate: Date;
@@ -60,9 +80,17 @@ export class Report{
   links: ReportLinks;
   resolvedDate?: Date;
   //No siempre queres la review y en los reports viejos no esta la review
-  reportedReview?:Review;
+  reportedReview?: Review;
 
-  private constructor(id: number, reason: ReportReason, submissionDate: Date, state: ReportState, links: ReportLinks, resolvedDate?: Date, reportedReview?: Review){
+  private constructor(
+    id: number,
+    reason: ReportReason,
+    submissionDate: Date,
+    state: ReportState,
+    links: ReportLinks,
+    resolvedDate?: Date,
+    reportedReview?: Review
+  ) {
     this.id = id;
     this.reason = reason;
     this.submissionDate = submissionDate;
@@ -71,8 +99,18 @@ export class Report{
     this.resolvedDate = resolvedDate;
     this.reportedReview = reportedReview;
   }
-  static fromResponse({id, reason, submissionDate, state, links, resolvedDate}: ReportResponse, reportedReview:Review): Report {
-    return new Report(id, reason as ReportReason, new Date(submissionDate), state as ReportState, ReportLinks.fromResponse(links), resolvedDate ? new Date(resolvedDate) : undefined, reportedReview);
+  static fromResponse(
+    { id, reason, submissionDate, state, links, resolvedDate }: ReportResponse,
+    reportedReview: Review
+  ): Report {
+    return new Report(
+      id,
+      reason as ReportReason,
+      new Date(submissionDate),
+      state as ReportState,
+      ReportLinks.fromResponse(links),
+      resolvedDate ? new Date(resolvedDate) : undefined,
+      reportedReview
+    );
   }
-
 }

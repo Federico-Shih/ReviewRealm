@@ -4,8 +4,6 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
   selector: 'app-setting-view',
   templateUrl: './setting-view.component.html',
   styleUrls: ['./setting-view.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SettingViewComponent {
-
-}
+export class SettingViewComponent {}

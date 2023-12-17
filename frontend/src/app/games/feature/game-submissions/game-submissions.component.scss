@@ -9,14 +9,14 @@
 .spinner {
   margin-top: 20%;
 }
-.header{
+.header {
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
   width: 100%;
   margin-bottom: 2%;
-  .search-title{
+  .search-title {
     margin-right: 2%;
   }
 }
@@ -28,7 +28,7 @@
   flex-direction: column;
   align-items: center;
 }
-.submissions{
+.submissions {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -36,11 +36,11 @@
   width: 70%;
   gap: 30px;
 }
-.full-width{
+.full-width {
   width: 80%;
 }
 ::ng-deep mat-dialog-container {
-  .mat-mdc-dialog-content{
+  .mat-mdc-dialog-content {
     max-height: 95vh !important;
   }
 
@@ -76,7 +76,7 @@
     gap: 20px;
     width: 100%;
   }
-  .game-container{
+  .game-container {
     width: 45%;
     margin: auto 0;
   }

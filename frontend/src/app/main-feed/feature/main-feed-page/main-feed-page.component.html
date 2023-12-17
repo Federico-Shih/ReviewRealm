@@ -1,21 +1,19 @@
 <div (scroll)="nextPage($event)" class="main-container">
   <div class="for-you-section">
     <app-header-banner
-      *ngIf="(hasPreferences$ | async)"
+      *ngIf="hasPreferences$ | async"
       [buttonLabel]="'mainfeed.preferences.cta' | translate | uppercase"
       [title]="'mainfeed.preferences.title' | translate"
       icon="videogame_asset"
-      routerLink="/for-you/discover"
-    >
+      routerLink="/for-you/discover">
     </app-header-banner>
     <app-header-banner
       *ngIf="(hasPreferences$ | async) === false"
       [bannerType]="'warning'"
-      [buttonLabel]="'mainfeed.nopreferencesset.cta' | translate  | uppercase"
+      [buttonLabel]="'mainfeed.nopreferencesset.cta' | translate | uppercase"
       [title]="'mainfeed.nopreferencesset.title' | translate"
       icon="warning"
-      routerLink="/"
-    >
+      routerLink="/">
     </app-header-banner>
     <!--TODO: link to preferences -->
   </div>
@@ -24,24 +22,28 @@
     <mat-button-toggle-group [formControl]="selectedTab" class="tab-group">
       <mat-button-toggle class="tab" value="following">
         <mat-icon class="tab-icon">groups</mat-icon>
-        {{ "following" | translate | titlecase }}
+        {{ 'following' | translate | titlecase }}
       </mat-button-toggle>
       <mat-button-toggle class="tab" value="recommended">
         <mat-icon class="tab-icon">local_fire_department</mat-icon>
-        {{ "recommended" | translate | titlecase }}
+        {{ 'recommended' | translate | titlecase }}
       </mat-button-toggle>
       <mat-button-toggle class="tab" value="new">
         <mat-icon class="tab-icon">newspaper</mat-icon>
-        {{ "new" | translate | titlecase }}
+        {{ 'new' | translate | titlecase }}
       </mat-button-toggle>
     </mat-button-toggle-group>
   </header>
-  <section *ngIf="(loadingReviews$ | async) as loadingReviews" class="main-section">
+  <section
+    *ngIf="loadingReviews$ | async as loadingReviews"
+    class="main-section">
     <div *ngIf="loadingReviews.loading" class="centered-container spinner">
       <mat-spinner></mat-spinner>
     </div>
     <!--TODO: cuando haya # de followers en User, agregar "seguir a gente" -->
-    <div *ngIf="!loadingReviews.loading && loadingReviews.reviews.totalPages === 0" class="centered-container">
+    <div
+      *ngIf="!loadingReviews.loading && loadingReviews.reviews.totalPages === 0"
+      class="centered-container">
       <h2>{{ 'mainfeed.noReviews' | translate }}</h2>
     </div>
     <mat-grid-list
@@ -49,14 +51,21 @@
       cols="2"
       gutterSize="20px"
       rowHeight="300px"
-      style="display: flex;"
-    >
-      <mat-grid-tile *ngFor="let review of loadingReviews.reviews.content" colspan="1" rowspan="1" style="">
-        <app-review-card [review]="review" style="width: 100%"></app-review-card>
+      style="display: flex">
+      <mat-grid-tile
+        *ngFor="let review of loadingReviews.reviews.content"
+        colspan="1"
+        rowspan="1"
+        style="">
+        <app-review-card
+          [review]="review"
+          style="width: 100%"></app-review-card>
       </mat-grid-tile>
-      <mat-grid-tile *ngIf="loadingReviews.loadingInfinite" colspan="2" rowspan="1">
-        <mat-spinner class="centered-container">
-        </mat-spinner>
+      <mat-grid-tile
+        *ngIf="loadingReviews.loadingInfinite"
+        colspan="2"
+        rowspan="1">
+        <mat-spinner class="centered-container"> </mat-spinner>
       </mat-grid-tile>
     </mat-grid-list>
   </section>

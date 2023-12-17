@@ -1,4 +1,4 @@
-import {SortDirection} from "./shared.enums";
+import { SortDirection } from './shared.enums';
 
 export type SortedDto<T> = {
   sort: T;
@@ -8,4 +8,4 @@ export type SortedDto<T> = {
 export type PaginatedDto = {
   page: number;
   pageSize: number;
-}
+};

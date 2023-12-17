@@ -2,24 +2,29 @@
   <div *ngIf="results.hasResults; else noResults" class="results-container">
     <section *ngIf="results.reviews.content.length > 0">
       <mat-card class="search-results-card">
-        <mat-card-header class="title">{{ 'search.review-title' | translate }}</mat-card-header>
+        <mat-card-header class="title">{{
+          'search.review-title' | translate
+        }}</mat-card-header>
         <mat-card-content>
           <mat-grid-list
             cols="2"
             gutterSize="20px"
             rowHeight="300px"
-            style="display: flex;"
-          >
-            <mat-grid-tile *ngFor="let review of results.reviews.content" colspan="1" rowspan="1" style="">
-              <app-review-card [review]="review" style="width: 100%"></app-review-card>
+            style="display: flex">
+            <mat-grid-tile
+              *ngFor="let review of results.reviews.content"
+              colspan="1"
+              rowspan="1"
+              style="">
+              <app-review-card
+                [review]="review"
+                style="width: 100%"></app-review-card>
             </mat-grid-tile>
           </mat-grid-list>
         </mat-card-content>
       </mat-card>
     </section>
-    <section
-      *ngIf="results.users.content.length > 0"
-    >
+    <section *ngIf="results.users.content.length > 0">
       <mat-card class="search-results-card">
         <mat-card-header class="title">
           {{ 'search.users-title' | translate }}
@@ -29,23 +34,22 @@
             cols="3"
             gutterSize="20px"
             rowHeight="100px"
-            style="display: flex;"
-          >
+            style="display: flex">
             <mat-grid-tile
               *ngFor="let user of results.users.content"
               class="title"
               colspan="1"
               rowspan="1"
               style="width: 100%">
-              <app-profile-card [user]="user" style="width: 100%"></app-profile-card>
+              <app-profile-card
+                [user]="user"
+                style="width: 100%"></app-profile-card>
             </mat-grid-tile>
           </mat-grid-list>
         </mat-card-content>
       </mat-card>
     </section>
-    <section
-      *ngIf="results.games.content.length > 0"
-    >
+    <section *ngIf="results.games.content.length > 0">
       <mat-card class="search-results-card">
         <mat-card-header class="title">
           {{ 'search.games-title' | translate }}
@@ -55,9 +59,12 @@
             cols="2"
             gutterSize="20px"
             rowHeight="400px"
-            style="display: flex;"
-          >
-            <mat-grid-tile *ngFor="let game of results.games.content" colspan="1" rowspan="1" style="">
+            style="display: flex">
+            <mat-grid-tile
+              *ngFor="let game of results.games.content"
+              colspan="1"
+              rowspan="1"
+              style="">
               <app-game-card [game]="game" style="width: 100%"></app-game-card>
             </mat-grid-tile>
           </mat-grid-list>
@@ -72,5 +79,5 @@
   </ng-template>
 </ng-container>
 <ng-template #loading>
-  <mat-spinner/>
+  <mat-spinner />
 </ng-template>

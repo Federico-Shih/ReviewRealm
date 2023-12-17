@@ -4,7 +4,11 @@
     <span class="card-title">{{ title }}</span>
     <div>
       <span *ngIf="description" class="description">{{ description }}</span>
-      <button *ngIf="buttonLabel" [routerLink]="routerLink" class="button-cta" mat-stroked-button>
+      <button
+        *ngIf="buttonLabel"
+        [routerLink]="routerLink"
+        class="button-cta"
+        mat-stroked-button>
         <span>{{ buttonLabel }}</span>
       </button>
     </div>

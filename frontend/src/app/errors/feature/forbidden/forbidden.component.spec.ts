@@ -8,7 +8,7 @@ describe('ForbiddenComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [ForbiddenComponent]
+      declarations: [ForbiddenComponent],
     });
     fixture = TestBed.createComponent(ForbiddenComponent);
     component = fixture.componentInstance;

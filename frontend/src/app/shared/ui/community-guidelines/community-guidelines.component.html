@@ -7,9 +7,8 @@
       </span>
     </mat-panel-title>
   </mat-expansion-panel-header>
-  <ng-container *ngFor="let guideline of guidelines; let i = index;">
-    <span>{{i+1}}. {{guideline | translate}}</span>
-    <br><br>
+  <ng-container *ngFor="let guideline of guidelines; let i = index">
+    <span>{{ i + 1 }}. {{ guideline | translate }}</span>
+    <br /><br />
   </ng-container>
-
 </mat-expansion-panel>

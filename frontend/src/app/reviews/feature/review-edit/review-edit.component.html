@@ -6,8 +6,7 @@
         [loading]="loading$ | async"
         [game]="review.game"
         [editReview]="review"
-        (reviewFormEvent)="editReview($event)"
-      ></app-review-form>
+        (reviewFormEvent)="editReview($event)"></app-review-form>
     </div>
     <ng-container *ngIf="review.game">
       <div class="game-section">

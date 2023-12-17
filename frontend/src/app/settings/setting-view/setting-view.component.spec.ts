@@ -8,7 +8,7 @@ describe('SettingViewComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [SettingViewComponent]
+      declarations: [SettingViewComponent],
     });
     fixture = TestBed.createComponent(SettingViewComponent);
     component = fixture.componentInstance;

@@ -5,9 +5,9 @@
   justify-content: center;
   align-items: center;
 }
-.game-container{
+.game-container {
   background-color: var(--color-background);
-  height: 100%
+  height: 100%;
 }
 .drawer-content {
   padding: 0 1rem;
@@ -23,24 +23,24 @@
   width: 100%;
   height: 99%;
 }
-.filter-buttons{
+.filter-buttons {
   display: flex;
   gap: 10px;
   align-items: center;
   padding: 0.5rem 1rem 0 1rem;
   width: 100%;
 }
-.filter-section{
+.filter-section {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   padding: 4%;
   width: 100%;
 }
-.filter-title{
+.filter-title {
   font-size: 20px;
   font-weight: 700;
-  margin-top: 6%
+  margin-top: 6%;
 }
 .label {
   display: flex;
@@ -48,14 +48,14 @@
   gap: 2% !important;
   width: 100% !important;
 }
-.subtitle{
+.subtitle {
   font-size: 14px;
   font-weight: 700;
 }
-.range-slider{
+.range-slider {
   width: 80%;
 }
-.full-width{
+.full-width {
   width: 100%;
 }
 

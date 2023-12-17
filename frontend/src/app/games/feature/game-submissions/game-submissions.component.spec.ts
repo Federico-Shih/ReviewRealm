@@ -8,7 +8,7 @@ describe('GameSubmissionsComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [GameSubmissionsComponent]
+      declarations: [GameSubmissionsComponent],
     });
     fixture = TestBed.createComponent(GameSubmissionsComponent);
     component = fixture.componentInstance;

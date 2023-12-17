@@ -1,5 +1,14 @@
-import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
-import {MAT_CHECKBOX_DEFAULT_OPTIONS, MatCheckboxDefaultOptions} from "@angular/material/checkbox";
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  Output,
+} from '@angular/core';
+import {
+  MAT_CHECKBOX_DEFAULT_OPTIONS,
+  MatCheckboxDefaultOptions,
+} from '@angular/material/checkbox';
 
 @Component({
   selector: 'app-tri-checkbox',
@@ -7,7 +16,10 @@ import {MAT_CHECKBOX_DEFAULT_OPTIONS, MatCheckboxDefaultOptions} from "@angular/
   styleUrls: ['./tri-checkbox.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [
-    {provide: MAT_CHECKBOX_DEFAULT_OPTIONS, useValue: {clickAction: 'noop'} as MatCheckboxDefaultOptions}
+    {
+      provide: MAT_CHECKBOX_DEFAULT_OPTIONS,
+      useValue: { clickAction: 'noop' } as MatCheckboxDefaultOptions,
+    },
   ],
 })
 export class TriCheckboxComponent {
@@ -16,6 +28,7 @@ export class TriCheckboxComponent {
 
   @Input()
   value: boolean | undefined = undefined;
+
   @Output()
   checkboxClick = new EventEmitter<boolean | undefined>();
 

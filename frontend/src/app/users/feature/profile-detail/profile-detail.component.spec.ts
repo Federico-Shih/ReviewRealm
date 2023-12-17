@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ProfileDetailComponent } from './profile-detail.component';
+import { UsersService } from '../../../shared/data-access/users/users.service';
 
 describe('ProfileDetailComponent', () => {
   let component: ProfileDetailComponent;
@@ -8,7 +9,8 @@ describe('ProfileDetailComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [ProfileDetailComponent]
+      declarations: [ProfileDetailComponent],
+      imports: [UsersService],
     });
     fixture = TestBed.createComponent(ProfileDetailComponent);
     component = fixture.componentInstance;

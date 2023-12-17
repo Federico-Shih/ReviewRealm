@@ -5,8 +5,18 @@
     </div>
 
     <div class="handlers">
-      <button mat-raised-button class="accept" (click)="handleSubmission.emit({game:game, accept:true})">{{'game.accept'| translate}}</button>
-      <button mat-raised-button class="reject" (click)="handleSubmission.emit({game:game, accept:false})">{{'game.reject'| translate}}</button>
+      <button
+        mat-raised-button
+        class="accept"
+        (click)="handleSubmission.emit({ game: game, accept: true })">
+        {{ 'game.accept' | translate }}
+      </button>
+      <button
+        mat-raised-button
+        class="reject"
+        (click)="handleSubmission.emit({ game: game, accept: false })">
+        {{ 'game.reject' | translate }}
+      </button>
     </div>
   </div>
 </ng-container>

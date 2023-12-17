@@ -3,7 +3,6 @@
 // Custom Theming for Angular Material
 // For more information: https://material.angular.io/guide/theming
 
-
 // Plus imports for other components in your app.
 
 // Include the common styles for Angular Material. We include this here so that you only
@@ -11,17 +10,17 @@
 // Be sure that you only ever include this mixin once!
 @include mat.core();
 
-$background-color: #070A18; // Use for backgrounds
-$surface-color: #13112D; // Use for cards
-$primary-color: #35325E; // Main color
-$secondary-color: #FFA500; // Temp
-$accent-color: #D84315; // Use for buttons
+$background-color: #070a18; // Use for backgrounds
+$surface-color: #13112d; // Use for cards
+$primary-color: #35325e; // Main color
+$secondary-color: #ffa500; // Temp
+$accent-color: #d84315; // Use for buttons
 /*
 Add variants
 $secondary-color-variant-1: #FFA500;
  */
 
-$error-color: #FF0000;
+$error-color: #ff0000;
 
 $primary-pallet: (
   50: #eaecf2,
@@ -44,8 +43,8 @@ $primary-pallet: (
     600: white,
     700: white,
     800: white,
-    900: white
-  )
+    900: white,
+  ),
 );
 
 $accent-pallet: (
@@ -54,7 +53,7 @@ $accent-pallet: (
   200: #ee724c,
   300: #eb6035,
   400: #e94d1d,
-  500: #D84315,
+  500: #d84315,
   600: #c13c13,
   700: #aa3510,
   800: #922d0e,
@@ -69,10 +68,9 @@ $accent-pallet: (
     600: white,
     700: white,
     800: white,
-    900: white
-  )
+    900: white,
+  ),
 );
-
 
 // Define the palettes for your theme using the Material Design palettes available in palette.scss
 // (imported above). For each palette, you can optionally specify a default, lighter, and darker
@@ -85,13 +83,15 @@ $frontend-warn: mat.define-palette(mat.$red-palette);
 
 // Create the theme object. A theme consists of configurations for individual
 // theming systems such as "color" or "typography".
-$frontend-theme: mat.define-dark-theme((
-  color: (
-    primary: $frontend-primary,
-    accent: $frontend-accent,
-    warn: $frontend-warn,
+$frontend-theme: mat.define-dark-theme(
+  (
+    color: (
+      primary: $frontend-primary,
+      accent: $frontend-accent,
+      warn: $frontend-warn,
+    ),
   )
-));
+);
 
 @include mat.core-theme($frontend-theme);
 @include mat.button-theme($frontend-theme);
@@ -106,7 +106,8 @@ body {
   background-color: $background-color;
 }
 
-html, body {
+html,
+body {
   height: 100%;
   color: white;
 }
@@ -117,7 +118,7 @@ a {
 
 body {
   margin: 0;
-  font-family: "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
   color: white;
 }
 
@@ -126,16 +127,16 @@ body {
 }
 
 :root {
-  --color-primary: #35325E;
-  --color-accent: #D84315;
-  --color-background: #070A18;
-  --color-surface: #13112D;
-  --color-error: #FF0000;
+  --color-primary: #35325e;
+  --color-accent: #d84315;
+  --color-background: #070a18;
+  --color-surface: #13112d;
+  --color-error: #ff0000;
   --color-primary-variant-1: #444155;
-  --color-text: #FFFFFF;
-  --color-green: #289C0E;
+  --color-text: #ffffff;
+  --color-green: #289c0e;
   --color-link: #007bff;
-  --color-warning: #9E9D24;
+  --color-warning: #9e9d24;
   // Add more variants
 }
 

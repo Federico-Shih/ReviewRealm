@@ -5,14 +5,16 @@
         <app-search-bar
           (search)="setSearch($event)"
           (submit)="submitSearch()"
-          [label]="'games.search.title' | translate"
-        ></app-search-bar>
+          [label]="'games.search.title' | translate"></app-search-bar>
       </div>
       <div class="games-container">
-        <ng-container *ngIf="!(loading$ | async); else loading">
-          <ng-container *ngIf="(games$ | async) as games" >
+        <ng-container *ngIf="(loading$ | async) === false ; else loading">
+          <ng-container *ngIf="(games$ | async) as games">
             <div *ngFor="let game of games.content" class="game-container">
-              <app-game-card [game]="game" [tiny]="true" [nolink]="true"></app-game-card>
+              <app-game-card
+                [game]="game"
+                [tiny]="true"
+                [nolink]="true"></app-game-card>
             </div>
           </ng-container>
         </ng-container>

@@ -25,7 +25,8 @@
     ],
     "types": [
       "jquery",
-      "materialize-css"
+      "materialize-css",
+      "jasmine"
     ]
   },
   "angularCompilerOptions": {

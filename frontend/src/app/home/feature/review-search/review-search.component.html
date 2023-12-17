@@ -1,21 +1,36 @@
 <mat-drawer-container autosize class="home-container">
-  <mat-drawer #drawer #sidenav class="drawer-container" mode="side" opened="true">
+  <mat-drawer
+    #drawer
+    #sidenav
+    class="drawer-container"
+    mode="side"
+    opened="true">
     <div class="hide-filters">
       <div class="filter-buttons-container sticky">
-        <button (click)="applyFilters()" color="accent" mat-raised-button style="flex: 1">
+        <button
+          (click)="applyFilters()"
+          color="accent"
+          mat-raised-button
+          style="flex: 1">
           {{ 'apply-filters' | translate }}
         </button>
-        <button (click)="resetFilters()" mat-flat-button style="background-color: rgb(128,128,128); flex: 1">
+        <button
+          (click)="resetFilters()"
+          mat-flat-button
+          style="background-color: rgb(128, 128, 128); flex: 1">
           {{ 'reset-filters' | translate }}
         </button>
       </div>
       <app-filter-drawer
         (selectOrder)="selectSortType($event)"
         (selectOrderDirection)="selectSortDirection($event)"
-        [defaultDirection]="(reviewSearchDto$ | async)?.direction || SortDirection.DESC"
-        [defaultSort]="(reviewSearchDto$ | async)?.sort || ReviewSortType.CREATED"
-        [sortTypes]="orderDirections"
-      >
+        [defaultDirection]="
+          (reviewSearchDto$ | async)?.direction || SortDirection.DESC
+        "
+        [defaultSort]="
+          (reviewSearchDto$ | async)?.sort || ReviewSortType.CREATED
+        "
+        [sortTypes]="orderDirections">
         <section>
           <span class="filter-title">{{ 'filter-title' | translate }}</span>
           <form [formGroup]="filter" class="filters">
@@ -24,88 +39,97 @@
                 <mat-icon>timer</mat-icon>
                 {{ 'review-search.timeplayed-filter' | translate }}
               </div>
-              <mat-slider [displayWith]="formatLabel" class="slider" discrete max="1000" min="0" step="10">
-                <input formControlName="mintimeplayed" matSliderThumb/>
+              <mat-slider
+                [displayWith]="formatLabel"
+                class="slider"
+                discrete
+                max="1000"
+                min="0"
+                step="10">
+                <input formControlName="mintimeplayed" matSliderThumb />
               </mat-slider>
             </div>
             <div class="first-checkbox">
               <app-tri-checkbox
                 (checkboxClick)="check('completed', $event)"
                 [label]="'review-search.completed' | translate"
-                [value]="filter.controls['completed'].value"
-              >
+                [value]="filter.controls['completed'].value">
               </app-tri-checkbox>
             </div>
             <div>
               <app-tri-checkbox
                 (checkboxClick)="check('replayable', $event)"
                 [label]="'review-search.replayable' | translate"
-                [value]="filter.controls['replayable'].value"
-              >
-
+                [value]="filter.controls['replayable'].value">
               </app-tri-checkbox>
             </div>
-            <mat-expansion-panel *ngIf="genres$ | async as genres; else genreLoading">
+            <mat-expansion-panel
+              *ngIf="genres$ | async as genres; else genreLoading">
               <mat-expansion-panel-header class="full-width">
                 <mat-panel-title>
                   <mat-icon>sports_esports</mat-icon>
-                  <span class="expansion-panel-title">{{ 'game-genres-filter' | translate }}</span>
+                  <span class="expansion-panel-title">{{
+                    'game-genres-filter' | translate
+                  }}</span>
                 </mat-panel-title>
               </mat-expansion-panel-header>
               <div formArrayName="gameGenres">
                 <mat-checkbox
                   *ngFor="let genre of genres; let i = index"
-                  [formControlName]="i"
-                >
+                  [formControlName]="i">
                   {{ genres[i].localized }}
                 </mat-checkbox>
               </div>
             </mat-expansion-panel>
-            <mat-expansion-panel *ngIf="genres$ | async as genres; else genreLoading">
+            <mat-expansion-panel
+              *ngIf="genres$ | async as genres; else genreLoading">
               <mat-expansion-panel-header>
                 <mat-panel-title>
                   <mat-icon>group</mat-icon>
-                  <span class="expansion-panel-title">{{ 'review-search.user-preference-filter' | translate }}</span>
+                  <span class="expansion-panel-title">{{
+                    'review-search.user-preference-filter' | translate
+                  }}</span>
                 </mat-panel-title>
               </mat-expansion-panel-header>
               <div formArrayName="userPreferences">
                 <mat-checkbox
                   *ngFor="let genre of genres; let i = index"
-                  [formControlName]="i"
-                >
+                  [formControlName]="i">
                   {{ genres[i].localized }}
                 </mat-checkbox>
               </div>
             </mat-expansion-panel>
-            <mat-expansion-panel *ngIf="(filtersLoaded | async)">
+            <mat-expansion-panel *ngIf="filtersLoaded | async">
               <mat-expansion-panel-header>
                 <mat-panel-title>
                   <mat-icon>gamepad</mat-icon>
-                  <span class="expansion-panel-title">{{ 'review-search.platform-filter' | translate }}</span>
+                  <span class="expansion-panel-title">{{
+                    'review-search.platform-filter' | translate
+                  }}</span>
                 </mat-panel-title>
               </mat-expansion-panel-header>
               <div formArrayName="platform">
                 <mat-checkbox
                   *ngFor="let platform of platforms; let i = index"
-                  [formControlName]="i"
-                >
+                  [formControlName]="i">
                   {{ platform | translate }}
                 </mat-checkbox>
               </div>
             </mat-expansion-panel>
-            <mat-expansion-panel *ngIf="(filtersLoaded | async)">
+            <mat-expansion-panel *ngIf="filtersLoaded | async">
               <mat-expansion-panel-header>
                 <mat-panel-title>
                   <mat-icon>sentiment_very_dissatisfied</mat-icon>
-                  <span class="expansion-panel-title">{{ 'review-search.difficulty-filter' | translate }}</span>
+                  <span class="expansion-panel-title">{{
+                    'review-search.difficulty-filter' | translate
+                  }}</span>
                 </mat-panel-title>
               </mat-expansion-panel-header>
               <div formArrayName="difficulty">
                 <mat-checkbox
                   *ngFor="let difficulty of difficulties; let i = index"
-                  [formControlName]="i"
-                >
-                  {{ ('difficulty.' + (difficulty | lowercase)) | translate }}
+                  [formControlName]="i">
+                  {{ 'difficulty.' + (difficulty | lowercase) | translate }}
                 </mat-checkbox>
               </div>
             </mat-expansion-panel>
@@ -120,47 +144,58 @@
 
   <mat-drawer-content class="drawer-content">
     <div class="searchbar">
-      <button (click)="drawer.toggle()"
-              color="accent"
-              class="filter-button"
-              mat-raised-button>
+      <button
+        (click)="drawer.toggle()"
+        color="accent"
+        class="filter-button"
+        mat-raised-button>
         <span><mat-icon>filter_alt</mat-icon></span>
       </button>
       <div>
         <app-search-bar
           (search)="search($event)"
           (submit)="submitSearch()"
-          [label]="'navbar.search' | translate"
-        ></app-search-bar>
+          [label]="'navbar.search' | translate"></app-search-bar>
       </div>
-      <button (click)="submitSearch()" class="search-button" color="accent" mat-flat-button>
+      <button
+        (click)="submitSearch()"
+        class="search-button"
+        color="accent"
+        mat-flat-button>
         {{ 'review-search.search-label' | translate }}
       </button>
     </div>
     <section>
       <div *ngIf="loading" class="centered-container sticky">
-        <mat-spinner/>
+        <mat-spinner />
       </div>
       <mat-grid-list
-        *ngIf="(paginatedReviews$ | async) as reviews"
+        *ngIf="paginatedReviews$ | async as reviews"
         [cols]="breakpoint"
         gutterSize="20px"
         rowHeight="300px"
-        style="display: flex;"
-        (window:resize)="onResize($event)"
-      >
-        <mat-grid-tile *ngIf="!loading && reviews.totalPages === 0" colspan="2" rowspan="1">
+        style="display: flex"
+        (window:resize)="onResize($event)">
+        <mat-grid-tile
+          *ngIf="!loading && reviews.totalPages === 0"
+          colspan="2"
+          rowspan="1">
           <span>
             {{ 'review-search.no-results' | translate }}
-            <a class="router-link" routerLink="/">{{ 'review-search.reset-filters' | translate }}</a>
+            <a class="router-link" routerLink="/">{{
+              'review-search.reset-filters' | translate
+            }}</a>
           </span>
         </mat-grid-tile>
         <mat-grid-tile
           *ngFor="let review of reviews.content"
-          [style.display]="loading ? 'none': 'auto'"
-          colspan="1" rowspan="1"
-        >
-          <app-review-card (click)="navigateToReview(review)" [review]="review" style="width: 100%"></app-review-card>
+          [style.display]="loading ? 'none' : 'auto'"
+          colspan="1"
+          rowspan="1">
+          <app-review-card
+            (click)="navigateToReview(review)"
+            [review]="review"
+            style="width: 100%"></app-review-card>
         </mat-grid-tile>
       </mat-grid-list>
       <div *ngIf="combinedPagination$ | async as combined">
@@ -169,16 +204,11 @@
           (page)="handlePageEvent($event)"
           *ngIf="combined[1].totalPages !== 0"
           [length]="combined[1].totalElements"
-
-          [pageIndex]="((combined[0].page || 1) - 1) "
+          [pageIndex]="(combined[0].page || 1) - 1"
           [pageSize]="combined[0].pageSize || 10"
-          class="paginator"
-        >
+          class="paginator">
         </mat-paginator>
       </div>
     </section>
   </mat-drawer-content>
 </mat-drawer-container>
-
-
-

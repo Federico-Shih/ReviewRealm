@@ -1,69 +1,80 @@
 <div>
   <form [formGroup]="genresGroup" (ngSubmit)="onSubmit()">
     <div formArrayName="genres">
-  <div class="full-width f-column">
-    <div class="f-row f-jc-center ">
-      <span class="titletext" i18n>{{ 'settings.genres.yourfavgenres' | translate}}</span>
-    </div>
-    <ng-container *ngIf="favgenres$ | async as favgenres">
-      <div class="f-row f-jc-center margin-for-text wrap contained-width">
-        <ng-container *ngFor="let favgenre of favgenres">
-          <span class="chip-small-inverted margin-for-label">{{favgenre.name}}</span>
+      <div class="full-width f-column">
+        <div class="f-row f-jc-center">
+          <span class="titletext" i18n>{{
+            'settings.genres.yourfavgenres' | translate
+          }}</span>
+        </div>
+        <ng-container *ngIf="favgenres$ | async as favgenres">
+          <div class="f-row f-jc-center margin-for-text wrap contained-width">
+            <ng-container *ngFor="let favgenre of favgenres">
+              <span class="chip-small-inverted margin-for-label">{{
+                favgenre.name
+              }}</span>
+            </ng-container>
+            <ng-container *ngIf="favgenres.length === 0">
+              <span class="subtitle" i18n>{{
+                'settings.genres.nofavgames' | translate
+              }}</span>
+            </ng-container>
+          </div>
         </ng-container>
-        <ng-container *ngIf="favgenres.length===0">
-          <span class="subtitle" i18n>{{ 'settings.genres.nofavgames' | translate }}</span>
-        </ng-container>
+        <div class="full-width f-row f-jc-center">
+          <span class="subtitle" i18n>{{
+            'settings.genres.choose' | translate
+          }}</span>
+        </div>
+
+        <div class="f-row f-jc-center contained-width margin-for-text wrap">
+          <ng-container *ngIf="allgenres$ | async as allgenres">
+            <ng-container *ngFor="let genre of allgenres">
+              <label class="margin-for-label">
+                <span>
+                  <div class="chip-small clickable width-fit-content">
+                    <input
+                      type="checkbox"
+                      class="clickable"
+                      [formControlName]="genre.id - 1" />
+                    <span>{{ genre.localized }}</span>
+                  </div>
+                </span>
+              </label>
+            </ng-container>
+          </ng-container>
+        </div>
+
+        <div class="f-row f-jc-center contained-width wrap">
+          <ng-container *ngIf="favgenres$ | async as favgenres">
+            <ng-container *ngFor="let genre of favgenres">
+              <label class="margin-for-label">
+                <span>
+                  <div class="chip-small clickable width-fit-content">
+                    <input
+                      type="checkbox"
+                      class="clickable"
+                      checked
+                      [formControlName]="genre.id - 1" />
+                    <span>{{ genre.localized }}</span>
+                  </div>
+                </span>
+              </label>
+            </ng-container>
+          </ng-container>
+        </div>
       </div>
-    </ng-container>
-    <div class="full-width f-row f-jc-center">
-      <span class="subtitle" i18n>{{ 'settings.genres.choose' | translate }}</span>
     </div>
-
-
-
-    <div class="f-row f-jc-center contained-width margin-for-text wrap">
-      <ng-container *ngIf="allgenres$ | async as allgenres">
-        <ng-container *ngFor="let genre of allgenres">
-          <label class="margin-for-label">
-            <span>
-              <div class="chip-small clickable width-fit-content">
-                <input type="checkbox" class="clickable" [formControlName]="genre.id-1"/>
-                <span>{{genre.localized}}</span>
-              </div>
-            </span>
-          </label>
-        </ng-container>
-      </ng-container>
-    </div>
-
-    <div class="f-row f-jc-center contained-width wrap">
-      <ng-container *ngIf="favgenres$ | async as favgenres">
-        <ng-container *ngFor="let genre of favgenres">
-          <label class="margin-for-label">
-            <span>
-              <div class="chip-small clickable width-fit-content">
-                <input type="checkbox" class="clickable" checked [formControlName]="genre.id-1"/>
-                <span>{{genre.localized}}</span>
-              </div>
-            </span>
-          </label>
-        </ng-container>
-      </ng-container>
-    </div>
-  </div>
-
-  </div>
 
     <div class="f-row full-width margin-for-text">
       <div class="full-width f-row f-jc-center">
         <button class="btn" type="submit">
           <i class="material-icons left white">save</i>
-          <span class="white" i18n>{{ 'settings.notification.save' | translate }}</span>
+          <span class="white" i18n>{{
+            'settings.notification.save' | translate
+          }}</span>
         </button>
       </div>
     </div>
-
-
   </form>
-
 </div>

@@ -1,66 +1,89 @@
 <div class="container">
   <div class="card">
     <ng-container *ngIf="loggedInUser$ | async as user">
-    <div class="f-row full-width f-jc-sbetween">
-      <div class="progress-container section">
-                <span class="card-title" i18n>
-                    {{ 'missions.yourprogress' | translate}}
-                </span>
-        <div class="progress-fontsize">
-          <span i18n>{{ 'missions.exp' | translate :{value: user.xp} }}</span>
+      <div class="f-row full-width f-jc-sbetween">
+        <div class="progress-container section">
+          <span class="card-title" i18n>
+            {{ 'missions.yourprogress' | translate }}
+          </span>
+          <div class="progress-fontsize">
+            <span i18n>{{
+              'missions.exp' | translate: { value: user.xp }
+            }}</span>
+          </div>
+          <mat-progress-bar
+            class="m-t-b"
+            mode="determinate"
+            color="accent"
+            value="{{ user.xp % 100 }}"></mat-progress-bar>
+          <div>
+            <span>{{ user.xp % 100 }}/100</span>
+          </div>
         </div>
-        <mat-progress-bar class="m-t-b" mode="determinate" color="accent" value="{{user.xp % 100}}"></mat-progress-bar>
-        <div>
-          <span>{{user.xp % 100}}/100</span>
+        <div class="section">
+          <div class="level-container no-wrap">
+            <span i18n>{{
+              'missions.lvl'
+                | translate: { value: (user.xp / 100 | number: '1.0-0') }
+            }}</span>
+          </div>
         </div>
       </div>
-      <div class="section">
-        <div class="level-container no-wrap">
-          <span i18n>{{'missions.lvl' | translate :{value: ((user.xp / 100) | number:'1.0-0') } }}</span>
-        </div>
-      </div>
-    </div>
     </ng-container>
   </div>
 
   <div class="card">
     <div class="card-content">
-            <span class="card-title">
-                <span i18n>{{ 'missions.yourmissions' | translate}}</span>
-            </span>
+      <span class="card-title">
+        <span i18n>{{ 'missions.yourmissions' | translate }}</span>
+      </span>
       <div>
         <ng-container *ngIf="missionComplete$ | async as completeMission">
           <ng-container *ngFor="let mission of completeMission">
             <div>
               <div class="card mission-card-container">
                 <div class="card-content mission-card">
-                              <span class="card-title">
-                                  {{mission.missionInfo.title}}
-                              </span>
+                  <span class="card-title">
+                    {{ mission.missionInfo.title }}
+                  </span>
                   <div>
-                    {{mission.missionInfo.description}}
+                    {{ mission.missionInfo.description }}
                   </div>
                   <div>
                     <div class="custom-progress">
-                      <mat-progress-bar mode="determinate" color="accent" value="{{(mission.progress.progress/mission.missionInfo.target)*100}}"></mat-progress-bar>
-                      <span>{{mission.progress.progress}}/{{mission.missionInfo.target}}</span>
+                      <mat-progress-bar
+                        mode="determinate"
+                        color="accent"
+                        value="{{
+                          (mission.progress.progress /
+                            mission.missionInfo.target) *
+                            100
+                        }}"></mat-progress-bar>
+                      <span
+                        >{{ mission.progress.progress }}/{{
+                          mission.missionInfo.target
+                        }}</span
+                      >
                     </div>
                   </div>
                   <div>
-                    <span i18n>{{ 'missions.completedtimes' | translate :{value: mission.progress.completedTimes} }}</span>
+                    <span i18n>{{
+                      'missions.completedtimes'
+                        | translate: { value: mission.progress.completedTimes }
+                    }}</span>
                   </div>
                   <div class="mission-data">
                     <ng-container *ngIf="mission.missionInfo.repeatable">
-                                  <span class="mission-chip">
-                                          <i class="material-icons">repeat</i>
-                                      <span>
-                                        {{mission.missionInfo.frequency?.localized}}
-                                      </span>
-                                  </span>
+                      <span class="mission-chip">
+                        <i class="material-icons">repeat</i>
+                        <span>
+                          {{ mission.missionInfo.frequency?.localized }}
+                        </span>
+                      </span>
                     </ng-container>
-                    <span class="mission-chip ">
-                                  {{mission.missionInfo.xp}}
-                              </span>
+                    <span class="mission-chip">
+                      {{ mission.missionInfo.xp }}
+                    </span>
                   </div>
                 </div>
               </div>

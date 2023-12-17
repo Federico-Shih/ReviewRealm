@@ -1,25 +1,21 @@
-import {NgModule} from '@angular/core';
-import {CommonModule} from '@angular/common';
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
 
-import {MainFeedRoutingModule} from './main-feed-routing.module';
-import {MainFeedPageComponent} from './feature/main-feed-page/main-feed-page.component';
-import {MatButtonToggleModule} from "@angular/material/button-toggle";
-import {TranslateModule} from "@ngx-translate/core";
-import {MatIconModule} from "@angular/material/icon";
-import {ReactiveFormsModule} from "@angular/forms";
-import {MatGridListModule} from "@angular/material/grid-list";
-import {SharedModule} from "../shared/shared.module";
-import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
-import {RecommendationsPageComponent} from './feature/recommendations-page/recommendations-page.component';
-import {GamesModule} from "../games/games.module";
-import {MatButtonModule} from "@angular/material/button";
-
+import { MainFeedRoutingModule } from './main-feed-routing.module';
+import { MainFeedPageComponent } from './feature/main-feed-page/main-feed-page.component';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { TranslateModule } from '@ngx-translate/core';
+import { MatIconModule } from '@angular/material/icon';
+import { ReactiveFormsModule } from '@angular/forms';
+import { MatGridListModule } from '@angular/material/grid-list';
+import { SharedModule } from '../shared/shared.module';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { RecommendationsPageComponent } from './feature/recommendations-page/recommendations-page.component';
+import { GamesModule } from '../games/games.module';
+import { MatButtonModule } from '@angular/material/button';
 
 @NgModule({
-  declarations: [
-    MainFeedPageComponent,
-    RecommendationsPageComponent
-  ],
+  declarations: [MainFeedPageComponent, RecommendationsPageComponent],
   imports: [
     CommonModule,
     MainFeedRoutingModule,
@@ -31,8 +27,7 @@ import {MatButtonModule} from "@angular/material/button";
     SharedModule,
     MatProgressSpinnerModule,
     GamesModule,
-    MatButtonModule
-  ]
+    MatButtonModule,
+  ],
 })
-export class MainFeedModule {
-}
+export class MainFeedModule {}

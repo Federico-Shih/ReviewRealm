@@ -1,6 +1,6 @@
-import {ComponentFixture, TestBed} from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import {GameDetailPageComponent} from './game-detail-page.component';
+import { GameDetailPageComponent } from './game-detail-page.component';
 
 describe('GameDetailPageComponent', () => {
   let component: GameDetailPageComponent;
@@ -8,7 +8,7 @@ describe('GameDetailPageComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [GameDetailPageComponent]
+      declarations: [GameDetailPageComponent],
     });
     fixture = TestBed.createComponent(GameDetailPageComponent);
     component = fixture.componentInstance;

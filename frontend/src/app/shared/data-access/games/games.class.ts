@@ -1,7 +1,6 @@
-import {Difficulty, Platform} from "../shared.enums";
-import {GameResponse, GameResponseLinks} from "../shared.responses";
-import {Genre} from "../enums/enums.class";
-
+import { Difficulty, Platform } from '../shared.enums';
+import { GameResponse, GameResponseLinks } from '../shared.responses';
+import { Genre } from '../enums/enums.class';
 
 export class GameLinks {
   self: string;
@@ -13,8 +12,16 @@ export class GameLinks {
   image: string;
   genres: string;
 
-  constructor(self: string, reviews: string, image: string, genres: string, userReview?: string,reviewsExcludingUser?:string, addToFavoriteGames?:
-    string, deleteFromFavoriteGames?: string) {
+  constructor(
+    self: string,
+    reviews: string,
+    image: string,
+    genres: string,
+    userReview?: string,
+    reviewsExcludingUser?: string,
+    addToFavoriteGames?: string,
+    deleteFromFavoriteGames?: string
+  ) {
     this.self = self;
     this.reviews = reviews;
     this.userReview = userReview;
@@ -26,23 +33,25 @@ export class GameLinks {
   }
 
   static fromResponse({
-                        self,
-                        reviews,
-                        userReview,
-                        reviewsExcludingUser,
-                        addToFavoriteGames,
-                        deleteFromFavoriteGames,
-                        image,
-                        genres
-                      }: GameResponseLinks): GameLinks {
-    return new GameLinks(self,
+    self,
+    reviews,
+    userReview,
+    reviewsExcludingUser,
+    addToFavoriteGames,
+    deleteFromFavoriteGames,
+    image,
+    genres,
+  }: GameResponseLinks): GameLinks {
+    return new GameLinks(
+      self,
       reviews,
       image,
       genres,
       userReview,
       reviewsExcludingUser,
       addToFavoriteGames,
-      deleteFromFavoriteGames);
+      deleteFromFavoriteGames
+    );
   }
 }
 
@@ -64,22 +73,24 @@ export class Game {
   links: GameLinks;
   genres?: Genre[];
 
-  constructor(id: number,
-              name: string,
-              description: string,
-              developer: string,
-              publisher: string,
-              publishDate: string,
-              ratingSum: number,
-              reviewCount: number,
-              isFavourite: boolean,
-              links: GameLinks,
-              averageDifficulty?: Difficulty,
-              averagePlatform?: Platform,
-              averageGameTime?: number,
-              replayability?: number,
-              completability?: number,
-              genres?: Genre[]) {
+  constructor(
+    id: number,
+    name: string,
+    description: string,
+    developer: string,
+    publisher: string,
+    publishDate: string,
+    ratingSum: number,
+    reviewCount: number,
+    isFavourite: boolean,
+    links: GameLinks,
+    averageDifficulty?: Difficulty,
+    averagePlatform?: Platform,
+    averageGameTime?: number,
+    replayability?: number,
+    completability?: number,
+    genres?: Genre[]
+  ) {
     this.id = id;
     this.name = name;
     this.description = description;

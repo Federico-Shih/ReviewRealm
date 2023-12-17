@@ -1,27 +1,27 @@
-.form-container{
+.form-container {
   height: 96%;
   width: 96%;
   background-color: var(--color-surface);
   color: white;
   margin: 2%;
   padding: 2%;
-  .header{
+  .header {
     font-size: 2rem;
     margin-bottom: 1rem;
   }
 
-  .fields{
+  .fields {
     display: flex;
     flex-direction: column;
     gap: 10px;
   }
-  textarea{
+  textarea {
     resize: none;
     height: 200px !important;
     overflow-y: auto !important;
   }
 }
-.input-field{
+.input-field {
   position: relative;
   margin-bottom: 1rem;
   width: 100%;
@@ -44,12 +44,12 @@
   border-radius: 10px;
   color: white;
 }
-img{
-    width: 100%;
-    height: 200px;
-    object-fit: contain;
+img {
+  width: 100%;
+  height: 200px;
+  object-fit: contain;
 }
-.full-width{
+.full-width {
   width: 100%;
 }
 .submit-btn {
@@ -66,8 +66,8 @@ img{
   overflow-wrap: anywhere;
   word-wrap: anywhere;
 }
-.grid{
-  display:flex;
+.grid {
+  display: flex;
   flex-direction: row;
   justify-content: space-between;
   width: 100%;
@@ -75,21 +75,21 @@ img{
   align-items: flex-start;
   gap: 5px;
 }
-.grid-item{
-  width:45%;
+.grid-item {
+  width: 45%;
   height: 100%;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
 }
-.footer-button{
-    width: 100%;
-    display: flex;
-    justify-content: flex-end;
+.footer-button {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
 
-    gap: 10px;
+  gap: 10px;
 }
-.text-icon{
+.text-icon {
   display: flex;
   align-items: baseline;
   justify-content: center;

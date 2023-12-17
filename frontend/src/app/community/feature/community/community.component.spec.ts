@@ -8,7 +8,7 @@ describe('CommunityComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [CommunityComponent]
+      declarations: [CommunityComponent],
     });
     fixture = TestBed.createComponent(CommunityComponent);
     component = fixture.componentInstance;

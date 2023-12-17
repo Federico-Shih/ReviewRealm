@@ -2,25 +2,43 @@
   <div class="form-container">
     <section *ngIf="!(initialLoading | async); else initialLoadingSpinner">
       <mat-card class="card">
-        <mat-card-header class="card-header">{{ 'validate-user-form.header' | translate }}</mat-card-header>
+        <mat-card-header class="card-header">{{
+          'validate-user-form.header' | translate
+        }}</mat-card-header>
         <mat-card-content class="card-content">
           <form (ngSubmit)="onSubmit()" [formGroup]="form" class="text-fields">
             <mat-form-field class="full-width">
-              <input formControlName="email" matInput placeholder="{{ 'validate-user-form.email' | translate }}">
-              <mat-error
-                *ngIf="form.controls.email.hasError('required')">{{ 'validate-user-form.email-required' | translate }}</mat-error>
-              <mat-error
-                *ngIf="form.controls.email.hasError('email')">{{ 'validate-user-form.email-invalid' | translate }}</mat-error>
+              <input
+                formControlName="email"
+                matInput
+                placeholder="{{ 'validate-user-form.email' | translate }}" />
+              <mat-error *ngIf="form.controls.email.hasError('required')">{{
+                'validate-user-form.email-required' | translate
+              }}</mat-error>
+              <mat-error *ngIf="form.controls.email.hasError('email')">{{
+                'validate-user-form.email-invalid' | translate
+              }}</mat-error>
             </mat-form-field>
             <mat-form-field class="full-width">
-              <input formControlName="token" matInput placeholder="{{ 'validate-user-form.token' | translate }}">
-              <mat-error
-                *ngIf="form.controls.token.hasError('required')">{{ 'validate-user-form.token-required' | translate }}</mat-error>
+              <input
+                formControlName="token"
+                matInput
+                placeholder="{{ 'validate-user-form.token' | translate }}" />
+              <mat-error *ngIf="form.controls.token.hasError('required')">{{
+                'validate-user-form.token-required' | translate
+              }}</mat-error>
             </mat-form-field>
-            <mat-error *ngIf="form.hasError('unknown')">{{ 'validate-user-form.token-unknown' | translate }}</mat-error>
+            <mat-error *ngIf="form.hasError('unknown')">{{
+              'validate-user-form.token-unknown' | translate
+            }}</mat-error>
 
-            <button class="submit-btn" color="accent" mat-raised-button type="submit" [disabled]="(loading | async)===true">
-              <span *ngIf="!(loading | async); else loadingSpinner">
+            <button
+              class="submit-btn"
+              color="accent"
+              mat-raised-button
+              type="submit"
+              [disabled]="(loading | async) === true">
+              <span *ngIf="(loading | async) === false; else loadingSpinner">
                 {{ 'validate-user-form.submit' | translate }}
               </span>
               <ng-template #loadingSpinner>

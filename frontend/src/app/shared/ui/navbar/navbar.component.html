@@ -1,56 +1,66 @@
 <mat-toolbar class="navbar" color="primary">
   <a class="navbar-icon-container" routerLink="/">
-    <img alt="Review Realm" class="icon" height="630" src="/assets/review_realm_logo_white_630px.png"/>
-    <label class="navbar-text">
-      Review Realm
-    </label>
+    <img
+      alt="Review Realm"
+      class="icon"
+      height="630"
+      src="/assets/review_realm_logo_white_630px.png" />
+    <p class="navbar-text">Review Realm</p>
   </a>
 
   <div class="navbar-search">
-    <app-search-bar (search)="search.emit($event)" (submit)="submit.emit()"
-                    [label]="'navbar.search' | translate"></app-search-bar>
+    <app-search-bar
+      (search)="search.emit($event)"
+      (searchSubmit)="searchSubmit.emit()"
+      [label]="'navbar.search' | translate"></app-search-bar>
   </div>
   <div class="spacer"></div>
   <section class="action-container">
     <a *ngIf="isLoggedIn" routerLink="/for-you">
-      <div i18n>
+      <div id="for-you-link">
         {{ 'navbar.for-you' | translate }}
       </div>
     </a>
     <a routerLink="/games">
-      <div i18n>
+      <div id="games-link">
         {{ 'navbar.games-link' | translate }}
       </div>
     </a>
     <a routerLink="/">
-      <div i18n>
+      <div id="reviews-link">
         {{ 'navbar.reviews-link' | translate }}
       </div>
     </a>
     <a routerLink="/community">
-      <div i18n>
+      <div id="community-link">
         {{ 'navbar.community-link' | translate }}
       </div>
     </a>
     <ng-container *ngIf="!isLoggedIn">
       <a routerLink="/login">
-        <div i18n>
+        <div id="login-link">
           {{ 'navbar.login' | translate }}
         </div>
       </a>
       <a routerLink="/register">
-        <div i18n>
+        <div id="register-link">
           {{ 'navbar.register' | translate }}
         </div>
       </a>
     </ng-container>
-    <button *ngIf="isLoggedIn" [matMenuTriggerFor]="menu" class="menu-button" color="accent" mat-raised-button>
-      {{ 'navbar.welcome' | translate:{value: user?.username} }}
+    <button
+      id="logged-in-button"
+      *ngIf="isLoggedIn"
+      [matMenuTriggerFor]="menu"
+      class="menu-button"
+      color="accent"
+      mat-raised-button>
+      {{ 'navbar.welcome' | translate: { value: user?.username } }}
       <mat-icon>arrow_drop_down</mat-icon>
     </button>
     <mat-menu #menu="matMenu">
       <div class="menu">
-        <button mat-menu-item routerLink="/profile/{{user?.id}}">
+        <button mat-menu-item routerLink="/profile/{{ user?.id }}">
           <mat-icon>account_circle</mat-icon>
           <span>{{ 'navbar.profile' | translate }}</span>
         </button>

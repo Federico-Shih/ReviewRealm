@@ -1,22 +1,28 @@
-import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
-import {SortDirection} from "../../data-access/shared.enums";
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  Output,
+} from '@angular/core';
+import { SortDirection } from '../../data-access/shared.enums';
 
 export type EnumType<T> = {
   translateKey: string;
   selectKey: T;
-}
+};
 
 @Component({
   selector: 'app-filter-drawer',
   templateUrl: './filter-drawer.component.html',
   styleUrls: ['./filter-drawer.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FilterDrawerComponent<T> {
-  @Input({required: true})
+  @Input({ required: true })
   sortTypes: EnumType<T>[] = [];
 
-  @Input({required: true})
+  @Input({ required: true })
   defaultSort!: T;
 
   @Input()

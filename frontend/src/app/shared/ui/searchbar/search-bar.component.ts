@@ -1,25 +1,32 @@
-import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  Output,
+} from '@angular/core';
+import { subscribeOn } from 'rxjs';
 
 @Component({
   selector: 'app-search-bar',
   templateUrl: './search-bar.component.html',
   styleUrls: ['./search-bar.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SearchBarComponent {
-  text: string = '';
+  text = '';
 
   @Input()
-  label: string = '';
+  label = '';
 
   @Input()
-  value: string = '';
+  value = '';
 
   @Output()
   search = new EventEmitter<string>();
 
   @Output()
-  submit = new EventEmitter();
+  searchSubmit = new EventEmitter();
 
   onChange(event: Event) {
     const value = (event.target as HTMLInputElement).value;
@@ -28,6 +35,8 @@ export class SearchBarComponent {
   }
 
   onSubmit() {
-    this.submit.emit();
+    this.searchSubmit.emit();
   }
+
+  protected readonly subscribeOn = subscribeOn;
 }

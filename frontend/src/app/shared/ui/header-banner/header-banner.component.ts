@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 
 type HeaderBannerType = 'default' | 'warning';
 
@@ -6,23 +6,23 @@ type HeaderBannerType = 'default' | 'warning';
   selector: 'app-header-banner',
   templateUrl: './header-banner.component.html',
   styleUrls: ['./header-banner.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HeaderBannerComponent {
   @Input()
-  title: string = '';
+  title = '';
 
-  @Input({required: true})
+  @Input({ required: true })
   icon!: string;
 
   @Input()
-  buttonLabel: string = '';
+  buttonLabel = '';
 
   @Input()
-  routerLink: string = '';
+  routerLink = '';
 
   @Input()
-  description: string = '';
+  description = '';
 
   @Input()
   bannerType: HeaderBannerType = 'default';

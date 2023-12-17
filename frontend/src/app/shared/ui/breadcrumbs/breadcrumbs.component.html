@@ -1,11 +1,13 @@
 <div class="breadcrumbs">
-    <ng-container *ngFor="let breadcrumb of breadcrumbs; let last = last">
-      <ng-container *ngIf="!last">
-        <a [routerLink]="breadcrumb.link" class="breadcrumb">{{ breadcrumb.name }}</a>
-        <mat-icon class="breadcrumbs-arrow" fontIcon="chevron_right"/>
-      </ng-container>
-      <ng-container *ngIf="last" >
-        <span class="breadcrumb-last">{{ breadcrumb.name }}</span>
-      </ng-container>
+  <ng-container *ngFor="let breadcrumb of breadcrumbs; let last = last">
+    <ng-container *ngIf="!last">
+      <a [routerLink]="breadcrumb.link" class="breadcrumb">{{
+        breadcrumb.name
+      }}</a>
+      <mat-icon class="breadcrumbs-arrow" fontIcon="chevron_right" />
     </ng-container>
+    <ng-container *ngIf="last">
+      <span class="breadcrumb-last">{{ breadcrumb.name }}</span>
+    </ng-container>
+  </ng-container>
 </div>

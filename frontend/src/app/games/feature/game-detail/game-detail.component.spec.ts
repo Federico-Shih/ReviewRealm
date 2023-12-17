@@ -8,7 +8,7 @@ describe('GameDetailComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [GameDetailComponent]
+      declarations: [GameDetailComponent],
     });
     fixture = TestBed.createComponent(GameDetailComponent);
     component = fixture.componentInstance;

@@ -1,10 +1,12 @@
 <div class="centered-container">
-  <span class="header">{{'not-found.header' | translate }}</span>
-  <span class="sub-header">{{'not-found.description' | translate}}</span>
-  <span class="sub-header">{{'not-found.solution' | translate}}</span>
+  <span class="header">{{ 'not-found.header' | translate }}</span>
+  <span class="sub-header">{{ 'not-found.description' | translate }}</span>
+  <span class="sub-header">{{ 'not-found.solution' | translate }}</span>
   <div>
     <a routerLink="/">
-      <img src="assets/gobackportal.png" alt="{{'not-found.image' | translate}}">
+      <img
+        src="assets/gobackportal.png"
+        alt="{{ 'not-found.image' | translate }}" />
     </a>
   </div>
 </div>

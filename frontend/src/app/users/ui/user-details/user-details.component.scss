@@ -1,10 +1,9 @@
-
 .top-container {
   display: flex;
   flex-direction: row;
   justify-content: center;
   margin-left: 15%;
-  width:70%;
+  width: 70%;
   margin-top: 20px;
   padding: 10px;
 }
@@ -23,7 +22,6 @@
   border-radius: 50%;
   margin: 0 5%;
 }
-
 
 .profile-info-panel {
   display: flex;
@@ -59,8 +57,8 @@
   margin-top: 5px;
 }
 
-.container{
-  width:70%
+.container {
+  width: 70%;
 }
 
 .f-row {
@@ -112,11 +110,11 @@
 }
 
 .green-text {
-  color: var(contrast) !important /*Todo arreglar esto*/
+  color: var(contrast) !important; /*Todo arreglar esto*/
 }
 
 .red-text {
-  color: var(contrast) !important /*Todo arreglar esto*/
+  color: var(contrast) !important; /*Todo arreglar esto*/
 }
 
 .profile-preferences {
@@ -141,7 +139,7 @@
 }
 
 .chip-small-inverted {
-  background: #DDD7FF;
+  background: #ddd7ff;
   color: var(--color-surface);
   border: 1px solid var(--color-primary-variant-1);
   border-radius: 12px;
@@ -151,7 +149,7 @@
   white-space: nowrap;
 }
 
-.clickable-chip{
+.clickable-chip {
   cursor: pointer;
 }
 
@@ -162,4 +160,3 @@
 .f-gap-1 {
   gap: 1% !important;
 }
-

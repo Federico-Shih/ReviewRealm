@@ -1,10 +1,17 @@
 <mat-card class="card-container">
-  <mat-card-header class="card-header">{{'login-form.login-header' | translate }}</mat-card-header>
-  <mat-card-content >
+  <mat-card-header class="card-header">{{
+    'login-form.login-header' | translate
+  }}</mat-card-header>
+  <mat-card-content>
     <form class="input-container">
       <div class="text-fields">
         <mat-form-field>
-          <input [formControl]="email" matInput name="email" placeholder="Email" type="email"/>
+          <input
+            [formControl]="email"
+            matInput
+            name="email"
+            placeholder="Email"
+            type="email" />
           <mat-error *ngIf="errorMessage !== null"></mat-error>
           <mat-error *ngIf="email.invalid && email.touched">
             <ng-container *ngIf="email.errors?.['required']">
@@ -16,7 +23,12 @@
           </mat-error>
         </mat-form-field>
         <mat-form-field>
-          <input [formControl]="password" matInput name="password" placeholder="Password" type="password"/>
+          <input
+            [formControl]="password"
+            matInput
+            name="password"
+            placeholder="Password"
+            type="password" />
           <mat-error *ngIf="password.invalid && password.touched">
             <ng-container *ngIf="password.errors?.['required']">
               {{ 'login-form.password-required' | translate }}
@@ -26,26 +38,35 @@
       </div>
 
       <mat-error [style.display]="errorMessage !== null ? 'flex' : 'none'">
-        <ng-container *ngIf="errorMessage !== null">{{ errorMessage | translate }}</ng-container>
+        <ng-container *ngIf="errorMessage !== null">{{
+          errorMessage | translate
+        }}</ng-container>
       </mat-error>
       <span>
-      {{ 'login-form.register-label' | translate }}
+        {{ 'login-form.register-label' | translate }}
         <a class="router-link" routerLink="/register">
-        {{ 'login-form.register-link' | translate}}
-      </a>
-    </span>
+          {{ 'login-form.register-link' | translate }}
+        </a>
+      </span>
       <span>
-      {{ 'login-form.forgot-password-label' | translate }}
+        {{ 'login-form.forgot-password-label' | translate }}
         <a class="router-link" routerLink="/login/recover-password">
-        {{ 'login-form.forgot-password' | translate}}
-      </a>
-    </span>
-      <button (click)="login()" class="submit-btn" color="accent" i18n mat-raised-button type="submit" [disabled]="loading === true">
-        <ng-container *ngIf="!loading else loadingTemplate">
-        <span class="btn-label">
-          {{ 'login-form.login-btn' | translate | uppercase }}
-          <mat-icon>send</mat-icon>
-        </span>
+          {{ 'login-form.forgot-password' | translate }}
+        </a>
+      </span>
+      <button
+        (click)="login()"
+        class="submit-btn"
+        color="accent"
+        i18n
+        mat-raised-button
+        type="submit"
+        [disabled]="loading === true">
+        <ng-container *ngIf="!loading; else loadingTemplate">
+          <span class="btn-label">
+            {{ 'login-form.login-btn' | translate | uppercase }}
+            <mat-icon>send</mat-icon>
+          </span>
         </ng-container>
         <ng-template #loadingTemplate>
           <mat-spinner diameter="30"></mat-spinner>

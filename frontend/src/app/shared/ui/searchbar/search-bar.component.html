@@ -1,5 +1,9 @@
 <div class="navbar-search">
-  <i (click)="onSubmit()" class="material-icons prefix icon-prefix clickable">
+  <i
+    tabindex="0"
+    (keyup)="onSubmit()"
+    (click)="onSubmit()"
+    class="material-icons prefix icon-prefix clickable">
     search
   </i>
   <input
@@ -9,6 +13,5 @@
     (keyup.enter)="onSubmit()"
     (submit)="onSubmit()"
     [placeholder]="label"
-    [value]="value"
-  />
+    [value]="value" />
 </div>

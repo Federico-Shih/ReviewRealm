@@ -1,17 +1,29 @@
 <div class="dialog">
   <h3 class="title">{{'review.reportdialog.title' | translate}}</h3>
-  <mat-radio-group
-    [(ngModel)]="reportReason">
+  <mat-radio-group [(ngModel)]="reportReason">
     <div class="report-radio-group">
       <ng-container *ngFor="let reason of reasons">
         <div>
-          <mat-radio-button class="report-radio-button" [value]="reason">{{ReasonToLocale(reason) | translate}}</mat-radio-button>
+          <mat-radio-button class="report-radio-button" [value]="reason"
+            >{{ReasonToLocale(reason) | translate}}</mat-radio-button
+          >
         </div>
       </ng-container>
     </div>
   </mat-radio-group>
   <mat-dialog-actions align="end">
-    <button mat-raised-button [mat-dialog-close]="null" class="button flat-button">{{'cancel'}}</button>
-    <button mat-raised-button [mat-dialog-close]="reportReason" cdkFocusInitial class="button accent-button">{{'review.report' | translate}}</button>
+    <button
+      mat-raised-button
+      [mat-dialog-close]="null"
+      class="button flat-button">
+      {{'cancel'}}
+    </button>
+    <button
+      mat-raised-button
+      [mat-dialog-close]="reportReason"
+      cdkFocusInitial
+      class="button accent-button">
+      {{'review.report' | translate}}
+    </button>
   </mat-dialog-actions>
 </div>

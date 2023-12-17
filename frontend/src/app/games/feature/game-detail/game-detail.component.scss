@@ -5,47 +5,47 @@
   justify-content: center;
   align-items: center;
 }
-.page-header{
+.page-header {
   display: flex;
   justify-content: space-between;
   align-items: baseline !important;
   margin-bottom: 20px;
 }
-.breadcrumb{
+.breadcrumb {
   width: 80%;
 }
-.mod-buttons{
+.mod-buttons {
   width: 20%;
   display: flex;
-  justify-content: space-evenly ;
+  justify-content: space-evenly;
   align-items: baseline !important;
 }
-.details-container{
+.details-container {
   width: 96%;
-  margin:2%;
+  margin: 2%;
   display: flex;
   justify-content: space-between;
 }
-.genres{
+.genres {
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
   align-items: baseline;
   flex-wrap: nowrap;
 }
-.chip{
+.chip {
   background: var(--color-surface) !important; //#13112D;
   border: 1px solid var(--color-primary-variant-1) !important; //#444155
   font-size: 12px;
   font-weight: 700;
   white-space: nowrap;
 }
-.title{
+.title {
   font-size: 36px;
   font-weight: 600;
   white-space: normal;
 }
-.details{
+.details {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -54,12 +54,12 @@
   padding-right: 2%;
   margin-bottom: 2%;
 }
-.description{
+.description {
   font-size: 16px;
   font-weight: 400;
   overflow: hidden;
 }
-.card{
+.card {
   display: flex;
   flex-direction: column;
   justify-content: space-around;
@@ -69,7 +69,7 @@
   border-radius: 25px;
   width: 30%;
 }
-.stat-card{
+.stat-card {
   width: 350px;
   height: 115px;
   display: flex;
@@ -78,47 +78,47 @@
   border-radius: 25px;
   align-items: center;
   justify-content: center;
-  .content{
+  .content {
     display: flex;
     flex-direction: column;
     gap: 1% !important;
     justify-content: flex-start;
     align-items: center;
-    .header{
+    .header {
       color: white;
       font-size: 18px;
       font-weight: 600; /* semibold */
       margin-bottom: 2px;
     }
-    .text{
+    .text {
       font-size: 24px;
       font-weight: 700; /* bold */
       color: white;
     }
-    .small-number{
+    .small-number {
       font-size: 18px;
       font-weight: 400; /* regular */
     }
   }
 }
-img{
+img {
   width: 100%;
   height: 200px;
   object-fit: contain;
 }
-.statistics-section{
+.statistics-section {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   width: 96%;
-  margin: 2%
+  margin: 2%;
 }
-.card-text{
+.card-text {
   font-size: 14px;
   font-weight: 400;
 }
 
-.statistics-list{
+.statistics-list {
   display: flex;
   flex-direction: row;
   justify-content: space-evenly;
@@ -128,7 +128,7 @@ img{
   margin-top: 2%;
   gap: 1% !important;
 }
-.review-section{
+.review-section {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -137,47 +137,47 @@ img{
   margin: 2%;
 }
 
-.header{
+.header {
   font-size: 30px;
   font-weight: 600;
   white-space: nowrap;
   margin-right: 10px;
 }
-.review-header{
+.review-header {
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
   align-items: baseline;
-  width: 100%
-}
-.full-width{
   width: 100%;
 }
-.margin-y-2{
+.full-width {
+  width: 100%;
+}
+.margin-y-2 {
   margin-top: 2%;
   margin-bottom: 2%;
 }
-.f-row{
+.f-row {
   display: flex;
   flex-direction: row;
 }
-.no-reviews{
+.no-reviews {
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
   align-items: center;
-  .text{
-      font-size: 20px;
-      font-weight: 500;
+  .text {
+    font-size: 20px;
+    font-weight: 500;
   }
 }
-.genres-header{
+.genres-header {
   font-size: 24px;
   font-weight: 600;
   white-space: nowrap;
   margin-right: 10px;
 }
-.genres-row{
+.genres-row {
   display: flex;
   align-items: flex-start;
   gap: 5px;
@@ -205,11 +205,11 @@ img{
     -webkit-tap-highlight-color: transparent;
     vertical-align: middle;
     z-index: 1;
-    transition: .3s ease-out;
+    transition: 0.3s ease-out;
     text-decoration: none;
     color: #fff;
     text-align: center;
-    letter-spacing: .5px;
+    letter-spacing: 0.5px;
     border: none;
     border-radius: 2px;
     height: 36px;

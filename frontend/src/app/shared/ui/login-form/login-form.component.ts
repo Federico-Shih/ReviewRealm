@@ -1,6 +1,6 @@
-import {Component, EventEmitter, Input, Output} from '@angular/core';
-import {AuthenticationDto} from "../../data-access/authentication/authentication.dtos";
-import {FormControl, Validators} from "@angular/forms";
+import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { AuthenticationDto } from '../../data-access/authentication/authentication.dtos';
+import { FormControl, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-login-form',
@@ -21,9 +21,16 @@ export class LoginFormComponent {
   loginSubmit = new EventEmitter<AuthenticationDto>();
 
   login() {
-    if (this.email.value === null || this.email.invalid || this.password.invalid || this.password.value === null) {
+    if (
+      this.email.value === null ||
+      this.email.invalid ||
+      this.password.invalid ||
+      this.password.value === null
+    ) {
       return;
     }
-    this.loginSubmit.emit(AuthenticationDto.of(this.email.value, this.password.value));
+    this.loginSubmit.emit(
+      AuthenticationDto.of(this.email.value, this.password.value)
+    );
   }
 }

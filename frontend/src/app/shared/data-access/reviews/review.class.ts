@@ -1,7 +1,11 @@
-import {Difficulty, Platform} from "../shared.enums";
-import {ReviewFeedbackResponse, ReviewLinksResponse, ReviewResponse} from "../shared.responses";
-import {Game} from "../games/games.class";
-import {User} from "../users/users.class";
+import { Difficulty, Platform } from '../shared.enums';
+import {
+  ReviewFeedbackResponse,
+  ReviewLinksResponse,
+  ReviewResponse,
+} from '../shared.responses';
+import { Game } from '../games/games.class';
+import { User } from '../users/users.class';
 
 export class ReviewLinks {
   feedback?: string;
@@ -11,7 +15,14 @@ export class ReviewLinks {
   author: string;
   self: string;
 
-  private constructor(game: string, author: string, self: string, feedback?: string, giveFeedback?: string, report?: string) {
+  private constructor(
+    game: string,
+    author: string,
+    self: string,
+    feedback?: string,
+    giveFeedback?: string,
+    report?: string
+  ) {
     this.feedback = feedback;
     this.game = game;
     this.author = author;
@@ -20,15 +31,22 @@ export class ReviewLinks {
     this.report = report;
   }
 
-  static fromResponse({feedback, game, author, self, giveFeedback, report}: ReviewLinksResponse): ReviewLinks {
+  static fromResponse({
+    feedback,
+    game,
+    author,
+    self,
+    giveFeedback,
+    report,
+  }: ReviewLinksResponse): ReviewLinks {
     return new ReviewLinks(game, author, self, feedback, giveFeedback, report);
   }
 }
 
 type GameLength = {
-    units: string;
-    value: number;
-}
+  units: string;
+  value: number;
+};
 
 export class Review {
   id: number;
@@ -51,22 +69,25 @@ export class Review {
   game?: Game;
   author?: User;
 
-
-  private constructor(id: number,
-                      title: string,
-                      content: string,
-                      rating: number,
-                      authorId: number,
-                      gameId: number,
-                      difficulty: Difficulty,
-                      gameLength: number,
-                      platform: Platform,
-                      likes: number,
-                      dislikes: number,
-                      completed: boolean,
-                      replayable: boolean,
-                      created: string,
-                      links: ReviewLinks, game?: Game, author?: User) {
+  private constructor(
+    id: number,
+    title: string,
+    content: string,
+    rating: number,
+    authorId: number,
+    gameId: number,
+    difficulty: Difficulty,
+    gameLength: number,
+    platform: Platform,
+    likes: number,
+    dislikes: number,
+    completed: boolean,
+    replayable: boolean,
+    created: string,
+    links: ReviewLinks,
+    game?: Game,
+    author?: User
+  ) {
     this.id = id;
     this.title = title;
     this.content = content;
@@ -86,24 +107,29 @@ export class Review {
     this.created = new Date(created);
   }
 
-  static fromResponse({
-                        id,
-                        title,
-                        content,
-                        rating,
-                        authorId,
-                        gameId,
-                        difficulty,
-                        gameLength,
-                        platform,
-                        likes,
-                        dislikes,
-                        completed,
-                        replayable,
-                        links,
-                        created
-                      }: ReviewResponse, game: Game, user: User): Review {
-    return new Review(id,
+  static fromResponse(
+    {
+      id,
+      title,
+      content,
+      rating,
+      authorId,
+      gameId,
+      difficulty,
+      gameLength,
+      platform,
+      likes,
+      dislikes,
+      completed,
+      replayable,
+      links,
+      created,
+    }: ReviewResponse,
+    game: Game,
+    user: User
+  ): Review {
+    return new Review(
+      id,
       title,
       content,
       rating,
@@ -124,50 +150,50 @@ export class Review {
   }
 
   getPopularity(): number {
-      return this.likes - this.dislikes;
+    return this.likes - this.dislikes;
   }
 
   getGameLengthInUnits(): GameLength | null {
-      if (this.gameLength === null) {
-          return null
-      }
-      let ans: GameLength;
-      if (this.gameLength > 3600) {
-          ans = {
-              units: 'hours',
-              value: this.gameLength / 3600.0
-          }
-      } else {
-          ans = {
-              units: 'minutes',
-              value: this.gameLength / 60.0
-          }
-      }
-      return ans;
+    if (this.gameLength === null) {
+      return null;
+    }
+    let ans: GameLength;
+    if (this.gameLength > 3600) {
+      ans = {
+        units: 'hours',
+        value: this.gameLength / 3600.0,
+      };
+    } else {
+      ans = {
+        units: 'minutes',
+        value: this.gameLength / 60.0,
+      };
+    }
+    return ans;
   }
 }
 
 export enum FeedbackType {
-    LIKE = "LIKE",
-    DISLIKE = "DISLIKE"
+  LIKE = 'LIKE',
+  DISLIKE = 'DISLIKE',
 }
 
 export class Feedback {
-    feedback: FeedbackType | null;
+  feedback: FeedbackType | null;
 
-    isLike(): boolean {
-        return this.feedback === FeedbackType.LIKE;
-    }
+  isLike(): boolean {
+    return this.feedback === FeedbackType.LIKE;
+  }
 
-    isDislike(): boolean {
-        return this.feedback === FeedbackType.DISLIKE;
-    }
+  isDislike(): boolean {
+    return this.feedback === FeedbackType.DISLIKE;
+  }
 
-    constructor(feedback: FeedbackType | null) {
-        this.feedback = feedback;
-    }
+  constructor(feedback: FeedbackType | null) {
+    this.feedback = feedback;
+  }
 
-    static fromResponse(reviewFeedbackDto: ReviewFeedbackResponse): Feedback {
-        return new Feedback(reviewFeedbackDto.feedbackType)
-    }
+  static fromResponse(reviewFeedbackDto: ReviewFeedbackResponse): Feedback {
+    return new Feedback(reviewFeedbackDto.feedbackType);
+  }
 }

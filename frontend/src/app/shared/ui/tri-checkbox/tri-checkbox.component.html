@@ -1,7 +1,6 @@
 <mat-checkbox
   (click)="check()"
-  [checked]="(value === undefined) ? false : !!value"
-  [indeterminate]="value === false"
->
+  [checked]="value === undefined ? false : !!value"
+  [indeterminate]="value === false">
   {{ label }}
 </mat-checkbox>
