@@ -405,7 +405,7 @@ public class GameDaoImplTest {
     public void testGetRecommendationsForUser() {
         //Setup user
         List<Integer> genres = Collections.singletonList(Genre.CASUAL.getId());
-        GameFilter filter = new GameFilterBuilder().withGameGenres(genres).withGamesToExclude(new ArrayList<>()).build();
+        GameFilter filter = new GameFilterBuilder().withGameGenres(genres).withGamesToExclude(Collections.emptyList()).build();
         Ordering<GameOrderCriteria> ordering = new Ordering<>(OrderDirection.DESCENDING, GameOrderCriteria.AVERAGE_RATING);
 
         List<Game> games = gameDao.findAll(Page.with(1,10),filter, ordering,null).getList();

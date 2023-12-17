@@ -13,10 +13,6 @@ public class ReportFilterBuilder {
 
     private ReportReason reason = null;
 
-    private LocalDateTime from = null;
-
-    private LocalDateTime to = null;
-
     private Long reportedUserId = null;
 
     private ReportState state = null;

@@ -72,7 +72,7 @@
     </div>
     <div class="container">
         <h3 th:text="#{email.suggestion.rejected.longtitle (${game})}"></h3>
-        <a th:href="@{{base}/game/submit(base=${webBaseUrl})}">
+        <a th:href="${webBaseUrl+'/games/submit'}">
             <span class="goto-button" th:text="#{email.suggestion.rejected.tryagain}">
             </span>
         </a>

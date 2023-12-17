@@ -1,11 +1,14 @@
 package ar.edu.itba.paw.webapp.controller.forms;
 
+import ar.edu.itba.paw.webapp.controller.annotations.ExistentReviewId;
+
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 
 public class SubmitReportForm {
     @NotNull(message = "NotNull.property")
+    @ExistentReviewId
     private Long reviewId;
     @Pattern(regexp ="^(disrespectful|spam|irrelevant|spoiler|piracy|privacy)$", flags = Pattern.Flag.CASE_INSENSITIVE
     ,message = "Pattern.submitReport.cause")

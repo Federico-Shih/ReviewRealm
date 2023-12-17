@@ -79,7 +79,7 @@
         <div class="token-container">
             <h2 th:text="${token}"></h2>
         </div>
-        <a th:href="@{{base}/validate/{token}(base=${webBaseUrl},token=${token})}">
+        <a th:href="${webBaseUrl+'/register/validate/?token='+token+'&email='+email}">
             <span class="goto-button" th:text="#{email.validation.cta}">
             </span>
         </a>

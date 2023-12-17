@@ -91,12 +91,12 @@ public class ReviewController{
     @Produces(VndType.APPLICATION_REVIEW)
     @Consumes(VndType.APPLICATION_REVIEW_FORM)
     public Response createReview(@Valid @NotNull(message = "error.body.empty") final SubmitReviewForm form) throws ReviewAlreadyExistsException {
-        User author = AuthenticationHelper.getLoggedUser(userService);
+        long author = AuthenticationHelper.getLoggedUser(userService).getId();
         Review createdReview = reviewService.createReview(
                 form.getReviewTitle(),
                 form.getReviewContent(),
                 form.getReviewRating(),
-                author.getId(),
+                author,
                 form.getGameId(),
                 form.getDifficultyEnum(),
                 form.getGameLengthSeconds(),
@@ -106,17 +106,17 @@ public class ReviewController{
         );
         return Response
                 .created(uriInfo.getAbsolutePathBuilder().path("/reviews").path(createdReview.getId().toString()).build())
-                .entity(ReviewResponse.fromEntity(uriInfo, createdReview, author.getId()))
+                .entity(ReviewResponse.fromEntity(uriInfo, createdReview, author))
                 .build();
     }
 
     @DELETE
     @Path("{id:\\d+}")
     @PreAuthorize("@accessControl.checkReviewAuthorOwnerOrMod(#id)")
-    public Response deleteReview(@Valid @PathParam("id") long id) { // Todo: Hace falta el valid?
-        User loggedUser = AuthenticationHelper.getLoggedUser(userService);
+    public Response deleteReview(@PathParam("id") long id) {
+        long loggedUser = AuthenticationHelper.getLoggedUser(userService).getId();
 
-        if (!reviewService.deleteReviewById(id, loggedUser.getId())) {
+        if (!reviewService.deleteReviewById(id, loggedUser)) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
         return Response.ok().build();
@@ -126,11 +126,11 @@ public class ReviewController{
     @Path("{id:\\d+}")
     @Produces(VndType.APPLICATION_REVIEW)
     public Response getReviewById(@Valid @PathParam("id") final long id) {
-        Long activeUserId = AuthenticationHelper.getLoggedUser(userService) == null ? null: AuthenticationHelper.getLoggedUser(userService).getId();
-        Optional<Review> possibleReview = reviewService.getReviewById(id, activeUserId);
+        User activeUser = AuthenticationHelper.getLoggedUser(userService);
+        Optional<Review> possibleReview = reviewService.getReviewById(id, activeUser == null? null : activeUser.getId());
         if (!possibleReview.isPresent())
             return Response.status(Response.Status.NOT_FOUND).build();
-        return Response.ok(ReviewResponse.fromEntity(uriInfo, possibleReview.get(), activeUserId)).build();
+        return Response.ok(ReviewResponse.fromEntity(uriInfo, possibleReview.get(), activeUser == null? null: activeUser.getId())).build();
     }
 
 

@@ -15,7 +15,6 @@ import ar.edu.itba.paw.webapp.exceptions.CustomRuntimeException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
@@ -49,7 +48,7 @@ public class GenreController {
     @GET()
     @Path("{id:\\d+}")
     @Produces(VndType.APPLICATION_GENRE)
-    public Response getById(@PathParam("id") Integer id, @Context Request request) {
+    public Response getById(@PathParam("id") int id, @Context Request request) {
         return genreService.getGenreById(id)
                 .map(genre -> {
                     CacheControl cacheControl = CacheHelper.buildCacheControl(cacheMaxAge);

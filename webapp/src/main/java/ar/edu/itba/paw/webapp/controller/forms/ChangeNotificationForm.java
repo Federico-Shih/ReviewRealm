@@ -13,19 +13,19 @@ public class ChangeNotificationForm {
     @NotNull(message = "NotNull.property")
     private Boolean myReviewIsDeleted;
 
-    public Boolean getUserIFollowWritesReview() {
+    public boolean getUserIFollowWritesReview() {
         return userIFollowWritesReview;
     }
 
-    public void setUserIFollowWritesReview(Boolean userIFollowWritesReview) {
+    public void setUserIFollowWritesReview(boolean userIFollowWritesReview) {
         this.userIFollowWritesReview = userIFollowWritesReview;
     }
 
-    public Boolean getMyReviewIsDeleted() {
+    public boolean getMyReviewIsDeleted() {
         return myReviewIsDeleted;
     }
 
-    public void setMyReviewIsDeleted(Boolean myReviewIsDeleted) {
+    public void setMyReviewIsDeleted(boolean myReviewIsDeleted) {
         this.myReviewIsDeleted = myReviewIsDeleted;
     }
 

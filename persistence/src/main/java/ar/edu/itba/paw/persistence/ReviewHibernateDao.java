@@ -22,10 +22,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Repository
@@ -35,7 +32,7 @@ public class ReviewHibernateDao implements ReviewDao, PaginationDao<ReviewFilter
 
     public Review create(String title,
                          String content,
-                         Integer rating,
+                         int rating,
                          Game reviewedGame,
                          User author,
                          Difficulty difficulty,
@@ -133,7 +130,7 @@ public class ReviewHibernateDao implements ReviewDao, PaginationDao<ReviewFilter
     public Paginated<Review> findAll(Page pagination, ReviewFilter filter, Ordering<ReviewOrderCriteria> ordering, Long activeUserId) {
         PaginationTotals totals = getPaginationTotals(filter, pagination.getPageSize());
         if (pagination.getPageNumber() > totals.getTotalPages() || pagination.getPageNumber() <= 0) {
-            return new Paginated<>(pagination.getPageNumber(), pagination.getPageSize(), totals.getTotalPages(), totals.getTotalElements(), new ArrayList<>());
+            return new Paginated<>(pagination.getPageNumber(), pagination.getPageSize(), totals.getTotalPages(), totals.getTotalElements(), Collections.emptyList());
         }
         QueryBuilder queryBuilder = getQueryBuilderFromFilter(filter);
         Query nativeQuery = em.createNativeQuery(
@@ -144,7 +141,7 @@ public class ReviewHibernateDao implements ReviewDao, PaginationDao<ReviewFilter
 
         DaoUtils.setNativeParameters(queryBuilder, nativeQuery);
         nativeQuery.setMaxResults(pagination.getPageSize());
-        nativeQuery.setFirstResult(pagination.getOffset().intValue());
+        nativeQuery.setFirstResult(pagination.getOffset());
 
         @SuppressWarnings("unchecked")
         final List<Long> idlist = (List<Long>) nativeQuery.getResultList().stream().map(n -> ((Number) n).longValue()).collect(Collectors.toList());
@@ -168,7 +165,7 @@ public class ReviewHibernateDao implements ReviewDao, PaginationDao<ReviewFilter
     public List<Review> findAll(ReviewFilter filter, Ordering<ReviewOrderCriteria> ordering, Long activeUserId) {
         Page page = Page.with(1, (int) count(filter));
         if (page.getPageSize() <= 0) {
-            return new ArrayList<>();
+            return Collections.emptyList();
         }
         return findAll(page, filter, ordering, activeUserId).getList();
     }

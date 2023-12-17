@@ -135,12 +135,12 @@ public class UserHibernateDao implements UserDao, PaginationDao<UserFilter> {
                         + DaoUtils.toOrderString(ordering, true,"mainuserid"));
         DaoUtils.setNativeParameters(queryBuilder, nativeQuery);
         nativeQuery.setMaxResults(page.getPageSize());
-        nativeQuery.setFirstResult(page.getOffset().intValue());
+        nativeQuery.setFirstResult(page.getOffset());
 
         @SuppressWarnings("unchecked") final List<Long> idlist = (List<Long>) nativeQuery.getResultList().stream().map(n -> ((Number) n).longValue()).collect(Collectors.toList());
 
         if (idlist.isEmpty()) {
-            return new Paginated<>(page.getPageNumber(), page.getPageSize(), totals.getTotalPages(), totals.getTotalElements(), new ArrayList<>());
+            return new Paginated<>(page.getPageNumber(), page.getPageSize(), totals.getTotalPages(), totals.getTotalElements(), Collections.emptyList());
         }
 
         final TypedQuery<User> userQuery = em.createQuery("from User where id IN :ids" + DaoUtils.toOrderString(ordering, false,null), User.class);
@@ -198,15 +198,15 @@ public class UserHibernateDao implements UserDao, PaginationDao<UserFilter> {
                 .getSingleResult();
         PaginationTotals totals = new PaginationTotals((int) Math.ceil((float) (queryTotalElements) / page.getPageSize()), queryTotalElements);
         if (totals.getTotalPages() < page.getPageNumber() || page.getPageNumber() <= 0) {
-            return Optional.of(new Paginated<>(page.getPageNumber(), page.getPageSize(), totals.getTotalPages(), totals.getTotalElements(), new ArrayList<>()));
+            return Optional.of(new Paginated<>(page.getPageNumber(), page.getPageSize(), totals.getTotalPages(), totals.getTotalElements(),Collections.emptyList()));
         }
         Query nativeQuery = em.createNativeQuery("SELECT f.userid FROM followers as f WHERE f.following = :id")
                 .setParameter("id", id)
                 .setMaxResults(page.getPageSize())
-                .setFirstResult(page.getOffset().intValue());
+                .setFirstResult(page.getOffset());
         @SuppressWarnings("unchecked") final List<Long> idlist = (List<Long>) nativeQuery.getResultList().stream().map(n -> ((Number) n).longValue()).collect(Collectors.toList());
         if (idlist.isEmpty()) {
-            return Optional.of(new Paginated<>(page.getPageNumber(), page.getPageSize(), totals.getTotalPages(), totals.getTotalElements(), new ArrayList<>()));
+            return Optional.of(new Paginated<>(page.getPageNumber(), page.getPageSize(), totals.getTotalPages(), totals.getTotalElements(), Collections.emptyList()));
         }
         TypedQuery<User> userQuery = em.createQuery("from User where id IN :ids", User.class);
         userQuery.setParameter("ids", idlist);
@@ -222,15 +222,15 @@ public class UserHibernateDao implements UserDao, PaginationDao<UserFilter> {
                 .getSingleResult();
         PaginationTotals totals = new PaginationTotals((int) Math.ceil((float) (queryTotalElements) / page.getPageSize()), queryTotalElements);
         if (totals.getTotalPages() < page.getPageNumber() || page.getPageNumber() <= 0) {
-            return Optional.of(new Paginated<>(page.getPageNumber(), page.getPageSize(), totals.getTotalPages(), totals.getTotalElements(), new ArrayList<>()));
+            return Optional.of(new Paginated<>(page.getPageNumber(), page.getPageSize(), totals.getTotalPages(), totals.getTotalElements(), Collections.emptyList()));
         }
         Query nativeQuery = em.createNativeQuery("SELECT f.following FROM followers as f WHERE f.userid = :id")
                 .setParameter("id", id)
                 .setMaxResults(page.getPageSize())
-                .setFirstResult(page.getOffset().intValue());
+                .setFirstResult(page.getOffset());
         @SuppressWarnings("unchecked") final List<Long> idlist = (List<Long>) nativeQuery.getResultList().stream().map(n -> ((Number) n).longValue()).collect(Collectors.toList());
         if (idlist.isEmpty()) {
-            return Optional.of(new Paginated<>(page.getPageNumber(), page.getPageSize(), totals.getTotalPages(), totals.getTotalElements(), new ArrayList<>()));
+            return Optional.of(new Paginated<>(page.getPageNumber(), page.getPageSize(), totals.getTotalPages(), totals.getTotalElements(), Collections.emptyList()));
         }
         TypedQuery<User> userQuery = em.createQuery("from User where id IN :ids", User.class);
         userQuery.setParameter("ids", idlist);

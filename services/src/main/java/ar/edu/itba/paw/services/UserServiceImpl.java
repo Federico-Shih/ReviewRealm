@@ -75,7 +75,7 @@ public class UserServiceImpl implements UserService {
         if(userDao.getByUsername(username).isPresent())
             throw new UsernameAlreadyExistsException();
         User createdUser;
-        LOGGER.info("Creating user: {}", email);
+        LOGGER.info("Creating user with username: {} and email: {}",username, email);
         createdUser = userDao.create(username, email, passwordEncoder.encode(password));
         changeUserLanguage(createdUser.getId(), locale);
         createdUser.setLanguage(locale);
@@ -450,7 +450,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public User setFavoriteGames(long userId, List<Long> gameIds) {
-        return userDao.replaceAllFavoriteGames(userId, gameIds==null? new ArrayList<>(): gameIds).orElseThrow(UserNotFoundException::new);
+        return userDao.replaceAllFavoriteGames(userId, gameIds==null? Collections.emptyList(): gameIds).orElseThrow(UserNotFoundException::new);
     }
 
     @Transactional

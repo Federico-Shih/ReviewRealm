@@ -21,7 +21,7 @@ public class EditReviewForm {
     @Min(value=1, message = "Size.submitReview.reviewRatingMin")
     private Integer reviewRating;
 
-    private Boolean replayability = false;
+    private Boolean replayability;
 
     @Pattern(regexp = "pc|xbox|nintendo|ps|^$", flags = Pattern.Flag.CASE_INSENSITIVE,message = "Pattern.submitReview.platform")
     private String platform;
@@ -29,7 +29,7 @@ public class EditReviewForm {
     @Pattern(regexp = "hard|medium|easy|^$", flags = Pattern.Flag.CASE_INSENSITIVE, message = "Pattern.submitReview.difficulty")
     private String difficulty;
 
-    private Boolean completed = false;
+    private Boolean completed;
 
     @Max(value = 100000000, message = "Size.submitReview.gameMax")
     @Min(value = 0,message = "Size.submitReview.gameMin")
@@ -74,18 +74,16 @@ public class EditReviewForm {
         this.reviewContent = reviewContent;
     }
 
-
-
-    public Integer getReviewRating() {
+    public int getReviewRating() {
         return reviewRating;
     }
 
-    public void setReviewRating(Integer reviewRating) {
+    public void setReviewRating(int reviewRating) {
         this.reviewRating = reviewRating;
     }
 
     public Boolean getReplayability() {
-        return replayability != null ? replayability : false;
+        return replayability;
     }
 
     public String getPlatform() {
@@ -97,7 +95,7 @@ public class EditReviewForm {
     }
 
     public Boolean getCompleted() {
-        return completed != null ? completed : false;
+        return completed;
     }
 
     public Double getGameLengthSeconds() {

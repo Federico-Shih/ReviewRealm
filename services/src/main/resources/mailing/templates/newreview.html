@@ -72,7 +72,7 @@
     </div>
     <div class="container">
         <h3 th:text="#{email.newreview.longtitle (${author}, ${game})}"></h3>
-        <a th:href="@{{base}/review/{id}(base=${webBaseUrl},id=${reviewId})}">
+        <a th:href="${webBaseUrl+'/reviews/'+id}">
             <span class="goto-button" th:text="#{email.newreview.checkitout}">
             </span>
         </a>

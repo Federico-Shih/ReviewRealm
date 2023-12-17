@@ -8,13 +8,13 @@ public enum UserOrderCriteria implements OrderCriteria {
     FOLLOWERS(1, "order.criteria.user.followers", "followers.size", "follower_count"),
     REPUTATION(2, "order.criteria.user.reputation", "reputation", "reputation");
 
-    final Integer value;
+    final int value;
     final String localizedNameCode;
     final String altName;
 
     final String tableName;
 
-    public Integer getValue() {
+    public int getValue() {
         return value;
     }
 
@@ -31,7 +31,7 @@ public enum UserOrderCriteria implements OrderCriteria {
     }
 
     // TODO: consider removing value
-    UserOrderCriteria(Integer value, String localizedNameCode, String altName, String tableName) {
+    UserOrderCriteria(int value, String localizedNameCode, String altName, String tableName) {
         this.value = value;
         this.localizedNameCode = localizedNameCode;
         this.altName = altName;

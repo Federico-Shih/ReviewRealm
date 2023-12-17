@@ -57,6 +57,7 @@ public class MailingServiceImpl implements MailingService {
         templateVariables.put("webBaseUrl", env.getProperty("mailing.weburl"));
         templateVariables.put("token", token.getToken());
         templateVariables.put("user", user.getUsername());
+        templateVariables.put("email", user.getEmail());
 
         Object[] stringArgs = {};
         String subject = messageSource.getMessage("email.validation.subject",

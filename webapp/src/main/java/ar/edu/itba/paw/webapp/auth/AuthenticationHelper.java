@@ -5,8 +5,8 @@ import ar.edu.itba.paw.servicesinterfaces.UserService;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Optional;
 
 public class AuthenticationHelper {
@@ -27,7 +27,7 @@ public class AuthenticationHelper {
 
     public static Collection<? extends GrantedAuthority> getAuthorities() {
         Optional<PawAuthUserDetails> principal = getPrincipalFromContext();
-        if (!principal.isPresent()) return new ArrayList<>();
+        if (!principal.isPresent()) return Collections.emptyList();
         return principal.get().getAuthorities();
     }
 }

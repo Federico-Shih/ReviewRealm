@@ -82,7 +82,7 @@ public class GameHibernateDao implements GameDao, PaginationDao<GameFilter> {
         PaginationTotals totals = getPaginationTotals(filter, page.getPageSize());
 
         if (page.getPageNumber() > totals.getTotalPages() || page.getPageNumber() <= 0) {
-            return new Paginated<>(page.getPageNumber(), page.getPageSize(), totals.getTotalPages(), totals.getTotalElements(), new ArrayList<>());
+            return new Paginated<>(page.getPageNumber(), page.getPageSize(), totals.getTotalPages(), totals.getTotalElements(), Collections.emptyList());
         }
         QueryBuilder queryBuilder = getQueryBuilderFromFilter(filter);
         Query nativeQuery = em.createNativeQuery(
@@ -95,7 +95,7 @@ public class GameHibernateDao implements GameDao, PaginationDao<GameFilter> {
         DaoUtils.setNativeParameters(queryBuilder, nativeQuery);
 
         nativeQuery.setMaxResults(page.getPageSize());
-        nativeQuery.setFirstResult(page.getOffset().intValue());
+        nativeQuery.setFirstResult(page.getOffset());
 
         @SuppressWarnings("unchecked")
         final List<Long> idlist = (List<Long>) nativeQuery.getResultList().stream().map(n -> ((Number) n).longValue()).collect(Collectors.toList());

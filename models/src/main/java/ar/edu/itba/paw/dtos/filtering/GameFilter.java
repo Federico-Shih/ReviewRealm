@@ -79,14 +79,14 @@ public class GameFilter {
     }
 
     public boolean isProperRecommendedFor(){
-        return gameContent == null && (gameGenres == null || gameGenres.isEmpty()) && minRating == null && maxRating == null && includeNoRating && !isSuggested && favoriteGamesOf == null && notReviewedBy == null;
+        return gameContent == null && (gameGenres == null || gameGenres.isEmpty()) && Float.compare(minRating,1.0f) == 0 && Float.compare(maxRating,10.0f) == 0  && includeNoRating && !isSuggested && favoriteGamesOf == null && notReviewedBy == null;
     }
     public boolean isProperFavoriteOf(){
-        return gameContent == null && (gameGenres == null || gameGenres.isEmpty()) && (minRating == null || Float.compare(minRating,1.0f)==0) && (maxRating == null || Float.compare(maxRating,10.0f)==0) && includeNoRating && !isSuggested && recommendedFor == null && notReviewedBy == null;
+        return gameContent == null && (gameGenres == null || gameGenres.isEmpty()) &&  Float.compare(minRating,1.0f)==0 && Float.compare(maxRating,10.0f)==0 && includeNoRating && !isSuggested && recommendedFor == null && notReviewedBy == null;
     }
 
     public boolean isProperNotReviewedBy() {
-        return (gameGenres == null || gameGenres.isEmpty()) && (minRating == null || Float.compare(minRating,1.0f)==0) && (maxRating == null || Float.compare(maxRating,10.0f)==0) && includeNoRating && !isSuggested && favoriteGamesOf == null && recommendedFor == null;
+        return (gameGenres == null || gameGenres.isEmpty()) &&  Float.compare(minRating,1.0f)==0 && Float.compare(maxRating,10.0f)==0 && includeNoRating && !isSuggested && favoriteGamesOf == null && recommendedFor == null;
     }
 
     public Boolean getDeleted() {

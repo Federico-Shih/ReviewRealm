@@ -95,7 +95,7 @@ public class ReportHibernateDao implements ReportDao, PaginationDao<ReportFilter
         QueryBuilder queryBuilder = getQueryBuilderFromFilter(filter);
         Query nativeQuery = em.createNativeQuery("SELECT id from reports " + queryBuilder.toQuery());
         prepareParametersForNativeQuery(queryBuilder, nativeQuery);
-        nativeQuery.setFirstResult(page.getOffset().intValue());
+        nativeQuery.setFirstResult(page.getOffset());
         nativeQuery.setMaxResults(page.getPageSize());
 
         @SuppressWarnings("unchecked")

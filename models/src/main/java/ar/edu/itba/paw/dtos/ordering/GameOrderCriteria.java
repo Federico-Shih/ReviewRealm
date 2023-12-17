@@ -7,11 +7,11 @@ public enum GameOrderCriteria implements OrderCriteria {
     NAME(1, "order.criteria.game.name", "name"),
     AVERAGE_RATING(2, "game.details.review.statistics.rating", "averageRating");
 
-    final Integer value;
+    final int value;
     final String localizedNameCode;
     final String altName;
 
-    public Integer getValue() {
+    public int getValue() {
         return value;
     }
 
@@ -35,7 +35,7 @@ public enum GameOrderCriteria implements OrderCriteria {
         this.altName = altName;
     }
 
-    public static GameOrderCriteria fromValue(Integer value) {
+    public static GameOrderCriteria fromValue(int value) {
         for (GameOrderCriteria orderCriteria : values()) {
             if (Objects.equals(orderCriteria.getValue(), value)){
                 return orderCriteria;

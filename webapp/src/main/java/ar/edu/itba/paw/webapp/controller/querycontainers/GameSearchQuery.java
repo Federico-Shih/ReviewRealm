@@ -40,16 +40,17 @@ public class GameSearchQuery extends PaginatedQuery{
     @QueryParam("genres")
     private List<Integer> genres;
 
-    @Pattern(regexp = "^([0-9]+t[0-9]+)$", message = "Pattern.searchGames.rating")
+    @Pattern(regexp = "^(([0-9]*[.])?[0-9]+t([0-9]*[.])?[0-9]+)$", message = "Pattern.searchGames.rating")
     @QueryParam("rating")
     private String rating;
 
     @QueryParam("excludeNoRating")
-    private Boolean excludeNoRating;
+    @DefaultValue("false")
+    private boolean excludeNoRating;
 
     @QueryParam("suggested")
     @DefaultValue("false")
-    private Boolean suggested;
+    private boolean suggested;
 
     @ExistentUserId(optional = true)
     @QueryParam("recommendedFor")
@@ -75,8 +76,8 @@ public class GameSearchQuery extends PaginatedQuery{
         );
     }
     public GameFilter getFilter() {
-        Float minRating = null;
-        Float maxRating = null;
+        float minRating = 1f;
+        float maxRating = 10f;
         if (rating != null) {
             try {
                 String[] ratingFilterArray = rating.split("t");
@@ -85,11 +86,11 @@ public class GameSearchQuery extends PaginatedQuery{
             } catch (Exception ignored) {
             }
         }
-        return new GameFilterBuilder().
-                withGameContent(search).
-                withGameGenres(genres).
-                withSuggestion(suggested).
-                withRatingRange(minRating, maxRating, excludeNoRating == null || !excludeNoRating)
+        return new GameFilterBuilder()
+                .withGameContent(search)
+                .withGameGenres(genres)
+                .withSuggestion(suggested)
+                .withRatingRange(minRating, maxRating, !excludeNoRating)
                 .withFavoriteGamesOf(favoriteOf)
                 .withRecommendedFor(recommendedFor)
                 .withNotReviewedBy(notReviewedBy)

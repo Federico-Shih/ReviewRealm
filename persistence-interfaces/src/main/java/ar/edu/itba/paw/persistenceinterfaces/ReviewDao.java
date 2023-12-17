@@ -16,7 +16,7 @@ import java.util.Optional;
 public interface ReviewDao {
     Review create(String title,
                          String content,
-                         Integer rating,
+                         int rating,
                          Game reviewedGame,
                          User author,
                          Difficulty difficulty,

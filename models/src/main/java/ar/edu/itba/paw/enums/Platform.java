@@ -5,7 +5,7 @@ import java.util.Optional;
 public enum Platform {
     PC(0, "platform.pc"), XBOX(1, "platform.xbox"), PS(2, "platform.ps"), NINTENDO(3, "platform.nintendo");
 
-    private final Integer id;
+    private final int id;
     private final String code;
 
     Platform(Integer id, String code) {
@@ -13,7 +13,7 @@ public enum Platform {
         this.code = code;
     }
 
-    public Integer getId() {
+    public int getId() {
         return id;
     }
 

@@ -11,7 +11,6 @@ import ar.edu.itba.paw.models.Paginated;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.servicesinterfaces.MissionService;
 import ar.edu.itba.paw.servicesinterfaces.UserService;
-import ar.edu.itba.paw.webapp.auth.AccessControl;
 import ar.edu.itba.paw.webapp.auth.AuthenticationHelper;
 import ar.edu.itba.paw.webapp.controller.annotations.ExistentGameId;
 import ar.edu.itba.paw.webapp.controller.annotations.ExistentUserId;
@@ -21,8 +20,6 @@ import ar.edu.itba.paw.webapp.controller.mediatypes.VndType;
 import ar.edu.itba.paw.webapp.controller.querycontainers.UserSearchQuery;
 import ar.edu.itba.paw.webapp.controller.responses.*;
 import ar.edu.itba.paw.webapp.exceptions.CustomRuntimeException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
@@ -39,15 +36,11 @@ import java.util.stream.Collectors;
 @Path("users")
 @Component
 public class UserController {
-    private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
     private final UserService us;
     private final MissionService missionService;
 
     @Context
     private UriInfo uriInfo;
-
-    @Autowired
-    private AccessControl accessControl;
 
     @Autowired
     public UserController(UserService us, MissionService missionService) {
@@ -94,7 +87,6 @@ public class UserController {
     @Consumes(VndType.APPLICATION_USER_FORM)
     @Produces(VndType.APPLICATION_USER)
     public Response createUser(@Valid @NotNull(message = "error.body.empty") RegisterForm registerForm) throws UsernameAlreadyExistsException, EmailAlreadyExistsException {
-        LOGGER.info("Creating user with username " + registerForm.getUsername() + " and email " + registerForm.getEmail());
         final User user = us.createUser(registerForm.getUsername(), registerForm.getEmail(), registerForm.getPassword(), LocaleHelper.getLocale());
         return Response
                 .created(uriInfo.getAbsolutePathBuilder().path("/users").path(user.getId().toString()).build())
@@ -105,7 +97,6 @@ public class UserController {
     @POST
     @Consumes(VndType.APPLICATION_PASSWORD_RESET)
     public Response changePasswordRequest(@Valid @NotNull(message = "error.body.empty") ResendEmailForm emailForm) {
-        LOGGER.info("User with email " + emailForm.getEmail() + " requested password reset");
         us.sendPasswordResetToken(emailForm.getEmail());
         return Response.accepted().build();
     }
@@ -120,8 +111,10 @@ public class UserController {
     @GET
     @Produces(VndType.APPLICATION_ENTITY_LINK_LIST)
     @Path("{id:\\d+}/followers")
-    public Response getFollowers(@PathParam("id") final long id, @QueryParam("page") @DefaultValue("1") final Integer page, @QueryParam("pageSize") @DefaultValue("10") final Integer pageSize) {
-        Paginated<User> followers = us.getFollowers(id, Page.with(page != null ? page : 1, pageSize != null ? pageSize : 10));
+    public Response getFollowers(@Valid @ExistentUserId @PathParam("id") final long id,
+                                 @QueryParam("page") @DefaultValue("1") final int page,
+                                 @QueryParam("pageSize") @DefaultValue("10") final int pageSize) {
+        Paginated<User> followers = us.getFollowers(id, Page.with(page,pageSize));
         if (followers.getList().isEmpty())
             return Response.noContent().build();
         return PaginatedResponseHelper.fromPaginated(uriInfo,
@@ -136,10 +129,10 @@ public class UserController {
     @Path("{id:\\d+}/following")
     public Response getFollowing(
             @Valid @ExistentUserId @PathParam("id") final long id,
-            @QueryParam("page") @DefaultValue("1") final Integer page,
-            @QueryParam("pageSize") @DefaultValue("10") final Integer pageSize
+            @QueryParam("page") @DefaultValue("1") final int page,
+            @QueryParam("pageSize") @DefaultValue("10") final int pageSize
     ) {
-        Paginated<User> following = us.getFollowing(id, Page.with(page != null ? page : 1, pageSize != null ? pageSize : 10));
+        Paginated<User> following = us.getFollowing(id, Page.with(page,pageSize));
         if (following.getList().isEmpty()) {
             return Response.noContent().build();
         }
@@ -155,8 +148,8 @@ public class UserController {
     @Path("{id:\\d+}/following")
     @Consumes(VndType.APPLICATION_FOLLOWING_FORM)
     @PreAuthorize("@accessControl.checkAccessedUserIdIsUser(#id)")
-    public Response createFollowing(@PathParam("id") String id, @Valid @NotNull(message = "error.body.empty") FollowingForm following) {
-        final User user = us.followUserById(Long.parseLong(id), following.getUserId());
+    public Response createFollowing(@PathParam("id") long id, @Valid @NotNull(message = "error.body.empty") FollowingForm following) {
+        final User user = us.followUserById(id, following.getUserId());
         return Response
                 .created(uriInfo.getBaseUriBuilder().path("/users").path(user.getId().toString()).path("/following").path(following.getUserId().toString()).build())
                 .build();
@@ -165,8 +158,8 @@ public class UserController {
     @DELETE
     @Path("{id:\\d+}/following/{followingId:\\d+}")
     @PreAuthorize("@accessControl.checkAccessedUserIdIsUser(#id)")
-    public Response unfollowUser(@PathParam("id") String id, @PathParam("followingId") String followingId) {
-        User user = us.unfollowUserById(Long.parseLong(id), Long.parseLong(followingId));
+    public Response unfollowUser(@PathParam("id") long id, @Valid @ExistentUserId @PathParam("followingId") long followingId) {
+        User user = us.unfollowUserById(id,followingId);
         if (user == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
@@ -174,10 +167,10 @@ public class UserController {
     }
 
     @PATCH
-    @PreAuthorize("@accessControl.checkAccessedUserIdIsUser(#id)")
     @Path("{id:\\d+}")
+    @PreAuthorize("@accessControl.checkAccessedUserIdIsUser(#id)")
     @Produces(VndType.APPLICATION_PATCH_USER_FORM)
-    public Response patchUser(@Valid @NotNull(message = "error.body.empty") PatchUserForm patchUserForm, @ExistentUserId @PathParam("id") Long id) throws InvalidAvatarException {
+    public Response patchUser(@Valid @NotNull(message = "error.body.empty") PatchUserForm patchUserForm, @PathParam("id") long id) throws InvalidAvatarException {
         us.patchUser(id, patchUserForm.getPassword(), patchUserForm.getEnabled());
         if (!patchUserForm.getGenres().isEmpty()) {
             us.setPreferences(patchUserForm.getGenres(), id);
@@ -193,7 +186,7 @@ public class UserController {
     @PreAuthorize("@accessControl.checkAccessedUserIdIsUser(#id)")
     @Consumes(VndType.APPLICATION_FAVORITE_GAME_FORM)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response createNewFavoriteGame(@ExistentUserId @PathParam("id") final long id, @Valid @NotNull(message = "error.body.empty") FavoriteGameForm favoriteGameForm) {
+    public Response createNewFavoriteGame(@PathParam("id") final long id, @Valid @NotNull(message = "error.body.empty") FavoriteGameForm favoriteGameForm) {
         boolean added = us.addFavoriteGame(id, favoriteGameForm.getGameId());
         if (!added) throw new CustomRuntimeException(Response.Status.BAD_REQUEST, "error.game.already.favorite");
         return Response.created(
@@ -209,7 +202,7 @@ public class UserController {
     @DELETE
     @Path("{id:\\d+}/favoritegames/{gameId:\\d+}")
     @PreAuthorize("@accessControl.checkAccessedUserIdIsUser(#id)")
-    public Response deleteFavoriteGame(@ExistentUserId @PathParam("id") final long id, @ExistentGameId @PathParam("gameId") final long gameId) {
+    public Response deleteFavoriteGame(@Valid @ExistentUserId @PathParam("id") final long id, @ExistentGameId @PathParam("gameId") final long gameId) {
         boolean deleted = us.deleteFavoriteGame(id, gameId);
         return deleted ? Response.ok().build() : Response.status(Response.Status.NOT_FOUND).build();
     }
@@ -219,7 +212,7 @@ public class UserController {
     @PreAuthorize("@accessControl.checkAccessedUserIdIsUser(#id)")
     @Consumes(VndType.APPLICATION_NOTIFICATIONS_FORM)
     @Produces(VndType.APPLICATION_NOTIFICATION_STATUS)
-    public Response putNotifications(@ExistentUserId @PathParam("id") final long id, @Valid @NotNull(message = "error.body.empty") ChangeNotificationForm changeNotificationForm) {
+    public Response putNotifications(@PathParam("id") final long id, @Valid @NotNull(message = "error.body.empty") ChangeNotificationForm changeNotificationForm) {
         User user = us.setUserNotificationSettings(id, changeNotificationForm.getNotificationMap());
         return Response.ok().entity(NotificationStatusResponse.fromEntity(uriInfo, user.getId(), user.getDisabledNotifications())).build();
     }
@@ -239,24 +232,6 @@ public class UserController {
                 ){}
         ).build();
     }
-
-    /*
-    @GET
-    @Path("{id:\\d+}/notifications")
-    @PreAuthorize("@accessControl.checkAccessedUserIdIsUser(#id)")
-    @Produces(VndType.APPLICATION_NOTIFICATION_STATUS)
-    public Response getNotifications(@PathParam("id") final long id) {
-        Set<NotificationType> notifications = us.getNotifications(id).orElseThrow(() -> new CustomRuntimeException(Response.Status.NOT_FOUND, "user.not.found"));
-        return Response.ok().entity(
-                new GenericEntity<List<NotificationStatusResponse.NotificationTypeResponse>>(
-                        notifications.stream()
-                                .map((notification) -> NotificationStatusResponse.fromEntity(uriInfo, id, notification).getInfo())
-                                .collect(Collectors.toList())
-                ){}
-        ).build();
-        //return Response.ok().entity(NotificationStatusResponse.fromEntity(uriInfo, id, notifications)).build();
-    }
-    */
 
     @GET
     @Path("{id:\\d+}/mission-progresses")
