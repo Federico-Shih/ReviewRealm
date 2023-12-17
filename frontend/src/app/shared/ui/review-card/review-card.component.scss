@@ -1,3 +1,23 @@
+.level-basic-border {
+  border: 2px solid #243276;
+}
+
+.level-bronze-border {
+  border: 2px solid #593d1b;
+}
+
+.level-silver-border {
+  border: 2px solid #4d4d4d;
+}
+
+.level-gold-border {
+  border: 2px solid #8a7919;
+}
+
+.level-epic-border {
+  border: 2px solid #82108a;
+}
+
 .card {
   color: white;
   background-color: var(--color-surface);
@@ -10,7 +30,18 @@
 .author-container {
   display: flex;
   flex-direction: row;
+  align-items: center;
   position: relative;
+  .name {
+    color: darkgray;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: underline;
+  }
+  .img {
+    border-radius: 50%;
+    object-fit: cover;
+  }
 }
 
 .card-header {
@@ -33,7 +64,9 @@
 }
 
 .review-rating {
-  font-size: 2rem;
+  font-size: 40px;
+  font-weight: 700;
+  white-space: nowrap;
 }
 
 .review-rating-container {
@@ -47,9 +80,10 @@
 
 .review-date {
   position: absolute;
-  right: 0;
-  bottom: 0;
-  font-size: 0.9rem;
+  right: 1em;
+  bottom: 0.5em;
+  font-size: 11px;
+  font-weight: 300;
 }
 
 .card-content {
@@ -75,12 +109,12 @@
   flex-direction: row;
   position: relative;
   gap: 10px;
-  height: 100px;
+  height: 80px;
 }
 
 .image-container {
   position: relative;
-  width: 140px;
+  width: 100px;
   height: 100%;
   overflow: hidden;
 
@@ -90,7 +124,10 @@
 }
 
 .review-game {
-  font-size: 1.2rem;
+  font-size: 18px;
+  font-weight: 600;
+  white-space: nowrap;
+  margin-bottom: 4px;
 }
 
 .pill {
@@ -112,15 +149,26 @@
   display: block;
 }
 
-.card-text {
-  cursor: pointer;
-}
-
 .clamp {
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.pointer {
+  cursor: pointer;
+}
+
+.small-chip {
+  background: #13112D;
+  border: 1px solid #444155;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 2px 6px;
+  white-space: nowrap;
+  margin-right: 4px;
 }
 

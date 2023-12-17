@@ -11,6 +11,9 @@ import {TranslateLoader, TranslateModule} from "@ngx-translate/core";
 import {TranslateHttpLoader} from "@ngx-translate/http-loader";
 import {MAT_SNACK_BAR_DEFAULT_OPTIONS} from "@angular/material/snack-bar";
 import {RetryWithRefreshInterceptor} from "./shared/interceptors/RetryWithRefreshInterceptor";
+import {MatButtonModule} from "@angular/material/button";
+import {MatTooltipModule} from "@angular/material/tooltip";
+import {MatIconModule} from "@angular/material/icon";
 import {IMAGE_LOADER, ImageLoaderConfig} from "@angular/common";
 
 export function HttpLoaderFactory(http: HttpClient) {
@@ -34,7 +37,10 @@ export function HttpLoaderFactory(http: HttpClient) {
     }),
     AppRoutingModule,
     SharedModule,
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
+    MatButtonModule,
+    MatTooltipModule,
+    MatIconModule
   ],
   providers: [{
     provide: HTTP_INTERCEPTORS,

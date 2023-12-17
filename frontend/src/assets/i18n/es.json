@@ -217,6 +217,7 @@
   "new": "Novedoso",
   "new-review": "Nueva Reseña",
   "no-reports": "¡No quedan reportes sin analizar!",
+  "no-results": "No encontramos resultados para tu búsqueda",
   "no-submissions": "¡No hay sugerencias de nuevos juegos provistas por los usuarios!",
   "not-found": {
     "description": "No queda nada en este desolado lugar...",
@@ -374,7 +375,7 @@
   "review-search": {
     "apply-filters": "Aplicar filtros",
     "completed": "Completado",
-    "difficulty-filter": "Difficultad percibida",
+    "difficulty-filter": "Dificultad percibida",
     "filter-title": "Filtrar por",
     "game-genres-filter": "Géneros del juego",
     "no-results": "No se encontraron resultados.",
@@ -439,7 +440,7 @@
     "email-required": "Correo electrónico es requerido.",
     "header": "Validar usuario",
     "submit": "Validar token",
-    "token": "ABCDEFGH",
+    "token": "Código de Verificación",
     "token-required": "Se requiere el código de verificación",
     "token-unknown": "Token desconocido."
   }

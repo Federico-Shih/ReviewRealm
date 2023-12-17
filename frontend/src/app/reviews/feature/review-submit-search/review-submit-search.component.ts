@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import {GamesService} from "../../../shared/data-access/games/games.service";
 import {environment} from "../../../../environments/environment";
-import {map, switchMap} from "rxjs";
+import {BehaviorSubject, map, switchMap, tap} from "rxjs";
 import {gameSearchForSubmitReviewParamsToDto, paramsMapToGameSearchDto} from "../../../home/utils/mappers";
 import {ActivatedRoute, Router} from "@angular/router";
 import {FormControl} from "@angular/forms";
@@ -23,6 +23,8 @@ export class ReviewSubmitSearchComponent {
   }
   search = new FormControl('')
 
+  loadingGames$ = new BehaviorSubject<boolean>(false);
+
   currentUser$ = this.authService.getLoggedUser()
   gameSearchDto$ = combineLatest([this.currentUser$, this.route.queryParamMap]).pipe(
     map(
@@ -31,8 +33,11 @@ export class ReviewSubmitSearchComponent {
       }
     )
   )
-  games$ = this.gameSearchDto$.pipe(
-    switchMap((query) => this.gameService.getGames(`${environment.API_ENDPOINT}/games`, query)));
+  games$ = this.gameSearchDto$
+    .pipe(tap(() => this.loadingGames$.next(true)))
+    .pipe(
+    switchMap((query) => this.gameService.getGames(`${environment.API_ENDPOINT}/games`, query)))
+    .pipe(tap(() => this.loadingGames$.next(false)));
 
   setSearch(value: string) {
     this.search.setValue(value);

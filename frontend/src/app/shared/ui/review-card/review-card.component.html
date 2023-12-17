@@ -1,12 +1,14 @@
 <mat-card class="card">
   <mat-card-header class="card-header">
-    <div (click)="click.emit()" class="card-title">{{ review.title }}</div>
+    <div class="card-title pointer" routerLink="/reviews/{{review.id}}">{{ review.title }}</div>
     <div class="author-container">
-      <span>{{ 'review-card.by' | translate:{author: review.author?.username} }}</span>
+      <span class="name">{{ 'review-card.by' | translate:{author: review.author?.username} }}</span>
       <img [ngSrc]="review.author?.avatar || ''"
-           alt="{{ 'review-card.author-alt' | translate:{author: review.author?.username } }}" height="20"
+           alt="{{ 'review-card.author-alt' | translate:{author: review.author?.username } }}" height="25"
            style="margin-left: 5px"
-           width="20"/>
+           width="25"
+           class="img level-{{userRank()}}-border"
+      />
       <div class="profile-card">
         <app-profile-card
           *ngIf="review.author"
@@ -14,17 +16,17 @@
         />
       </div>
     </div>
-    <div class="review-rating-container">
+    <div class="review-rating-container pointer" routerLink="/reviews/{{review.id}}">
       <span class="review-rating">{{review.rating}}</span>/10
       <mat-icon>star</mat-icon>
     </div>
     <div class="review-date">
-      {{review.created | date: 'medium'}}
+      {{review.created | date: 'yyyy-MM-dd HH:mm'}}
     </div>
   </mat-card-header>
   <mat-divider/>
-  <mat-card-content class="card-content">
-    <p (click)="click.emit()" class="clamp card-text">
+  <mat-card-content class="card-content pointer" routerLink="/reviews/{{review.id}}">
+    <p class="clamp">
       {{ review.content }}
     </p>
     <div class="likes">
@@ -35,7 +37,7 @@
   <ng-container *ngIf="!hideActions">
     <mat-divider/>
     <mat-card-actions class="game-container">
-      <div class="image-container">
+      <div class="image-container pointer" routerLink="/games/{{review.game?.id}}">
         <img
           [ngSrc]="review.game?.links?.image || ''"
           fill="true"
@@ -44,16 +46,16 @@
         />
       </div>
       <section>
-        <div class="review-game">
+        <div class="review-game pointer" routerLink="/games/{{review.game?.id}}">
           {{review.game?.name}}
         </div>
         <div *ngIf="review.game && review.game.genres">
-          <mat-chip *ngFor="let genre of review.game.genres | slice:0:2" class="pill">
+          <span *ngFor="let genre of review.game.genres | slice:0:2" class="small-chip pointer" routerLink="/games" [queryParams]="{genres: [genre.id]}">
             {{genre.localized}}
-        </mat-chip>
-        <mat-chip *ngIf="review.game.genres!.length > 2" class="pill" routerLink="/">
+        </span>
+        <span *ngIf="review.game.genres!.length > 2" class="small-chip">
           +{{review.game.genres!.length - 2}}
-          </mat-chip>
+          </span>
         </div>
       </section>
     </mat-card-actions>

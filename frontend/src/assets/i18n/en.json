@@ -217,6 +217,7 @@
   "new": "New",
   "new-review": "New Review",
   "no-reports": "There are no unanalysed reports!",
+  "no-results": "We found no results for your search",
   "no-submissions": "There are no suggestions of new games provided by users!",
   "not-found": {
     "description": "Nothing to see in this wasteland...",
@@ -435,7 +436,7 @@
     "email-required": "Email is required",
     "header": "Validar usuario",
     "submit": "Validate token",
-    "token": "ABCDEFGH",
+    "token": "Verification Code",
     "token-required": "Token is required",
     "token-unknown": "Unknown token. ",
     "welcome": "Welcome {{value}}",

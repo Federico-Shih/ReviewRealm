@@ -1,4 +1,4 @@
-<ng-container *ngIf="(review$ | async) as review; else loading">
+<ng-container *ngIf="!(loadingReview$ | async) && (review$ | async) as review; else loading">
   <app-breadcrumbs [breadcrumbs]="[
   {name: 'review.search' | translate, link: '/'},
   {name: review.game?.name, link: null}

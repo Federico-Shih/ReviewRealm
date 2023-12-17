@@ -83,7 +83,7 @@
         {{ 'register-form.password-mismatch' | translate }}
       </div>
 
-      <button class="submit-btn" color="accent" i18n mat-raised-button tabindex="5" type="submit">
+      <button class="submit-btn" color="accent" i18n mat-raised-button tabindex="5" type="submit" [disabled]="loading === true">
         <span *ngIf="!loading; else loadingSpinner">
           {{ 'register-form.register-btn' | translate | uppercase }}
           <mat-icon>send</mat-icon>

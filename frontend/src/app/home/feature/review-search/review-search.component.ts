@@ -87,6 +87,7 @@ export class ReviewSearchComponent implements OnInit {
   protected readonly Object = Object;
   protected readonly formatNumber = formatNumber;
   private renderer: Renderer2;
+  protected breakpoint: number = 1;
 
 
   @ViewChild('sidenav')
@@ -177,6 +178,12 @@ export class ReviewSearchComponent implements OnInit {
         );
       this.filtersLoaded.next(true);
     });
+
+    this.breakpoint = (window.innerWidth <= 1100) ? 1 : (window.innerWidth <= 2100)? 2: 3;
+  }
+
+  onResize(event: any) {
+    this.breakpoint = (event.target.innerWidth <= 1100) ? 1 : (event.target.innerWidth <= 2100)? 2: 3;
   }
 
   handlePageEvent(e: PageEvent) {

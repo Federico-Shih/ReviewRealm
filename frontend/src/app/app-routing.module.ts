@@ -26,7 +26,6 @@ const routes: Routes = [
   {
     path: 'profile',
     loadChildren: () => import('./users/profile.module').then(m => m.ProfileModule),
-    canActivate: [isAuthenticatedGuard]
   },
   {path: 'reviews', loadChildren: () => import('./reviews/reviews.module').then(m => m.ReviewsModule)},
   {

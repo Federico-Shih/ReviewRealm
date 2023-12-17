@@ -1,2 +1,8 @@
-<app-register-form (createUser)="createUser($event)" [errors]="(userCreateErrors | async)"
-                   [loading]="loading$ | async"/>
+<section class="main-container">
+  <div class="form-container">
+    <app-register-form
+      (createUser)="createUser($event)"
+      [errors]="(userCreateErrors | async)"
+      [loading]="loading$ | async"/>
+  </div>
+</section>

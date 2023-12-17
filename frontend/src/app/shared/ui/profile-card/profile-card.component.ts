@@ -1,6 +1,7 @@
 import {ChangeDetectionStrategy, Component, computed, EventEmitter, Input, Output, signal} from '@angular/core';
 import {User} from "../../data-access/users/users.class";
 import {Genre} from "../../data-access/enums/enums.class";
+import {Role} from "../../data-access/shared.enums";
 
 @Component({
   selector: 'app-profile-card',
@@ -38,4 +39,5 @@ export class ProfileCardComponent {
     }
     return "basic";
   })
+  protected readonly Role = Role;
 }

@@ -1,7 +1,7 @@
 <mat-drawer-container autosize class="home-container">
   <mat-drawer #drawer #sidenav class="drawer-container" mode="side" opened="true">
     <div class="hide-filters">
-      <div class="filter-buttons-container">
+      <div class="filter-buttons-container sticky">
         <button (click)="applyFilters()" color="accent" mat-raised-button style="flex: 1">
           {{ 'apply-filters' | translate }}
         </button>
@@ -19,7 +19,7 @@
         <section>
           <span class="filter-title">{{ 'filter-title' | translate }}</span>
           <form [formGroup]="filter" class="filters">
-            <div>
+            <div class="time-played-filter">
               <div class="label">
                 <mat-icon>timer</mat-icon>
                 {{ 'review-search.timeplayed-filter' | translate }}
@@ -28,13 +28,12 @@
                 <input formControlName="mintimeplayed" matSliderThumb/>
               </mat-slider>
             </div>
-            <div>
+            <div class="first-checkbox">
               <app-tri-checkbox
                 (checkboxClick)="check('completed', $event)"
                 [label]="'review-search.completed' | translate"
                 [value]="filter.controls['completed'].value"
               >
-
               </app-tri-checkbox>
             </div>
             <div>
@@ -50,7 +49,7 @@
               <mat-expansion-panel-header class="full-width">
                 <mat-panel-title>
                   <mat-icon>sports_esports</mat-icon>
-                  {{ 'game-genres-filter' | translate }}
+                  <span class="expansion-panel-title">{{ 'game-genres-filter' | translate }}</span>
                 </mat-panel-title>
               </mat-expansion-panel-header>
               <div formArrayName="gameGenres">
@@ -66,7 +65,7 @@
               <mat-expansion-panel-header>
                 <mat-panel-title>
                   <mat-icon>group</mat-icon>
-                  {{ 'review-search.user-preference-filter' | translate }}
+                  <span class="expansion-panel-title">{{ 'review-search.user-preference-filter' | translate }}</span>
                 </mat-panel-title>
               </mat-expansion-panel-header>
               <div formArrayName="userPreferences">
@@ -82,7 +81,7 @@
               <mat-expansion-panel-header>
                 <mat-panel-title>
                   <mat-icon>gamepad</mat-icon>
-                  {{ 'review-search.platform-filter' | translate }}
+                  <span class="expansion-panel-title">{{ 'review-search.platform-filter' | translate }}</span>
                 </mat-panel-title>
               </mat-expansion-panel-header>
               <div formArrayName="platform">
@@ -98,7 +97,7 @@
               <mat-expansion-panel-header>
                 <mat-panel-title>
                   <mat-icon>sentiment_very_dissatisfied</mat-icon>
-                  {{ 'review-search.difficulty-filter' | translate }}
+                  <span class="expansion-panel-title">{{ 'review-search.difficulty-filter' | translate }}</span>
                 </mat-panel-title>
               </mat-expansion-panel-header>
               <div formArrayName="difficulty">
@@ -106,7 +105,7 @@
                   *ngFor="let difficulty of difficulties; let i = index"
                   [formControlName]="i"
                 >
-                  {{ difficulty | translate }}
+                  {{ ('difficulty.' + (difficulty | lowercase)) | translate }}
                 </mat-checkbox>
               </div>
             </mat-expansion-panel>
@@ -139,15 +138,16 @@
       </button>
     </div>
     <section>
-      <div *ngIf="loading" class="centered-container">
+      <div *ngIf="loading" class="centered-container sticky">
         <mat-spinner/>
       </div>
       <mat-grid-list
         *ngIf="(paginatedReviews$ | async) as reviews"
-        cols="2"
+        [cols]="breakpoint"
         gutterSize="20px"
         rowHeight="300px"
         style="display: flex;"
+        (window:resize)="onResize($event)"
       >
         <mat-grid-tile *ngIf="!loading && reviews.totalPages === 0" colspan="2" rowspan="1">
           <span>

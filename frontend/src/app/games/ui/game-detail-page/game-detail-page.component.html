@@ -99,7 +99,7 @@
     <ng-template #notlogged>
       <div class="review-header">
         <span class="header"> {{'game-details.no-personal-review' | translate}}</span>
-        <button [routerLink]="" color="primary" mat-raised-button> <!--todo: link create-->
+        <button routerLink="/reviews/submit/{{game.id}}" color="primary" mat-raised-button>
           <mat-icon>add</mat-icon>
           {{ 'new-review' | translate }}
         </button>

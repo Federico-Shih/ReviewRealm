@@ -9,13 +9,22 @@
         [value]="search.value!"
       ></app-search-bar>
     </div>
-    <div class="games-container">
+    <div class="games-container" *ngIf="!(loadingGames$ | async); else loading2">
       <ng-container *ngFor="let game of games.content">
         <div class="game-card-container" routerLink="/reviews/submit/{{game.id}}">
           <app-game-card [game]="game" [nolink]="true"></app-game-card>
         </div>
       </ng-container>
+      <ng-container *ngIf="games.content.length === 0">
+        <div class="no-results">
+          <mat-icon class="icon">sentiment_dissatisfied</mat-icon>
+          <span>{{ 'no-results' | translate }}</span>
+        </div>
+      </ng-container>
     </div>
+    <ng-template #loading2>
+      <app-loading-spinner/>
+    </ng-template>
   </div>
 </ng-container>
 <ng-template #loading>

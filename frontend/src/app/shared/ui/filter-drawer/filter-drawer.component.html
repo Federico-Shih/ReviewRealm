@@ -1,5 +1,5 @@
 <div class="drawer-content">
-  <h3>{{ 'filter-drawer.order-by' | translate }}</h3>
+  <h3 class="title">{{ 'filter-drawer.order-by' | translate }}</h3>
   <mat-radio-group [value]="defaultSort" class="radio-group">
     <mat-radio-button (click)="selectOrder.emit(direction.selectKey)"
                       *ngFor="let direction of sortTypes"
@@ -16,5 +16,6 @@
     </mat-radio-button>
   </mat-radio-group>
   <mat-divider></mat-divider>
+  <br/>
   <ng-content></ng-content>
 </div>

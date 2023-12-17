@@ -2,7 +2,7 @@ import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
 import {ReviewsService} from "../../../shared/data-access/reviews/reviews.service";
 import {Feedback, Review} from "../../../shared/data-access/reviews/review.class";
-import {catchError, combineLatest, map, Observable, of, switchMap} from "rxjs";
+import {BehaviorSubject, catchError, combineLatest, map, Observable, of, switchMap, tap} from "rxjs";
 import {AuthenticationService} from "../../../shared/data-access/authentication/authentication.service";
 import {DifficultyToLocale,Role} from "../../../shared/data-access/shared.enums";
 import {environment} from "../../../../environments/environment";
@@ -34,11 +34,16 @@ export class ReviewDetailComponent {
 
   }
 
-  review$: Observable<Review> = this.route.paramMap.pipe(
+  loadingReview$ = new BehaviorSubject<boolean>(false);
+
+  review$: Observable<Review> = this.route.paramMap
+    .pipe(tap(() => this.loadingReview$.next(true)))
+    .pipe(
     switchMap((params) => {
       return this.reviewsService.getReviewById(`${environment.API_ENDPOINT}/reviews/${params.get('id')}`)
-    })
-  )
+    }))
+    .pipe(tap(() => this.loadingReview$.next(false)));
+
   currentUser$ = this.authService.getLoggedUser()
   userAndReview$ = combineLatest([this.currentUser$, this.review$])
   reviewFeedback$: Observable<Feedback> = of()

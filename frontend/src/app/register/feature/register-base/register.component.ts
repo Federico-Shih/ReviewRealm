@@ -29,6 +29,7 @@ export class RegisterComponent {
         error: (err) => {
           if (!(err instanceof ValidationError) || err.status !== 400 || err.exceptions === null) {
             this._snackBar.open(this.translateService.instant('errors.unknown'), this.translateService.instant('errors.dismiss'));
+            this.loading$.next(false);
             return;
           }
           const errorMessages: UserCreateErrors = err.exceptions.reduce((acc: UserCreateErrors, curr) => {
