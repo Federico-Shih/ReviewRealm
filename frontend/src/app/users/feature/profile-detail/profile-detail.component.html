@@ -11,9 +11,11 @@
   <div class="second-part">
     <span class="titletext" i18n>{{ 'profile.favgames' | translate }}</span>
     <ng-container *ngIf="favgames$ | async as games; else loading2">
-      <mat-grid-list cols="3" class="m-t">
-        <mat-grid-tile *ngFor="let game of games.content" [colspan]="1">
-          <app-game-card [game]="game" [tiny]="true"></app-game-card>
+      <mat-grid-list class="m-t" cols="3" gutterSize="10px">
+        <mat-grid-tile *ngFor="let game of (games.content | slice : 0 : 3)" [colspan]="1">
+          <div class="game-container">
+            <app-game-card [game]="game" [tiny]="true"></app-game-card>
+          </div>
         </mat-grid-tile>
       </mat-grid-list>
     </ng-container>

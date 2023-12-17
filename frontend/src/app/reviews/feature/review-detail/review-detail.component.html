@@ -1,31 +1,32 @@
+<ng-container *ngIf='loading'>
+  <app-loading-spinner/>
+</ng-container>
 <ng-container
-  *ngIf="loadingReview$ | async as loadingReview">
+  *ngIf="loadedReview$ | async as review">
   <app-breadcrumbs
-    *ngIf='loadingReview.review !== null && loadingReview.review.game'
+    *ngIf='review !== null && review.game'
     [breadcrumbs]="[
       { name: 'review.search' | translate, link: '/' },
-      { name: loadingReview.review.game.name, link: null }
-    ]" />
-  <ng-container *ngIf='loadingReview.loading'>
-    <app-loading-spinner />
-  </ng-container>
-  <div class="review-detail" *ngIf="loadingReview.review" [style.visibility]="loadingReview.loading ? 'hidden' : 'visible' ">
+      { name: review.game.name, link: null }
+    ]"/>
+
+  <div *ngIf="review" [style.visibility]="loading ? 'hidden' : 'visible' " class="review-detail">
     <div class="review-section">
       <div class="main-card">
         <div class="review-card-content">
           <div class="review-header">
-            <span class="title">{{ loadingReview.review.title }}</span>
+            <span class="title">{{ review.title }}</span>
             <div class="top-right">
               <div class="score">
-                <span class="actual-score">{{ loadingReview.review.rating }}</span>
+                <span class="actual-score">{{ review.rating }}</span>
                 <span>/10</span>
               </div>
               <ng-container *ngIf="canEdit$ | async">
                 <button
                   mat-icon-button
                   [matTooltip]="'review.edit' | translate"
-                  routerLink="/reviews/{{ loadingReview.review.id }}/edit">
-                  <mat-icon fontIcon="edit" class="icons" />
+                  routerLink="/reviews/{{ review.id }}/edit">
+                  <mat-icon class="icons" fontIcon="edit"/>
                 </button>
               </ng-container>
               <ng-container *ngIf="canDelete$ | async">
@@ -48,28 +49,28 @@
           </div>
           <mat-divider />
           <p class="review-body">
-            {{ loadingReview.review.content }}
+            {{ review.content }}
           </p>
           <mat-divider />
           <div class="review-middle">
             <div>
-              <ng-container *ngIf="loadingReview.review.getGameLengthInUnits()">
+              <ng-container *ngIf="review.getGameLengthInUnits()">
                 <span>
                   {{ 'review.timeplayed' | translate }}:
                   {{
-                    loadingReview.review.getGameLengthInUnits()?.units!
-                      | translate
-                        : {
-                            number: loadingReview.review
-                              .getGameLengthInUnits()
-                              ?.value!.toFixed(2)
-                          }
+                  review.getGameLengthInUnits()?.units!
+                    | translate
+                    : {
+                      number: review
+                        .getGameLengthInUnits()
+                        ?.value!.toFixed(2)
+                    }
                   }}
                 </span>
               </ng-container>
             </div>
             <span>
-              {{ loadingReview.review.created | date: 'yyyy-MM-dd HH:mm' }}
+              {{ review.created | date: 'yyyy-MM-dd HH:mm' }}
             </span>
           </div>
           <mat-divider />
@@ -78,28 +79,28 @@
               <span> {{ 'review.tags' | translate }}: </span>
               <div class="tag-group">
                 <span
-                  *ngIf="loadingReview.review.platform"
+                  *ngIf="review.platform"
                   routerLink="/"
-                  [queryParams]="{ platform: loadingReview.review.platform }"
+                  [queryParams]="{ platform: review.platform }"
                   class="chip">
-                  {{ loadingReview.review.platform }}
+                  {{ review.platform }}
                 </span>
                 <span
-                  *ngIf="loadingReview.review.difficulty"
+                  *ngIf="review.difficulty"
                   routerLink="/"
-                  [queryParams]="{ difficulty: loadingReview.review.difficulty }"
+                  [queryParams]="{ difficulty: review.difficulty }"
                   class="chip">
-                  {{ DifficultyToLocale[loadingReview.review.difficulty] | translate }}
+                  {{ DifficultyToLocale[review.difficulty] | translate }}
                 </span>
                 <span
-                  *ngIf="loadingReview.review.completed"
+                  *ngIf="review.completed"
                   routerLink="/"
                   [queryParams]="{ completed: true }"
                   class="chip">
                   {{ 'review-search.completed' | translate }}
                 </span>
                 <span
-                  *ngIf="loadingReview.review.replayable"
+                  *ngIf="review.replayable"
                   routerLink="/"
                   [queryParams]="{ replayable: true }"
                   class="chip">
@@ -108,15 +109,15 @@
               </div>
             </div>
             <div class="author">
-              <a routerLink="/profile/{{ loadingReview.review.authorId }}" class="name">{{
+              <a class="name" routerLink="/profile/{{ review.authorId }}">{{
                 'review-card.by'
-                  | translate: { author: loadingReview.review.author?.username }
-              }}</a>
+                  | translate: {author: review.author?.username}
+                }}</a>
               <div class="author-preferences">
                 <span>{{ 'profile-card.whoprefers' | translate }}:</span>
                 <div class="tag-group">
                   <ng-container
-                    *ngFor="let genre of loadingReview.review.author?.preferences">
+                    *ngFor="let genre of review.author?.preferences">
                     <span
                       routerLink="/"
                       [queryParams]="{ gameGenres: genre.id }"
@@ -134,9 +135,9 @@
         <div class="popularity-section">
           <div class="left">
             <span class="popularity-tag"
-              >{{ 'review-filter.popularity' | translate }}:</span
+            >{{ 'review-filter.popularity' | translate }}:</span
             >
-            <span class="popularity-value">{{ loadingReview.review.getPopularity() }}</span>
+            <span class="popularity-value">{{ review.getPopularity() }}</span>
           </div>
           <div class="right">
             <ng-container *ngIf="reviewFeedback$ | async as feedback">
@@ -172,9 +173,9 @@
         </div>
       </div>
     </div>
-    <ng-container *ngIf="loadingReview.review.game as game">
+    <ng-container *ngIf="review.game as game">
       <div class="game-section">
-        <app-game-card [game]="game" [small]="true" />
+        <app-game-card [game]="game" [small]="true"/>
       </div>
     </ng-container>
   </div>

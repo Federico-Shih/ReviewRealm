@@ -43,6 +43,21 @@
   margin-top: 15px;
 }
 
+.game-container {
+  width: 100%;
+  height: 280px;
+}
+
+.slide-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+  overflow-x: scroll;
+}
+
 .centered-container {
   width: 100%;
   height: 100%;

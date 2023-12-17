@@ -16,22 +16,22 @@
   </div>
   <div class="spacer"></div>
   <section class="action-container">
-    <a *ngIf="isLoggedIn" routerLink="/for-you">
+    <a *ngIf="isLoggedIn" routerLink="/for-you" routerLinkActive="active">
       <div id="for-you-link">
         {{ 'navbar.for-you' | translate }}
       </div>
     </a>
-    <a routerLink="/games">
+    <a routerLink="/games" routerLinkActive="active">
       <div id="games-link">
         {{ 'navbar.games-link' | translate }}
       </div>
     </a>
-    <a routerLink="/">
+    <a [routerLinkActiveOptions]="{exact: true}" routerLink="/" routerLinkActive="active">
       <div id="reviews-link">
         {{ 'navbar.reviews-link' | translate }}
       </div>
     </a>
-    <a routerLink="/community">
+    <a routerLink="/community" routerLinkActive="active">
       <div id="community-link">
         {{ 'navbar.community-link' | translate }}
       </div>

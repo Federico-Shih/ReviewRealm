@@ -191,3 +191,7 @@ app-root {
 .hidden {
   display: none !important;
 }
+
+.remove-mat-expansion-panel-padding .mat-expansion-panel-content .mat-expansion-panel-body {
+  padding: 0 !important;
+}

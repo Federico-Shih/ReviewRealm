@@ -1,24 +1,14 @@
-import { ParamMap } from '@angular/router';
-import {
-  isReviewSortType,
-  ReviewSearchDto,
-} from '../../shared/data-access/reviews/reviews.dtos';
-import {
-  isDifficulty,
-  isPlatform,
-  isSortDirection,
-} from '../../shared/data-access/shared.enums';
-import { isBoolean } from '../../shared/helpers/utils';
+import {ParamMap} from '@angular/router';
+import {isReviewSortType, ReviewSearchDto,} from '../../shared/data-access/reviews/reviews.dtos';
+import {isDifficulty, isPlatform, isSortDirection,} from '../../shared/data-access/shared.enums';
+import {isBoolean} from '../../shared/helpers/utils';
 import {
   GameNotReviewedBySearchDto,
   GameSearchDto,
   isGameSortType,
   isRatingType,
 } from '../../shared/data-access/games/games.dtos';
-import {
-  isUserSortType,
-  UserSearchDto,
-} from '../../shared/data-access/users/users.dtos';
+import {isUserSortType, UserSearchDto,} from '../../shared/data-access/users/users.dtos';
 
 // Precondición: checked.length === total.length
 export const mapCheckedToType = <T, K>(
@@ -46,7 +36,7 @@ export const paramsMapToReviewSearchDto = (
     .filter(userId => !isNaN(userId as unknown as number))
     .map(genre => parseInt(genre));
   const authorPrefs = params
-    .getAll('preferences')
+    .getAll('userPreferences')
     .filter(genre => !isNaN(genre as unknown as number))
     .map(genre => parseInt(genre));
   const sort = params.get('sort');

@@ -7,28 +7,22 @@ import {
   RendererFactory2,
   ViewChild,
 } from '@angular/core';
-import { ReviewsService } from '../../../shared/data-access/reviews/reviews.service';
-import { BehaviorSubject, combineLatest, map, switchMap, tap } from 'rxjs';
-import { ActivatedRoute, Router } from '@angular/router';
-import {
-  mapCheckedToType,
-  paramsMapToReviewSearchDto,
-} from '../../utils/mappers';
-import {
-  Difficulty,
-  Platform,
-  SortDirection,
-} from '../../../shared/data-access/shared.enums';
-import { ReviewSortType } from '../../../shared/data-access/reviews/reviews.dtos';
-import { EnumType } from '../../../shared/ui/filter-drawer/filter-drawer.component';
-import { EnumsService } from '../../../shared/data-access/enums/enums.service';
-import { Genre } from '../../../shared/data-access/enums/enums.class';
-import { FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
-import { MatSidenav } from '@angular/material/sidenav';
-import { formatNumber } from '@angular/common';
-import { PageEvent } from '@angular/material/paginator';
-import { environment } from '../../../../environments/environment';
-import { Review } from '../../../shared/data-access/reviews/review.class';
+import {ReviewsService} from '../../../shared/data-access/reviews/reviews.service';
+import {BehaviorSubject, combineLatest, map, Observable, switchMap, tap} from 'rxjs';
+import {ActivatedRoute, Router} from '@angular/router';
+import {mapCheckedToType, paramsMapToReviewSearchDto,} from '../../utils/mappers';
+import {Difficulty, Platform, SortDirection,} from '../../../shared/data-access/shared.enums';
+import {ReviewSortType} from '../../../shared/data-access/reviews/reviews.dtos';
+import {EnumType} from '../../../shared/ui/filter-drawer/filter-drawer.component';
+import {EnumsService} from '../../../shared/data-access/enums/enums.service';
+import {Genre} from '../../../shared/data-access/enums/enums.class';
+import {FormArray, FormBuilder, FormControl, FormGroup} from '@angular/forms';
+import {MatSidenav} from '@angular/material/sidenav';
+import {formatNumber} from '@angular/common';
+import {PageEvent} from '@angular/material/paginator';
+import {environment} from '../../../../environments/environment';
+import {Review} from '../../../shared/data-access/reviews/review.class';
+import {AuthenticationService} from "../../../shared/data-access/authentication/authentication.service";
 
 @Component({
   selector: 'app-review-search',
@@ -37,8 +31,12 @@ import { Review } from '../../../shared/data-access/reviews/review.class';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ReviewSearchComponent implements OnInit, AfterViewInit {
-  filter: FormGroup;
+  favoritedGenres$: Observable<Genre[]> = this.authService.getLoggedUser().pipe(switchMap((user) => {
+    if (user === null) return [];
+    return this.genreService.getGenres(user.links.preferences);
+  }));
 
+  filter: FormGroup;
   loading = false;
   filtersLoaded = new BehaviorSubject<boolean>(false);
   genres$ = this.genreService.getGenres(`${environment.API_ENDPOINT}/genres`);
@@ -79,7 +77,8 @@ export class ReviewSearchComponent implements OnInit, AfterViewInit {
     private readonly router: Router,
     private readonly genreService: EnumsService,
     private readonly formBuilder: FormBuilder,
-    private readonly rendererFactory: RendererFactory2
+    private readonly rendererFactory: RendererFactory2,
+    private readonly authService: AuthenticationService,
   ) {
     this.filter = this.formBuilder.group({
       gameGenres: new FormArray([]),
@@ -96,6 +95,7 @@ export class ReviewSearchComponent implements OnInit, AfterViewInit {
     });
     this.renderer = rendererFactory.createRenderer(null, null);
   }
+
 
   orderDirections: EnumType<ReviewSortType>[] = Object.values(
     ReviewSortType
@@ -116,25 +116,6 @@ export class ReviewSearchComponent implements OnInit, AfterViewInit {
   @ViewChild('sidenav')
   sidenav!: MatSidenav;
 
-  search(value: string) {
-    this.filter.get('search')?.setValue(value);
-  }
-
-  submitSearch() {
-    if (this.filter.get('search')?.value !== undefined) {
-      this.router.navigate([], {
-        queryParams: {
-          search: this.filter.get('search')?.value,
-        },
-        queryParamsHandling: 'merge',
-      });
-    }
-  }
-
-  navigateToReview(review: Review) {
-    this.router.navigate(['/reviews', review.id]);
-  }
-
   ngOnInit() {
     // Carga los generes elegidos y sus selecciones
     combineLatest([this.genres$, this.reviewSearchDto$]).subscribe(
@@ -152,9 +133,11 @@ export class ReviewSearchComponent implements OnInit, AfterViewInit {
           } else {
             genreControl.at(index).setValue(isSelected);
           }
+
           const isSelectedPreference =
             selectedPreferences.find(selection => selection === genre.id) !==
             undefined;
+
           const prefControl = this.filter.get('userPreferences') as FormArray;
           if (prefControl.length < genres.length) {
             prefControl.push(new FormControl(isSelectedPreference));
@@ -169,14 +152,14 @@ export class ReviewSearchComponent implements OnInit, AfterViewInit {
     // Actualiza los valores de forms cada vez que hay un cambio en tu reviewSearch.
     this.reviewSearchDto$.subscribe(
       ({
-        sort,
-        timeplayed,
-        completed,
-        replayable,
-        direction,
-        difficulty,
-        platforms,
-      }) => {
+         sort,
+         timeplayed,
+         completed,
+         replayable,
+         direction,
+         difficulty,
+         platforms,
+       }) => {
         this.filter.get('sort')?.setValue(sort || ReviewSortType.CREATED);
         this.filter.get('direction')?.setValue(direction || SortDirection.DESC);
         const difficultyControl = this.filter.get('difficulty') as FormArray;
@@ -210,6 +193,45 @@ export class ReviewSearchComponent implements OnInit, AfterViewInit {
 
     this.breakpoint =
       window.innerWidth <= 1100 ? 1 : window.innerWidth <= 2100 ? 2 : 3;
+  }
+
+  search(value: string) {
+    this.filter.get('search')?.setValue(value);
+  }
+
+  submitSearch() {
+    if (this.filter.get('search')?.value !== undefined) {
+      this.router.navigate([], {
+        queryParams: {
+          search: this.filter.get('search')?.value,
+        },
+        queryParamsHandling: 'merge',
+      });
+    }
+  }
+
+  navigateToReview(review: Review) {
+    this.router.navigate(['/reviews', review.id]);
+  }
+
+  selectFavoriteGameGenres(genres: Genre[]) {
+    if (genres.length > 0) {
+      this.filter.value._gameGenresMeta.forEach((genre: Genre, index: number) => {
+        if (genres.find((g) => g.id === genre.id) !== undefined) {
+          this.filter.get('gameGenres')?.get(`${index}`)?.setValue(true);
+        }
+      });
+    }
+  }
+
+  selectUserPreferences(genres: Genre[]) {
+    if (genres.length > 0) {
+      this.filter.value._gameGenresMeta.forEach((genre: Genre, index: number) => {
+        if (genres.find((g) => g.id === genre.id) !== undefined) {
+          this.filter.get('userPreferences')?.get(`${index}`)?.setValue(true);
+        }
+      });
+    }
   }
 
   onResize(event: Event) {

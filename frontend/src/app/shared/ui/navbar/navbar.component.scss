@@ -62,6 +62,11 @@ a {
   align-items: center;
 }
 
+.active {
+  background: rgba(0, 0, 0, 0.4);
+  color: white !important;
+}
+
 a div:hover {
   background: rgba(0, 0, 0, 0.3);
   color: white !important;

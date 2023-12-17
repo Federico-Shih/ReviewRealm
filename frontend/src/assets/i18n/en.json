@@ -1,4 +1,8 @@
 {
+  "NINTENDO": "Nintendo",
+  "PC": "PC",
+  "PS": "PlayStation",
+  "XBOX": "Xbox",
   "apply-filters": "Apply filters",
   "asc": "Ascending",
   "average-rating": "Average Rating",
@@ -154,7 +158,8 @@
     "avg-rating": {
       "filter": "Average Rating"
     },
-    "exclude-no-rating": "Exclude games without rating"
+    "exclude-no-rating": "Exclude games without rating",
+    "no-results": "No games found..."
   },
   "game-suggest": {
     "submit": "Send Suggestion",
@@ -209,6 +214,13 @@
     }
   },
   "minutes": "{{number}} minutes",
+  "missions": {
+    "completedtimes": "Times Completed: {{value}}",
+    "exp": "Total Experience: {{value}}",
+    "lvl": "LVL. {{value}}",
+    "yourmissions": "Your Missions",
+    "yourprogress": "Your Progress"
+  },
   "navbar": {
     "community-link": "Community",
     "for-you": "For you",
@@ -389,6 +401,7 @@
     "apply-filters": "Apply filters",
     "completed": "Completed",
     "difficulty-filter": "Perceived difficulty",
+    "favoritegenres": "Select favorites",
     "filter-title": "Filter by",
     "game-genres-filter": "Game's genres",
     "no-results": "No reviews found.",
@@ -396,7 +409,7 @@
     "replayable": "Replayable",
     "reset-filters": "Reset filters",
     "search-label": "Search",
-    "timeplayed-filter": "Minimum time played",
+    "timeplayed-filter": "Minimum hours played",
     "toggle-filters": "Filters",
     "user-preference-filter": "User preferences"
   },
@@ -459,12 +472,5 @@
     "token-unknown": "Unknown token. ",
     "welcome": "Welcome {{value}}",
     "write-review": "Write review"
-  },
-  "missions": {
-    "yourprogress": "Your Progress",
-    "exp": "Total Experience: {{value}}",
-    "lvl": "LVL. {{value}}",
-    "completedtimes": "Times Completed: {{value}}",
-    "yourmissions": "Your Missions"
   }
 }

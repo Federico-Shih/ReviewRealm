@@ -21,6 +21,11 @@
   padding: 1em;
 }
 
+.genre-checkbox {
+  width: 50%;
+  font-size: 0.9rem;
+}
+
 .drawer-container::-webkit-scrollbar {
   display: none;
 }
@@ -115,9 +120,24 @@
   background-color: var(--color-background);
 }
 
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .sticky {
   position: sticky;
   top: 0;
   overflow: hidden;
   z-index: 10;
+}
+
+.no-results-container {
+  font-size: 1.2rem;
+}
+
+.favorite-button {
+  width: 95%;
+  margin: 0 0.5rem;
 }

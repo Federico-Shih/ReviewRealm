@@ -7,22 +7,20 @@ import {
   RendererFactory2,
   ViewChild,
 } from '@angular/core';
-import { GamesService } from '../../../shared/data-access/games/games.service';
-import { GameSortType } from '../../../shared/data-access/games/games.dtos';
-import { ActivatedRoute, Router } from '@angular/router';
-import { combineLatest, map, switchMap } from 'rxjs';
-import { SortDirection } from '../../../shared/data-access/shared.enums';
-import {
-  mapCheckedToType,
-  paramsMapToGameSearchDto,
-} from '../../../home/utils/mappers';
-import { EnumsService } from '../../../shared/data-access/enums/enums.service';
-import { FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
-import { EnumType } from '../../../shared/ui/filter-drawer/filter-drawer.component';
-import { MatSidenav } from '@angular/material/sidenav';
-import { PageEvent } from '@angular/material/paginator';
-import { Genre } from '../../../shared/data-access/enums/enums.class';
-import { environment } from '../../../../environments/environment';
+import {GamesService} from '../../../shared/data-access/games/games.service';
+import {GameSortType} from '../../../shared/data-access/games/games.dtos';
+import {ActivatedRoute, Router} from '@angular/router';
+import {combineLatest, map, Observable, switchMap, tap} from 'rxjs';
+import {SortDirection} from '../../../shared/data-access/shared.enums';
+import {mapCheckedToType, paramsMapToGameSearchDto,} from '../../../home/utils/mappers';
+import {EnumsService} from '../../../shared/data-access/enums/enums.service';
+import {FormArray, FormBuilder, FormControl, FormGroup} from '@angular/forms';
+import {EnumType} from '../../../shared/ui/filter-drawer/filter-drawer.component';
+import {MatSidenav} from '@angular/material/sidenav';
+import {PageEvent} from '@angular/material/paginator';
+import {Genre} from '../../../shared/data-access/enums/enums.class';
+import {environment} from '../../../../environments/environment';
+import {AuthenticationService} from "../../../shared/data-access/authentication/authentication.service";
 
 @Component({
   selector: 'app-game-list',
@@ -34,12 +32,16 @@ export class GameListComponent implements OnInit, AfterViewInit {
   gameSearchDto$ = this.route.queryParamMap.pipe(map(paramsMapToGameSearchDto));
   genres$ = this.genreService.getGenres(`${environment.API_ENDPOINT}/genres`);
   filter: FormGroup;
+  loading = true;
+
   private renderer: Renderer2;
 
   paginatedGames$ = this.gameSearchDto$.pipe(
+    tap(() => (this.loading = true)),
     switchMap(query =>
       this.gameService.getGames(`${environment.API_ENDPOINT}/games`, query)
-    )
+    ),
+    tap(() => (this.loading = false))
   );
 
   pagination$ = this.paginatedGames$.pipe(
@@ -52,31 +54,17 @@ export class GameListComponent implements OnInit, AfterViewInit {
     })
   );
 
-  combinedPagination$ = combineLatest([this.gameSearchDto$, this.pagination$]);
+  combinedPagination$ = combineLatest({
+    gameSearch: this.gameSearchDto$,
+    pagination: this.pagination$
+  });
 
   @ViewChild('sidenav')
   sidenav!: MatSidenav;
-
-  constructor(
-    private readonly gameService: GamesService,
-    private readonly router: Router,
-    private readonly genreService: EnumsService,
-    private readonly formBuilder: FormBuilder,
-    private route: ActivatedRoute,
-    private readonly rendererFactory: RendererFactory2
-  ) {
-    this.filter = this.formBuilder.group({
-      search: new FormControl(''),
-      excludeNoRating: new FormControl(false),
-      genres: new FormArray([]),
-      lowRating: new FormControl(0),
-      highRating: new FormControl(10),
-      _gameGenresMeta: [],
-      sort: new FormControl(''),
-      direction: new FormControl(''),
-    });
-    this.renderer = rendererFactory.createRenderer(null, null);
-  }
+  favoritedGenres$: Observable<Genre[]> = this.authService.getLoggedUser().pipe(switchMap((user) => {
+    if (user === null) return [];
+    return this.genreService.getGenres(user.links.preferences);
+  }));
   orderDirections: EnumType<GameSortType>[] = Object.values(GameSortType).map(
     str => ({
       translateKey: `game-filter.${str}`,
@@ -167,14 +155,47 @@ export class GameListComponent implements OnInit, AfterViewInit {
       sort,
       direction,
     };
-    console.log(queryParams);
     this.router.navigate([], {
       queryParams,
     });
   }
+
+  constructor(
+    private readonly gameService: GamesService,
+    private readonly router: Router,
+    private readonly genreService: EnumsService,
+    private readonly formBuilder: FormBuilder,
+    private route: ActivatedRoute,
+    private readonly rendererFactory: RendererFactory2,
+    private readonly authService: AuthenticationService,
+  ) {
+    this.filter = this.formBuilder.group({
+      search: new FormControl(''),
+      excludeNoRating: new FormControl(false),
+      genres: new FormArray([]),
+      lowRating: new FormControl(0),
+      highRating: new FormControl(10),
+      _gameGenresMeta: [],
+      sort: new FormControl(''),
+      direction: new FormControl(''),
+    });
+    this.renderer = rendererFactory.createRenderer(null, null);
+  }
+
+  selectGameGenres(genres: Genre[]) {
+    if (genres.length > 0) {
+      this.filter.value._gameGenresMeta.forEach((genre: Genre, index: number) => {
+        if (genres.find((g) => g.id === genre.id) !== undefined) {
+          this.filter.get('genres')?.get(`${index}`)?.setValue(true);
+        }
+      });
+    }
+  }
+
   check(formLabel: string, value: boolean | undefined) {
     this.filter.get(formLabel)?.setValue(value);
   }
+
   selectSortDirection(sortDirection: SortDirection) {
     this.filter.get('direction')?.setValue(sortDirection);
   }

@@ -1,4 +1,8 @@
 {
+  "NINTENDO": "Nintendo",
+  "PC": "PC",
+  "PS": "PlayStation",
+  "XBOX": "Xbox",
   "apply-filters": "Aplicar filtros",
   "asc": "Ascendente",
   "average-rating": "Puntuación Promedio",
@@ -154,7 +158,8 @@
     "avg-rating": {
       "filter": "Puntación Promedio"
     },
-    "exclude-no-rating": "Excluir juegos sin puntuación"
+    "exclude-no-rating": "Excluir juegos sin puntuación",
+    "no-results": "No se encontraron juegos..."
   },
   "game-suggest": {
     "submit": "Enviar Sugerencia",
@@ -209,6 +214,13 @@
     }
   },
   "minutes": "{{number}} minutos",
+  "missions": {
+    "completedtimes": "Veces Completada: {{value}}",
+    "exp": "Experiencia Total: {{value}}",
+    "lvl": "NIVEL {{value}}",
+    "yourmissions": "Sus Misiones",
+    "yourprogress": "Tu Progreso"
+  },
   "navbar": {
     "community-link": "Comunidad",
     "for-you": "Tu feed",
@@ -246,12 +258,12 @@
     "xbox": "XBox"
   },
   "profile": {
+    "fan": "Fanático de:",
     "favgames": "Juegos Favoritos",
     "followers": "Seguidores: {{value}}",
     "following": "Siguiendo: {{value}}",
     "reviews": "Reseñas",
-    "view-more-button": "Ver Más",
-    "fan": "Fanático de:"
+    "view-more-button": "Ver Más"
   },
   "profile-card": {
     "whoprefers": "quien prefiere"
@@ -390,6 +402,7 @@
     "apply-filters": "Aplicar filtros",
     "completed": "Completado",
     "difficulty-filter": "Dificultad percibida",
+    "favoritegenres": "Seleccionar favoritos",
     "filter-title": "Filtrar por",
     "game-genres-filter": "Géneros del juego",
     "no-results": "No se encontraron resultados.",
@@ -397,7 +410,7 @@
     "replayable": "Rejugable",
     "reset-filters": "Eliminar filtros",
     "search-label": "Buscar",
-    "timeplayed-filter": "Tiempo mínimo jugado",
+    "timeplayed-filter": "Horas mínimas jugadas",
     "toggle-filters": "Filtros",
     "user-preference-filter": "Preferencias de usuarios"
   },
@@ -410,6 +423,9 @@
   "settings": {
     "avatar": "Avatar de Perfil",
     "avatarchoose": "¡Seleccione su Avatar!",
+    "avatars": {
+      "choose": "¡Seleccione su Avatar!"
+    },
     "fav-games": "Juegos Favoritos",
     "fav-genres": "Géneros Favoritos",
     "fg": {
@@ -430,10 +446,7 @@
       "save": "Guardar Nueva Configuración"
     },
     "notifications": "Notificaciones de Correo Electrónico",
-    "title": "Configuración de Cuenta",
-    "avatars": {
-      "choose": "¡Seleccione su Avatar!"
-    }
+    "title": "Configuración de Cuenta"
   },
   "submission": {
     "handled": "Sugerencia resuelta."
@@ -461,12 +474,5 @@
     "token": "Código de Verificación",
     "token-required": "Se requiere el código de verificación",
     "token-unknown": "Token desconocido."
-  },
-  "missions": {
-    "yourprogress": "Tu Progreso",
-    "exp": "Experiencia Total: {{value}}",
-    "lvl": "NIVEL {{value}}",
-    "completedtimes": "Veces Completada: {{value}}",
-    "yourmissions": "Sus Misiones"
   }
 }
