@@ -12,7 +12,6 @@ import { isBoolean } from '../../shared/helpers/utils';
 import {
   GameNotReviewedBySearchDto,
   GameSearchDto,
-  GameSortType,
   isGameSortType,
   isRatingType,
 } from '../../shared/data-access/games/games.dtos';
@@ -135,7 +134,7 @@ export const gameSearchForSubmitReviewParamsToDto = (
   const search = params.get('search') !== null ? params.get('search') : null;
   const searchNotNull = search !== null ? search : undefined;
   return {
-    search: params.get('search') ? params.get('search')! : undefined,
+    search: searchNotNull,
     page: parseInt(params.get('page') || '1') || 1,
     pageSize: parseInt(params.get('pageSize') || '6') || 6,
     notReviewedBy: userid,

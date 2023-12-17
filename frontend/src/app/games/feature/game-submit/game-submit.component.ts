@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { AuthenticationService } from '../../../shared/data-access/authentication/authentication.service';
 import { Router } from '@angular/router';
-import { BehaviorSubject, map, of, switchMap } from 'rxjs';
+import { BehaviorSubject, map } from 'rxjs';
 import { GameFormType, Role } from '../../../shared/data-access/shared.enums';
 import { EnumsService } from '../../../shared/data-access/enums/enums.service';
 import { environment } from '../../../../environments/environment';
@@ -52,7 +52,7 @@ export class GameSubmitComponent {
         this.gameService
           .createGame(`${environment.API_ENDPOINT}/games`, formData)
           .subscribe({
-            error: err => {
+            error: () => {
               this.snackBar.open(
                 this.translate.instant('errors.unknown'),
                 this.translate.instant('errors.dismiss'),

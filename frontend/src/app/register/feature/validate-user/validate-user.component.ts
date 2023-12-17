@@ -30,12 +30,12 @@ export class ValidateUserComponent implements OnInit {
     this.authenticationService
       .enableUser(this.form.value.email, this.form.value.token)
       .subscribe({
-        next: user => {
+        next: () => {
           this.loading.next(false);
           this.initialLoading.next(false);
           this.router.navigate(['/']);
         },
-        error: error => {
+        error: () => {
           this.form.controls.token.setErrors({ unknown: true });
           this.form.setErrors({ unknown: true });
           this.loading.next(false);

@@ -51,7 +51,7 @@ export class ReviewSubmitComponent {
     this.reviewService
       .createReview(`${environment.API_ENDPOINT}/reviews`, dto)
       .subscribe({
-        error: err => {
+        error: () => {
           this.loading$.next(false);
           this._snackBar.open(
             this.translate.instant('errors.unknown'),

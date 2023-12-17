@@ -49,7 +49,7 @@ export class ReviewEditComponent {
     this.loading$.next(true);
     this.review$.subscribe(review => {
       this.reviewService.editReview(review.links.self, dto).subscribe({
-        error: err => {
+        error: () => {
           this.loading$.next(false);
           this._snackBar.open(
             this.translate.instant('errors.unknown'),

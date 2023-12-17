@@ -1,6 +1,6 @@
 <div class="main-container">
   <div class="form-container">
-    <section *ngIf="!(initialLoading | async); else initialLoadingSpinner">
+    <section *ngIf="(initialLoading | async) !== true; else initialLoadingSpinner">
       <mat-card class="card">
         <mat-card-header class="card-header">{{
           'validate-user-form.header' | translate

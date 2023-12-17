@@ -14,8 +14,6 @@ import {
 } from '../../../shared/data-access/shared.enums';
 import { Review } from '../../../shared/data-access/reviews/review.class';
 import { Game } from '../../../shared/data-access/games/games.class';
-import { MatFormField } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
 import { ReviewSubmitDto } from '../../../shared/data-access/reviews/reviews.dtos';
 
 @Component({
@@ -24,7 +22,7 @@ import { ReviewSubmitDto } from '../../../shared/data-access/reviews/reviews.dto
   styleUrls: ['./review-form.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ReviewFormComponent {
+export class ReviewFormComponent implements OnInit{
   @Input()
   loading: boolean | null = false;
 

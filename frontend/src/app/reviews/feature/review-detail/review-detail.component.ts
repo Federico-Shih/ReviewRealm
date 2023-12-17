@@ -38,7 +38,7 @@ import {
   styleUrls: ['./review-detail.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ReviewDetailComponent {
+export class ReviewDetailComponent implements OnInit {
   constructor(
     private readonly reviewsService: ReviewsService,
     private readonly route: ActivatedRoute,

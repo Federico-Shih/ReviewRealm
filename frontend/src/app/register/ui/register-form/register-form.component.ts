@@ -82,11 +82,13 @@ export class RegisterFormComponent implements OnInit {
   onSubmit() {
     if (this.registerForm.status !== 'VALID') return;
     const { username, email, password } = this.registerForm.value;
-    this.createUser.emit({
-      username: username,
-      email: email,
-      password: password,
-    });
+    if(username && email && password) {
+      this.createUser.emit({
+        username: username,
+        email: email,
+        password: password,
+      });
+    }
   }
 
   ngOnInit(): void {

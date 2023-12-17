@@ -172,7 +172,7 @@
         </div>
       </div>
     </div>
-    <ng-container *ngIf="review.game">
+    <ng-container *ngIf="loadingReview.review.game as game">
       <div class="game-section">
         <app-game-card [game]="game" [small]="true" />
       </div>
