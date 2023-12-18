@@ -260,19 +260,19 @@
                             </resource>
                         </webResources>
                     </configuration>
-                    <!--                    <executions>-->
-                    <!--                        <execution>-->
-                    <!--                            <id>default-war</id>-->
-                    <!--                            <phase>none</phase>-->
-                    <!--                        </execution>-->
-                    <!--                        <execution>-->
-                    <!--                            <id>war-exploded</id>-->
-                    <!--                            <phase>package</phase>-->
-                    <!--                            <goals>-->
-                    <!--                                <goal>exploded</goal>-->
-                    <!--                            </goals>-->
-                    <!--                        </execution>-->
-                    <!--                    </executions>-->
+<!--                    <executions>-->
+<!--                        <execution>-->
+<!--                            <id>default-war</id>-->
+<!--                            <phase>none</phase>-->
+<!--                        </execution>-->
+<!--                        <execution>-->
+<!--                            <id>war-exploded</id>-->
+<!--                            <phase>package</phase>-->
+<!--                            <goals>-->
+<!--                                <goal>exploded</goal>-->
+<!--                            </goals>-->
+<!--                        </execution>-->
+<!--                    </executions>-->
                 </plugin>
                 <plugin>
                     <artifactId>maven-install-plugin</artifactId>

@@ -18,10 +18,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Lazy
@@ -225,6 +222,10 @@ public class ReviewServiceImpl implements ReviewService {
     public ReviewFeedback updateOrCreateReviewFeedback(long reviewId, long userId, FeedbackType feedback){
         User user = userService.getUserById(userId).orElseThrow(UserNotFoundException::new);
         Review review = getReviewById(reviewId, null).orElseThrow(ReviewNotFoundException::new);
+
+        if (Objects.equals(review.getAuthor().getId(), user.getId())) {
+            throw new UserIsAuthorException();
+        }
         
         FeedbackType oldFeedback = reviewDao.getReviewFeedback(review.getId(), user.getId()).orElse(null);
 

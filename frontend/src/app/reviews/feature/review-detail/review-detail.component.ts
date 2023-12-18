@@ -1,8 +1,14 @@
-import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
-import {ReviewsService} from '../../../shared/data-access/reviews/reviews.service';
-import {Feedback, Review,} from '../../../shared/data-access/reviews/review.class';
-import {BehaviorSubject, combineLatest, distinctUntilChanged, map, Observable, switchMap, tap,} from 'rxjs';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { ReviewsService } from '../../../shared/data-access/reviews/reviews.service';
+import {
+  Feedback, FeedbackType,
+  Review,
+} from '../../../shared/data-access/reviews/review.class';
+import {
+  BehaviorSubject,
+  combineLatest,
+ distinctUntilChanged, map, Observable, switchMap, tap,} from 'rxjs';
 import {AuthenticationService} from '../../../shared/data-access/authentication/authentication.service';
 import {DifficultyToLocale, Role,} from '../../../shared/data-access/shared.enums';
 import {environment} from '../../../../environments/environment';
@@ -33,6 +39,7 @@ export class ReviewDetailComponent implements OnInit {
   ) {}
 
   loading = true;
+  loadingLike$ = new BehaviorSubject<boolean>(false);
 
   review$: Observable<Review> = this.route.paramMap
     .pipe(map((params) => params.get('id')))
@@ -95,6 +102,39 @@ export class ReviewDetailComponent implements OnInit {
           }
         })
       }
+    });
+  }
+
+  giveReviewFeedback(feedback: FeedbackType | null) {
+    this.review$.subscribe(review => {
+      if (!review.links.feedback) return;
+      this.reviewsService
+        .giveFeedback(review.links.feedback, feedback)
+        .pipe(tap(() => this.loadingLike$.next(true)))
+        .subscribe({
+          error: () => {
+            this.snackBar.open(
+              this.translate.instant('errors.unknown'),
+              this.translate.instant('errors.dismiss'),
+              {
+                panelClass: ['red-snackbar'],
+              }
+            );
+            this.loadingLike$.next(false);
+          },
+          next: result => {
+            if (!result) {
+              this.snackBar.open(
+                this.translate.instant('errors.unknown'),
+                this.translate.instant('errors.dismiss'),
+                {
+                  panelClass: ['red-snackbar'],
+                }
+              );
+            }
+            this.loadingLike$.next(false);
+          },
+        });
     });
   }
 
@@ -179,6 +219,7 @@ export class ReviewDetailComponent implements OnInit {
   }
 
   protected readonly DifficultyToLocale = DifficultyToLocale;
+  protected readonly FeedbackType = FeedbackType;
 }
 
 @Component({

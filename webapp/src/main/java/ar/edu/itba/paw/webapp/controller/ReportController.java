@@ -72,7 +72,7 @@ public class ReportController {
     @POST
     @Consumes(VndType.APPLICATION_REPORT_FORM)
     @Produces(VndType.APPLICATION_REPORT)
-    public Response submitReport(@Valid @NotNull(message = "error.body.empty") SubmitReportForm reportForm) throws ReportAlreadyExistsException, ReviewNotFoundException {
+    public Response submitReport(@Valid @NotNull(message = "error.body.empty") SubmitReportForm reportForm) throws ReportAlreadyExistsException {
         long reporterId = AuthenticationHelper.getLoggedUser(userService).getId();
         ReportReason rs = ReportReason.valueOf(reportForm.getReason().toUpperCase());
         final Report report;

@@ -1,10 +1,12 @@
 import { PaginatedDto, SortedDto } from '../shared.dtos';
 import { Difficulty, Platform } from '../shared.enums';
+import {Feedback, FeedbackType} from "./review.class";
 
 export enum ReviewMediaTypes {
   REPORTREVIEW = 'application/vnd.report-form.v1+json',
   CREATEREVIEW = 'application/vnd.review-form.v1+json',
   EDITREVIEW = 'application/vnd.review-update.v1+json',
+  FEEDBACKREVIEW = 'application/vnd.review-feedback-form.v1+json',
 }
 
 /*created|rating|popularity|controversial*/
@@ -62,3 +64,9 @@ export type ReviewSubmitDto = {
   unit?: string;
   gameId?: number;
 };
+
+
+
+export type ReviewFeedbackDto = {
+  feedbackType: FeedbackType;
+}

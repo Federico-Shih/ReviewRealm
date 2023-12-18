@@ -2,8 +2,10 @@ package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.enums.FeedbackType;
 import ar.edu.itba.paw.exceptions.ReviewAlreadyExistsException;
+import ar.edu.itba.paw.exceptions.ReviewNotFoundException;
 import ar.edu.itba.paw.models.Paginated;
 import ar.edu.itba.paw.models.Review;
+import ar.edu.itba.paw.models.ReviewFeedback;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.servicesinterfaces.GameService;
 import ar.edu.itba.paw.servicesinterfaces.ReportService;
@@ -139,7 +141,7 @@ public class ReviewController{
     @Path("{id:\\d+}")
     @Consumes(VndType.APPLICATION_REVIEW_UPDATE)
     @PreAuthorize("@accessControl.checkReviewAuthorOwnerOrMod(#id)")
-    public Response editReview(@Valid @ExistentReviewId @PathParam("id") final long id, @Valid @NotNull(message = "error.body.empty") final EditReviewForm form) {
+    public Response editReview(@Valid @PathParam("id") final long id, @Valid @NotNull(message = "error.body.empty") final EditReviewForm form) {
         reviewService.updateReview(id, form.getReviewTitle(),
                 form.getReviewContent(),
                 form.getReviewRating(),
@@ -152,25 +154,29 @@ public class ReviewController{
         return Response.noContent().build();
     }
 
-    // Si no existe, devuelve null, no me parece mal. TODO: quiza considerar 404?
     @GET
     @Path("{reviewId:\\d+}/feedback/{userId:\\d+}")
     @Produces(VndType.APPLICATION_REVIEW_FEEDBACK)
-    public Response getReviewFeedback(@Valid @ExistentReviewId @PathParam("reviewId") long reviewId, @Valid @ExistentUserId @PathParam("userId") long userId) {
-        Optional<Review> perhapsReview = reviewService.getReviewById(reviewId, userId);
-        return Response.ok(FeedbackResponse.fromEntity(uriInfo, userId, perhapsReview.get().getId(), perhapsReview.get().getFeedback())).build();
+    public Response getReviewFeedback(@Valid @PathParam("reviewId") long reviewId, @Valid @ExistentUserId @PathParam("userId") long userId) {
+        Review review = reviewService.getReviewById(reviewId, userId).orElseThrow(ReviewNotFoundException::new);
+        if (review.getFeedback() == null)
+            return Response.status(Response.Status.NOT_FOUND).build();
+        return Response.ok(FeedbackResponse.fromEntity(uriInfo, userId, review.getId(), review.getFeedback())).build();
     }
 
-    @POST
-    @Path("{reviewId:\\d+}/feedback")
+    @PUT
+    @Path("{reviewId:\\d+}/feedback/{userId:\\d+}")
     @Consumes(VndType.APPLICATION_REVIEW_FEEDBACK_FORM)
     @Produces(VndType.APPLICATION_REVIEW_FEEDBACK)
-    @PreAuthorize("@accessControl.checkUserIsNotAuthor(#reviewId)")
-    public Response createReviewFeedback(@Valid @ExistentReviewId @PathParam("reviewId") long reviewId, @Valid @NotNull(message = "error.body.empty") FeedbackTypeForm feedbackType) {
+    @PreAuthorize("@accessControl.checkAccessedUserIdIsUser(#userId)")
+    public Response updateReviewFeedback(@Valid @PathParam("reviewId") long reviewId, @Valid @PathParam("userId") long userId, @Valid @NotNull(message = "error.body.empty") FeedbackTypeForm feedbackType) {
         FeedbackType fb = feedbackType.transformToEnum();
-        long userId = AuthenticationHelper.getLoggedUser(userService).getId();
-
+        Review review = reviewService.getReviewById(reviewId, userId).orElseThrow(ReviewNotFoundException::new);
+        boolean existsOldFeedback = review.getFeedback() != null;
         reviewService.updateOrCreateReviewFeedback(reviewId,userId,fb);
+        if (existsOldFeedback) {
+            return Response.ok(FeedbackResponse.fromEntity(uriInfo, userId, reviewId, fb)).build();
+        }
         return Response
                 .created(uriInfo.getAbsolutePathBuilder().path("reviews").path(String.valueOf(reviewId)).path("feedback").path(String.valueOf(userId)).build())
                 .entity(FeedbackResponse.fromEntity(uriInfo, userId, reviewId, fb))

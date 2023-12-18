@@ -51,7 +51,6 @@ public class ReviewResponse extends BaseResponse {
         if(userId != null) {
             response.link("feedback", uri.getBaseUriBuilder().path("reviews").path(String.valueOf(review.getId())).path("feedback").path(String.valueOf(userId)).build());
             if(!userId.equals(review.getAuthor().getId())) {
-                response.link("giveFeedback", uri.getBaseUriBuilder().path("reviews").path(String.valueOf(review.getId())).path("feedback").build());
                 response.link("report", uri.getBaseUriBuilder().path("reports").build());
             }
         }

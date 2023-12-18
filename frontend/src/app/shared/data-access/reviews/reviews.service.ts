@@ -1,5 +1,5 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import {Injectable} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
 import {
   catchError,
   filter,
@@ -10,24 +10,24 @@ import {
   of,
   switchMap,
 } from 'rxjs';
-import { ReviewFeedbackResponse, ReviewResponse } from '../shared.responses';
-import { Feedback, Review } from './review.class';
+import {ReviewFeedbackResponse, ReviewResponse} from '../shared.responses';
+import {Feedback, FeedbackType, Review} from './review.class';
 import {
   customExceptionMapper,
   exceptionMapper,
   paginatedObjectMapper,
   queryMapper,
 } from '../../helpers/mapper';
-import { Paginated, RequestError } from '../shared.models';
+import {Paginated, RequestError} from '../shared.models';
 import {
-  ReportReviewDto,
+  ReportReviewDto, ReviewFeedbackDto,
   ReviewMediaTypes,
   ReviewSearchDto,
   ReviewSubmitDto,
 } from './reviews.dtos';
-import { GamesService } from '../games/games.service';
-import { UsersService } from '../users/users.service';
-import { ReportReason } from '../reports/reports.class';
+import {GamesService} from '../games/games.service';
+import {UsersService} from '../users/users.service';
+import {ReportReason} from '../reports/reports.class';
 
 @Injectable()
 export class ReviewsService {
@@ -35,7 +35,8 @@ export class ReviewsService {
     private http: HttpClient,
     private usersService: UsersService,
     private gamesService: GamesService
-  ) {}
+  ) {
+  }
 
   /*
     Popula Review con Game y User.
@@ -60,7 +61,7 @@ export class ReviewsService {
             game: this.gamesService.getGame(review.links.game),
             user: this.usersService.getUserById(review.links.author),
           }).pipe(
-            map(({ game, user }) => Review.fromResponse(review, game, user))
+            map(({game, user}) => Review.fromResponse(review, game, user))
           );
         })
       );
@@ -83,7 +84,7 @@ export class ReviewsService {
               content: [],
               totalPages: 0,
               totalElements: 0,
-              links: { self: '' },
+              links: {self: ''},
             });
           return forkJoin(
             response.body.map(review =>
@@ -91,7 +92,7 @@ export class ReviewsService {
                 game: this.gamesService.getGame(review.links.game),
                 user: this.usersService.getUserById(review.links.author),
               }).pipe(
-                map(({ game, user }) => Review.fromResponse(review, game, user))
+                map(({game, user}) => Review.fromResponse(review, game, user))
               )
             )
           ).pipe(map(reviews => paginatedObjectMapper(response, reviews)));
@@ -105,7 +106,6 @@ export class ReviewsService {
         observe: 'response',
         responseType: 'json',
       })
-      .pipe(catchError(exceptionMapper))
       .pipe(
         map(response => {
           if (!response.body)
@@ -114,7 +114,14 @@ export class ReviewsService {
             });
           return Feedback.fromResponse(response.body);
         })
-      );
+      )
+      .pipe(catchError((error) => {
+        if (error.status === 404) {
+          console.log('no feedback')
+          return of(new Feedback(null));
+        }
+        return exceptionMapper(error);
+      }));
   }
 
   deleteReview(url: string): Observable<boolean> {
@@ -152,7 +159,34 @@ export class ReviewsService {
       );
   }
 
-  //TODO: giveFeedback() cuando esté hecho con el body
+  giveFeedback(url: string, feedback: FeedbackType | null): Observable<boolean> {
+    if (feedback === null) {
+      return this.http.delete<boolean>(url, {
+        observe: 'response',
+        responseType: 'json',
+      }).pipe(
+        catchError(err => {
+          return customExceptionMapper(err.status, err.error?.message);
+        }),
+        map(x => x.status === 200)
+      );
+    }
+    const reviewFeedbackDto: ReviewFeedbackDto = {
+      feedbackType: feedback,
+    };
+    return this.http.put<boolean>(url, reviewFeedbackDto, {
+      observe: 'response',
+      responseType: 'json',
+      headers: {
+        'Content-Type': ReviewMediaTypes.FEEDBACKREVIEW,
+      },
+    }).pipe(
+      catchError(err => {
+        return customExceptionMapper(err.status, err.error?.message);
+      }),
+      map(x => x.status === 200 || x.status === 201)
+    );
+  }
 
   createReview(url: string, reviewDto: ReviewSubmitDto): Observable<number> {
     return this.http
@@ -165,9 +199,9 @@ export class ReviewsService {
       })
       .pipe(
         catchError(exceptionMapper),
-        map(({ body }) => {
+        map(({body}) => {
           if (body === null)
-            throw new RequestError(500, { message: 'Empty body response' });
+            throw new RequestError(500, {message: 'Empty body response'});
           return body.id;
         })
       );

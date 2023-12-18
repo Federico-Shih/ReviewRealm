@@ -26,7 +26,7 @@ public class ReviewNotFoundExceptionMapper implements ExceptionMapper<ReviewNotF
     public Response toResponse(ReviewNotFoundException e) {
         LOGGER.error("{} : {}", e.getClass().getName(), messageSource.getMessage("review.not.found", null,
                 Locale.ENGLISH));
-        return Response.status(Response.Status.BAD_REQUEST)
+        return Response.status(Response.Status.NOT_FOUND)
                 .type(MediaType.APPLICATION_JSON)
                 .entity(ExceptionResponse.of(messageSource.getMessage("review.not.found", null, LocaleHelper.getLocale())))
                 .build();

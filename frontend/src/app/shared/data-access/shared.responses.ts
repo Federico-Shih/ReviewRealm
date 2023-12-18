@@ -34,7 +34,7 @@ export type ReviewFeedbackResponse = {
     liker: string;
     self: string;
   };
-  feedbackType: FeedbackType | null;
+  feedbackType: FeedbackType;
 };
 
 export type UserLinksResponse = {
