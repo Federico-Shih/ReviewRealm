@@ -4,7 +4,10 @@
       <app-user-details
         [userInfo]="users[1]"
         [loggedUser]="users[0]"
-        [isFollowing]="users[2]"></app-user-details>
+        (followClick)="followToggle()"
+        [isFollowing]="users[2]"
+        [loading]="(followLoading | async) === true"
+      ></app-user-details>
     </mat-grid-list>
   </ng-container>
 

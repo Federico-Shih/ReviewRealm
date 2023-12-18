@@ -47,31 +47,31 @@
           }}</span>
           <div class="divider-v profile-followers-text-divider"></div>
           <span class="no-wrap clickable" i18n routerLink="/profile/{{userInfo.id}}/followers">{{
-            'profile.followers' | translate: { value: userInfo.followers }
-          }}</span>
+            'profile.followers' | translate: {value: userInfo.followers}
+            }}</span>
           <div class="divider-v profile-followers-text-divider"></div>
           <span i18n [class]="userInfo.reputation>=0?'green-text':'red-text'">{{
-            'profile.reputation' | translate: { value: userInfo.reputation }
+            'profile.reputation' | translate: {value: userInfo.reputation}
             }}
           </span>
         </div>
-
-        <div>
-          <ng-container
-            *ngIf="loggedUser !== null && userInfo.id !== loggedUser.id">
-            <ng-container *ngIf="isFollowing">
-                <button (click)="onSubmit(true)" mat-flat-button class="followbtn">
-                  {{ 'profile.unfollow' | translate }}
-                </button>
-            </ng-container>
-            <ng-container *ngIf="!isFollowing">
-                <button (click)="onSubmit(false)" mat-flat-button class="followbtn">
-                  {{ 'profile.follow' | translate }}
-                </button>
-            </ng-container>
-          </ng-container>
-        </div>
       </div>
+    </div>
+    <div>
+      <ng-container>
+        <ng-container *ngIf="isFollowing">
+          <button (click)="onSubmit(true)" [disabled]="loading" class="followbtn" mat-flat-button>
+            <span *ngIf="!loading">{{ 'profile.unfollow' | translate }}</span>
+            <mat-spinner *ngIf="loading" [diameter]="20"></mat-spinner>
+          </button>
+        </ng-container>
+        <ng-container *ngIf="!isFollowing">
+          <button (click)="onSubmit(false)" [disabled]="loading" class="followbtn" mat-flat-button>
+            <span *ngIf="!loading">{{ 'profile.follow' | translate }}</span>
+            <mat-spinner *ngIf="loading" [diameter]="20"></mat-spinner>
+          </button>
+        </ng-container>
+      </ng-container>
     </div>
     <div>
       <ng-container *ngIf="loggedUser !== null && userInfo.id === loggedUser.id">
@@ -79,7 +79,7 @@
           class="material-icons settings"
           aria-hidden="true"
           routerLink="/settings"
-          >settings</i
+        >settings</i
         >
       </ng-container>
     </div>
