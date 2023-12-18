@@ -52,7 +52,7 @@ public class GameServiceImpl implements GameService {
     public Game createGame(SubmitGameDTO gameDTO, long userId) {
         Image img = imgService.uploadImage(gameDTO.getImageData(), gameDTO.getMediatype());
         if (img == null) {
-            throw new RuntimeException("Error creating image"); //TODO:Cambiarlo a otra exception
+            throw new ImageNotInsertedException();
         }
 
         User user = userService
@@ -136,7 +136,7 @@ public class GameServiceImpl implements GameService {
     @Override
     public Paginated<Game> searchGames(Page page, GameFilter searchFilter, Ordering<GameOrderCriteria> ordering, Long userId)
     {
-        if(searchFilter.getFavoriteGamesOf() != null){
+        if(searchFilter.getFavoriteGamesOf() != null) {
             if(searchFilter.isProperFavoriteOf()){
                 return userService.getFavoriteGamesFromUser(page,searchFilter.getFavoriteGamesOf());
             }

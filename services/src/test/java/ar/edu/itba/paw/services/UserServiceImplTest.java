@@ -180,8 +180,8 @@ public class UserServiceImplTest {
 
     @Test(expected = TokenExpiredException.class)
     public void validateTokenExpired() throws TokenExpiredException {
-        Mockito.when(tokenDao.create(anyLong(), any())).thenReturn(new ExpirationToken(TOKEN, USER, PASSWORD, EXPIRED_DATE));
-        Mockito.when(tokenDao.getByToken(any())).thenReturn(Optional.of(new ExpirationToken(TOKEN, USER, PASSWORD, EXPIRED_DATE)));
+        Mockito.when(tokenDao.create(anyLong(), any())).thenReturn(new ExpirationToken(TOKEN, USER, EXPIRED_DATE));
+        Mockito.when(tokenDao.getByToken(any())).thenReturn(Optional.of(new ExpirationToken(TOKEN, USER, EXPIRED_DATE)));
 
         us.validateToken(PASSWORD);
     }
@@ -194,7 +194,7 @@ public class UserServiceImplTest {
 
     @Test
     public void validateExistentToken() throws TokenExpiredException {
-        Mockito.when(tokenDao.getByToken(TOKEN)).thenReturn(Optional.of(new ExpirationToken(TOKEN, USER, PASSWORD, LocalDateTime.MAX)));
+        Mockito.when(tokenDao.getByToken(TOKEN)).thenReturn(Optional.of(new ExpirationToken(TOKEN, USER, LocalDateTime.MAX)));
         Mockito.when(userDao.findById(ID)).thenReturn(Optional.of(USER));
 
         Assert.assertTrue(us.validateToken(TOKEN).isPresent());
@@ -216,8 +216,8 @@ public class UserServiceImplTest {
 
     @Test(expected = UserAlreadyEnabled.class)
     public void resendTokenSuccessTest() throws UserAlreadyEnabled {
-        ExpirationToken token = new ExpirationToken(TOKEN, USER, PASSWORD, EXPIRATION_DATE);
-        ExpirationToken newToken = new ExpirationToken(OTHER_TOKEN, USER, PASSWORD, EXPIRATION_DATE);
+        ExpirationToken token = new ExpirationToken(TOKEN, USER, EXPIRATION_DATE);
+        ExpirationToken newToken = new ExpirationToken(OTHER_TOKEN, USER, EXPIRATION_DATE);
         Mockito.when(userDao.getByEmail(eq(EMAIL))).thenReturn(Optional.of(USER));
         us.resendToken(EMAIL);
     }

@@ -201,7 +201,7 @@ public class UserController {
         if (!added) throw new CustomRuntimeException(Response.Status.BAD_REQUEST, "error.game.already.favorite");
         return Response.created(
                 uriInfo.getBaseUriBuilder()
-                        .path("users") //TODO: check url and maybe put /games?favoriteOf=id
+                        .path("users")
                         .path(String.valueOf(id))
                         .path("favoritegames")
                         .path(String.valueOf(favoriteGameForm.getGameId()))

@@ -12,8 +12,7 @@
     <artifactId>services</artifactId>
 
     <name>services</name>
-    <!-- FIXME change it to the project's website -->
-    <url>http://www.example.com</url>
+    <url>http://pawserver.it.itba.edu.ar/paw-2023a-04</url>
 
 
     <dependencies>

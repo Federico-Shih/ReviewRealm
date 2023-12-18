@@ -10,8 +10,7 @@
   <artifactId>services-interfaces</artifactId>
 
   <name>services-interfaces</name>
-  <!-- FIXME change it to the project's website -->
-  <url>http://www.example.com</url>
+  <url>http://pawserver.it.itba.edu.ar/paw-2023a-04</url>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

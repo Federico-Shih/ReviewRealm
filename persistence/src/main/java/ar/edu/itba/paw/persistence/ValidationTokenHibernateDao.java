@@ -18,19 +18,18 @@ public class ValidationTokenHibernateDao implements ValidationTokenDao {
     @PersistenceContext
     private EntityManager em;
 
-    // TODO: migrate ExpirationToken
     @Override
     public ExpirationToken create(long userId, LocalDateTime expiration) {
         User user = em.getReference(User.class, userId);
         if (user == null) return null;
-        ExpirationToken token = new ExpirationToken(generateId(), user, "", expiration);
+        ExpirationToken token = new ExpirationToken(generateId(), user,  expiration);
         em.persist(token);
         return token;
     }
 
     @Override
-    public Optional<ExpirationToken> findLastPasswordToken(long userId) {
-        TypedQuery<ExpirationToken> query = em.createQuery("from ExpirationToken where user.id = :userId and password <> '' order by expiration desc", ExpirationToken.class);
+    public Optional<ExpirationToken> findLastToken(long userId) {
+        TypedQuery<ExpirationToken> query = em.createQuery("from ExpirationToken where user.id = :userId order by expiration desc", ExpirationToken.class);
         query.setParameter("userId", userId);
         return query.getResultList().stream().findFirst();
     }

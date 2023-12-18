@@ -26,18 +26,18 @@ public class TokenTestModels {
     private final static LocalDateTime CREATE_EXPIRATION = LocalDateTime.of(2018, 1, 1, 0, 0);
 
     public static ExpirationToken getToken1() {
-        return new ExpirationToken(TOKEN1, USER1, PASSWORD, EXPIRATION);
+        return new ExpirationToken(TOKEN1, USER1, EXPIRATION);
     }
 
     public static ExpirationToken getToken2() {
-        return new ExpirationToken(TOKEN2, USER2, PASSWORD2, EXPIRATION2);
+        return new ExpirationToken(TOKEN2, USER2, EXPIRATION2);
     }
 
     public static ExpirationToken getToken3() {
-        return new ExpirationToken(TOKEN3, USER3, PASSWORD3, EXPIRATION3);
+        return new ExpirationToken(TOKEN3, USER3, EXPIRATION3);
     }
 
     public static ExpirationToken getCreateToken() {
-        return new ExpirationToken(CREATE_USER, CREATE_PASSWORD, CREATE_EXPIRATION);
+        return new ExpirationToken(CREATE_USER, CREATE_EXPIRATION);
     }
 }

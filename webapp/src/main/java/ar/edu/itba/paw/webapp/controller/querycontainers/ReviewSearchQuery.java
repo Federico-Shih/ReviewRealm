@@ -71,7 +71,6 @@ public class ReviewSearchQuery extends PaginatedQuery {
     @QueryParam("gameId")
     private Long gameId;
 
-    // TODO: throw Forbidden if not same user
     @ExistentUserId(optional = true)
     @QueryParam("recommendedFor")
     private Long recommendedFor;
