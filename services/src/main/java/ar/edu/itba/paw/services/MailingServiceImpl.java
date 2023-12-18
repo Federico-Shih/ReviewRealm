@@ -44,6 +44,7 @@ public class MailingServiceImpl implements MailingService {
         templateVariables.put("game", game.getName());
         templateVariables.put("gameId", game.getId());
         templateVariables.put("webBaseUrl", env.getProperty("mailing.weburl"));
+        templateVariables.put("serverUrl", env.getProperty("mailing.serverurl"));
         Object[] stringArgs = {};
         String subject = messageSource.getMessage("email.deletedreview.subject",
                 stringArgs, user.getLanguage());
@@ -58,6 +59,7 @@ public class MailingServiceImpl implements MailingService {
         templateVariables.put("webBaseUrl", env.getProperty("mailing.weburl"));
         templateVariables.put("token", token.getToken());
         templateVariables.put("user", user.getUsername());
+        templateVariables.put("serverUrl", env.getProperty("mailing.serverurl"));
         templateVariables.put("email", EncodingUtil.encodeURIComponent(user.getEmail()));
 
         Object[] stringArgs = {};
@@ -74,6 +76,7 @@ public class MailingServiceImpl implements MailingService {
         templateVariables.put("webBaseUrl", env.getProperty("mailing.weburl"));
         templateVariables.put("token", token.getToken());
         templateVariables.put("user", user.getUsername());
+        templateVariables.put("serverUrl", env.getProperty("mailing.serverurl"));
         templateVariables.put("email", EncodingUtil.encodeURIComponent(user.getEmail()));
 
         Object[] stringArgs = {};
@@ -90,6 +93,7 @@ public class MailingServiceImpl implements MailingService {
         templateVariables.put("author", author.getUsername());
         templateVariables.put("game", createdReview.getReviewedGame().getName());
         templateVariables.put("reviewId", createdReview.getId());
+        templateVariables.put("serverUrl", env.getProperty("mailing.serverurl"));
         templateVariables.put("webBaseUrl", env.getProperty("mailing.weburl"));
 
         Object[] stringArgs = {author.getUsername()};
@@ -105,6 +109,7 @@ public class MailingServiceImpl implements MailingService {
         Map<String, Object> templateVariables = new HashMap<>();
         templateVariables.put("game", suggestedGame.getName());
         templateVariables.put("webBaseUrl", env.getProperty("mailing.weburl"));
+        templateVariables.put("serverUrl", env.getProperty("mailing.serverurl"));
 
         Object[] stringArgs = {};
         String subject = messageSource.getMessage("email.suggestion.inreview.subject",
@@ -120,6 +125,7 @@ public class MailingServiceImpl implements MailingService {
         templateVariables.put("game", suggestedGame.getName());
         templateVariables.put("gameId", suggestedGame.getId());
         templateVariables.put("webBaseUrl", env.getProperty("mailing.weburl"));
+        templateVariables.put("serverUrl", env.getProperty("mailing.serverurl"));
 
         Object[] stringArgs = {};
         String subject = messageSource.getMessage("email.suggestion.accepted.subject",
@@ -134,6 +140,7 @@ public class MailingServiceImpl implements MailingService {
         Map<String, Object> templateVariables = new HashMap<>();
         templateVariables.put("game", suggestedGame.getName());
         templateVariables.put("webBaseUrl", env.getProperty("mailing.weburl"));
+        templateVariables.put("serverUrl", env.getProperty("mailing.serverurl"));
 
         Object[] stringArgs = {};
         String subject = messageSource.getMessage("email.suggestion.rejected.subject",
@@ -150,6 +157,8 @@ public class MailingServiceImpl implements MailingService {
         templateVariables.put("level", user.getLevel());
         templateVariables.put("webBaseUrl", env.getProperty("mailing.weburl"));
         templateVariables.put("userid", user.getId());
+        templateVariables.put("serverUrl", env.getProperty("mailing.serverurl"));
+
         Object[] stringArgs = {user.getUsername()};
         String subject = messageSource.getMessage("email.levelup.subject",
                 stringArgs, user.getLanguage());

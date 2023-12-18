@@ -44,7 +44,7 @@
         .goto-button {
             color: #fff;
             border: none;
-            background-color: #26a69a;
+            background-color: #D84315;
             font-size: 14px;
             font-weight: 600;
             border-radius: 2px;
@@ -64,7 +64,7 @@
         <div class="navbar">
             <div>
                 <a th:href="@{${webBaseUrl}}" class="navbar-logo">
-                    <img class="navbar-logo-image" src="http://pawserver.it.itba.edu.ar/paw-2023a-04/static/review_realm_logo_white_630px.png" alt="Review Realm Logo">
+                    <img class="navbar-logo-image" th:src="@{{url}/static/review_realm_logo_white_630px.png(url=${serverUrl})}" alt="Review Realm Logo">
                     <span class="navbar-logo-title">Review Realm</span>
                 </a>
             </div>

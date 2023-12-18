@@ -7,6 +7,7 @@ import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.servicesinterfaces.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -91,13 +92,14 @@ public class BasicAuthFilter extends OncePerRequestFilter {
     }
 
     private void basicAuthentication(String header, HttpServletRequest request, HttpServletResponse response) {
+        String username = "";
         final String encodedCredentials = header.split(" ")[1];
         try {
             String[] credentials = new String(Base64.getDecoder().decode(encodedCredentials)).split(":");
             if (credentials.length != 2)
                 return;
 
-            String username = credentials[0].trim();
+            username = credentials[0].trim();
             String password = credentials[1].trim();
 
             UsernamePasswordAuthenticationToken authentication =
@@ -117,8 +119,10 @@ public class BasicAuthFilter extends OncePerRequestFilter {
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        } catch (Exception ignored) {
-
+        } catch (Exception exception) {
+            if (exception instanceof DisabledException) {
+                userService.resendToken(username);
+            }
         }
     }
 
