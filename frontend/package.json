@@ -4,7 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build && echo '<%@ page session=\\\"false\\\" %> ' > ./dist/.tmp && cat ./dist/index.html >> ./dist/.tmp && cp ./dist/.tmp ./dist/index.html && rm ./dist/.tmp\n",
+    "build": "ng build -c production && echo '<%@ page session=\"false\" %> ' > ./dist/.tmp && cat ./dist/index.html >> ./dist/.tmp && cp ./dist/.tmp ./dist/index.html && rm ./dist/.tmp\n",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "lint": "ng lint",

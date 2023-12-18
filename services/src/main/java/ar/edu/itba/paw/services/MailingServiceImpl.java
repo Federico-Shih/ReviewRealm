@@ -4,6 +4,7 @@ import ar.edu.itba.paw.models.ExpirationToken;
 import ar.edu.itba.paw.models.Game;
 import ar.edu.itba.paw.models.Review;
 import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.services.utils.EncodingUtil;
 import ar.edu.itba.paw.servicesinterfaces.MailingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,7 +58,7 @@ public class MailingServiceImpl implements MailingService {
         templateVariables.put("webBaseUrl", env.getProperty("mailing.weburl"));
         templateVariables.put("token", token.getToken());
         templateVariables.put("user", user.getUsername());
-        templateVariables.put("email", user.getEmail());
+        templateVariables.put("email", EncodingUtil.encodeURIComponent(user.getEmail()));
 
         Object[] stringArgs = {};
         String subject = messageSource.getMessage("email.validation.subject",
@@ -73,7 +74,7 @@ public class MailingServiceImpl implements MailingService {
         templateVariables.put("webBaseUrl", env.getProperty("mailing.weburl"));
         templateVariables.put("token", token.getToken());
         templateVariables.put("user", user.getUsername());
-        templateVariables.put("email", user.getEmail());
+        templateVariables.put("email", EncodingUtil.encodeURIComponent(user.getEmail()));
 
         Object[] stringArgs = {};
         String subject = messageSource.getMessage("email.changepassword.subject",

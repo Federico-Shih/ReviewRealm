@@ -48,7 +48,7 @@ export class ValidateUserComponent implements OnInit {
     this.route.queryParamMap.subscribe(params => {
       const email = params.get('email');
       const token = params.get('token');
-      this.form.controls.email.setValue(email || '');
+      this.form.controls.email.setValue(decodeURIComponent(email || '') || '');
       this.form.controls.token.setValue(token || '');
 
       if (!!email && !!token) {

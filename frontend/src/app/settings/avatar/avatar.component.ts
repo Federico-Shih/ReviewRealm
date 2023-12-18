@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { environment } from '../../../environments/environment.development';
+import { environment } from '../../../environments/environment';
 import { UsersService } from '../../shared/data-access/users/users.service';
 import { AvatarDto } from '../../shared/data-access/users/users.dtos';
 import { Router } from '@angular/router';

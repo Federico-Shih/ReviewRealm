@@ -348,7 +348,52 @@
     },
     "reported": "¡El reporte ha sido enviado!",
     "search": "Buscar Reseñas",
-    "submit": "Crear reseña",
+    "submit": {
+      "button": {
+        "create": "Crear Reseña",
+        "edit": "Editar Reseña"
+      },
+      "completed": {
+        "label": "Completado"
+      },
+      "content": {
+        "charcount": "{{count}} caracteres",
+        "label": "Contenido",
+        "minlength": "El contenido de la reseña debe tener {{value}} caracteres como mínimo.",
+        "placeholder": "Contanos qué te pareció...",
+        "required": "Se requiere un contenido de la reseña"
+      },
+      "difficulty": {
+        "label": "Dificultad Percibida",
+        "placeholder": "Seleccione una dificultad"
+      },
+      "gameLength": {
+        "label": "Tiempo jugado",
+        "max": "El tiempo jugado no debe ser mayor a {{value}}",
+        "min": "El tiempo jugado debe ser como mínimo {{value}}"
+      },
+      "platform": {
+        "label": "Plataforma",
+        "placeholder": "Seleccione una plataforma"
+      },
+      "rating": {
+        "label": "Puntuación",
+        "max": "La puntuación debe ser menor o igual a 10",
+        "min": "La puntuación debe ser mayor o igual a 1",
+        "required": "Se requiere una puntuación"
+      },
+      "replayability": {
+        "label": "¿Rejugable?"
+      },
+      "reviewtitle": {
+        "label": "Título",
+        "maxlength": "Un título debe tener como máximo {{value}} caracteres.",
+        "minlength": "Un título debe tener {{value}} caracteres como mínimo",
+        "placeholder": "¡Danos un título llamativo!",
+        "required": "Se requiere un título"
+      },
+      "title": "Reseña sobre {{game}}"
+    },
     "tags": "Etiquetas",
     "timeplayed": "Tiempo jugado"
   },

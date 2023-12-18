@@ -347,7 +347,52 @@
     },
     "reported": "The report has been submitted!",
     "search": "Search Reviews",
-    "submit": "Create review",
+    "submit": {
+      "button": {
+        "create": "Create Review",
+        "edit": "Edit Review"
+      },
+      "completed": {
+        "label": "Completed"
+      },
+      "content": {
+        "charcount": "{{count}} characters",
+        "label": "Content",
+        "minlength": "Review content must be at least {{value}} characters long.",
+        "placeholder": "Tell us what your thought about it",
+        "required": "A review content is required"
+      },
+      "difficulty": {
+        "label": "Perceived Difficulty",
+        "placeholder": "Select a difficulty"
+      },
+      "gameLength": {
+        "label": "Time played",
+        "max": "Time played must be no larger than {{value}}",
+        "min": "Time played must be at least {{value}}"
+      },
+      "platform": {
+        "label": "Platform",
+        "placeholder": "Select a platform"
+      },
+      "rating": {
+        "label": "Rating",
+        "max": "Rating must be less or equal than 10",
+        "min": "Rating must be greater or equal than 1",
+        "required": "A rating is required"
+      },
+      "replayability": {
+        "label": "Replayable?"
+      },
+      "reviewtitle": {
+        "label": "Title",
+        "maxlength": "A title must be at most {{value}} characters long.",
+        "minlength": "A title must be at least {{value}} characters long",
+        "placeholder": "Give us a great title!",
+        "required": "A title is required"
+      },
+      "title": "Review about {{game}}"
+    },
     "tags": "Tags",
     "timeplayed": "Time played"
   },

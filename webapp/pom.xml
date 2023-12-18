@@ -257,6 +257,13 @@
                         <webResources>
                             <resource>
                                 <directory>../frontend/dist</directory>
+                                <excludes>
+                                    <exclude>**/assets</exclude>
+                                </excludes>
+                            </resource>
+                            <resource>
+                                <directory>../frontend/dist/static/assets</directory>
+                                <targetPath>assets</targetPath>
                             </resource>
                         </webResources>
                     </configuration>

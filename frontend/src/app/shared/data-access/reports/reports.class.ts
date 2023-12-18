@@ -59,7 +59,7 @@ export enum ReportState {
 export function getMessageFromReason(reason: ReportReason): string {
   switch (reason) {
     case ReportReason.DISRESPECTFUL:
-      return 'report.reason.disrespectful';
+      return 'report.reason.disrespect';
     case ReportReason.SPAM:
       return 'report.reason.spam';
     case ReportReason.IRRELEVANT:

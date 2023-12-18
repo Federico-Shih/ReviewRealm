@@ -60,15 +60,15 @@
       </div>
     </div>
     <div>
-      <ng-container>
+      <ng-container *ngIf="loggedUser && loggedUser?.id !== userInfo.id">
         <ng-container *ngIf="isFollowing">
-          <button (click)="onSubmit(true)" [disabled]="loading" class="followbtn" mat-flat-button>
+          <button (click)="onSubmit(true)" [disabled]="loading" color="accent" mat-flat-button>
             <span *ngIf="!loading">{{ 'profile.unfollow' | translate }}</span>
             <mat-spinner *ngIf="loading" [diameter]="20"></mat-spinner>
           </button>
         </ng-container>
         <ng-container *ngIf="!isFollowing">
-          <button (click)="onSubmit(false)" [disabled]="loading" class="followbtn" mat-flat-button>
+          <button (click)="onSubmit(false)" [disabled]="loading" color="accent" mat-flat-button>
             <span *ngIf="!loading">{{ 'profile.follow' | translate }}</span>
             <mat-spinner *ngIf="loading" [diameter]="20"></mat-spinner>
           </button>

@@ -51,8 +51,8 @@ export class ChangePasswordComponent implements OnInit {
         this.router.navigate(['login'], { replaceUrl: true });
         return;
       }
-      const email = params.get('email');
-      if (email === null) {
+      const email = decodeURIComponent(params.get('email') || '') || '';
+      if (email === null || email === '') {
         return;
       }
       this.userService
