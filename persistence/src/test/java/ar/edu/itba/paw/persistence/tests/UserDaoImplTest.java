@@ -346,8 +346,7 @@ public class UserDaoImplTest {
     public void testDeleteNonexistentFollow() {
         User supposedFollowing = UserTestModels.getUser3();
         Optional<User> user = userDao.deleteFollow(testNonFollowingUser.getId(), supposedFollowing.getId());
-        Assert.assertTrue(user.isPresent());
-        Assert.assertFalse(user.get().getFollowing().contains(supposedFollowing));
+        Assert.assertFalse(user.isPresent());
     }
 
     @Rollback

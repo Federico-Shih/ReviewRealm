@@ -45,7 +45,7 @@ public class MissionServiceTest {
         user.setRoles(new HashSet<>());
         Mockito.when(missionDao.findById(any(), any())).thenReturn(Optional.empty());
         Mockito.when(userDao.findById(anyLong())).thenReturn(Optional.of(user));
-        Mockito.when(missionDao.create(any(), any(), any(), any())).thenReturn(STARTING_MISSION_PROGRESS);
+        Mockito.when(missionDao.create(any(), any(), anyFloat(), any())).thenReturn(STARTING_MISSION_PROGRESS);
         Mockito.when(missionDao.updateProgress(any(), any(), anyFloat())).thenReturn(Optional.of(ADVANCED_MISSION_PROGRESS));
 
         MissionProgress missionProgress = missionService.addMissionProgress(user.getId(), Mission.RECOMMEND_GAMES, 1f);
@@ -103,7 +103,7 @@ public class MissionServiceTest {
         User user = getUser1();
         user.setRoles(new HashSet<>());
         Mockito.when(missionDao.findById(any(), any())).thenReturn(Optional.empty());
-        Mockito.when(missionDao.create(any(), any(), any(), any())).thenReturn(REPEATABLE_START_MISSION_PROGRESS);
+        Mockito.when(missionDao.create(any(), any(), anyFloat(), any())).thenReturn(REPEATABLE_START_MISSION_PROGRESS);
         Mockito.when(userDao.findById(anyLong())).thenReturn(Optional.of(user));
         Mockito.when(missionDao.updateProgress(any(), any(), anyFloat())).thenReturn(Optional.of(REPEATED_MISSION_PROGRESS));
 

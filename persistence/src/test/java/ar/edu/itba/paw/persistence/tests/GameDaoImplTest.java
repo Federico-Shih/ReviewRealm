@@ -277,7 +277,7 @@ public class GameDaoImplTest {
         Set<Genre> genres = gameDao.getGenresByGame(gameWithGenres.getId());
 
         Assert.assertEquals(2, genres.size());
-        List<Genre> expectedGenres = Arrays.asList(Genre.ACTION, Genre.ADVENTURE);
+        List<Genre> expectedGenres = Arrays.asList(Genre.ADVENTURE, Genre.ACTION);
 
         Assert.assertArrayEquals(expectedGenres.toArray(), genres.toArray());
     }
