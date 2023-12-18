@@ -31,8 +31,6 @@ public class GameResponse extends BaseResponse {
 
     private int reviewCount;
 
-    private boolean isFavorite;
-
     //GameReviewData
     private Difficulty averageDifficulty = null;
     private Platform averagePlatform = null;
@@ -49,7 +47,7 @@ public class GameResponse extends BaseResponse {
         if(user != null) {
             response.link("userReview", uri.getBaseUriBuilder().path("reviews").queryParam("authors", user.getId()).queryParam("gameId", game.getId()).build());
             response.link("reviewsExcludingUser",uri.getBaseUriBuilder().path("reviews").queryParam("excludeAuthors",user.getId()).queryParam("gameId",game.getId()).build());
-            if(!response.isFavorite()){
+            if(game.isFavorite()){
                 response.link("addToFavoriteGames", uri.getBaseUriBuilder().path("users").path(String.valueOf(user.getId())).path("favoritegames").build());
             }else{
                 response.link("deleteFromFavoriteGames", uri.getBaseUriBuilder().path("users").path(String.valueOf(user.getId())).path("favoritegames").path(String.valueOf(game.getId())).build());
@@ -73,7 +71,6 @@ public class GameResponse extends BaseResponse {
         response.setPublishDate(game.getPublishDate().format(DateTimeFormatter.ISO_DATE));
         response.setRatingSum(game.getRatingSum());
         response.setReviewCount(game.getReviewCount());
-        response.setFavorite(game.isFavorite());
         if(gameReviewData != null) {
             response.setAverageDifficulty(gameReviewData.getAverageDifficulty());
             response.setAveragePlatform(gameReviewData.getAveragePlatform());
@@ -145,10 +142,6 @@ public class GameResponse extends BaseResponse {
         this.completability = completability;
     }
 
-    public void setFavorite(boolean favorite) {
-        isFavorite = favorite;
-    }
-
     public String getName() {
         return name;
     }
@@ -195,9 +188,5 @@ public class GameResponse extends BaseResponse {
 
     public double getCompletability() {
         return completability;
-    }
-
-    public boolean isFavorite() {
-        return isFavorite;
     }
 }

@@ -10,22 +10,6 @@ import static ar.edu.itba.paw.webapp.controller.responses.NotificationResponse.g
 
 public class NotificationStatusResponse extends BaseResponse {
 
-    /*
-    private NotificationTypeResponse info;
-
-
-    public static NotificationStatusResponse fromEntity(final UriInfo uri, long id, NotificationType notification) {
-        NotificationStatusResponse response = new NotificationStatusResponse();
-        response.info = NotificationTypeResponse.fromEntity(uri, notification, true);
-        response.link("self", uri.getBaseUriBuilder().path("users").path(String.valueOf(id)).path("notifications").build());
-        return response;
-    }
-
-    public NotificationTypeResponse getInfo() {
-        return info;
-    }
-    */
-
     private NotificationTypeResponse userIFollowWritesReview;
     private NotificationTypeResponse myReviewIsDeleted;
 

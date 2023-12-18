@@ -25,6 +25,6 @@ public class UserAlreadyFollowingExceptionMapper implements ExceptionMapper<User
     @Override
     public Response toResponse(UserAlreadyFollowing e) {
         LOGGER.error("{}: {}", e.getClass().getName(), e.getMessage());
-        return Response.status(Response.Status.BAD_REQUEST).type(MediaType.APPLICATION_JSON).entity(ExceptionResponse.of(messageSource.getMessage("user_already_followed", null, LocaleHelper.getLocale()))).build();
+        return Response.status(Response.Status.CONFLICT).type(MediaType.APPLICATION_JSON).entity(ExceptionResponse.of(messageSource.getMessage("user_already_followed", null, LocaleHelper.getLocale()))).build();
     }
 }

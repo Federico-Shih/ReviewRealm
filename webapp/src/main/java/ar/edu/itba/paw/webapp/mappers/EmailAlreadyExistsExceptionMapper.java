@@ -28,7 +28,7 @@ public class EmailAlreadyExistsExceptionMapper implements ExceptionMapper<EmailA
     public Response toResponse(EmailAlreadyExistsException e) {
         LOGGER.error("{} : {}", e.getClass().getName(), messageSource.getMessage("email.already.exists",
                 null, Locale.ENGLISH));
-        return Response.status(Response.Status.BAD_REQUEST).type(MediaType.APPLICATION_JSON).entity(ExceptionResponse.of(messageSource.getMessage("email.already.exists",
+        return Response.status(Response.Status.CONFLICT).type(MediaType.APPLICATION_JSON).entity(ExceptionResponse.of(messageSource.getMessage("email.already.exists",
                 null, LocaleHelper.getLocale()))).build();
     }
 }

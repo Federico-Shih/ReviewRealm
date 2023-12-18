@@ -13,11 +13,9 @@ import javax.ws.rs.QueryParam;
 public class ReportSearchQuery extends PaginatedQuery {
 
     @QueryParam("reviewId")
-    @ExistentReviewId(optional = true)
     private Long reviewId;
 
     @QueryParam("reporterId")
-    @ExistentUserId(optional = true)
     private Long reporterId;
 
     @Pattern(regexp ="^(disrespectful|spam|irrelevant|spoiler|piracy|privacy)$"
@@ -26,11 +24,9 @@ public class ReportSearchQuery extends PaginatedQuery {
     private String reason;
 
     @QueryParam("moderatorId")
-    @ExistentUserId(optional = true)
     private Long moderatorId;
 
     @QueryParam("reportedUserId")
-    @ExistentUserId(optional = true)
     private Long reportedUserId;
 
     public ReportSearchQuery() {

@@ -2,6 +2,7 @@ package ar.edu.itba.paw.webapp.controller.forms;
 
 import ar.edu.itba.paw.webapp.controller.annotations.*;
 import ar.edu.itba.paw.dtos.saving.SubmitGameDTO;
+import ar.edu.itba.paw.webapp.controller.helpers.ImageValidatorHelper;
 import ar.edu.itba.paw.webapp.exceptions.CustomRuntimeException;
 import org.apache.commons.io.IOUtils;
 import org.glassfish.jersey.media.multipart.FormDataBodyPart;
@@ -19,11 +20,11 @@ import java.util.List;
 
 
 public class SubmitGameForm {
-    @Size(min = 1, max = 80,message = "Size.submitGame.name")
+    @Size(min = 1, max = 80, message = "Size.submitGame.name")
     @NotNull(message = "NotNull.property")
     @FormDataParam("name")
     private String name;
-    @Size(max = 300,message = "Size.submitGame.description")
+    @Size(max = 300, message = "Size.submitGame.description")
     @NotNull(message = "NotNull.property")
     @FormDataParam("description")
     private String description;
@@ -49,7 +50,6 @@ public class SubmitGameForm {
     @FormDataParam("image")
     private InputStream imageStream;
 
-    @ValidImage
     @NotNull(message = "NotNull.property")
     @FormDataParam("image")
     private FormDataBodyPart imageDetails;
@@ -119,15 +119,18 @@ public class SubmitGameForm {
         this.releaseDate = releaseDate;
     }
 
-    public SubmitGameDTO toSubmitDTO(){
-            byte[] imageArray = new byte[0];
-            if(imageStream != null){
-                try {
-                    imageArray = IOUtils.toByteArray(imageStream);
-                } catch (IOException e) {
-                    throw new CustomRuntimeException(Response.Status.INTERNAL_SERVER_ERROR,"image.error");
-                }
+    public SubmitGameDTO toSubmitDTO() {
+        if(!ImageValidatorHelper.isValid(imageDetails)) {
+            throw new CustomRuntimeException(Response.Status.BAD_REQUEST, "javax.validation.constraints.ValidImage.message");
+        }
+        byte[] imageArray = new byte[0];
+        if (imageStream != null) {
+            try {
+                imageArray = IOUtils.toByteArray(imageStream);
+            } catch (IOException e) {
+                throw new CustomRuntimeException(Response.Status.INTERNAL_SERVER_ERROR, "image.error");
             }
+        }
         return new SubmitGameDTO(name, description, developer, publisher, genres, imageArray, imageDetails.getMediaType().toString(), LocalDate.parse(releaseDate));
     }
 }

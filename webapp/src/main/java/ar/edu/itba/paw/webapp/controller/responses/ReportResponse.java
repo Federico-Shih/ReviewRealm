@@ -9,9 +9,9 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class ReportResponse extends BaseResponse{
-    private static String USERS_BASE_PATH = "/users";
-    private static String REVIEWS_BASE_PATH = "/reviews";
-    private static String REPORTS_BASE_PATH = "/reports";
+    private static final String USERS_BASE_PATH = "/users";
+    private static final String REVIEWS_BASE_PATH = "/reviews";
+    private static final String REPORTS_BASE_PATH = "/reports";
     private long id;
     private ReportReason reason;
     private String submissionDate;

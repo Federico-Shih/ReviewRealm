@@ -27,7 +27,7 @@ public class ReviewAlreadyExistsExceptionMapper implements ExceptionMapper<Revie
     public Response toResponse(ReviewAlreadyExistsException e) {
         LOGGER.error("{}: {}", e.getClass().getName(), messageSource.getMessage("review.already.exists", new Object[]{e.getReviewedGame().getName()},
                 Locale.ENGLISH));
-        return Response.status(Response.Status.BAD_REQUEST).type(MediaType.APPLICATION_JSON).entity(ExceptionResponse.of(messageSource.getMessage("review.already.exists", new Object[]{e.getReviewedGame().getName()},
+        return Response.status(Response.Status.CONFLICT).type(MediaType.APPLICATION_JSON).entity(ExceptionResponse.of(messageSource.getMessage("review.already.exists", new Object[]{e.getReviewedGame().getName()},
                 LocaleHelper.getLocale()))).build();
     }
 }

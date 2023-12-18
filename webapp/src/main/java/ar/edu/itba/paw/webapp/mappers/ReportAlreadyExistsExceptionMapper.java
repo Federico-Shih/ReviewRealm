@@ -26,7 +26,7 @@ public class ReportAlreadyExistsExceptionMapper implements ExceptionMapper<Repor
     public Response toResponse(ReportAlreadyExistsException e) {
         LOGGER.error("{} : {}", e.getClass().getName(), messageSource.getMessage("report.already.exists", null,
                 Locale.ENGLISH));
-        return Response.status(Response.Status.BAD_REQUEST)
+        return Response.status(Response.Status.CONFLICT)
                 .type(MediaType.APPLICATION_JSON)
                 .entity(ExceptionResponse.of(messageSource.getMessage("report.already.exists", null, LocaleHelper.getLocale())))
                 .build();

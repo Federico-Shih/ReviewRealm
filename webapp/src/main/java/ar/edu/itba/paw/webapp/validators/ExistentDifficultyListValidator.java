@@ -1,7 +1,6 @@
 package ar.edu.itba.paw.webapp.validators;
 
 import ar.edu.itba.paw.enums.Difficulty;
-import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.webapp.controller.annotations.ExistentDifficultyList;
 
 import javax.validation.ConstraintValidator;

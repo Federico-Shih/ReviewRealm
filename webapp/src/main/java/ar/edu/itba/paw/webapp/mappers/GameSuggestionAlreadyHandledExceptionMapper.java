@@ -27,7 +27,7 @@ public class GameSuggestionAlreadyHandledExceptionMapper implements ExceptionMap
     public Response toResponse(GameSuggestionAlreadyHandled gameSuggestionAlreadyHandled) {
         LOGGER.error("{}: {}", gameSuggestionAlreadyHandled.getClass().getName(), messageSource.getMessage("game.suggestion.already.handled",
                 null, Locale.ENGLISH));
-        return Response.status(Response.Status.BAD_REQUEST).type(MediaType.APPLICATION_JSON).entity(ExceptionResponse.of(messageSource.getMessage("game.suggestion.already.handled",
+        return Response.status(Response.Status.CONFLICT).type(MediaType.APPLICATION_JSON).entity(ExceptionResponse.of(messageSource.getMessage("game.suggestion.already.handled",
                 null, LocaleHelper.getLocale()))).build();
     }
 }

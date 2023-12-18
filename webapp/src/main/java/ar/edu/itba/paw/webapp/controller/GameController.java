@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.webapp.controller;
 
+import ar.edu.itba.paw.exceptions.UserNotFoundException;
 import ar.edu.itba.paw.models.Game;
 import ar.edu.itba.paw.models.Paginated;
 import ar.edu.itba.paw.models.User;
@@ -24,7 +25,6 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -71,37 +71,46 @@ public class GameController {
     @PreAuthorize("@accessControl.checkSuggestedFilterIsModerator(#gameSearchQuery.getSuggested())")
     public Response getGames(@Valid @BeanParam GameSearchQuery gameSearchQuery){
         User loggedUser = AuthenticationHelper.getLoggedUser(us);
-        Paginated<Game> games = gs.searchGames(gameSearchQuery.getPage(), gameSearchQuery.getFilter(),gameSearchQuery.getOrdering(),(loggedUser != null ? loggedUser.getId() : null));
+        Paginated<Game> games;
+        try {
+            games = gs.searchGames(gameSearchQuery.getPage(), gameSearchQuery.getFilter(), gameSearchQuery.getOrdering(), (loggedUser != null ? loggedUser.getId() : null));
+        }catch (UserNotFoundException e){
+            return Response.noContent().build();
+        }
         if(games.getTotalPages() == 0 || games.getList().isEmpty()){
             return Response.noContent().build();
         }
         List<GameResponse> gameResponseList = games.getList().stream().map(
                 (game) -> GameResponse.fromEntity(uriInfo,game, gs.getGameReviewDataByGameId(game.getId())
                         ,loggedUser)
-                // Que busque los gameReviewData por todos los games es medio lento
         ).collect(Collectors.toList());
         return PaginatedResponseHelper.fromPaginated(uriInfo,gameResponseList,games).build();
     }
 
     @POST
     @Consumes(MediaType.MULTIPART_FORM_DATA)
-    public Response postGame(@Valid @NotNull(message = "error.body.empty") @BeanParam SubmitGameForm submitGameForm) throws IOException {
-        long loggedUser = AuthenticationHelper.getLoggedUser(us).getId();
-        Game game = gs.createGame(submitGameForm.toSubmitDTO(),loggedUser);
+    public Response postGame(@Valid @NotNull(message = "error.body.empty") @BeanParam SubmitGameForm submitGameForm){
+        User loggedUser = AuthenticationHelper.getLoggedUser(us);
+        Game game = gs.createGame(submitGameForm.toSubmitDTO(),loggedUser.getId());
 
+        if(!loggedUser.isModerator()){
+            return Response.accepted().build();
+        }
         return Response
-                .created(uriInfo.getAbsolutePathBuilder().path(game.getId().toString()).build()).build();
+                .created(uriInfo.getAbsolutePathBuilder().path("/games").path(game.getId().toString()).build())
+                .entity(GameResponse.fromEntity(uriInfo, game,
+                        gs.getGameReviewDataByGameId(game.getId()), loggedUser)).build();
     }
 
     @PATCH
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(VndType.APPLICATION_GAME)
     @Path("{id:\\d+}")
-    public Response  editGame(@Valid @NotNull(message = "error.body.empty") @BeanParam EditGameForm editGameForm, @Valid @ExistentGameId @PathParam("id") final long id){
+    public Response  editGame(@Valid @NotNull(message = "error.body.empty") @BeanParam EditGameForm editGameForm,@PathParam("id") final long id){
         Game game = gs.editGame(editGameForm.toSubmitDTO(),id);
         User user = AuthenticationHelper.getLoggedUser(us);
 
-        return Response.ok(uriInfo.getAbsolutePathBuilder().path(game.getId().toString()).build())
+        return Response.ok(uriInfo.getAbsolutePathBuilder().path("/games").path(game.getId().toString()).build())
                 .entity(GameResponse.fromEntity(uriInfo, game,
                         gs.getGameReviewDataByGameId(game.getId()), user)).build();
     }
@@ -121,7 +130,7 @@ public class GameController {
     @Consumes(VndType.APPLICATION_GAME_SUGGESTION_FORM)
     @Path("{id:\\d+}")
     public Response patchGame(@Valid @NotNull(message = "error.body.empty") PatchGameForm patchGameForm,
-                              @Valid @ExistentGameId @PathParam("id") final long id) {
+                              @PathParam("id") final long id) {
         long loggedUser = AuthenticationHelper.getLoggedUser(us).getId();
         if(patchGameForm.getAccept()){
             gs.acceptGame(id, loggedUser);

@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 
 public interface CommonRowMappers{
-    String IMAGE_PREFIX = "/images/";
 
     RowMapper<Game> TEST_GAME_ROW_MAPPER = (resultSet, i) ->
             new Game(resultSet.getLong("id"),

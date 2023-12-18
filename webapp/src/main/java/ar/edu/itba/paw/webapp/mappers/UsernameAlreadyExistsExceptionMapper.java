@@ -27,7 +27,7 @@ public class UsernameAlreadyExistsExceptionMapper implements ExceptionMapper<Use
     public Response toResponse(UsernameAlreadyExistsException e) {
         LOGGER.error("{} : {}", e.getClass().getName(), messageSource.getMessage("username.already.exists",
                 null, Locale.ENGLISH));
-        return Response.status(Response.Status.BAD_REQUEST).type(MediaType.APPLICATION_JSON).entity(ExceptionResponse.of(messageSource.getMessage("username.already.exists",
+        return Response.status(Response.Status.CONFLICT).type(MediaType.APPLICATION_JSON).entity(ExceptionResponse.of(messageSource.getMessage("username.already.exists",
                 null, LocaleHelper.getLocale()))).build();
     }
 }

@@ -10,7 +10,7 @@ import java.net.URI;
 
 public class FeedbackResponse extends BaseResponse {
 
-    private static String BASE_PATH = "/reviews";
+    private static final String BASE_PATH = "/reviews";
     private FeedbackType feedbackType;
 
 

@@ -188,15 +188,6 @@ public class ReviewHibernateDao implements ReviewDao, PaginationDao<ReviewFilter
     }
 
     @Override
-    public int deleteReviewsOfGame(long gameId) {
-        Game game = em.find(Game.class, gameId);
-        if (game == null || game.getDeleted()) return 0;
-        final TypedQuery<Review> query = em.createQuery("update Review set deleted = true where reviewedGame = :game", Review.class);
-        query.setParameter("game", game);
-        return query.executeUpdate();
-    }
-
-    @Override
     public Optional<FeedbackType> getReviewFeedback(long reviewId, long userId) {
         User user = em.find(User.class, userId);
         Review review = em.find(Review.class, reviewId);

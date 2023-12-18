@@ -84,13 +84,13 @@ public class GameServiceImpl implements GameService {
     @Transactional
     @Override
     public Game editGame(SubmitGameDTO gameDTO, long gameId) {
+        if(!gameDao.getById(gameId).isPresent()) throw new GameNotFoundException();
         Image img = null;
         if(gameDTO.getImageData().length!=0) {
             img = imgService.uploadImage(gameDTO.getImageData(), gameDTO.getMediatype());
             if (img == null)
                 throw new RuntimeException("Error creating image");
         }
-
         List<Genre> genreList = prepareGenres(gameDTO);
         LOGGER.info("Editing game - name: {}, developer: {}", gameDTO.getName(), gameDTO.getName());
         return gameDao.edit(gameId,gameDTO.getName(),gameDTO.getDescription(),gameDTO.getDeveloper(),gameDTO.getPublisher(), (img!=null)? img.getId() : null, genreList,gameDTO.getReleaseDate()).orElseThrow(GameNotFoundException::new);

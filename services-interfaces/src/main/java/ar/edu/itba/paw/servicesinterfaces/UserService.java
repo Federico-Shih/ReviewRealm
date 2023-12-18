@@ -51,19 +51,12 @@ public interface UserService {
 
     ExpirationToken refreshToken(String token);
 
-    Paginated<User> searchUsers(Page page, String search, Ordering<UserOrderCriteria> ordering, Long currentUserId);
-
-    Paginated<User> getOtherUsers(Page page, Long userId, Ordering<UserOrderCriteria> ordering, Long currentUserId);
-
     Paginated<User> getUsersWhoReviewedSameGames(Page page, long userId, Ordering<UserOrderCriteria> ordering, Long currentUserId);
-    
-    boolean hasUserReviewedAnything(long userId);
 
     Paginated<User> getUsersWithSamePreferences(Page page, long userId, Ordering<UserOrderCriteria> ordering, Long currentUserId);
     
     ExpirationToken sendPasswordResetToken(String email) throws UserNotFoundException;
-    
-    User resetPassword(int id, String password) throws UserNotFoundException;
+
     
     Map<NotificationType, Boolean> getUserNotificationSettings(long userId);
     
@@ -78,12 +71,10 @@ public interface UserService {
     User changeUserLanguage(long userId, Locale language);
     
     Paginated<Game> getFavoriteGamesFromUser(Page page,long userId);
-    
-    List<Game> getPossibleFavGamesFromUser(long userId);
+
     
     boolean deleteFavoriteGame(long userId, long gameId);
-    
-    User setFavoriteGames(long userId, List<Long> gameIds);
+
 
     boolean addFavoriteGame(long userId, long gameid);
 
@@ -91,5 +82,4 @@ public interface UserService {
 
     Optional<ExpirationToken> getExpirationToken(String token);
 
-    Optional<Set<NotificationType>> getNotifications(long id);
 }

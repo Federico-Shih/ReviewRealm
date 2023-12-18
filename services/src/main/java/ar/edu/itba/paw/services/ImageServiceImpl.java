@@ -28,34 +28,6 @@ public class ImageServiceImpl implements ImageService {
 
     @Transactional
     @Override
-    public Image uploadImage(URL url){
-        BufferedImage img;
-        try {
-            img = ImageIO.read(url);
-        } catch (IOException e) {
-            LOGGER.error("Error reading image url: {}", e.getMessage());
-            return null;
-        }
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        try {
-            ImageIO.write(img, "jpg", baos);
-            baos.flush();
-        } catch (IOException e) {
-            LOGGER.error("Error writing image: {}", e.getMessage());
-            return null;
-        }
-        byte[] imageInByte = baos.toByteArray();
-        try {
-            baos.close();
-        } catch (IOException e) {
-            LOGGER.error("Error closing image: {}", e.getMessage());
-            return null;
-        }
-        return imageDao.uploadImage(imageInByte,"image/jpg");
-    }
-
-    @Transactional
-    @Override
     public Image uploadImage(byte[] image, String extension) {
         try {
             return imageDao.uploadImage(image, extension);

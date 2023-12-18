@@ -1,13 +1,5 @@
 package ar.edu.itba.paw.webapp.controller.querycontainers;
 
-/*
-//            @RequestParam(value = "search", defaultValue = "") final String search,
-//            @RequestParam(value = "page", defaultValue = "1") Integer page,
-//            @RequestParam(value = "pageSize", required = false) Integer pageSize,
-//            @RequestParam(value = "o-crit", defaultValue = "0") Integer orderCriteria,
-//            @RequestParam(value = "o-dir", defaultValue = "0") Integer orderDirection
- */
-
 import ar.edu.itba.paw.dtos.filtering.ReviewFilter;
 import ar.edu.itba.paw.dtos.filtering.ReviewFilterBuilder;
 import ar.edu.itba.paw.dtos.ordering.OrderDirection;
@@ -32,7 +24,6 @@ public class ReviewSearchQuery extends PaginatedQuery {
     @QueryParam("direction")
     private String orderDirection;
 
-    @ExistentGenreList
     @QueryParam("gameGenres")
     private List<Integer> gameGenres;
 
@@ -46,7 +37,6 @@ public class ReviewSearchQuery extends PaginatedQuery {
     @QueryParam("timeplayed")
     private String timePlayedFilter;
 
-    @ExistentGenreList
     @QueryParam("authorPreferences")
     private List<Integer> authorPreferences;
 
@@ -67,19 +57,15 @@ public class ReviewSearchQuery extends PaginatedQuery {
     @QueryParam("search")
     private String search;
 
-    @ExistentGameId(optional = true)
     @QueryParam("gameId")
     private Long gameId;
 
-    @ExistentUserId(optional = true)
     @QueryParam("recommendedFor")
     private Long recommendedFor;
 
-    @ExistentUserId(optional = true)
     @QueryParam("fromFollowing")
     private Long fromFollowing;
 
-    @ExistentUserId(optional = true)
     @QueryParam("newForUser")
     private Long newForUser;
 

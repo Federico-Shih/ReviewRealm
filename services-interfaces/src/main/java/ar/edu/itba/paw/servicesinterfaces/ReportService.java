@@ -14,9 +14,6 @@ public interface ReportService {
 
     Optional<Report> getReportById(long id);
 
-
-    boolean isReported(long reviewId, long reporterId);
-
     Paginated<Report> getReports(Page page, ReportFilter filter);
 
 

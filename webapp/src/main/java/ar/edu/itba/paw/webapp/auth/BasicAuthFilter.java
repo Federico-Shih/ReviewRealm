@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 
 @Component
 public class BasicAuthFilter extends OncePerRequestFilter {
-    private static String REFRESH_HEADER = "X-Refresh";
+    private static final String REFRESH_HEADER = "X-Refresh";
 
     @Autowired
     private AuthenticationManager authenticationManager;

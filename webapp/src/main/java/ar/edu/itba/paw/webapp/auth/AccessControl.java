@@ -23,7 +23,6 @@ public class AccessControl {
     public boolean checkReviewAuthorOwnerOrMod(long reviewId) {
         return checkReviewAuthorOwner(reviewId) || checkAccessedUserIdIsMod();
     }
-
     public boolean checkReviewAuthorOwner(long reviewId) {
         User activeUser = AuthenticationHelper.getLoggedUser(userService);
         if(activeUser == null)
@@ -31,25 +30,13 @@ public class AccessControl {
         Optional<Review> review = reviewService.getReviewById(reviewId, activeUser.getId());
         return review.isPresent() && Objects.equals(review.get().getAuthor().getId(), activeUser.getId());
     }
+
     public boolean checkLoggedIsCreatorOfFeedback(long reviewId, long userId){
         User activeUser = AuthenticationHelper.getLoggedUser(userService);
         if(activeUser == null)
             return false;
         Optional<Review> review = reviewService.getReviewById(reviewId, activeUser.getId());
         return review.isPresent() && Objects.equals(userId, activeUser.getId());
-    }
-    public boolean checkReviewAuthorforFeedback(long reviewId){
-        User activeUser = AuthenticationHelper.getLoggedUser(userService);
-        if(activeUser == null)
-            return false;
-        Optional<Review> review = reviewService.getReviewById(reviewId, activeUser.getId());
-        return review.isPresent() && !Objects.equals(review.get().getAuthor().getId(), activeUser.getId());
-    }
-    public boolean checkGameAuthorReviewed(long gameId) {
-        User activeUser = AuthenticationHelper.getLoggedUser(userService);
-        if(activeUser == null)
-            return false;
-        return !reviewService.getReviewOfUserForGame(activeUser.getId(), gameId).isPresent();
     }
 
     public boolean checkAccessedUserIdIsUser(long id) {
@@ -70,9 +57,5 @@ public class AccessControl {
         if(activeUser == null)
             return false;
         return activeUser.isModerator();
-    }
-
-    public boolean checkUserIsNotAuthor(long reviewId) {
-        return !checkReviewAuthorOwner(reviewId);
     }
 }

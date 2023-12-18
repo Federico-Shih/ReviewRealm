@@ -3,13 +3,12 @@ package ar.edu.itba.paw.webapp.controller.forms;
 import ar.edu.itba.paw.dtos.saving.SubmitGameDTO;
 import ar.edu.itba.paw.webapp.controller.annotations.CheckDateFormat;
 import ar.edu.itba.paw.webapp.controller.annotations.ExistentGenreList;
-import ar.edu.itba.paw.webapp.controller.annotations.ValidImage;
+import ar.edu.itba.paw.webapp.controller.helpers.ImageValidatorHelper;
 import ar.edu.itba.paw.webapp.exceptions.CustomRuntimeException;
 import org.apache.commons.io.IOUtils;
 import org.glassfish.jersey.media.multipart.FormDataBodyPart;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
@@ -42,8 +41,6 @@ public class EditGameForm {
 
     @FormDataParam("image")
     private InputStream imageStream;
-
-    @ValidImage
     @FormDataParam("image")
     private FormDataBodyPart imageDetails;
 
@@ -113,6 +110,9 @@ public class EditGameForm {
     }
 
     public SubmitGameDTO toSubmitDTO(){
+        if(!ImageValidatorHelper.isValid(imageDetails)) {
+            throw new CustomRuntimeException(Response.Status.BAD_REQUEST, "javax.validation.constraints.ValidImage.message");
+        }
         byte[] imageArray = new byte[0];
         if(imageStream != null){
             try {

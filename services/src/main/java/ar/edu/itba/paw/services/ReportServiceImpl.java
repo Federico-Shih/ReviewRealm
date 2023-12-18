@@ -76,14 +76,6 @@ public class ReportServiceImpl implements ReportService {
 
     @Transactional
     @Override
-    public boolean isReported(long reviewId, long reporterId){
-        ReportFilter filter = new ReportFilterBuilder().withReviewId(reviewId).withReporterId(reporterId).withState(ReportState.UNRESOLVED).build();
-        return !reportDao.findAll(Page.with(1, 1), filter).getList().isEmpty();
-    }
-
-
-    @Transactional
-    @Override
     public Report resolveReport(long reportid, long moderatorId) {
         Report report = reportDao.get(reportid).orElseThrow(ReportNotFoundException::new);
         if (report.isResolved())

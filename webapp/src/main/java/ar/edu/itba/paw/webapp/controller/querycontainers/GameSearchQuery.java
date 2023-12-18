@@ -5,24 +5,12 @@ import ar.edu.itba.paw.dtos.filtering.GameFilterBuilder;
 import ar.edu.itba.paw.dtos.ordering.GameOrderCriteria;
 import ar.edu.itba.paw.dtos.ordering.OrderDirection;
 import ar.edu.itba.paw.dtos.ordering.Ordering;
-import ar.edu.itba.paw.webapp.controller.annotations.ExistentGenreList;
-import ar.edu.itba.paw.webapp.controller.annotations.ExistentUserId;
 
 import javax.validation.constraints.Pattern;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.QueryParam;
 import java.util.List;
 
-//            @RequestParam(value = "page", defaultValue = "1") Integer page,
-//            @RequestParam(value = "pageSize", required = false) Integer pageSize,
-//            @RequestParam(value = "o-crit", defaultValue = "0") Integer orderCriteria,
-//            @RequestParam(value = "o-dir", defaultValue = "0") Integer orderDirection,
-//            @RequestParam(value = "f-gen", defaultValue = "") List<Integer> genresFilter,
-//            @RequestParam(value = "f-rat", defaultValue = "") String ratingFilter,
-//            @RequestParam(value = "f-enr", defaultValue = "") Boolean excludeNoRatingFilter,
-//            @RequestParam(value = "search", defaultValue = "") String search,
-//            @RequestParam(value = "created", required = false) Boolean created,
-//            @RequestParam(value = "deleted", required = false) Boolean deleted
 public class GameSearchQuery extends PaginatedQuery{
 
     @QueryParam("search")
@@ -36,7 +24,6 @@ public class GameSearchQuery extends PaginatedQuery{
     @QueryParam("direction")
     private String orderDirection;
 
-    @ExistentGenreList
     @QueryParam("genres")
     private List<Integer> genres;
 
@@ -52,15 +39,12 @@ public class GameSearchQuery extends PaginatedQuery{
     @DefaultValue("false")
     private boolean suggested;
 
-    @ExistentUserId(optional = true)
     @QueryParam("recommendedFor")
     private Long recommendedFor;
 
-    @ExistentUserId(optional = true)
     @QueryParam("favoriteOf")
     private Long favoriteOf;
 
-    @ExistentUserId(optional = true)
     @QueryParam("notReviewedBy")
     private Long notReviewedBy;
 

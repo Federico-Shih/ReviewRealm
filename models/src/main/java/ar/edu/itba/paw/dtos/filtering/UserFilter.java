@@ -3,7 +3,6 @@ package ar.edu.itba.paw.dtos.filtering;
 import org.apache.commons.lang3.ObjectUtils;
 
 import java.util.List;
-import java.util.Objects;
 
 // To be used between Services and Persistence
 public class UserFilter {

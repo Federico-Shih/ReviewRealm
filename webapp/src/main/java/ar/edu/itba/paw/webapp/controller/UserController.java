@@ -11,8 +11,6 @@ import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.servicesinterfaces.MissionService;
 import ar.edu.itba.paw.servicesinterfaces.UserService;
 import ar.edu.itba.paw.webapp.auth.AuthenticationHelper;
-import ar.edu.itba.paw.webapp.controller.annotations.ExistentGameId;
-import ar.edu.itba.paw.webapp.controller.annotations.ExistentUserId;
 import ar.edu.itba.paw.webapp.controller.forms.*;
 import ar.edu.itba.paw.webapp.controller.helpers.LocaleHelper;
 import ar.edu.itba.paw.webapp.controller.mediatypes.VndType;
@@ -109,7 +107,7 @@ public class UserController {
     @GET
     @Produces(VndType.APPLICATION_ENTITY_LINK_LIST)
     @Path("{id:\\d+}/followers")
-    public Response getFollowers(@Valid @ExistentUserId @PathParam("id") final long id,
+    public Response getFollowers(@PathParam("id") final long id,
                                  @QueryParam("page") @DefaultValue("1") final int page,
                                  @QueryParam("pageSize") @DefaultValue("10") final int pageSize) {
         Paginated<User> followers = us.getFollowers(id, Page.with(page,pageSize));
@@ -126,7 +124,7 @@ public class UserController {
     @Produces(VndType.APPLICATION_ENTITY_LINK_LIST)
     @Path("{id:\\d+}/following")
     public Response getFollowing(
-            @Valid @ExistentUserId @PathParam("id") final long id,
+            @PathParam("id") final long id,
             @QueryParam("page") @DefaultValue("1") final int page,
             @QueryParam("pageSize") @DefaultValue("10") final int pageSize
     ) {
@@ -146,8 +144,8 @@ public class UserController {
     @Produces(VndType.APPLICATION_ENTITY_LINK_LIST)
     @Path("{id:\\d+}/following/{followingId:\\d+}")
     public Response getFollowingById(
-            @Valid @ExistentUserId @PathParam("id") final long id,
-            @Valid @ExistentUserId @PathParam("followingId") final long followingId
+            @PathParam("id") final long id,
+            @PathParam("followingId") final long followingId
     ) {
         boolean follows = us.userFollowsId(id, followingId);
         Optional<User> user;
@@ -168,7 +166,7 @@ public class UserController {
     @DELETE
     @Path("{id:\\d+}/following/{followingId:\\d+}")
     @PreAuthorize("@accessControl.checkAccessedUserIdIsUser(#id)")
-    public Response unfollowUser(@PathParam("id") long id, @Valid @ExistentUserId @PathParam("followingId") long followingId) {
+    public Response unfollowUser(@PathParam("id") long id,@PathParam("followingId") long followingId) {
         User user = us.unfollowUserById(id,followingId);
         if (user == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
@@ -212,7 +210,7 @@ public class UserController {
     @DELETE
     @Path("{id:\\d+}/favoritegames/{gameId:\\d+}")
     @PreAuthorize("@accessControl.checkAccessedUserIdIsUser(#id)")
-    public Response deleteFavoriteGame(@Valid @ExistentUserId @PathParam("id") final long id, @ExistentGameId @PathParam("gameId") final long gameId) {
+    public Response deleteFavoriteGame(@PathParam("id") final long id, @PathParam("gameId") final long gameId) {
         boolean deleted = us.deleteFavoriteGame(id, gameId);
         return deleted ? Response.ok().build() : Response.status(Response.Status.NOT_FOUND).build();
     }
@@ -248,7 +246,7 @@ public class UserController {
     @Path("{id:\\d+}/mission-progresses")
     @PreAuthorize("@accessControl.checkAccessedUserIdIsUser(#id)")
     @Produces(VndType.APPLICATION_MISSION_PROGRESS)
-    public Response getMissionProgresses(@PathParam("id") final Long id) {
+    public Response getMissionProgresses(@PathParam("id") final long id) {
         List<MissionProgress> progresses = missionService.getMissionProgresses(id);
         if (progresses.isEmpty()) {
             return Response.status(Response.Status.NOT_FOUND).build();

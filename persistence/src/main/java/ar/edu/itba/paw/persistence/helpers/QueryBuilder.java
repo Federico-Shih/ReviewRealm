@@ -15,7 +15,7 @@ public class QueryBuilder {
     private Boolean not = false;
 
     public <T>QueryBuilder withList(String queryField, List<T> querylist) {
-        if (querylist != null && querylist.size() > 0) {
+        if (querylist != null && !querylist.isEmpty()) {
             str.append(" ");
             str.append(operator.getOperator());
             str.append(" ");

@@ -68,8 +68,7 @@ public class GenreController {
     @GET()
     @Produces(VndType.APPLICATION_GENRE_LIST)
     public Response getGenres(@Context Request request,
-                           @QueryParam("forGame") Long gameId,
-                           @QueryParam("forUser") Long userId) {
+                              @QueryParam("forGame") Long gameId, @QueryParam("forUser") Long userId) {
         if (gameId != null && userId != null) {
             throw new CustomRuntimeException(Response.Status.BAD_REQUEST, "genres.invalid.filter" );
         }
@@ -79,13 +78,13 @@ public class GenreController {
         if(gameId != null){
             Optional<Game> game = gameService.getGameById(gameId, loggedUser != null? loggedUser.getId() : null);
             if(!game.isPresent()){
-                return Response.status(Response.Status.NOT_FOUND).build();
+                return Response.noContent().build();
             }
             genres = new ArrayList<>(game.get().getGenres());
         } else if(userId != null){
             Optional<User> user = userService.getUserById(userId);
             if(!user.isPresent()){
-                return Response.status(Response.Status.NOT_FOUND).build();
+                return Response.noContent().build();
             }
             genres = new ArrayList<>(user.get().getPreferences());
         } else {

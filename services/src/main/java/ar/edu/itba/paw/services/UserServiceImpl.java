@@ -263,25 +263,6 @@ public class UserServiceImpl implements UserService {
 
     @Transactional(readOnly = true)
     @Override
-    public Paginated<User> searchUsers(Page page, String search, Ordering<UserOrderCriteria> ordering, Long currentUserId) {
-        UserFilterBuilder userFilterBuilder = new UserFilterBuilder();
-        if (search != null) {
-            userFilterBuilder = userFilterBuilder.withSearch(search);
-        }
-        return userDao.findAll(page, userFilterBuilder.build(), ordering, currentUserId);
-    }
-
-    @Transactional(readOnly = true)
-    @Override
-    public Paginated<User> getOtherUsers(Page page, Long userId, Ordering<UserOrderCriteria> ordering, Long currentUserId) {
-        UserFilterBuilder userFilterBuilder = new UserFilterBuilder();
-        if (userId != null)
-            userFilterBuilder = userFilterBuilder.notWithId(userId);
-        return userDao.findAll(page, userFilterBuilder.build(), ordering, currentUserId);
-    }
-
-    @Transactional(readOnly = true)
-    @Override
     public Paginated<User> getUsersWhoReviewedSameGames(Page page, long userId, Ordering<UserOrderCriteria> ordering, Long currentUserId) {
         Set<Game> reviewedGames = gameService.getGamesReviewedByUser(userId);
         return userDao.findAll(page,
@@ -291,12 +272,6 @@ public class UserServiceImpl implements UserService {
                         .build(),
                 ordering,
                 currentUserId);
-    }
-
-    @Transactional(readOnly = true)
-    @Override
-    public boolean hasUserReviewedAnything(long userId) {
-        return !gameService.getGamesReviewedByUser(userId).isEmpty();
     }
 
     @Transactional(readOnly = true)
@@ -321,21 +296,6 @@ public class UserServiceImpl implements UserService {
         LOGGER.info("Sending User {} a password reset token", user.getId());
         return newToken;
     }
-
-    @Transactional
-    @Override
-    public User resetPassword(int id, String password) {
-        User user = userDao.update(
-                id,
-                new SaveUserBuilder()
-                        .withPassword(passwordEncoder.encode(password))
-                        .withEnabled(true)
-                        .build()
-        ).orElseThrow(UserNotFoundException::new);
-        LOGGER.info("User {} reset password", id);
-        return user;
-    }
-
     @Transactional(readOnly = true)
     @Override
     public Map<NotificationType, Boolean> getUserNotificationSettings(long userId) {
@@ -425,25 +385,11 @@ public class UserServiceImpl implements UserService {
         return gameDao.findAll(page, filter, new Ordering<>(OrderDirection.DESCENDING, GameOrderCriteria.AVERAGE_RATING), userId);
     }
 
-    @Transactional(readOnly = true)
-    @Override
-    public List<Game> getPossibleFavGamesFromUser(long userId) {
-        if(!getUserById(userId).isPresent())
-            throw new UserNotFoundException();
-        return gameDao.getFavoriteGamesCandidates(userId, 8);
-    }
-
     @Transactional
     @Override
     public boolean deleteFavoriteGame(long userId, long gameId) {
         LOGGER.info("Possibly deleting gameId: {} from favorite games, for user {}", gameId, userId);
         return userDao.deleteFavoriteGameForUser(userId, gameId);
-    }
-
-    @Transactional
-    @Override
-    public User setFavoriteGames(long userId, List<Long> gameIds) {
-        return userDao.replaceAllFavoriteGames(userId, gameIds==null? Collections.emptyList(): gameIds).orElseThrow(UserNotFoundException::new);
     }
 
     @Transactional
@@ -490,9 +436,4 @@ public class UserServiceImpl implements UserService {
         return tokenDao.getByToken(token);
     }
 
-    @Transactional(readOnly = true)
-    @Override
-    public Optional<Set<NotificationType>> getNotifications(long id) {
-        return userDao.findById(id).map(User::getDisabledNotifications);
-    }
 }

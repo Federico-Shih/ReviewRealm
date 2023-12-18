@@ -2,21 +2,17 @@ package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.dtos.filtering.ReviewFilter;
 import ar.edu.itba.paw.enums.FeedbackType;
+import ar.edu.itba.paw.exceptions.GenreNotFoundException;
 import ar.edu.itba.paw.exceptions.ReviewAlreadyExistsException;
 import ar.edu.itba.paw.exceptions.ReviewNotFoundException;
+import ar.edu.itba.paw.exceptions.UserNotFoundException;
 import ar.edu.itba.paw.models.Paginated;
 import ar.edu.itba.paw.models.Review;
-import ar.edu.itba.paw.models.ReviewFeedback;
 import ar.edu.itba.paw.models.User;
-import ar.edu.itba.paw.servicesinterfaces.GameService;
-import ar.edu.itba.paw.servicesinterfaces.ReportService;
 import ar.edu.itba.paw.servicesinterfaces.ReviewService;
 import ar.edu.itba.paw.servicesinterfaces.UserService;
-import ar.edu.itba.paw.webapp.auth.AccessControl;
 import ar.edu.itba.paw.webapp.auth.AuthenticationHelper;
-import ar.edu.itba.paw.webapp.controller.annotations.ExistentReviewId;
-import ar.edu.itba.paw.webapp.controller.annotations.ExistentUserId;
-import ar.edu.itba.paw.webapp.controller.cache.CacheHelper;
+
 import ar.edu.itba.paw.webapp.controller.forms.EditReviewForm;
 import ar.edu.itba.paw.webapp.controller.forms.SubmitReviewForm;
 import ar.edu.itba.paw.webapp.controller.mediatypes.VndType;
@@ -25,9 +21,7 @@ import ar.edu.itba.paw.webapp.controller.responses.FeedbackResponse;
 import ar.edu.itba.paw.webapp.controller.responses.PaginatedResponseHelper;
 import ar.edu.itba.paw.webapp.controller.responses.ReviewResponse;
 import ar.edu.itba.paw.webapp.exceptions.CustomRuntimeException;
-import ar.edu.itba.paw.webapp.validators.FeedbackTypeForm;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import ar.edu.itba.paw.webapp.controller.forms.FeedbackTypeForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
@@ -46,29 +40,18 @@ import java.util.stream.Collectors;
 
 @Path("reviews")
 @Component
-public class ReviewController{
-    private static final Logger LOGGER = LoggerFactory.getLogger(ReviewController.class);
+public class ReviewController {
     @Context
     private UriInfo uriInfo;
-    private final GameService gameService;
-    @Autowired
-    private AccessControl accessControl;
     private final ReviewService reviewService;
     private final UserService userService;
-    private final ReportService reportService;
-    private static final int PAGE_SIZE = 8;
-    private static final int INITIAL_PAGE = 1;
-    private static final int MAX_SEARCH_RESULTS = 6;
 
     @Autowired
-    public ReviewController(GameService gameService, ReviewService reviewService, UserService userService, ReportService reportService) {
-        this.gameService = gameService;
+    public ReviewController(ReviewService reviewService, UserService userService) {
         this.reviewService = reviewService;
         this.userService = userService;
-        this.reportService = reportService;
 
     }
-
 
     @GET
     @Produces(VndType.APPLICATION_REVIEW_LIST)
@@ -87,12 +70,16 @@ public class ReviewController{
                 throw new CustomRuntimeException(Response.Status.FORBIDDEN, "unauthorized");
             }
         }
-
-        final Paginated<Review> reviews = reviewService.searchReviews(reviewSearchQuery.getPage(), reviewSearchQuery.getFilter(), reviewSearchQuery.getOrdering(), user!=null? user.getId() : null);
+        Paginated<Review> reviews;
+        try {
+            reviews = reviewService.searchReviews(reviewSearchQuery.getPage(), reviewSearchQuery.getFilter(), reviewSearchQuery.getOrdering(), user != null ? user.getId() : null);
+        }catch (UserNotFoundException e){
+            return Response.noContent().build();
+        }
         if (reviews.getTotalPages() == 0 || reviews.getList().isEmpty()) {
             return Response.noContent().build();
         }
-        List<ReviewResponse> reviewResponseList = reviews.getList().stream().map((review) -> ReviewResponse.fromEntity(uriInfo, review, user == null? null: user.getId())).collect(Collectors.toList());
+        List<ReviewResponse> reviewResponseList = reviews.getList().stream().map((review) -> ReviewResponse.fromEntity(uriInfo, review, user == null ? null : user.getId())).collect(Collectors.toList());
         return PaginatedResponseHelper.fromPaginated(uriInfo, reviewResponseList, reviews).build();
     }
 
@@ -128,28 +115,27 @@ public class ReviewController{
         if (!reviewService.deleteReviewById(id, loggedUser)) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
-        return Response.ok().build();
+        return Response.noContent().build();
     }
 
     @GET
     @Path("{id:\\d+}")
     @Produces(VndType.APPLICATION_REVIEW)
-    public Response getReviewById(@Valid @PathParam("id") final long id) {
+    public Response getReviewById(@PathParam("id") final long id) {
         User activeUser = AuthenticationHelper.getLoggedUser(userService);
-        Optional<Review> possibleReview = reviewService.getReviewById(id, activeUser == null? null : activeUser.getId());
+        Optional<Review> possibleReview = reviewService.getReviewById(id, activeUser == null ? null : activeUser.getId());
         if (!possibleReview.isPresent())
             return Response.status(Response.Status.NOT_FOUND).build();
-        return Response.ok(ReviewResponse.fromEntity(uriInfo, possibleReview.get(), activeUser == null? null: activeUser.getId())).build();
+        return Response.ok(ReviewResponse.fromEntity(uriInfo, possibleReview.get(), activeUser == null ? null : activeUser.getId())).build();
     }
-
 
 
     @PUT
     @Path("{id:\\d+}")
     @Consumes(VndType.APPLICATION_REVIEW_UPDATE)
-    @PreAuthorize("@accessControl.checkReviewAuthorOwnerOrMod(#id)")
-    public Response editReview(@Valid @PathParam("id") final long id, @Valid @NotNull(message = "error.body.empty") final EditReviewForm form) {
-        reviewService.updateReview(id, form.getReviewTitle(),
+    @PreAuthorize("@accessControl.checkReviewAuthorOwner(#id)")
+    public Response editReview(@PathParam("id") final long id, @Valid @NotNull(message = "error.body.empty") final EditReviewForm form) {
+        Review editedReview = reviewService.updateReview(id, form.getReviewTitle(),
                 form.getReviewContent(),
                 form.getReviewRating(),
                 form.getDifficultyEnum(),
@@ -158,13 +144,13 @@ public class ReviewController{
                 form.getCompleted(),
                 form.getReplayability()
         );
-        return Response.noContent().build();
+        return Response.ok(ReviewResponse.fromEntity(uriInfo, editedReview, AuthenticationHelper.getLoggedUser(userService).getId())).build();
     }
 
     @GET
     @Path("{reviewId:\\d+}/feedback/{userId:\\d+}")
     @Produces(VndType.APPLICATION_REVIEW_FEEDBACK)
-    public Response getReviewFeedback(@Valid @PathParam("reviewId") long reviewId, @Valid @ExistentUserId @PathParam("userId") long userId) {
+    public Response getReviewFeedback(@PathParam("reviewId") long reviewId, @PathParam("userId") long userId) {
         Review review = reviewService.getReviewById(reviewId, userId).orElseThrow(ReviewNotFoundException::new);
         if (review.getFeedback() == null)
             return Response.status(Response.Status.NOT_FOUND).build();
@@ -176,11 +162,11 @@ public class ReviewController{
     @Consumes(VndType.APPLICATION_REVIEW_FEEDBACK_FORM)
     @Produces(VndType.APPLICATION_REVIEW_FEEDBACK)
     @PreAuthorize("@accessControl.checkAccessedUserIdIsUser(#userId)")
-    public Response updateReviewFeedback(@Valid @PathParam("reviewId") long reviewId, @Valid @PathParam("userId") long userId, @Valid @NotNull(message = "error.body.empty") FeedbackTypeForm feedbackType) {
+    public Response updateReviewFeedback(@PathParam("reviewId") long reviewId, @PathParam("userId") long userId, @Valid @NotNull(message = "error.body.empty") FeedbackTypeForm feedbackType) {
         FeedbackType fb = feedbackType.transformToEnum();
         Review review = reviewService.getReviewById(reviewId, userId).orElseThrow(ReviewNotFoundException::new);
         boolean existsOldFeedback = review.getFeedback() != null;
-        reviewService.updateOrCreateReviewFeedback(reviewId,userId,fb);
+        reviewService.updateOrCreateReviewFeedback(reviewId, userId, fb);
         if (existsOldFeedback) {
             return Response.ok(FeedbackResponse.fromEntity(uriInfo, userId, reviewId, fb)).build();
         }
@@ -194,8 +180,8 @@ public class ReviewController{
     @DELETE
     @Path("{reviewId:\\d+}/feedback/{userId:\\d+}")
     @PreAuthorize("@accessControl.checkLoggedIsCreatorOfFeedback(#reviewId, #userId)")
-    public Response deleteReviewFeedback(@Valid @ExistentReviewId @PathParam("reviewId") long reviewId, @Valid @ExistentUserId @PathParam("userId") long userId) {
-        return reviewService.deleteReviewFeedback(reviewId,userId) ? Response.ok().build() : Response.status(Response.Status.NOT_FOUND).build();
+    public Response deleteReviewFeedback(@PathParam("reviewId") long reviewId, @PathParam("userId") long userId) {
+        return reviewService.deleteReviewFeedback(reviewId, userId) ? Response.ok().build() : Response.status(Response.Status.NOT_FOUND).build();
     }
 
 }

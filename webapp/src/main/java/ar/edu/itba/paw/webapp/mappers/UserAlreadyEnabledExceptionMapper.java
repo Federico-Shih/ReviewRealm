@@ -27,7 +27,7 @@ public class UserAlreadyEnabledExceptionMapper implements ExceptionMapper<UserAl
     public Response toResponse(UserAlreadyEnabled userAlreadyEnabled) {
         LOGGER.error("{}: {}", userAlreadyEnabled.getClass().getName(), messageSource.getMessage("user.already.validated", null,
                 Locale.ENGLISH));
-        return Response.status(Response.Status.BAD_REQUEST).type(MediaType.APPLICATION_JSON).entity(ExceptionResponse.of(messageSource.getMessage("user.already.validated", null,
+        return Response.status(Response.Status.CONFLICT).type(MediaType.APPLICATION_JSON).entity(ExceptionResponse.of(messageSource.getMessage("user.already.validated", null,
                 LocaleHelper.getLocale()))).build();
     }
 }

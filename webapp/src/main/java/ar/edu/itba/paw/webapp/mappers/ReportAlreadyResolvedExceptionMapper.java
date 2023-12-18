@@ -26,7 +26,7 @@ public class ReportAlreadyResolvedExceptionMapper implements ExceptionMapper<Rep
     public Response toResponse(ReportAlreadyResolvedException userAlreadyEnabled) {
         LOGGER.error("{}: {}", userAlreadyEnabled.getClass().getName(),
                 messageSource.getMessage("report.already.resolved", null, Locale.ENGLISH));
-        return Response.status(Response.Status.BAD_REQUEST)
+        return Response.status(Response.Status.CONFLICT)
                 .type(MediaType.APPLICATION_JSON)
                 .entity(ExceptionResponse.of(messageSource.getMessage("report.already.resolved", null, LocaleHelper.getLocale())))
                 .build();

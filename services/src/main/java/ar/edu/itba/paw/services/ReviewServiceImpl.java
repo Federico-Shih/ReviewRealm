@@ -264,15 +264,6 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Transactional
     @Override
-    public Paginated<Review> getReviewsFromGame(Page page, long gameId, Long activeUserId, boolean excludeActiveUser) {
-        ReviewFilterBuilder filterBuilder = new ReviewFilterBuilder().withGameId(gameId);
-        if(excludeActiveUser && activeUserId!=null)
-            filterBuilder = filterBuilder.withAuthorsToExclude(Arrays.asList(activeUserId));
-        return reviewDao.findAll(page, filterBuilder.build(), Ordering.defaultOrder(ReviewOrderCriteria.REVIEW_DATE), activeUserId);
-    }
-
-    @Transactional
-    @Override
     public List<Review> getAllReviewsFromGame(long gameId, Long activeUserId) {
         ReviewFilter filter = new ReviewFilterBuilder().withGameId(gameId).build();
         return reviewDao.findAll(filter, Ordering.defaultOrder(ReviewOrderCriteria.REVIEW_DATE), activeUserId);
