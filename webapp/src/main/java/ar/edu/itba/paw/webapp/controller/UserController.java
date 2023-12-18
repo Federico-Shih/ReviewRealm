@@ -74,10 +74,10 @@ public class UserController {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
         return Response.ok(
-                UserResponse.UserResponseBuilder
-                        .fromUser(user.get(), uriInfo)
-                        .withAuthed(loggedIn)
-                        .build()
+            UserResponse.UserResponseBuilder
+                .fromUser(user.get(), uriInfo)
+                .withAuthed(loggedIn)
+                .build()
         ).build();
     }
 

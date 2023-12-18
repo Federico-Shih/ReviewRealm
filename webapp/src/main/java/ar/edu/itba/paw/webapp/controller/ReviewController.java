@@ -88,7 +88,7 @@ public class ReviewController{
             return Response.noContent().build();
         }
         List<ReviewResponse> reviewResponseList = reviews.getList().stream().map((review) -> ReviewResponse.fromEntity(uriInfo, review, user == null? null: user.getId())).collect(Collectors.toList());
-        return CacheHelper.unconditionalCache(PaginatedResponseHelper.fromPaginated(uriInfo, reviewResponseList, reviews), 240).build();
+        return PaginatedResponseHelper.fromPaginated(uriInfo, reviewResponseList, reviews).build();
     }
 
     @POST

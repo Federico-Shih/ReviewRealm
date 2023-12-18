@@ -53,13 +53,13 @@ public class GameController {
         User loggedUser = AuthenticationHelper.getLoggedUser(us);
         Optional<Game> game = gs.getGameById(gameId,loggedUser != null ? loggedUser.getId() : null);
         if (game.isPresent()) {
-            return CacheHelper.conditionalCache(Response.ok(
-                    GameResponse.fromEntity(
-                            uriInfo,
-                            game.get(),
-                            gs.getGameReviewDataByGameId(gameId),
-                            loggedUser)
-            ), request, game.get(), CacheHelper.buildCacheControl(240)).build();
+            return Response.ok(
+                GameResponse.fromEntity(
+                    uriInfo,
+                    game.get(),
+                    gs.getGameReviewDataByGameId(gameId),
+                    loggedUser)
+            ).build();
         } else {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
@@ -80,7 +80,7 @@ public class GameController {
                         ,loggedUser)
                 // Que busque los gameReviewData por todos los games es medio lento
         ).collect(Collectors.toList());
-        return CacheHelper.unconditionalCache(PaginatedResponseHelper.fromPaginated(uriInfo,gameResponseList,games), 240).build();
+        return PaginatedResponseHelper.fromPaginated(uriInfo,gameResponseList,games).build();
     }
 
     @POST
