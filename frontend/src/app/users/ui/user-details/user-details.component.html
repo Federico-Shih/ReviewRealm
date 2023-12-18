@@ -26,6 +26,7 @@
         </div>
         <ng-container *ngIf="true">
           <div class="profile-preferences">
+            <ng-container *ngIf="userInfo.preferences.length!==0">
             <span class="no-wrap" i18n>{{ 'profile.fan' | translate }}</span>
             <div class="profile-preferences-list f-gap-1 full-width">
               <div
@@ -34,10 +35,11 @@
                 [queryParams]="{ genres: genre.id }"
                 class="clickable-chip">
                 <span class="chip-small-inverted">
-                  {{ genre.name }}
+                  {{ genre.localized }}
                 </span>
               </div>
             </div>
+            </ng-container>
           </div>
         </ng-container>
 
