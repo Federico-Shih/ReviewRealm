@@ -1,24 +1,12 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { AuthenticationService } from '../../../shared/data-access/authentication/authentication.service';
-import { GamesService } from '../../../shared/data-access/games/games.service';
-import {
-  BehaviorSubject,
-  combineLatest,
-  map,
-  Observable,
-  of,
-  ReplaySubject,
-  switchMap,
-  tap,
-} from 'rxjs';
-import { Game } from '../../../shared/data-access/games/games.class';
-import {
-  Paginated,
-  PaginatedLinks,
-} from '../../../shared/data-access/shared.models';
-import { Review } from '../../../shared/data-access/reviews/review.class';
-import { ReviewsService } from '../../../shared/data-access/reviews/reviews.service';
+import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
+import {ActivatedRoute, Router} from '@angular/router';
+import {AuthenticationService} from '../../../shared/data-access/authentication/authentication.service';
+import {GamesService} from '../../../shared/data-access/games/games.service';
+import {BehaviorSubject, combineLatest, map, Observable, of, ReplaySubject, switchMap, tap,} from 'rxjs';
+import {Game} from '../../../shared/data-access/games/games.class';
+import {Paginated, PaginatedLinks,} from '../../../shared/data-access/shared.models';
+import {Review} from '../../../shared/data-access/reviews/review.class';
+import {ReviewsService} from '../../../shared/data-access/reviews/reviews.service';
 
 @Component({
   selector: 'app-recommendations-page',
@@ -49,7 +37,7 @@ export class RecommendationsPageComponent implements OnInit {
         return this.reviewService.getReviews(
           game.links.reviewsExcludingUser,
           {}
-        ); //TODO:infinite scrolling
+        );
       }
       return this.reviewService.getReviews(game.links.reviews, {});
     })

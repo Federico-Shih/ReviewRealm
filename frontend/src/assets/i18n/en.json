@@ -203,6 +203,7 @@
       "new": "Reviews that were written recently",
       "recommended": "Reviews we recommend based on your preferences "
     },
+    "noFollowing": "You have no following yet...",
     "noReviews": "No reviews found...",
     "nopreferencesset": {
       "cta": "Lets do it!",
@@ -259,16 +260,16 @@
   },
   "profile": {
     "favgames": "Favorite Games",
+    "follow": "Follow",
     "followers": "Followers: {{value}}",
-    "following": "Following: {{value}}",
-    "reviews": "Reviews",
-    "view-more-button": "View More",
     "followerstitle": "Followers",
-    "reputation": "Reputation: {{value}}",
+    "following": "Following: {{value}}",
     "followingtitle": "Following",
     "nofavgames": "This User Does Not Have Any Favorite Games!",
+    "reputation": "Reputation: {{value}}",
+    "reviews": "Reviews",
     "unfollow": "Unfollow",
-    "follow": "Follow"
+    "view-more-button": "View More"
   },
   "profile-card": {
     "whoprefers": "who prefers"
@@ -325,6 +326,9 @@
   },
   "reset-filters": "Reset Filters",
   "review": {
+    "confirm": {
+      "title": "Confirm review creation?"
+    },
     "created": "The review has been created",
     "delete": "Delete Review",
     "deleted": "The review has been deleted",
@@ -343,52 +347,7 @@
     },
     "reported": "The report has been submitted!",
     "search": "Search Reviews",
-    "submit": {
-      "button": {
-        "create": "Create Review",
-        "edit": "Edit Review"
-      },
-      "completed": {
-        "label": "Completed"
-      },
-      "content": {
-        "charcount": "{{count}} characters",
-        "label": "Content",
-        "minlength": "Review content must be at least {{value}} characters long.",
-        "placeholder": "Tell us what your thought about it",
-        "required": "A review content is required"
-      },
-      "difficulty": {
-        "label": "Perceived Difficulty",
-        "placeholder": "Select a difficulty"
-      },
-      "gameLength": {
-        "label": "Time played",
-        "max": "Time played must be no larger than {{value}}",
-        "min": "Time played must be at least {{value}}"
-      },
-      "platform": {
-        "label": "Platform",
-        "placeholder": "Select a platform"
-      },
-      "rating": {
-        "label": "Rating",
-        "max": "Rating must be less or equal than 10",
-        "min": "Rating must be greater or equal than 1",
-        "required": "A rating is required"
-      },
-      "replayability": {
-        "label": "Replayable?"
-      },
-      "reviewtitle": {
-        "label": "Title",
-        "maxlength": "A title must be at most {{value}} characters long.",
-        "minlength": "A title must be at least {{value}} characters long",
-        "placeholder": "Give us a great title!",
-        "required": "A title is required"
-      },
-      "title": "Review about {{game}}"
-    },
+    "submit": "Create review",
     "tags": "Tags",
     "timeplayed": "Time played"
   },

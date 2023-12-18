@@ -11,7 +11,6 @@
         color="primary"
         mat-icon-button
         matTooltip="{{ 'game.edit' | translate }}">
-        <!--todo:check router link-->
         <mat-icon class="icons">edit</mat-icon>
       </button>
       <button
@@ -121,8 +120,7 @@
         <span class="header">
           {{ 'game-details.personal-review' | translate }}</span
         >
-        <button [routerLink]="" color="primary" mat-raised-button>
-          <!--todo: link edits-->
+        <button [routerLink]="['reviews', userReview.id, 'edit']" color="primary" mat-raised-button>
           <mat-icon>edit</mat-icon>
           {{ 'edit-own-review' | translate }}
         </button>

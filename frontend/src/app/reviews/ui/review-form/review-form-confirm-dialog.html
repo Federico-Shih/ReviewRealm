@@ -1,0 +1,18 @@
+<div class="dialog">
+  <h3 class="title">{{'review.confirm.title' | translate}}</h3>
+  <mat-dialog-actions align="end">
+    <button
+      [mat-dialog-close]="false"
+      class="button flat-button"
+      mat-raised-button>
+      {{'cancel' | translate}}
+    </button>
+    <button
+      [mat-dialog-close]="true"
+      cdkFocusInitial
+      class="button accent-button"
+      mat-raised-button>
+      {{'review.submit' | translate}}
+    </button>
+  </mat-dialog-actions>
+</div>

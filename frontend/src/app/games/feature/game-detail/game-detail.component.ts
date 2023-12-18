@@ -1,25 +1,18 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { GamesService } from '../../../shared/data-access/games/games.service';
-import { ReviewsService } from '../../../shared/data-access/reviews/reviews.service';
-import { AuthenticationService } from '../../../shared/data-access/authentication/authentication.service';
-import { ActivatedRoute, Router } from '@angular/router';
-import { Game } from '../../../shared/data-access/games/games.class';
-import {
-  BehaviorSubject,
-  combineLatest,
-  map,
-  Observable,
-  of,
-  switchMap,
-} from 'rxjs';
-import { Review } from '../../../shared/data-access/reviews/review.class';
-import { Paginated } from '../../../shared/data-access/shared.models';
-import { environment } from '../../../../environments/environment';
-import { Role } from '../../../shared/data-access/shared.enums';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatDialog } from '@angular/material/dialog';
-import { TranslateService } from '@ngx-translate/core';
-import { GameDeleteDialogComponent } from '../../ui/game-delete-dialog/game-delete-dialog.component';
+import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
+import {GamesService} from '../../../shared/data-access/games/games.service';
+import {ReviewsService} from '../../../shared/data-access/reviews/reviews.service';
+import {AuthenticationService} from '../../../shared/data-access/authentication/authentication.service';
+import {ActivatedRoute, Router} from '@angular/router';
+import {Game} from '../../../shared/data-access/games/games.class';
+import {BehaviorSubject, combineLatest, map, Observable, of, switchMap,} from 'rxjs';
+import {Review} from '../../../shared/data-access/reviews/review.class';
+import {Paginated} from '../../../shared/data-access/shared.models';
+import {environment} from '../../../../environments/environment';
+import {Role} from '../../../shared/data-access/shared.enums';
+import {MatSnackBar} from '@angular/material/snack-bar';
+import {MatDialog} from '@angular/material/dialog';
+import {TranslateService} from '@ngx-translate/core';
+import {GameDeleteDialogComponent} from '../../ui/game-delete-dialog/game-delete-dialog.component';
 
 @Component({
   selector: 'app-game-detail',
@@ -50,7 +43,7 @@ export class GameDetailComponent implements OnInit {
         return this.reviewService.getReviews(
           game.links.reviewsExcludingUser,
           {}
-        ); //TODO:infinite scrolling
+        );
       }
       return this.reviewService.getReviews(game.links.reviews, {});
     })

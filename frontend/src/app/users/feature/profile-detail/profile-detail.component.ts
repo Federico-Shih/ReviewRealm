@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {UsersService} from '../../../shared/data-access/users/users.service';
-import {BehaviorSubject, catchError, combineLatest, map, Observable, ReplaySubject, switchMap, tap,} from 'rxjs';
+import {BehaviorSubject, catchError, combineLatest, map, Observable, of, ReplaySubject, switchMap, tap,} from 'rxjs';
 import {User} from '../../../shared/data-access/users/users.class';
 import {GamesService} from '../../../shared/data-access/games/games.service';
 import {GameExclusiveSearchDto} from '../../../shared/data-access/games/games.dtos';
@@ -53,10 +53,14 @@ export class ProfileDetailComponent implements OnInit {
         query
       );
     }),
-    catchError((err, caught) => {
-      this.router.navigate(['/']); //TODO: Qué hago acá?
-      return caught;
-    })
+    catchError(() => {
+      return of({
+        content: [],
+        links: {self: ''},
+        totalPages: 0,
+        totalElements: 0,
+      })
+    }),
   );
 
   initialReviews$: Observable<Paginated<Review>> = this.route.paramMap.pipe(
@@ -71,10 +75,14 @@ export class ProfileDetailComponent implements OnInit {
         query
       );
     }),
-    catchError((err, caught) => {
-      this.router.navigate(['/']); //TODO: Qué hago acá?
-      return caught;
-    })
+    catchError(() => {
+      return of({
+        content: [],
+        links: {self: ''},
+        totalPages: 0,
+        totalElements: 0,
+      })
+    }),
   );
 
   userReviews$: BehaviorSubject<Paginated<Review> | null> =

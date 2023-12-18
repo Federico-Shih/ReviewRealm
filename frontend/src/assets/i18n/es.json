@@ -203,6 +203,7 @@
       "new": "Reseñas que fueron escritas recientemente ",
       "recommended": "Reseñas que recomendamos en base a tus preferencias"
     },
+    "noFollowing": "No seguís a nadie todavía...",
     "noReviews": "No se encontraron reseñas...",
     "nopreferencesset": {
       "cta": "¡Hagámoslo!",
@@ -260,16 +261,16 @@
   "profile": {
     "fan": "Fanático de:",
     "favgames": "Juegos Favoritos",
+    "follow": "Seguir",
     "followers": "Seguidores: {{value}}",
-    "following": "Siguiendo: {{value}}",
-    "reviews": "Reseñas",
-    "view-more-button": "Ver Más",
     "followerstitle": "Seguidores",
-    "reputation": "Reputación: {{value}}",
+    "following": "Siguiendo: {{value}}",
     "followingtitle": "Siguiendo",
     "nofavgames": "¡Este Usuario No Cuenta Con Juegos Favoritos!",
+    "reputation": "Reputación: {{value}}",
+    "reviews": "Reseñas",
     "unfollow": "Dejar de Seguir",
-    "follow": "Seguir"
+    "view-more-button": "Ver Más"
   },
   "profile-card": {
     "whoprefers": "quien prefiere"
@@ -326,6 +327,9 @@
   },
   "reset-filters": "Restablecer Filtros",
   "review": {
+    "confirm": {
+      "title": "Confirmar la creación de la reseña?"
+    },
     "created": "La reseña ha sido creada",
     "delete": "Borrar Reseña",
     "deleted": "La reseña ha sido borrada",
@@ -344,52 +348,7 @@
     },
     "reported": "¡El reporte ha sido enviado!",
     "search": "Buscar Reseñas",
-    "submit": {
-      "button": {
-        "create": "Crear Reseña",
-        "edit": "Editar Reseña"
-      },
-      "completed": {
-        "label": "Completado"
-      },
-      "content": {
-        "charcount": "{{count}} caracteres",
-        "label": "Contenido",
-        "minlength": "El contenido de la reseña debe tener {{value}} caracteres como mínimo.",
-        "placeholder": "Contanos qué te pareció...",
-        "required": "Se requiere un contenido de la reseña"
-      },
-      "difficulty": {
-        "label": "Dificultad Percibida",
-        "placeholder": "Seleccione una dificultad"
-      },
-      "gameLength": {
-        "label": "Tiempo jugado",
-        "max": "El tiempo jugado no debe ser mayor a {{value}}",
-        "min": "El tiempo jugado debe ser como mínimo {{value}}"
-      },
-      "platform": {
-        "label": "Plataforma",
-        "placeholder": "Seleccione una plataforma"
-      },
-      "rating": {
-        "label": "Puntuación",
-        "max": "La puntuación debe ser menor o igual a 10",
-        "min": "La puntuación debe ser mayor o igual a 1",
-        "required": "Se requiere una puntuación"
-      },
-      "replayability": {
-        "label": "¿Rejugable?"
-      },
-      "reviewtitle": {
-        "label": "Título",
-        "maxlength": "Un título debe tener como máximo {{value}} caracteres.",
-        "minlength": "Un título debe tener {{value}} caracteres como mínimo",
-        "placeholder": "¡Danos un título llamativo!",
-        "required": "Se requiere un título"
-      },
-      "title": "Reseña sobre {{game}}"
-    },
+    "submit": "Crear reseña",
     "tags": "Etiquetas",
     "timeplayed": "Tiempo jugado"
   },

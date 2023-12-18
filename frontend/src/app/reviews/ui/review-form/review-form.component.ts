@@ -1,20 +1,14 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  EventEmitter,
-  Input,
-  OnInit,
-  Output,
-} from '@angular/core';
-import { FormBuilder, FormControl, Validators } from '@angular/forms';
-import { TranslateService } from '@ngx-translate/core';
-import {
-  Platform,
-  ReviewFormType,
-} from '../../../shared/data-access/shared.enums';
-import { Review } from '../../../shared/data-access/reviews/review.class';
-import { Game } from '../../../shared/data-access/games/games.class';
-import { ReviewSubmitDto } from '../../../shared/data-access/reviews/reviews.dtos';
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output,} from '@angular/core';
+import {FormBuilder, FormControl, Validators} from '@angular/forms';
+import {TranslateService} from '@ngx-translate/core';
+import {Platform, ReviewFormType,} from '../../../shared/data-access/shared.enums';
+import {Review} from '../../../shared/data-access/reviews/review.class';
+import {Game} from '../../../shared/data-access/games/games.class';
+import {ReviewSubmitDto} from '../../../shared/data-access/reviews/reviews.dtos';
+import {AsyncPipe, CommonModule} from "@angular/common";
+import {SharedModule} from "../../../shared/shared.module";
+import {MatDialog, MatDialogModule, MatDialogRef} from "@angular/material/dialog";
+import {MatButtonModule} from "@angular/material/button";
 
 @Component({
   selector: 'app-review-form',
@@ -22,7 +16,7 @@ import { ReviewSubmitDto } from '../../../shared/data-access/reviews/reviews.dto
   styleUrls: ['./review-form.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ReviewFormComponent implements OnInit{
+export class ReviewFormComponent implements OnInit {
   @Input()
   loading: boolean | null = false;
 
@@ -66,7 +60,8 @@ export class ReviewFormComponent implements OnInit{
 
   constructor(
     private readonly formBuilder: FormBuilder,
-    private readonly translateService: TranslateService
+    private readonly translateService: TranslateService,
+    public dialog: MatDialog,
   ) {}
 
   ngOnInit(): void {
@@ -123,32 +118,44 @@ export class ReviewFormComponent implements OnInit{
     ) {
       return;
     }
+    const dialogRef: MatDialogRef<ReviewConfirmDialog, boolean> = this.dialog.open(ReviewConfirmDialog);
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        const dto: ReviewSubmitDto = {
+          completed,
+          replayability,
+          reviewContent,
+          reviewRating: parseInt(reviewRating),
+          reviewTitle,
+        };
+        if (this.editReview == null && this.game) {
+          dto['gameId'] = this.game?.id;
+        }
+        if (platform !== null && platform !== undefined) {
+          dto['platform'] = platform.toString();
+        }
+        if (difficulty) {
+          dto['difficulty'] = difficulty.toString();
+        }
+        if (gameLength && unit) {
+          dto['gameLength'] = parseFloat(gameLength);
+          dto['unit'] = unit;
+        }
+        this.reviewFormEvent.emit(dto);
+      }
+    });
 
-    const dto: ReviewSubmitDto = {
-      completed,
-      replayability,
-      reviewContent,
-      reviewRating: parseInt(reviewRating),
-      reviewTitle,
-    };
-    if (this.editReview == null && this.game) {
-      dto['gameId'] = this.game?.id;
-    }
-    if (platform !== null && platform !== undefined) {
-      dto['platform'] = platform.toString();
-    }
-    if (difficulty) {
-      dto['difficulty'] = difficulty.toString();
-    }
-    if (gameLength && unit) {
-      dto['gameLength'] = parseFloat(gameLength);
-      dto['unit'] = unit;
-    }
-    this.reviewFormEvent.emit(dto);
   }
 
   protected readonly ReviewFormType = ReviewFormType;
   protected readonly Platform = Platform;
 }
 
-//TODO: confiramtion dialog
+@Component({
+  selector: 'app-review-form-dialog',
+  templateUrl: './review-form-confirm-dialog.html',
+  imports: [MatDialogModule, SharedModule, AsyncPipe, CommonModule, MatButtonModule],
+  standalone: true,
+})
+export class ReviewConfirmDialog {
+}

@@ -48,8 +48,7 @@
       </ng-container>
     </div>
     <ng-container *ngIf="loadingSearch$ | async">
-      <!-- TODO: replace with spinner modern -->
-      <mat-spinner></mat-spinner>
+      <app-loading-spinner></app-loading-spinner>
     </ng-container>
   </div>
 </div>

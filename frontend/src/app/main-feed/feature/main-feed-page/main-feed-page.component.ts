@@ -1,12 +1,12 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { FormControl } from '@angular/forms';
-import { BehaviorSubject, combineLatest, map } from 'rxjs';
-import { Review } from '../../../shared/data-access/reviews/review.class';
-import { Paginated } from '../../../shared/data-access/shared.models';
-import { ReviewsService } from '../../../shared/data-access/reviews/reviews.service';
-import { AuthenticationService } from '../../../shared/data-access/authentication/authentication.service';
-import { User } from '../../../shared/data-access/users/users.class';
+import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
+import {ActivatedRoute, Router} from '@angular/router';
+import {FormControl} from '@angular/forms';
+import {BehaviorSubject, combineLatest, map} from 'rxjs';
+import {Review} from '../../../shared/data-access/reviews/review.class';
+import {Paginated} from '../../../shared/data-access/shared.models';
+import {ReviewsService} from '../../../shared/data-access/reviews/reviews.service';
+import {AuthenticationService} from '../../../shared/data-access/authentication/authentication.service';
+import {User} from '../../../shared/data-access/users/users.class';
 
 enum Tabs {
   FOLLOWING = 'following',
@@ -47,6 +47,7 @@ export class MainFeedPageComponent implements OnInit {
     loading: this.loading$,
     reviews: this.reviews$,
     loadingInfinite: this.loadingInfinite$,
+    user: this.loggedInUser$
   });
 
   constructor(

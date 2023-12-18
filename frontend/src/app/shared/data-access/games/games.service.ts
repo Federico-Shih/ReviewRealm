@@ -1,5 +1,5 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import {Injectable} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
 import {
   GameExclusiveSearchDto,
   GameMediaTypes,
@@ -7,25 +7,12 @@ import {
   GameSearchDto,
   GameSubmissionHandleDto,
 } from './games.dtos';
-import {
-  customExceptionMapper,
-  exceptionMapper,
-  paginatedObjectMapper,
-  queryMapper,
-} from '../../helpers/mapper';
-import {
-  catchError,
-  filter,
-  forkJoin,
-  map,
-  mergeMap,
-  Observable,
-  of,
-} from 'rxjs';
-import { Paginated } from '../shared.models';
-import { Game } from './games.class';
-import { GameResponse } from '../shared.responses';
-import { EnumsService } from '../enums/enums.service';
+import {customExceptionMapper, exceptionMapper, paginatedObjectMapper, queryMapper,} from '../../helpers/mapper';
+import {catchError, filter, forkJoin, map, mergeMap, Observable, of,} from 'rxjs';
+import {Paginated} from '../shared.models';
+import {Game} from './games.class';
+import {GameResponse} from '../shared.responses';
+import {EnumsService} from '../enums/enums.service';
 
 @Injectable()
 export class GamesService {
@@ -99,14 +86,11 @@ export class GamesService {
   }
 
   editGame(url: string, gameDto: FormData) {
-    //TODO:Error
     return this.http
       .patch<GameResponse>(url, gameDto, {
         responseType: 'json',
         observe: 'response',
       })
-      .pipe(catchError(exceptionMapper))
-      .pipe(filter(response => response.body !== null))
       .pipe(
         mergeMap(response => {
           if (!response.body)
@@ -116,7 +100,8 @@ export class GamesService {
             .getGenres(game.links.genres)
             .pipe(map(genres => Game.fromResponse(game, genres)));
         })
-      );
+      )
+      .pipe(catchError(exceptionMapper));
   }
   deleteGame(url: string) {
     return this.http
