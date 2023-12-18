@@ -109,12 +109,18 @@
   top: 2.5%;
 }
 
+.followbtn {
+  background-color: var(--color-accent);
+  margin-top: 10px;
+}
+
+
 .green-text {
-  color: var(contrast) !important; /*Todo arreglar esto*/
+  color: var(--color-green);
 }
 
 .red-text {
-  color: var(contrast) !important; /*Todo arreglar esto*/
+  color: var(--color-error);
 }
 
 .profile-preferences {
@@ -150,6 +156,10 @@
 }
 
 .clickable-chip {
+  cursor: pointer;
+}
+
+.clickable {
   cursor: pointer;
 }
 

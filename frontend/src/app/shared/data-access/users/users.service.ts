@@ -12,15 +12,15 @@ import { User } from './users.class';
 import { catchError, forkJoin, map, mergeMap, Observable, of } from 'rxjs';
 import { UserResponse } from '../shared.responses';
 import {
-  AvatarDto,
-  FavoriteGameCreateDto,
-  GenresDto,
-  CredentialsDto,
-  UserCreateDto,
-  UserMediaTypes,
-  UserPatchDto,
-  UserSearchDto,
-  NotificationsDto,
+    AvatarDto,
+    FavoriteGameCreateDto,
+    GenresDto,
+    CredentialsDto,
+    UserCreateDto,
+    UserMediaTypes,
+    UserPatchDto,
+    UserSearchDto,
+    NotificationsDto, FollowDto,
 } from './users.dtos';
 import { Paginated, ValidationResponse } from '../shared.models';
 import { EnumsService } from '../enums/enums.service';
@@ -198,6 +198,33 @@ export class UsersService {
       .pipe(catchError(exceptionMapper))
       .pipe(map(() => true));
   }
+
+  getIfFollowing(url: string) {
+      return this.http
+        .get<boolean>(url, {
+            responseType: 'json',
+            observe: 'response',
+        }).pipe(map(()=> true)).pipe(catchError(map(() => false)))
+  }
+
+    follow(url: string, followDto: FollowDto) {
+        return this.http
+            .post<boolean>(url, followDto,{
+                responseType: 'json',
+                observe: 'response',
+                headers: {
+                    'Content-Type': 'application/vnd.following-form.v1+json',
+                },
+            }).pipe(catchError(map(() => false))).pipe(map(()=> true))
+    }
+
+    unfollow(url: string) {
+        return this.http
+            .delete<boolean>(url,{
+                responseType: 'json',
+                observe: 'response',
+            }).pipe(catchError(map(() => false))).pipe(map(()=> true))
+    }
 
   patchUser(
     url: string,

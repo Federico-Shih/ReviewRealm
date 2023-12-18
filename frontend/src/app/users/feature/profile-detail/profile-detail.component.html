@@ -3,7 +3,8 @@
     <mat-grid-list cols="2">
       <app-user-details
         [userInfo]="users[1]"
-        [loggedUser]="users[0]"></app-user-details>
+        [loggedUser]="users[0]"
+        [isFollowing]="users[2]"></app-user-details>
     </mat-grid-list>
   </ng-container>
 
@@ -11,6 +12,7 @@
   <div class="second-part">
     <span class="titletext" i18n>{{ 'profile.favgames' | translate }}</span>
     <ng-container *ngIf="favgames$ | async as games; else loading2">
+      <ng-container *ngIf="games.content.length!==0">
       <mat-grid-list class="m-t" cols="3" gutterSize="10px">
         <mat-grid-tile *ngFor="let game of (games.content | slice : 0 : 3)" [colspan]="1">
           <div class="game-container">
@@ -18,6 +20,12 @@
           </div>
         </mat-grid-tile>
       </mat-grid-list>
+      </ng-container>
+      <ng-container *ngIf="games.content.length===0">
+        <div class="nofavgames-container">
+          <span i18n>{{ 'profile.nofavgames' | translate }}</span>
+        </div>
+      </ng-container>
     </ng-container>
   </div>
 

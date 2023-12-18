@@ -5,7 +5,7 @@ import {
   BehaviorSubject,
   catchError,
   combineLatest,
-  Observable,
+  Observable, of,
   switchMap,
 } from 'rxjs';
 import { User } from '../../../shared/data-access/users/users.class';
@@ -38,9 +38,16 @@ export class ProfileDetailComponent implements OnInit {
     })
   );
 
+  isFollowing$: Observable<boolean> = this.user$.pipe(switchMap((user)=> {
+    if(user.links.unfollow===undefined) {
+      return of(false)
+    }
+    return this.userService.getIfFollowing(user.links.unfollow);
+  }))
+
   loggedUser$ = this.authService.getLoggedUser();
 
-  combinedUsers$ = combineLatest([this.loggedUser$, this.user$]);
+  combinedUsers$ = combineLatest([this.loggedUser$, this.user$, this.isFollowing$]);
 
   favgames$: Observable<Paginated<Game>> = this.route.paramMap.pipe(
     switchMap(params => {

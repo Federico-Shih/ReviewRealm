@@ -262,7 +262,13 @@
     "followers": "Followers: {{value}}",
     "following": "Following: {{value}}",
     "reviews": "Reviews",
-    "view-more-button": "View More"
+    "view-more-button": "View More",
+    "followerstitle": "Followers",
+    "reputation": "Reputation: {{value}}",
+    "followingtitle": "Following",
+    "nofavgames": "This User Does Not Have Any Favorite Games!",
+    "unfollow": "Unfollow",
+    "follow": "Follow"
   },
   "profile-card": {
     "whoprefers": "who prefers"

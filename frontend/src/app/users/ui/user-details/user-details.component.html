@@ -42,59 +42,45 @@
         </ng-container>
 
         <div class="profile-followers">
-          <!--<a href="<c:url value="/profile/${profile.id}/followers"/>">-->
-          <span class="no-wrap" i18n>{{
-            'profile.following' | translate: { value: 'x' }
+          <span class="no-wrap clickable" i18n routerLink="/profile/{{userInfo.id}}/following">{{
+            'profile.following' | translate: { value: userInfo.following }
           }}</span>
-          <!--</a>-->
           <div class="divider-v profile-followers-text-divider"></div>
-          <!--<a href="<c:url value="/profile/${profile.id}/following"/>">-->
-          <span class="no-wrap" i18n>{{
-            'profile.followers' | translate: { value: 'y' }
+          <span class="no-wrap clickable" i18n routerLink="/profile/{{userInfo.id}}/followers">{{
+            'profile.followers' | translate: { value: userInfo.followers }
           }}</span>
-          <!--</a>-->
           <div class="divider-v profile-followers-text-divider"></div>
-          <span
-            class="{{ userInfo.reputation }} > 0 ? 'green-text no-wrap' : ({{
-              userInfo.reputation
-            }}== 0) ? 'white-text no-wrap' : 'red-text no-wrap'}">
-            {{ userInfo.reputation }}
+          <span i18n [class]="userInfo.reputation>=0?'green-text':'red-text'">{{
+            'profile.reputation' | translate: { value: userInfo.reputation }
+            }}
           </span>
         </div>
 
         <div>
           <ng-container
             *ngIf="loggedUser !== null && userInfo.id !== loggedUser.id">
-            <ng-container *ngIf="true">
-              <!--<c:url value="/profile/follow/${profile.id}" var="follow"/>
-              <form method="post" action="${follow}">
-                <button type="submit" class="waves-effect waves-light btn-small deep-purple">
-                  <spring:message code="profile.follow"/>
+            <ng-container *ngIf="isFollowing">
+                <button (click)="onSubmit(true)" mat-flat-button class="followbtn">
+                  {{ 'profile.unfollow' | translate }}
                 </button>
-              </form>-->
             </ng-container>
-            <ng-container *ngIf="true">
-              <!--<c:url value="/profile/unfollow/${profile.id}" var="unfollow"/>
-              <form method="post" action="${unfollow}">
-                <button type="submit" class="waves-effect waves-light btn-small deep-purple">
-                  <spring:message code="profile.unfollow"/>
+            <ng-container *ngIf="!isFollowing">
+                <button (click)="onSubmit(false)" mat-flat-button class="followbtn">
+                  {{ 'profile.follow' | translate }}
                 </button>
-              </form>-->
             </ng-container>
           </ng-container>
         </div>
       </div>
     </div>
     <div>
-      <ng-container *ngIf="true">
-        <!--<a class="btn valign-wrapper" href="<c:url value="/profile/settings/"/>">-->
+      <ng-container *ngIf="loggedUser !== null && userInfo.id === loggedUser.id">
         <i
           class="material-icons settings"
           aria-hidden="true"
           routerLink="/settings"
           >settings</i
         >
-        <!--</a>-->
       </ng-container>
     </div>
   </div>

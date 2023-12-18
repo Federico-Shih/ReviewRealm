@@ -70,3 +70,7 @@ export type NotificationsDto = {
 export type AvatarDto = {
   avatarId: number;
 };
+
+export type FollowDto = {
+    userId: number;
+};

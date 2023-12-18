@@ -1,7 +1,6 @@
 package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.dtos.Page;
-import ar.edu.itba.paw.enums.NotificationType;
 import ar.edu.itba.paw.exceptions.EmailAlreadyExistsException;
 import ar.edu.itba.paw.exceptions.InvalidAvatarException;
 import ar.edu.itba.paw.exceptions.UserAlreadyEnabled;
@@ -144,6 +143,18 @@ public class UserController {
                         following).build();
     }
 
+    @GET
+    @Produces(VndType.APPLICATION_ENTITY_LINK_LIST)
+    @Path("{id:\\d+}/following/{followingId:\\d+}")
+    public Response getFollowingById(
+            @Valid @ExistentUserId @PathParam("id") final long id,
+            @Valid @ExistentUserId @PathParam("followingId") final long followingId
+    ) {
+        boolean follows = us.userFollowsId(id, followingId);
+        Optional<User> user;
+        return (!follows || !(user = us.getUserById(followingId)).isPresent())? Response.status(Response.Status.NOT_FOUND).build(): Response.ok().entity(UserResponse.getLinkFromEntity(uriInfo, user.get())).build();
+    }
+
     @POST
     @Path("{id:\\d+}/following")
     @Consumes(VndType.APPLICATION_FOLLOWING_FORM)
@@ -232,6 +243,7 @@ public class UserController {
                 ){}
         ).build();
     }
+
 
     @GET
     @Path("{id:\\d+}/mission-progresses")

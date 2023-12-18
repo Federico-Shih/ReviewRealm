@@ -11,12 +11,16 @@ import { SharedModule } from '../shared/shared.module';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatButtonModule } from '@angular/material/button';
 import { MatChipsModule } from '@angular/material/chips';
+import { FollowersComponent } from './feature/followers/followers.component';
+import { FollowingComponent } from './feature/following/following.component';
 
 @NgModule({
   declarations: [
     ProfileDetailComponent,
     UserDetailsComponent,
     FavGamesComponent,
+    FollowersComponent,
+    FollowingComponent,
   ],
   imports: [
     CommonModule,
