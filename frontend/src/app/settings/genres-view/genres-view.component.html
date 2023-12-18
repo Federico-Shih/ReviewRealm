@@ -1,6 +1,6 @@
 <div>
   <form [formGroup]="genresGroup" (ngSubmit)="onSubmit()">
-    <div formArrayName="genres">
+    <div formArrayName="genres" class="container">
       <div class="full-width f-column">
         <div class="f-row f-jc-center">
           <span class="titletext" i18n>{{
@@ -28,38 +28,13 @@
         </div>
 
         <div class="f-row f-jc-center contained-width margin-for-text wrap">
-          <ng-container *ngIf="allgenres$ | async as allgenres">
-            <ng-container *ngFor="let genre of allgenres">
-              <label class="margin-for-label">
-                <span>
-                  <div class="chip-small clickable width-fit-content">
-                    <input
-                      type="checkbox"
-                      class="clickable"
-                      [formControlName]="genre.id - 1" />
-                    <span>{{ genre.localized }}</span>
-                  </div>
-                </span>
-              </label>
-            </ng-container>
-          </ng-container>
-        </div>
-
-        <div class="f-row f-jc-center contained-width wrap">
-          <ng-container *ngIf="favgenres$ | async as favgenres">
-            <ng-container *ngFor="let genre of favgenres">
-              <label class="margin-for-label">
-                <span>
-                  <div class="chip-small clickable width-fit-content">
-                    <input
-                      type="checkbox"
-                      class="clickable"
-                      checked
-                      [formControlName]="genre.id - 1" />
-                    <span>{{ genre.localized }}</span>
-                  </div>
-                </span>
-              </label>
+          <ng-container *ngIf="(completeGenres$ | async)">
+            <ng-container *ngFor="let genre of genres; let i = index">
+              <div class="chip-small clickable">
+                <mat-checkbox [formControlName]="i">
+                  <span class="margin-for-genres">{{genres[i].localized}}</span>
+                </mat-checkbox>
+              </div>
             </ng-container>
           </ng-container>
         </div>
@@ -68,11 +43,10 @@
 
     <div class="f-row full-width margin-for-text">
       <div class="full-width f-row f-jc-center">
-        <button class="btn" type="submit">
-          <i class="material-icons left white">save</i>
-          <span class="white" i18n>{{
-            'settings.notification.save' | translate
-          }}</span>
+        <button class="submit-btn" mat-raised-button color="accent" type="submit">
+          <mat-icon class="icon">save</mat-icon>
+          <span class="white">{{
+            'settings.notification.save' | translate }}</span>
         </button>
       </div>
     </div>

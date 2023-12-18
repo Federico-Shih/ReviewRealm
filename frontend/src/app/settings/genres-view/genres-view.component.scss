@@ -22,11 +22,15 @@
 }
 
 .margin-for-genres {
-  margin-top: 6px;
+  margin-right: 8px;
 }
-
-.width-fit-content {
-  width: fit-content !important;
+.submit-btn {
+  font-size: 1.2rem;
+  height: auto;
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  padding: 10px;
 }
 
 .chip-small {
@@ -36,9 +40,10 @@
   border-radius: 12px;
   font-size: 12px;
   font-weight: 700;
-  padding: 2px 6px;
+  padding: 2px;
   white-space: nowrap;
   margin-right: 10px;
+  margin-bottom: 10px;
 }
 
 .clickable {

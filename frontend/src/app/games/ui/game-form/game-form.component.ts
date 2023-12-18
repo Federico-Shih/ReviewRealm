@@ -149,17 +149,17 @@ export class GameFormComponent implements OnInit {
     const developer = this.gameForm.get('developer')?.value;
     const publisher = this.gameForm.get('publisher')?.value;
     const date = this.gameForm.get('releaseDate')?.value;
-    const tempImage = this.temporaryImage;
     if (
       this.gameForm.status !== 'VALID' ||
       !name ||
       !description ||
       !developer ||
       !publisher ||
-      !date ||
-      !tempImage
-    )
+      !date
+    ) {
+      console.log('Invalid form');
       return;
+    }
     const output = new FormData();
     output.append('name', name);
     output.append('description', description);
@@ -169,7 +169,7 @@ export class GameFormComponent implements OnInit {
     output.append('releaseDate', isoDate.split('T')[0]);
     if (this.temporaryImage !== null) {
       //Caso en edit donde no cambiaste la imagen
-      output.append('image', tempImage);
+      output.append('image', this.temporaryImage);
     }
     const output_genres = mapCheckedToType(
       selectedGenres as boolean[],

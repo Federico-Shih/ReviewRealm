@@ -1,6 +1,6 @@
 import { PaginatedDto, SortedDto } from '../shared.dtos';
 import { Difficulty, Platform } from '../shared.enums';
-import {Feedback, FeedbackType} from "./review.class";
+import {FeedbackType} from "./review.class";
 
 export enum ReviewMediaTypes {
   REPORTREVIEW = 'application/vnd.report-form.v1+json',

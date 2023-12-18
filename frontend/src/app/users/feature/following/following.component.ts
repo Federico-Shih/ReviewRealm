@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import {BehaviorSubject, catchError, Observable, switchMap} from "rxjs";
 import {Paginated} from "../../../shared/data-access/shared.models";
 import {User} from "../../../shared/data-access/users/users.class";
@@ -12,7 +12,7 @@ import {ActivatedRoute, Router} from "@angular/router";
   styleUrls: ['./following.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class FollowingComponent {
+export class FollowingComponent implements OnInit{
   userName: string | undefined;
   userId: number | undefined;
 

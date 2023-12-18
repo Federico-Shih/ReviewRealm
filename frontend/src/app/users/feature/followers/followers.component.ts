@@ -5,7 +5,6 @@ import {BehaviorSubject, catchError, Observable, switchMap} from "rxjs";
 import {Paginated} from "../../../shared/data-access/shared.models";
 import {User} from "../../../shared/data-access/users/users.class";
 import {environment} from "../../../../environments/environment";
-import {Review} from "../../../shared/data-access/reviews/review.class";
 
 @Component({
   selector: 'app-followers',
