@@ -3,6 +3,7 @@ package ar.edu.itba.paw.services;
 import ar.edu.itba.paw.dtos.Page;
 import ar.edu.itba.paw.enums.FeedbackType;
 import ar.edu.itba.paw.exceptions.ReviewNotFoundException;
+import ar.edu.itba.paw.exceptions.UserIsAuthorException;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.persistenceinterfaces.ReviewDao;
 import ar.edu.itba.paw.servicesinterfaces.*;
@@ -168,36 +169,43 @@ public class ReviewServiceImplTest {
 
     @Test
     public void feedbackUpdateNoChangeTest() {
-        Mockito.when(reviewDao.getReviewFeedback(eq(getReview1().getId()), eq(getUser1().getId()))).thenReturn(Optional.empty());
-        Mockito.when(userService.getUserById(anyLong())).thenReturn(Optional.of(getUser1()));
+        Mockito.when(reviewDao.getReviewFeedback(eq(getReview1().getId()), eq(getUser2().getId()))).thenReturn(Optional.empty());
+        Mockito.when(userService.getUserById(anyLong())).thenReturn(Optional.of(getUser2()));
         Mockito.when(reviewDao.findById(anyLong(), nullable(Long.class))).thenReturn(Optional.of(getReview1()));
 
-        ReviewFeedback result = rs.updateOrCreateReviewFeedback(getReview1().getId(), getUser1().getId(), null);
+        ReviewFeedback result = rs.updateOrCreateReviewFeedback(getReview1().getId(), getUser2().getId(), null);
         Assert.assertNull(result);
     }
 
     @Test
     public void feedbackUpdateRemoveFeedbackTest() {
-        Mockito.when(userService.getUserById(anyLong())).thenReturn(Optional.of(getUser1()));
+        Mockito.when(userService.getUserById(anyLong())).thenReturn(Optional.of(getUser2()));
         Mockito.when(reviewDao.findById(anyLong(), nullable(Long.class))).thenReturn(Optional.of(getReview1()));
-        Mockito.when(reviewDao.getReviewFeedback(eq(getReview1().getId()), eq(getUser1().getId()))).thenReturn(Optional.of(FeedbackType.LIKE));
-        Mockito.when(reviewDao.editReviewFeedback(eq(getReview1().getId()), eq(getUser1().getId()), eq(FeedbackType.LIKE), eq(FeedbackType.DISLIKE))).thenReturn(Optional.of(new ReviewFeedback(getUser1(), getReview1(), FeedbackType.DISLIKE)));
+        Mockito.when(reviewDao.getReviewFeedback(eq(getReview1().getId()), eq(getUser2().getId()))).thenReturn(Optional.of(FeedbackType.LIKE));
+        Mockito.when(reviewDao.editReviewFeedback(eq(getReview1().getId()), eq(getUser2().getId()), eq(FeedbackType.LIKE), eq(FeedbackType.DISLIKE))).thenReturn(Optional.of(new ReviewFeedback(getUser2(), getReview1(), FeedbackType.DISLIKE)));
 
-        ReviewFeedback result = rs.updateOrCreateReviewFeedback(getReview1().getId(), getUser1().getId(), FeedbackType.DISLIKE);
+        ReviewFeedback result = rs.updateOrCreateReviewFeedback(getReview1().getId(), getUser2().getId(), FeedbackType.DISLIKE);
         Assert.assertNotNull(result);
         Assert.assertEquals(FeedbackType.DISLIKE, result.getFeedback());
     }
 
     @Test
     public void feedbackUpdateNoPreviousFeedback() {
-        Mockito.when(userService.getUserById(anyLong())).thenReturn(Optional.of(getUser1()));
+        Mockito.when(userService.getUserById(anyLong())).thenReturn(Optional.of(getUser2()));
         Mockito.when(reviewDao.findById(anyLong(), nullable(Long.class))).thenReturn(Optional.of(getReview1()));
-        Mockito.when(reviewDao.getReviewFeedback(eq(getReview1().getId()), eq(getUser1().getId()))).thenReturn(Optional.empty());
-        Mockito.when(reviewDao.addReviewFeedback(eq(getReview1().getId()), eq(getUser1().getId()), eq(FeedbackType.LIKE))).thenReturn(Optional.of(new ReviewFeedback(getUser1(), getReview1(), FeedbackType.LIKE)));
+        Mockito.when(reviewDao.getReviewFeedback(eq(getReview1().getId()), eq(getUser2().getId()))).thenReturn(Optional.empty());
+        Mockito.when(reviewDao.addReviewFeedback(eq(getReview1().getId()), eq(getUser2().getId()), eq(FeedbackType.LIKE))).thenReturn(Optional.of(new ReviewFeedback(getUser2(), getReview1(), FeedbackType.LIKE)));
 
-        ReviewFeedback result = rs.updateOrCreateReviewFeedback(getReview1().getId(), getUser1().getId(), FeedbackType.LIKE);
+        ReviewFeedback result = rs.updateOrCreateReviewFeedback(getReview1().getId(), getUser2().getId(), FeedbackType.LIKE);
         Assert.assertNotNull(result);
         Assert.assertEquals(FeedbackType.LIKE, result.getFeedback());
+    }
+
+    @Test(expected = UserIsAuthorException.class)
+    public void feedbackUpdateOwnReview() {
+        Mockito.when(userService.getUserById(anyLong())).thenReturn(Optional.of(getUser1()));
+        Mockito.when(reviewDao.findById(anyLong(), nullable(Long.class))).thenReturn(Optional.of(getReview1()));
+        rs.updateOrCreateReviewFeedback(getReview1().getId(), getUser1().getId(), FeedbackType.LIKE);
     }
 
 }
