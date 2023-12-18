@@ -25,7 +25,7 @@ public class ExistentGenreListValidator implements ConstraintValidator<ExistentG
         if (!(o instanceof List)) {
             return false;
         }
-        List<Integer> list = (List<Integer>) o;//TODO: si aca me pasan un string revienta
+        List<Integer> list = (List<Integer>) o;
         if(list.isEmpty() && !emptyAllowed){
             return false;
         }

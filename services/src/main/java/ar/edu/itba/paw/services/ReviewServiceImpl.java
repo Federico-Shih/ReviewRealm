@@ -67,7 +67,6 @@ public class ReviewServiceImpl implements ReviewService {
         gameService.addNewReviewToGame(reviewedGame.getId(), rating);
 
         missionService.addMissionProgress(author.getId(), Mission.REVIEWS_GOAL, 1f);
-        // TODO: convert into task to email all followers
         Paginated<User> authorFollowers = userService.getFollowers(author.getId(), Page.with(1, 1000));
 
         for (User follower : authorFollowers.getList()) {
@@ -133,8 +132,8 @@ public class ReviewServiceImpl implements ReviewService {
     @Transactional(readOnly = true)
     @Override
     public Paginated<Review> getReviewsFromFollowingByUser(long userId, Page page) {
-        FollowerFollowingCount count = userService.getFollowerFollowingCount(userId);
-        List<User> followingUsers = userService.getFollowing(userId, Page.with(1, (int) count.getFollowingCount())).getList();
+        User user = userService.getUserById(userId).orElseThrow(UserNotFoundException::new);
+        List<User> followingUsers = userService.getFollowing(userId, Page.with(1, user.getFollowingCount())).getList();
         if (followingUsers.isEmpty()) {
             return new Paginated<>(page.getPageNumber(), page.getPageSize(), 0, 0, new ArrayList<>());
         }

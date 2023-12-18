@@ -66,12 +66,6 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private JwtTokenFilter jwtTokenFilter;
 
-    private static final String ACCESS_CONTROL_CHECK_REVIEW_OWNER = "@accessControl.checkReviewAuthorOwner(#id)";
-
-    private static final String ACCESS_CONTROL_CHECK_REVIEW_FEEDBACK = "@accessControl.checkReviewAuthorforFeedback(#id)";
-
-    private static final String ACCESS_CONTROL_CHECK_GAME_REVIEWED = "@accessControl.checkGameAuthorReviewed(#id)";
-
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -103,7 +97,6 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(WebSecurity web) throws Exception {
-        web.ignoring().antMatchers( "/static/**", "/css/**", "/js/**");
     }
 
     @Override
@@ -116,33 +109,12 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                 .accessDecisionManager(accessDecisionManager())
                 .antMatchers(HttpMethod.PATCH, "/api/users/{id:\\d+}").authenticated()
                 .antMatchers(HttpMethod.POST, "/api/reports", "/api/games","/api/reviews").authenticated()
-                .antMatchers("/api/reports/**").hasRole(RoleType.MODERATOR.getRole())
+                .antMatchers("/api/reports/**", "/api/reports").hasRole(RoleType.MODERATOR.getRole())
                 .antMatchers(HttpMethod.PATCH, "/api/games/{id:\\d+}").hasRole(RoleType.MODERATOR.getRole())
                 .antMatchers(HttpMethod.DELETE, "/api/games/{id:\\d+}").hasRole(RoleType.MODERATOR.getRole())
                 .antMatchers(HttpMethod.POST,"/api/reviews/{id:\\d+}").authenticated()
                 .antMatchers(HttpMethod.DELETE,"/api/reviews/{id:\\d+}").authenticated()
                 .antMatchers(HttpMethod.PATCH,"/api/reviews/{id:\\d+}").authenticated()
-// todo: agregar rutas a medida que se van haciendo las APIs
-                //.antMatchers("/admin/**").hasRole("ADMIN")  lo que requiera un rol especial
-                //.antMatchers("/review/edit/").access("@AccessHelper.canEdit") cuando se requiera un acceso especial segun el usuario (Spring Expression Language)
-//                .antMatchers("/review/{id:\\d+}/edit").access(ACCESS_CONTROL_CHECK_REVIEW_OWNER)
-//                .antMatchers(HttpMethod.POST,"/review/feedback/{id:\\d+}").access(ACCESS_CONTROL_CHECK_REVIEW_FEEDBACK)
-//                .antMatchers("/review/submit/{id:\\d+}").access(ACCESS_CONTROL_CHECK_GAME_REVIEWED)
-//                /* ACÁ PONEMOS TODOS LOS PATHS QUE REQUIERAN INICIAR SESIÓN Y TENER UN ROL */
-//                .antMatchers("/review/delete/{\\d+}", "/game/submissions", "/game/submissions/**", "/game/{\\d+}/edit", "/game/delete/{\\d+}", "/report/reviews/**", "/report/reviews").hasRole(RoleType.MODERATOR.getRole())
-//                /* ACÁ PONEMOS TODOS LOS PATHS QUE REQUIERAN INICIAR SESIÓN, PERO NO ROLES */
-//                .antMatchers(HttpMethod.GET, "/api/users").authenticated()
-//                .antMatchers("/review/submit/**",
-//                        "/profile/following",
-//                        "/profile/followers",
-//                        "/profile/follow/{\\d+}",
-//                        "/profile/unfollow/{\\d+}",
-//                        "/for-you/**",
-//                        "/profile/settings/**",
-//                        "/profile/settings/**",
-//                        "/game/submit",
-//                        "/profile/missions"
-//                ).authenticated()
                 .antMatchers("/api/**").permitAll()
                 /* ACÁ PONEMOS TODOS LOS PATHS QUE REQUIERAN NO HABER INICIADO SESIÓN */
 

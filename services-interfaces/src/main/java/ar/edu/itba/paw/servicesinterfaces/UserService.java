@@ -32,9 +32,7 @@ public interface UserService {
     Paginated<User> getFollowers(long id, Page page);
     
     Paginated<User> getFollowing(long id, Page page);
-    
-    FollowerFollowingCount getFollowerFollowingCount(long id);
-    
+
     Set<RoleType> getUserRoles(long id);
     
     User followUserById(long userId, long otherId);

@@ -9,7 +9,7 @@ public interface ValidationTokenDao {
 
     ExpirationToken create(long userId, LocalDateTime expiration);
 
-    Optional<ExpirationToken> findLastPasswordToken(long userId);
+    Optional<ExpirationToken> findLastToken(long userId);
 
     boolean delete(String id);
 

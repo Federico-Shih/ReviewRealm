@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.webapp.controller;
 
+import ar.edu.itba.paw.dtos.filtering.ReviewFilter;
 import ar.edu.itba.paw.enums.FeedbackType;
 import ar.edu.itba.paw.exceptions.ReviewAlreadyExistsException;
 import ar.edu.itba.paw.exceptions.ReviewNotFoundException;
@@ -15,6 +16,7 @@ import ar.edu.itba.paw.webapp.auth.AccessControl;
 import ar.edu.itba.paw.webapp.auth.AuthenticationHelper;
 import ar.edu.itba.paw.webapp.controller.annotations.ExistentReviewId;
 import ar.edu.itba.paw.webapp.controller.annotations.ExistentUserId;
+import ar.edu.itba.paw.webapp.controller.cache.CacheHelper;
 import ar.edu.itba.paw.webapp.controller.forms.EditReviewForm;
 import ar.edu.itba.paw.webapp.controller.forms.SubmitReviewForm;
 import ar.edu.itba.paw.webapp.controller.mediatypes.VndType;
@@ -22,6 +24,7 @@ import ar.edu.itba.paw.webapp.controller.querycontainers.ReviewSearchQuery;
 import ar.edu.itba.paw.webapp.controller.responses.FeedbackResponse;
 import ar.edu.itba.paw.webapp.controller.responses.PaginatedResponseHelper;
 import ar.edu.itba.paw.webapp.controller.responses.ReviewResponse;
+import ar.edu.itba.paw.webapp.exceptions.CustomRuntimeException;
 import ar.edu.itba.paw.webapp.validators.FeedbackTypeForm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,10 +35,12 @@ import org.springframework.stereotype.Component;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
+import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -64,23 +69,25 @@ public class ReviewController{
 
     }
 
-    /*
-      TODO:
-       GET /reviews
-       POST /reviews
-       DELETE /reviews/{reviewid}
-       GET /reviews/{reviewid}
-       PATCH /reviews/{reviewid}
-       GET /reviews/{id}/feedback/{userId}
-       POST /reviews/{id}/feedback{?feedbackType}
-       DELETE /reviews/{id}/feedback/{userId}
-    */
-
 
     @GET
     @Produces(VndType.APPLICATION_REVIEW_LIST)
     public Response getReviews(@Valid @BeanParam ReviewSearchQuery reviewSearchQuery) {
         User user = AuthenticationHelper.getLoggedUser(userService);
+
+        ReviewFilter reviewFilter = reviewSearchQuery.getFilter();
+        if (reviewFilter.getRecommendedFor() != null || reviewFilter.getFromFollowing() != null || reviewFilter.getNewForUser() != null) {
+            if (user == null) {
+                return Response.status(Response.Status.UNAUTHORIZED).build();
+            }
+            if (
+                    reviewFilter.getRecommendedFor() != null && !Objects.equals(reviewFilter.getRecommendedFor(), user.getId())
+                            || reviewFilter.getFromFollowing() != null && !Objects.equals(reviewFilter.getFromFollowing(), user.getId())
+                            || reviewFilter.getNewForUser() != null && !Objects.equals(reviewFilter.getNewForUser(), user.getId())) {
+                throw new CustomRuntimeException(Response.Status.FORBIDDEN, "unauthorized");
+            }
+        }
+
         final Paginated<Review> reviews = reviewService.searchReviews(reviewSearchQuery.getPage(), reviewSearchQuery.getFilter(), reviewSearchQuery.getOrdering(), user!=null? user.getId() : null);
         if (reviews.getTotalPages() == 0 || reviews.getList().isEmpty()) {
             return Response.noContent().build();

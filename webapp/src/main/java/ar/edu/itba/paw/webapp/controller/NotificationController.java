@@ -7,7 +7,6 @@ import ar.edu.itba.paw.servicesinterfaces.UserService;
 import ar.edu.itba.paw.webapp.controller.cache.CacheHelper;
 import ar.edu.itba.paw.webapp.controller.helpers.LocaleHelper;
 import ar.edu.itba.paw.webapp.controller.mediatypes.VndType;
-import ar.edu.itba.paw.webapp.controller.responses.GenreResponse;
 import ar.edu.itba.paw.webapp.controller.responses.NotificationResponse;
 import ar.edu.itba.paw.webapp.controller.responses.NotificationStatusResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,28 +50,28 @@ public class NotificationController {
             }
             return Response.ok().entity(
                     new GenericEntity<List<NotificationStatusResponse.NotificationTypeResponse>>(
-                            NotificationStatusResponse.getAllNotifications(uriInfo, user.get().getDisabledNotifications())
+                            NotificationStatusResponse.fromEntity(uriInfo, user.get().getDisabledNotifications())
                     ){}
             ).build();
         }
 
         List<NotificationType> notificationTypeList = this.notificationService.getNotifications();
-        return CacheHelper.buildEtagCache(
-                request,
-                notificationTypeList,
-                CacheHelper.buildCacheControl(cacheMaxAge),
-                entity -> Response.ok(
-                        new GenericEntity<List<NotificationResponse>>(
-                                notificationTypeList.stream()
-                                        .map((notificationType ->
-                                                NotificationResponse
-                                                        .fromEntity(
-                                                                uriInfo,
-                                                                notificationType,
-                                                                getLocalizedNotification(notificationType)
-                                                        )
-                                        )).collect(Collectors.toList())) {}
-                )
+        return CacheHelper.conditionalCache(
+            Response.ok(
+                new GenericEntity<List<NotificationResponse>>(
+                    notificationTypeList.stream()
+                        .map((notificationType ->
+                            NotificationResponse
+                                .fromEntity(
+                                    uriInfo,
+                                    notificationType,
+                                    getLocalizedNotification(notificationType)
+                                )
+                        )).collect(Collectors.toList())) {}
+            ),
+            request,
+            notificationTypeList,
+            CacheHelper.buildCacheControl(cacheMaxAge)
         ).build();
     }
 
@@ -81,19 +80,19 @@ public class NotificationController {
     @Produces(VndType.APPLICATION_NOTIFICATION)
     public Response getNotificationById(@PathParam("id") String id, @Context Request request) {
         return this.notificationService.getNotificationTypeById(id)
-                .map(notificationType -> CacheHelper.buildEtagCache(
-                        request,
+            .map(notificationType -> CacheHelper.conditionalCache(
+                Response.ok(
+                    NotificationResponse.fromEntity(
+                        uriInfo,
                         notificationType,
-                        CacheHelper.buildCacheControl(cacheMaxAge),
-                        entity -> Response.ok(
-                                NotificationResponse.fromEntity(
-                                        uriInfo,
-                                        entity,
-                                        getLocalizedNotification(entity)
-                                )
-                        )
-                ))
-                .orElse(Response.status(Response.Status.NOT_FOUND)).build();
+                        getLocalizedNotification(notificationType)
+                    )
+                ),
+                request,
+                notificationType,
+                CacheHelper.buildCacheControl(cacheMaxAge)
+            ))
+            .orElse(Response.status(Response.Status.NOT_FOUND)).build();
     }
 
     private String getLocalizedNotification(NotificationType notification) {

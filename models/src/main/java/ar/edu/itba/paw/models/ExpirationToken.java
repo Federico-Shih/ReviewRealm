@@ -17,17 +17,13 @@ public class ExpirationToken {
     @JoinColumn(name = "userid", referencedColumnName = "id")
     private User user;
 
-    @Column(name = "password", nullable = true)
-    private String password = "";
-
     @Column(name = "expiration", nullable = false)
     @Convert(converter = LocalDateTimeConverter.class)
     private LocalDateTime expiration;
 
-    public ExpirationToken(String token, User user, String password, LocalDateTime expiration) {
+    public ExpirationToken(String token, User user, LocalDateTime expiration) {
         this.token = token;
         this.user = user;
-        this.password = password;
         this.expiration = expiration;
     }
 
@@ -35,10 +31,9 @@ public class ExpirationToken {
         // Just for Hibernate
     }
 
-    public ExpirationToken(User createUser, String createPassword, LocalDateTime createExpiration) {
+    public ExpirationToken(User createUser, LocalDateTime createExpiration) {
         // For testing
         this.user = createUser;
-        this.password = createPassword;
         this.expiration = createExpiration;
     }
 
@@ -54,7 +49,4 @@ public class ExpirationToken {
         return user;
     }
 
-    public String getPassword() {
-        return password;
-    }
 }

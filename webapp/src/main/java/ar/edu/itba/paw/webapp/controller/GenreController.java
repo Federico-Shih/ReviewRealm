@@ -18,8 +18,10 @@ import org.springframework.stereotype.Component;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Path("genres")
@@ -50,14 +52,17 @@ public class GenreController {
     @Produces(VndType.APPLICATION_GENRE)
     public Response getById(@PathParam("id") int id, @Context Request request) {
         return genreService.getGenreById(id)
-                .map(genre -> {
-                    CacheControl cacheControl = CacheHelper.buildCacheControl(cacheMaxAge);
-                    return CacheHelper
-                            .buildEtagCache(request, genre, cacheControl,
-                                    entity -> Response.ok(GenreResponse.fromEntity(uriInfo, genre, getLocalizedGenre(genre)))
-                            );
-                })
-                .orElse(Response.status(Response.Status.NOT_FOUND)).build();
+            .map(genre -> {
+                CacheControl cacheControl = CacheHelper.buildCacheControl(cacheMaxAge);
+                return CacheHelper
+                    .conditionalCache(
+                        Response.ok(GenreResponse.fromEntity(uriInfo, genre, getLocalizedGenre(genre))),
+                        request,
+                        genre,
+                        cacheControl
+                    );
+            })
+            .orElse(Response.status(Response.Status.NOT_FOUND)).build();
     }
 
     @GET()
@@ -66,46 +71,35 @@ public class GenreController {
                            @QueryParam("forGame") Long gameId,
                            @QueryParam("forUser") Long userId) {
         if (gameId != null && userId != null) {
-            throw new CustomRuntimeException(Response.Status.BAD_REQUEST,"genres.invalid.filter" );
+            throw new CustomRuntimeException(Response.Status.BAD_REQUEST, "genres.invalid.filter" );
         }
         User loggedUser = AuthenticationHelper.getLoggedUser(userService);
+        List<Genre> genres;
+
         if(gameId != null){
             Optional<Game> game = gameService.getGameById(gameId, loggedUser != null? loggedUser.getId() : null);
             if(!game.isPresent()){
                 return Response.status(Response.Status.NOT_FOUND).build();
             }
-            return Response.ok().entity(
-                    new GenericEntity<List<GenreResponse>>(
-                            game.get().getGenres().stream()
-                                    .map((genre) -> GenreResponse.fromEntity(uriInfo, genre, getLocalizedGenre(genre)))
-                                    .collect(Collectors.toList())
-                    ){}
-            ).build();
-        }
-        if(userId != null){
+            genres = new ArrayList<>(game.get().getGenres());
+        } else if(userId != null){
             Optional<User> user = userService.getUserById(userId);
             if(!user.isPresent()){
                 return Response.status(Response.Status.NOT_FOUND).build();
             }
-            return Response.ok().entity(
-                    new GenericEntity<List<GenreResponse>>(
-                            user.get().getPreferences().stream()
-                                    .map((genre) -> GenreResponse.fromEntity(uriInfo, genre, getLocalizedGenre(genre)))
-                                    .collect(Collectors.toList())
-                    ){}
-            ).build();
+            genres = new ArrayList<>(user.get().getPreferences());
+        } else {
+            genres = genreService.getGenres();
         }
-        List<Genre> genres = genreService.getGenres();
-        CacheControl cacheControl = CacheHelper.buildCacheControl(cacheMaxAge);
-
-        return CacheHelper.buildEtagCache(request, genres, cacheControl,
-                entity -> Response.ok().entity(
-                        new GenericEntity<List<GenreResponse>>(
-                                genres.stream()
-                                        .map((genre) -> GenreResponse.fromEntity(uriInfo, genre, getLocalizedGenre(genre)))
-                                        .collect(Collectors.toList())
-                        ){}
-                )).build();
+        CacheControl cacheControl = CacheHelper.buildCacheControl(gameId != null || userId != null ? 3600 : cacheMaxAge);
+        Response.ResponseBuilder response = Response.ok().entity(
+            new GenericEntity<List<GenreResponse>>(
+                genres.stream()
+                        .map((genre) -> GenreResponse.fromEntity(uriInfo, genre, getLocalizedGenre(genre)))
+                        .collect(Collectors.toList())
+            ){}
+        );
+        return CacheHelper.conditionalCache(response, request, genres, cacheControl).build();
     }
 
     private String getLocalizedGenre(Genre genre) {

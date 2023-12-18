@@ -238,13 +238,6 @@ public class UserHibernateDao implements UserDao, PaginationDao<UserFilter> {
     }
 
     @Override
-    public Optional<FollowerFollowingCount> getFollowerFollowingCount(long id) {
-        User user = em.find(User.class, id);
-        if (user == null) return Optional.empty();
-        return Optional.of(new FollowerFollowingCount(user.getFollowers().size(), user.getFollowing().size()));
-    }
-
-    @Override
     public Optional<User> createFollow(long userId, long id) {
         User user = em.find(User.class, userId);
         User userToFollow = em.find(User.class, id);

@@ -1,7 +1,6 @@
 package ar.edu.itba.paw.webapp.controller.responses;
 
 import ar.edu.itba.paw.enums.NotificationType;
-import ar.edu.itba.paw.models.User;
 
 import javax.ws.rs.core.UriInfo;
 
@@ -46,7 +45,7 @@ public class NotificationStatusResponse extends BaseResponse {
         return response;
     }
 
-    public static List<NotificationTypeResponse> getAllNotifications(final UriInfo uri, Set<NotificationType> notifications) {
+    public static List<NotificationTypeResponse> fromEntity(final UriInfo uri, Set<NotificationType> notifications) {
         List<NotificationTypeResponse> setWithNotifications = new ArrayList<>();
         for (NotificationType type : NotificationType.values()) {
             // No hace falta el switch, no?

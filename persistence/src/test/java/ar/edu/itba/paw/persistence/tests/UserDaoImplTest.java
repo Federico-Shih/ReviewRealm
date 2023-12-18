@@ -304,24 +304,6 @@ public class UserDaoImplTest {
 
     @Rollback
     @Test
-    public void testGetFollowingCount() {
-        Optional<FollowerFollowingCount> ffcount = userDao.getFollowerFollowingCount(testFollowingUser.getId());
-        Assert.assertTrue(ffcount.isPresent());
-        Assert.assertEquals(3, ffcount.get().getFollowerCount());
-        Assert.assertEquals(1, ffcount.get().getFollowingCount());
-    }
-
-    @Rollback
-    @Test
-    public void testGetFollowingCountEmpty() {
-        Optional<FollowerFollowingCount> ffcount = userDao.getFollowerFollowingCount(testNonFollowingUser.getId());
-        Assert.assertTrue(ffcount.isPresent());
-        Assert.assertEquals(0, ffcount.get().getFollowerCount());
-        Assert.assertEquals(0, ffcount.get().getFollowingCount());
-    }
-
-    @Rollback
-    @Test
     public void testCreateFollow() {
         Optional<User> user = userDao.createFollow(testUser.getId(), UserTestModels.getUser5().getId());
         Assert.assertTrue(user.isPresent());

@@ -10,7 +10,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -20,9 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.sql.DataSource;
-import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 @Transactional
@@ -67,18 +63,17 @@ public class TokenDaoImplTest {
     @Rollback
     @Test
     public void findLastPasswordTokenTest() {
-        ExpirationToken token = tokenDao.findLastPasswordToken(passwordToken.getUser().getId()).orElse(null);
+        ExpirationToken token = tokenDao.findLastToken(passwordToken.getUser().getId()).orElse(null);
         Assert.assertNotNull(token);
         Assert.assertEquals(passwordToken.getToken(), token.getToken());
         Assert.assertEquals(passwordToken.getUser(), token.getUser());
-        Assert.assertEquals(passwordToken.getPassword(), token.getPassword());
         Assert.assertEquals(passwordToken.getExpiration(), token.getExpiration());
     }
 
     @Rollback
     @Test
     public void noLastTokenFoundTest() {
-        ExpirationToken token = tokenDao.findLastPasswordToken(-1L).orElse(null);
+        ExpirationToken token = tokenDao.findLastToken(-1L).orElse(null);
         Assert.assertNull(token);
     }
 
@@ -86,7 +81,7 @@ public class TokenDaoImplTest {
     @Rollback
     @Test
     public void noValidateUserTokenTest() {
-        ExpirationToken token = tokenDao.findLastPasswordToken(TokenTestModels.getToken1().getUser().getId()).orElse(null);
+        ExpirationToken token = tokenDao.findLastToken(TokenTestModels.getToken1().getUser().getId()).orElse(null);
         Assert.assertNull(token);
     }
 

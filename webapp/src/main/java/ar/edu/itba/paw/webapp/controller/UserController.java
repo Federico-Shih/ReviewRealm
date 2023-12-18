@@ -29,7 +29,6 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Path("users")
@@ -75,10 +74,10 @@ public class UserController {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
         return Response.ok(
-                UserResponse.UserResponseBuilder
-                        .fromUser(user.get(), uriInfo)
-                        .withAuthed(loggedIn)
-                        .build()
+            UserResponse.UserResponseBuilder
+                .fromUser(user.get(), uriInfo)
+                .withAuthed(loggedIn)
+                .build()
         ).build();
     }
 
@@ -202,7 +201,7 @@ public class UserController {
         if (!added) throw new CustomRuntimeException(Response.Status.BAD_REQUEST, "error.game.already.favorite");
         return Response.created(
                 uriInfo.getBaseUriBuilder()
-                        .path("users") //TODO: check url and maybe put /games?favoriteOf=id
+                        .path("users")
                         .path(String.valueOf(id))
                         .path("favoritegames")
                         .path(String.valueOf(favoriteGameForm.getGameId()))
@@ -239,7 +238,7 @@ public class UserController {
         }
         return Response.ok().entity(
                 new GenericEntity<List<NotificationStatusResponse.NotificationTypeResponse>>(
-                        NotificationStatusResponse.getAllNotifications(uriInfo, user.get().getDisabledNotifications())
+                        NotificationStatusResponse.fromEntity(uriInfo, user.get().getDisabledNotifications())
                 ){}
         ).build();
     }

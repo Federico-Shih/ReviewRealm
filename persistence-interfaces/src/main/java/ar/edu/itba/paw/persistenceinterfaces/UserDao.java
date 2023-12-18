@@ -36,8 +36,6 @@ public interface UserDao {
 
     Optional<Paginated<User>> getFollowing(final long id, Page page);
 
-    Optional<FollowerFollowingCount> getFollowerFollowingCount(final long id);
-
     Optional<User> createFollow(final long userId, final long id);
 
     Optional<User> deleteFollow(final long userId, final long id);

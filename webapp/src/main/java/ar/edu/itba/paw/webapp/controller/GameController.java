@@ -8,6 +8,7 @@ import ar.edu.itba.paw.servicesinterfaces.GameService;
 import ar.edu.itba.paw.servicesinterfaces.UserService;
 import ar.edu.itba.paw.webapp.auth.AuthenticationHelper;
 import ar.edu.itba.paw.webapp.controller.annotations.ExistentGameId;
+import ar.edu.itba.paw.webapp.controller.cache.CacheHelper;
 import ar.edu.itba.paw.webapp.controller.forms.EditGameForm;
 import ar.edu.itba.paw.webapp.controller.forms.PatchGameForm;
 import ar.edu.itba.paw.webapp.controller.forms.SubmitGameForm;
@@ -22,10 +23,7 @@ import org.springframework.stereotype.Component;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.core.*;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
@@ -51,12 +49,17 @@ public class GameController {
     @GET
     @Produces(VndType.APPLICATION_GAME)
     @Path("{id:\\d+}")
-    public Response getById(@PathParam("id") final long gameId) {
+    public Response getById(@PathParam("id") final long gameId, @Context Request request) {
         User loggedUser = AuthenticationHelper.getLoggedUser(us);
         Optional<Game> game = gs.getGameById(gameId,loggedUser != null ? loggedUser.getId() : null);
         if (game.isPresent()) {
-            return Response.ok(GameResponse.fromEntity(uriInfo,game.get(),
-                    gs.getGameReviewDataByGameId(gameId),loggedUser)).build();
+            return Response.ok(
+                GameResponse.fromEntity(
+                    uriInfo,
+                    game.get(),
+                    gs.getGameReviewDataByGameId(gameId),
+                    loggedUser)
+            ).build();
         } else {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
@@ -86,8 +89,8 @@ public class GameController {
         long loggedUser = AuthenticationHelper.getLoggedUser(us).getId();
         Game game = gs.createGame(submitGameForm.toSubmitDTO(),loggedUser);
 
-        return Response.
-                created(uriInfo.getAbsolutePathBuilder().path(game.getId().toString()).build()).build();
+        return Response
+                .created(uriInfo.getAbsolutePathBuilder().path(game.getId().toString()).build()).build();
     }
 
     @PATCH

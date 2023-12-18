@@ -139,13 +139,6 @@ public class UserServiceImpl implements UserService {
         return userDao.getFollowing(id, page).orElseThrow(UserNotFoundException::new);
     }
 
-    // TODO: remove
-    @Transactional(readOnly = true)
-    @Override
-    public FollowerFollowingCount getFollowerFollowingCount(long id) {
-        return userDao.getFollowerFollowingCount(id).orElseThrow(UserNotFoundException::new);
-    }
-
     @Transactional(readOnly = true)
     @Override
     public Set<RoleType> getUserRoles(long id) {
@@ -238,7 +231,7 @@ public class UserServiceImpl implements UserService {
             LOGGER.error("User {} already enabled", user.getId());
             throw new UserAlreadyEnabled();
         }
-        Optional<ExpirationToken> token = tokenDao.findLastPasswordToken(user.getId());
+        Optional<ExpirationToken> token = tokenDao.findLastToken(user.getId());
         token.ifPresent(expirationToken -> tokenDao.delete(expirationToken.getToken()));
 
         ExpirationToken newToken = tokenDao.create(user.getId(), LocalDateTime.now().plusHours(EXPIRATION_TIME));

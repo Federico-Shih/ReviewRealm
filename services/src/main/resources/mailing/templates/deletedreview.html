@@ -55,6 +55,10 @@
             text-transform: uppercase;
             vertical-align: middle;
         }
+        .centered {
+            margin-top: 50px;
+            text-align: center;
+        }
     </style>
 </head>
 
@@ -64,19 +68,23 @@
         <div class="navbar">
             <div>
                 <a th:href="@{${webBaseUrl}}" class="navbar-logo">
-                    <img class="navbar-logo-image" src="http://pawserver.it.itba.edu.ar/paw-2023a-04/static/review_realm_logo_white_630px.png" alt="Review Realm Logo">
+                    <img class="navbar-logo-image" th:src="@{{url}/static/review_realm_logo_white_630px.png(url=${serverUrl})}" alt="Review Realm Logo">
                     <span class="navbar-logo-title">Review Realm</span>
                 </a>
             </div>
         </div>
     </div>
-    <div class="container">
-        <h3 th:text="#{email.deletedreview.longtitle (${game})}"></h3>
-        <a th:href="${webBaseUrl+'/reviews/submit/'+gameId}">
-            <span class="goto-button" th:text="#{email.deletedreview.tryagain}">
-            </span>
-        </a>
-    </div>
+    <table class="container">
+        <tr>
+            <td class="centered">
+                <h3 th:text="#{email.deletedreview.longtitle (${game})}"></h3>
+                <a th:href="${webBaseUrl+'/reviews/submit/'+gameId}">
+                <span class="goto-button" th:text="#{email.deletedreview.tryagain}">
+                </span>
+                </a>
+            </td>
+        </tr>
+    </table>
 </div>
 </body>
 
