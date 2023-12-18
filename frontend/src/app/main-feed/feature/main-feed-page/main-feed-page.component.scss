@@ -1,0 +1,92 @@
+.mat-button-toggle {
+  width: 200px;
+  background-color: var(--color-surface) !important;
+  font-weight: 600;
+  color: #aaaaaa !important;
+  border: 0px !important;
+}
+
+.mat-button-toggle-checked {
+  background-color: #2b2a3d !important;
+  color: white !important;
+}
+
+.tab-icon {
+  margin-right: 10px;
+}
+
+.tab-group {
+  background-color: var(--color-surface);
+  border: 0 !important;
+  width: 100%;
+}
+
+.main-container {
+  padding: 2% 10%;
+  height: 100%;
+  overflow-y: scroll;
+}
+
+.centered-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  width: 100%;
+}
+
+.spinner {
+  margin-top: 20%;
+}
+
+.main-section {
+  width: 100%;
+  padding-top: 30px;
+}
+
+.for-you-section {
+  height: 120px;
+  border-radius: 15px;
+  overflow: hidden;
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+  width: 100%;
+  align-items: center;
+  padding: 0 20px;
+  gap: 10px;
+}
+
+.icon-size {
+  font-size: 50px;
+  width: 50px;
+  height: 50px;
+}
+
+.card-title {
+  font-size: 1.4rem;
+  margin-bottom: 5px;
+}
+
+.card-cta {
+  display: flex;
+  flex-direction: column;
+  padding: 0 10px;
+}
+
+.has-preference-bg {
+  background-color: #263238;
+}
+
+.no-preference-bg {
+  background-color: var(--color-warning);
+}
+
+.button-cta {
+  font-size: 1.02rem;
+  margin-top: 5px;
+  border: white 1px solid !important;
+}

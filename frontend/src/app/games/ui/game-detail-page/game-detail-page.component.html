@@ -1,0 +1,193 @@
+<ng-container *ngIf="game !== null">
+  <div class="page-header">
+    <app-breadcrumbs
+      [breadcrumbs]="[
+        { name: 'games.search.title' | translate, link: '/games' },
+        { name: game.name, link: '/games/' + game.id }
+      ]" />
+    <div *ngIf="isModerator" class="mod-buttons">
+      <button
+        [routerLink]="['/games', game.id, 'edit']"
+        color="primary"
+        mat-icon-button
+        matTooltip="{{ 'game.edit' | translate }}">
+        <mat-icon class="icons">edit</mat-icon>
+      </button>
+      <button
+        (click)="deleteGame.emit()"
+        color="primary"
+        mat-icon-button
+        matTooltip="{{ 'game.delete' | translate }}">
+        <mat-icon class="icons">delete</mat-icon>
+      </button>
+    </div>
+  </div>
+  <div class="details-container">
+    <div class="details">
+      <span class="title">{{ game.name }}</span>
+      <div class="genres-row">
+        <span class="genres-header">{{ 'genres' | translate }}</span>
+        <mat-chip-set class="genres">
+          <mat-chip
+            *ngFor="let genre of game.genres"
+            [queryParams]="{ genres: [genre.id] }"
+            class="chip clickable"
+            routerLink="/games">
+            {{ genre.localized }}
+          </mat-chip>
+        </mat-chip-set>
+      </div>
+
+      <mat-divider />
+      <p class="description">{{ game.description }}</p>
+      <mat-divider />
+    </div>
+    <div class="card">
+      <img alt="{{ game.name }}" src="{{ game.links.image }}" />
+      <span class="card-text" i18n>{{
+        'publishing.date'
+          | translate: { value: game.publishDate.toLocaleDateString() }
+      }}</span>
+      <span class="card-text" i18n>{{
+        'developer.card' | translate: { value: game.developer }
+      }}</span>
+      <span class="card-text" i18n>{{
+        'publisher.card' | translate: { value: game.publisher }
+      }}</span>
+    </div>
+  </div>
+  <div *ngIf="game.reviewCount > 0" class="statistics-section">
+    <span class="header"> {{ 'game-details.statistics' | translate }}</span>
+    <div class="statistics-list">
+      <div class="stat-card">
+        <div class="content">
+          <span class="header">{{ 'game-details.rating' | translate }}</span>
+          <span class="text"
+            >{{ (game.ratingSum / game.reviewCount).toFixed(2)
+            }}<span class="small-number">/10</span></span
+          >
+        </div>
+      </div>
+      <div *ngIf="game.averagePlatform !== undefined" class="stat-card">
+        <div class="content">
+          <span class="header">{{ 'game-details.platform' | translate }}</span>
+          <span class="text">{{ game.averagePlatform }}</span>
+        </div>
+      </div>
+      <div *ngIf="game.averageDifficulty !== undefined" class="stat-card">
+        <div class="content">
+          <span class="header">{{
+            'game-details.difficulty' | translate
+          }}</span>
+          <span class="text">{{ game.averageDifficulty }}</span>
+        </div>
+      </div>
+      <div *ngIf="game.averageGameTime !== undefined" class="stat-card">
+        <div class="content">
+          <span class="header">{{ 'game-details.gametime' | translate }}</span>
+          <span class="text">{{
+            (game.averageGameTime / 3600).toFixed(2)
+          }}</span>
+        </div>
+      </div>
+      <div *ngIf="game.replayability !== undefined" class="stat-card">
+        <div class="content">
+          <span class="header">{{
+            'game-details.replayability' | translate
+          }}</span>
+          <span class="text"
+            >{{ game.replayability | number: '1.0-2' }}
+            <span class="small-number">%</span></span
+          >
+        </div>
+      </div>
+      <div *ngIf="game.completability !== undefined" class="stat-card">
+        <div class="content">
+          <span class="header">{{
+            'game-details.completability' | translate
+          }}</span>
+          <span class="text"
+            >{{ game.completability | number: '1.0-2' }}
+            <span class="small-number">%</span></span
+          >
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="review-section">
+    <ng-container *ngIf="!!userReview; else notlogged">
+      <div class="review-header">
+        <span class="header">
+          {{ 'game-details.personal-review' | translate }}</span
+        >
+        <button [routerLink]="['reviews', userReview.id, 'edit']" color="primary" mat-raised-button>
+          <mat-icon>edit</mat-icon>
+          {{ 'edit-own-review' | translate }}
+        </button>
+      </div>
+      <div class="full-width margin-y-2">
+        <app-review-card
+          [hideActions]="true"
+          [review]="userReview"></app-review-card>
+      </div>
+    </ng-container>
+    <ng-template #notlogged>
+      <div class="review-header">
+        <span class="header">
+          {{ 'game-details.no-personal-review' | translate }}</span
+        >
+        <button
+          routerLink="/reviews/submit/{{ game.id }}"
+          color="primary"
+          mat-raised-button>
+          <mat-icon>add</mat-icon>
+          {{ 'new-review' | translate }}
+        </button>
+      </div>
+    </ng-template>
+    <div class="review-header">
+      <span class="header" i18n> {{ 'game-details.reviews' | translate }}</span>
+    </div>
+    <div *ngIf="paginatedReviews !== null" class="full-width">
+      <ng-container *ngIf="paginatedReviews.content.length > 0; else noreviews">
+        <mat-grid-list
+          class="f-row"
+          cols="2"
+          gutterSize="20px"
+          rowHeight="300px">
+          <mat-grid-tile
+            *ngFor="let review of paginatedReviews.content"
+            colspan="1"
+            rowspan="1">
+            <app-review-card
+              [hideActions]="true"
+              [review]="review"
+              class="full-width"></app-review-card>
+          </mat-grid-tile>
+        </mat-grid-list>
+        <div
+          *ngIf="paginatedReviews.links.next"
+          class="centered-container view-more-button">
+          <button
+            (click)="showMore(paginatedReviews.links.next)"
+            color="accent"
+            i18n
+            mat-raised-button>
+            <ng-container *ngIf="loadingReviews; else notloading">
+              <mat-spinner diameter="20"></mat-spinner>
+            </ng-container>
+            <ng-template #notloading>
+              {{ 'profile.view-more-button' | translate }}
+            </ng-template>
+          </button>
+        </div>
+      </ng-container>
+      <ng-template #noreviews>
+        <div class="no-reviews">
+          <div></div>
+          <p class="text" i18n>{{ 'game-details.no-reviews' | translate }}</p>
+        </div>
+      </ng-template>
+    </div>
+  </div>
+</ng-container>

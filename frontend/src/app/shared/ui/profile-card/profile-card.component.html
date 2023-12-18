@@ -1,0 +1,53 @@
+<div
+  *ngIf="_user() as user"
+  class="profile-card level-{{ userRank() }}-background">
+  <div class="profile-image">
+    <a routerLink="/profile/{{ user.id }}">
+      <img
+        [alt]="user.username"
+        [ngSrc]="user.avatar"
+        height="80"
+        width="80"
+        class="img" />
+    </a>
+  </div>
+  <div>
+    <a routerLink="/profile/{{ user.id }}">
+      <span class="username">{{ user.username }}</span>
+    </a>
+    <div *ngIf="user.preferences.length > 0">
+      <div class="likes">
+        <mat-icon class="heart-icon">favorite</mat-icon>
+        <span>{{ 'profile-card.whoprefers' | translate }}</span>
+      </div>
+      <div style="margin-top: 5px">
+        <span
+          *ngFor="let genre of user.preferences | slice: 0 : 2"
+          class="chip-small-inverted pointer"
+          routerLink="/games"
+          [queryParams]="{ genres: genre.id }">
+          {{ genre.localized }}
+        </span>
+        <span *ngIf="user.preferences.length > 2" class="chip-small-inverted">
+          +{{ user.preferences.length - 2 }}</span
+        >
+      </div>
+    </div>
+  </div>
+  <div style="flex: 1"></div>
+  <div class="level-container">
+    <div class="level-badge-container">
+      <mat-icon class="level-{{ userRank() }} level-badge-icon"
+        >sports_esports</mat-icon
+      >
+      <span class="level-badge-text">{{
+        user.xp / 100 | number: '1.0-0'
+      }}</span>
+    </div>
+    <div style="position: relative; height: 20px">
+      <mat-icon class="badge-icon" *ngIf="_user()?.role === Role.MODERATOR">
+        engineering
+      </mat-icon>
+    </div>
+  </div>
+</div>

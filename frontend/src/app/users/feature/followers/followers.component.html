@@ -1,0 +1,42 @@
+<div class="margintop">
+<app-breadcrumbs
+  [breadcrumbs]="[
+        { name: userName, link: '/profile/'+userId },
+        { name: 'profile.followerstitle' | translate, link: '/profile' }
+      ]" />
+</div>
+<div class="container row">
+
+  <span class="header" i18n>{{ 'profile.followerstitle' | translate }}</span>
+  <div class="divider-h"></div>
+  <ng-container *ngIf="followers$ | async as followers ; else loading" >
+    <div class="user-container">
+      <ng-container *ngFor="let user of followers.content">
+        <div class="margin-bottom-2">
+          <div class="profile-card-container">
+            <app-profile-card [user]="user" />
+          </div>
+        </div>
+      </ng-container>
+    </div>
+    <ng-container *ngIf="followers.totalPages===0">
+      <span class="header" i18n>
+        {{ 'profile.followingtitle' | translate }}
+      </span>
+    </ng-container>
+    <div *ngIf="followers.links.next" class="centered-container view-more-button">
+      <button
+              mat-raised-button
+              color="accent"
+              (click)="showMore(followers.links.next)"
+              i18n>
+        {{ 'profile.view-more-button' | translate }}
+      </button>
+    </div>
+  </ng-container>
+  <ng-template #loading>
+    <div class="centered-container">
+      <mat-spinner mode="indeterminate"></mat-spinner>
+    </div>
+  </ng-template>
+</div>

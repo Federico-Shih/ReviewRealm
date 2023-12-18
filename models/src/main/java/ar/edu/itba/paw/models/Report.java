@@ -2,6 +2,7 @@ package ar.edu.itba.paw.models;
 
 import ar.edu.itba.paw.converters.LocalDateTimeConverter;
 import ar.edu.itba.paw.enums.ReportReason;
+import ar.edu.itba.paw.enums.ReportState;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -37,14 +38,15 @@ public class Report {
     @Convert(converter = LocalDateTimeConverter.class)
     private LocalDateTime submissionDate;
 
-    @Column(name = "resolved")
-    private boolean resolved;
+    @Column(name = "state")
+    @Enumerated(EnumType.STRING)
+    private ReportState state = ReportState.UNRESOLVED;
 
     @Column(name = "resolvedDate")
     @Convert(converter = LocalDateTimeConverter.class)
     private LocalDateTime resolvedDate;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "moderatorId", referencedColumnName = "id")
     private User moderator;
 
@@ -59,10 +61,10 @@ public class Report {
         this.reportedUser = reportedReview.getAuthor();
         this.submissionDate = submissionDate;
     }
-    public Report(Long id, User reporter, Review reportedReview, ReportReason reason, LocalDateTime submissionDate,boolean resolved) {
+    public Report(Long id, User reporter, Review reportedReview, ReportReason reason, LocalDateTime submissionDate, ReportState state) {
         this(reporter, reportedReview, reason, submissionDate);
         this.id = id;
-        this.resolved = resolved;
+        this.state = state;
     }
     public Report(Long id,ReportReason reason){//Testing use only
         this.id = id;
@@ -87,8 +89,12 @@ public class Report {
         return id;
     }
 
-    public boolean isResolved() {
-        return resolved;
+    public ReportState getState() {
+        return state;
+    }
+
+    public Boolean isResolved() {
+        return state != ReportState.UNRESOLVED;
     }
 
     public LocalDateTime getResolvedDate() {
@@ -107,8 +113,8 @@ public class Report {
         this.reportedReview = reportedReview;
     }
 
-    public void setResolved(boolean resolved) {
-        this.resolved = resolved;
+    public void setState(ReportState state) {
+        this.state = state;
     }
 
     public void setResolvedDate(LocalDateTime resolvedDate) {

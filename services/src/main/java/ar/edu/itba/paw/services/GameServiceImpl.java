@@ -4,6 +4,7 @@ import ar.edu.itba.paw.dtos.Page;
 import ar.edu.itba.paw.dtos.filtering.GameFilter;
 import ar.edu.itba.paw.dtos.filtering.GameFilterBuilder;
 import ar.edu.itba.paw.dtos.ordering.GameOrderCriteria;
+import ar.edu.itba.paw.dtos.ordering.OrderDirection;
 import ar.edu.itba.paw.dtos.ordering.Ordering;
 import ar.edu.itba.paw.dtos.saving.SubmitGameDTO;
 import ar.edu.itba.paw.enums.Difficulty;
@@ -11,9 +12,7 @@ import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.enums.Mission;
 import ar.edu.itba.paw.enums.Platform;
 import ar.edu.itba.paw.enums.RoleType;
-import ar.edu.itba.paw.exceptions.GameNotFoundException;
-import ar.edu.itba.paw.exceptions.GenreNotFoundException;
-import ar.edu.itba.paw.exceptions.UserNotFoundException;
+import ar.edu.itba.paw.exceptions.*;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.persistenceinterfaces.GameDao;
 import ar.edu.itba.paw.servicesinterfaces.*;
@@ -50,15 +49,15 @@ public class GameServiceImpl implements GameService {
 
     @Transactional
     @Override
-    public Optional<Game> createGame(SubmitGameDTO gameDTO, long userId) {
+    public Game createGame(SubmitGameDTO gameDTO, long userId) {
         Image img = imgService.uploadImage(gameDTO.getImageData(), gameDTO.getMediatype());
         if (img == null) {
-            throw new RuntimeException("Error creating image");
+            throw new RuntimeException("Error creating image"); //TODO:Cambiarlo a otra exception
         }
 
         User user = userService
                 .getUserById(userId)
-                .orElseThrow(() -> new UserNotFoundException("user.notfound"));
+                .orElseThrow(UserNotFoundException::new);
 
         boolean isModerator = user
                 .getRoles()
@@ -72,12 +71,13 @@ public class GameServiceImpl implements GameService {
             mailingService.sendSuggestionInReviewEmail(toReturn, user);
             missionService.addMissionProgress(user.getId(), Mission.RECOMMEND_GAMES, 1f);
         }
-        return (isModerator) ? Optional.of(toReturn) : Optional.empty();
+        return  toReturn;
     }
 
     @Transactional
     @Override
     public boolean deleteGame(long gameId) {
+        reviewService.deleteReviewsOfGame(gameId);
         return gameDao.deleteGame(gameId);
     }
 
@@ -106,7 +106,7 @@ public class GameServiceImpl implements GameService {
                     genreList.add(g.get());
                 }
                 else {
-                    throw new GenreNotFoundException();
+                    throw new GenreNotFoundException(c);
                 }
             }
         }
@@ -115,15 +115,46 @@ public class GameServiceImpl implements GameService {
 
     @Transactional(readOnly = true)
     @Override
-    public Optional<Game> getGameById(long id) {
-        return gameDao.getById(id);
+    public Optional<Game> getGameById(long id,Long userId) {
+        Optional<Game> game =  gameDao.getById(id,userId);
+        if(!game.isPresent()){
+            return game;
+        }
+        if(game.get().getSuggestion()){
+            if(userId == null){
+                return Optional.empty();
+            }
+            Optional<User> user = userService.getUserById(userId);
+            if(!user.isPresent() || !user.get().getRoles().contains(RoleType.MODERATOR)){
+                return Optional.empty();
+            }
+        }
+        return game;
     }
 
     @Transactional(readOnly = true)
     @Override
-    public Paginated<Game> searchGames(Page page, GameFilter searchFilter, Ordering<GameOrderCriteria> ordering)
+    public Paginated<Game> searchGames(Page page, GameFilter searchFilter, Ordering<GameOrderCriteria> ordering, Long userId)
     {
-        return gameDao.findAll(page, searchFilter, ordering);
+        if(searchFilter.getFavoriteGamesOf() != null){
+            if(searchFilter.isProperFavoriteOf()){
+                return userService.getFavoriteGamesFromUser(page,searchFilter.getFavoriteGamesOf());
+            }
+            throw new ExclusiveFilterException("error.game.filter.favorite");
+        }
+        if(searchFilter.getRecommendedFor() != null){
+            if(searchFilter.isProperRecommendedFor()){
+                return getRecommendationsOfGamesForUser(page,searchFilter.getRecommendedFor());
+            }
+            throw new ExclusiveFilterException("error.game.filter.recommended");
+        }
+        if(searchFilter.getNotReviewedBy() != null){
+            if(searchFilter.isProperNotReviewedBy()){
+                return searchGamesNotReviewedByUser(page, searchFilter.getGameContent(), ordering, searchFilter.getNotReviewedBy());
+            }
+            throw new ExclusiveFilterException("error.game.filter.notreviewed");
+        }
+        return gameDao.findAll(page, searchFilter, ordering,userId);
     }
 
     @Transactional(readOnly = true)
@@ -131,17 +162,17 @@ public class GameServiceImpl implements GameService {
     public Paginated<Game> searchGamesNotReviewedByUser(Page page, String search, Ordering<GameOrderCriteria> ordering, long userId) {
         List<Long> gamesReviewed = getGamesReviewedByUser(userId).stream().map(Game::getId).collect(Collectors.toList());
         GameFilter gameFilter = new GameFilterBuilder().withGameContent(search).withGamesToExclude(gamesReviewed).build();
-        return gameDao.findAll(page, gameFilter, ordering);
+        return gameDao.findAll(page, gameFilter, ordering,userId);
     }
 
 
     @Transactional(readOnly = true)
     @Override
     public GameReviewData getGameReviewDataByGameId(long id) {
-        if(!getGameById(id).isPresent())
+        if(!gameDao.getById(id).isPresent())
             throw new GameNotFoundException();
         List<Review> reviews = reviewService.getAllReviewsFromGame(id,null);
-        if(reviews.size() > 0) {
+        if(!reviews.isEmpty()) {
             HashMap<Difficulty, Integer> difficultyCount = new HashMap<>();
             HashMap<Platform, Integer> platformCount = new HashMap<>();
 
@@ -186,17 +217,18 @@ public class GameServiceImpl implements GameService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<Game> getRecommendationsOfGamesForUser(long userId) {
+    public Paginated<Game> getRecommendationsOfGamesForUser(Page page,long userId) {
         User user = userService.getUserById(userId).orElseThrow(UserNotFoundException::new);
         if(!user.hasPreferencesSet()){
-            return new ArrayList<>();
+            return new Paginated<>(1,0,0,0,new ArrayList<>());
         }
         Set <Genre> userPreferences = user.getPreferences();
         List<Integer> preferencesIds = userPreferences.stream().map(Genre::getId).collect(Collectors.toList());
         Set<Game> userReviewedGames = getGamesReviewedByUser(user.getId());
         List<Long> idsToExclude = userReviewedGames.stream().map(Game::getId).collect(Collectors.toList());
-
-        return gameDao.getRecommendationsForUser(preferencesIds,idsToExclude);
+        GameFilter filter = new GameFilterBuilder().withGameGenres(preferencesIds).withSuggestion(false).withGamesToExclude(idsToExclude).build();
+        Ordering<GameOrderCriteria> ordering = new Ordering<>(OrderDirection.DESCENDING, GameOrderCriteria.AVERAGE_RATING);
+        return gameDao.findAll(page,filter,ordering,userId);
     }
 
     @Transactional(readOnly = true)
@@ -208,8 +240,13 @@ public class GameServiceImpl implements GameService {
     @Transactional
     @Override
     public Game acceptGame(long gameId, long approvingUserId) {
-        Game game = gameDao.setSuggestedFalse(gameId).orElseThrow(GameNotFoundException::new);
+        Game game = gameDao.getById(gameId).orElseThrow(GameNotFoundException::new);
+        if(!game.getSuggestion()){
+            throw new GameSuggestionAlreadyHandled();
+        }
+        gameDao.setSuggestedFalse(gameId);
         User suggester = game.getSuggestedBy();
+        LOGGER.info("Accepting game - id: {} ; name: {}",gameId, game.getName());
         if(suggester != null) {
             mailingService.sendAcceptedSuggestionEmail(game, suggester);
             missionService.addMissionProgress(suggester.getId(), Mission.ACCEPTED_GAMES, 1f);
@@ -223,6 +260,10 @@ public class GameServiceImpl implements GameService {
     public boolean rejectGame(long gameId, long approvingUserId) {
         Game rejectedGame = gameDao.getById(gameId).orElseThrow(GameNotFoundException::new);
         User suggester = rejectedGame.getSuggestedBy();
+        if(!rejectedGame.getSuggestion()){
+            throw new GameSuggestionAlreadyHandled();
+        }
+        LOGGER.info("Rejecting game - id: {} ; name: {}",gameId, rejectedGame.getName());
         boolean deleted = gameDao.deleteGame(gameId);
         if(deleted && rejectedGame.getSuggestedBy() != null) {
             mailingService.sendDeclinedSuggestionEmail(rejectedGame, suggester);

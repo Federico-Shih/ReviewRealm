@@ -1,0 +1,30 @@
+<mat-dialog-content>
+  <div class="dialog">
+    <div class="all-container">
+      <div>
+        <app-search-bar
+          (search)="setSearch($event)"
+          (searchSubmit)="submitSearch()"
+          [label]="'games.search.title' | translate"></app-search-bar>
+      </div>
+      <div class="games-container">
+        <ng-container *ngIf="(loading$ | async) === false ; else loading">
+          <ng-container *ngIf="(games$ | async) as games">
+            <div *ngFor="let game of games.content" class="game-container">
+              <app-game-card
+                [game]="game"
+                [tiny]="true"
+                [nolink]="true"></app-game-card>
+            </div>
+          </ng-container>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+</mat-dialog-content>
+
+<ng-template #loading>
+  <div class="loading-container">
+    <mat-spinner mode="indeterminate"></mat-spinner>
+  </div>
+</ng-template>

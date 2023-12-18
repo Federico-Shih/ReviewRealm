@@ -1,0 +1,111 @@
+.f-row {
+  display: flex !important;
+  flex-direction: row;
+}
+
+.full-width {
+  width: 100% !important;
+}
+
+.f-jc-sbetween {
+  justify-content: space-between;
+}
+
+.progress-fontsize {
+  font-size: 20px;
+}
+
+.progress-container {
+  width: 80%;
+  padding-right: 4%;
+}
+
+.no-wrap {
+  white-space: nowrap;
+}
+
+.section {
+  margin: 20px 20px;
+}
+
+.card-title {
+  display: block;
+  line-height: 32px;
+  margin-bottom: 8px;
+  font-size: 28px;
+}
+
+.level-container {
+  font-size: 3em;
+  border: 1px solid #444155;
+  border-radius: 4px;
+  box-shadow: 3px 3px 8px 6px rgb(0 0 0 / 0.4);
+  height: 2em;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 0 8px;
+}
+
+.mission-card {
+  position: relative;
+}
+
+.mission-card-container {
+}
+
+.container {
+  width: 100%;
+  padding: 30px 15%;
+}
+
+.card {
+  color: white;
+  background-color: var(--color-surface);
+  border: 1px solid #444;
+  border-radius: 15px;
+  position: relative;
+  width: 100%;
+  margin-bottom: 2%;
+}
+
+.card-content {
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+  font-size: 0.9rem;
+  margin: 20px 15px;
+}
+
+.mission-data {
+  position: absolute;
+  bottom: 10px;
+  right: 24px;
+  display: flex;
+  flex-direction: row;
+  gap: 5px;
+}
+
+.mission-chip {
+  background: #ddd7ff;
+  color: #13112d;
+  border: 1px solid #444155;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 700;
+  padding: 2px 6px;
+  white-space: nowrap;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.custom-progress {
+  height: 10px !important;
+  margin-bottom: 35px;
+  margin-top: 10px;
+}
+.m-t-b {
+  margin: 10px 0;
+}

@@ -1,4 +1,29 @@
 #!/bin/bash
 
-scp ./webapp/target/webapp.war fshih@pampero.itba.edu.ar:/home/fshih/web/app.war
-ssh -t fshih@pampero.itba.edu.ar "cd /home/fshih/web/;"
+#if mvn clean package;
+#then
+#    printf "Maven build successful\n"
+#else
+#    printf "Maven build failed\n"
+#    exit 1
+#fi
+
+if [ $# -eq 1 ]
+then
+	u=$1
+else
+	u=${USER}
+fi
+
+mv webapp/target/webapp.war webapp/target/app.war
+
+scp webapp/target/app.war "${u}"@pampero.it.itba.edu.ar:/home/"${u}"/.
+
+ssh -tt "${u}"@pampero.it.itba.edu.ar << EOF
+	export SSHPASS=m5jx4ksYH
+	sshpass -e sftp -oBatchMode=no -b - paw-2023a-04@10.16.1.110 << !
+	cd web
+	put app.war
+	bye
+!
+EOF

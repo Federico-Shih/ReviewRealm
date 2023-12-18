@@ -9,7 +9,6 @@ import ar.edu.itba.paw.dtos.saving.SaveUserBuilder;
 import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.enums.NotificationType;
 import ar.edu.itba.paw.models.FollowerFollowingCount;
-import ar.edu.itba.paw.models.Game;
 import ar.edu.itba.paw.models.Paginated;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.persistence.config.TestConfig;
@@ -69,6 +68,7 @@ public class UserDaoImplTest {
     private User testUserWithPref;
     private User testUserWithoutPref;
     private User disabledNotifUser;
+    private User testUserWithFavoriteGame;
 
     @Before
     public void setUp() {
@@ -80,13 +80,14 @@ public class UserDaoImplTest {
         this.testUserWithPref = UserTestModels.getUser1();
         this.testUserWithoutPref = UserTestModels.getUser5();
         this.disabledNotifUser = UserTestModels.getUser5();
+        this.testUserWithFavoriteGame = UserTestModels.getUser5();
     }
 
     @Rollback
     @Test
     public void testFindById() throws SQLException {
         //2.execute
-        Optional<User> maybeUser = userDao.findById(testUser.getId());
+        Optional<User> maybeUser = userDao.findById(testUser.getId(), null);
 
         //3.assert
         Assert.assertTrue(maybeUser.isPresent());
@@ -100,7 +101,7 @@ public class UserDaoImplTest {
     public void testFindByIdDoesNotExist() throws SQLException {
 
         //2.execute
-        Optional<User> maybeUser = userDao.findById(-1L);
+        Optional<User> maybeUser = userDao.findById(-1L, null);
 
         //3.assert
         Assert.assertFalse(maybeUser.isPresent());
@@ -108,8 +109,32 @@ public class UserDaoImplTest {
 
     @Rollback
     @Test
+    public void testFindByIdWithFollowing() throws SQLException {
+
+        //2.execute
+        Optional<User> maybeUser = userDao.findById(UserTestModels.getUser3().getId(), testFollowingUser.getId());
+
+        //3.assert
+        Assert.assertTrue(maybeUser.isPresent());
+        Assert.assertTrue(maybeUser.get().isFollowing());
+    }
+
+    @Rollback
+    @Test
+    public void testFindByIdWithoutFollowing() throws SQLException {
+
+        //2.execute
+        Optional<User> maybeUser = userDao.findById(testFollowingUser.getId(), testFollowingUser.getId());
+
+        //3.assert
+        Assert.assertTrue(maybeUser.isPresent());
+        Assert.assertFalse(maybeUser.get().isFollowing());
+    }
+
+    @Rollback
+    @Test
     public void testFindAll() throws SQLException {
-        Paginated<User> userlist = userDao.findAll(Page.with(1, 80), new UserFilterBuilder().build(), new Ordering<>(OrderDirection.DESCENDING, UserOrderCriteria.LEVEL));
+        Paginated<User> userlist = userDao.findAll(Page.with(1, 80), new UserFilterBuilder().build(), new Ordering<>(OrderDirection.DESCENDING, UserOrderCriteria.LEVEL), null);
 
         Assert.assertEquals(userlist.getTotalPages(), 1);
         Assert.assertEquals(userlist.getList().size(), 5);
@@ -121,7 +146,7 @@ public class UserDaoImplTest {
     @Test
     public void testMultipleFilter() throws SQLException {
         //2.execute
-        Paginated<User> userlist = userDao.findAll(Page.with(1, 10), new UserFilterBuilder().withEmail("email2").build(), new Ordering<>(OrderDirection.DESCENDING, UserOrderCriteria.LEVEL));
+        Paginated<User> userlist = userDao.findAll(Page.with(1, 10), new UserFilterBuilder().withEmail("email2").build(), new Ordering<>(OrderDirection.DESCENDING, UserOrderCriteria.LEVEL), null);
 
         Assert.assertEquals(userlist.getTotalPages(), 1);
         Assert.assertEquals(userlist.getList().size(), 1);
@@ -133,10 +158,10 @@ public class UserDaoImplTest {
     @Test
     public void wrongPaginationTest() {
         Assert.assertThrows(RuntimeException.class, () -> {
-            userDao.findAll(Page.with(0, 0), new UserFilterBuilder().build(), new Ordering<>(OrderDirection.DESCENDING, UserOrderCriteria.LEVEL));
+            userDao.findAll(Page.with(0, 0), new UserFilterBuilder().build(), new Ordering<>(OrderDirection.DESCENDING, UserOrderCriteria.LEVEL), null);
         });
 
-        Paginated<User> userlist = userDao.findAll(Page.with(1000000, 10), new UserFilterBuilder().build(), new Ordering<>(OrderDirection.DESCENDING, UserOrderCriteria.LEVEL));
+        Paginated<User> userlist = userDao.findAll(Page.with(1000000, 10), new UserFilterBuilder().build(), new Ordering<>(OrderDirection.DESCENDING, UserOrderCriteria.LEVEL), null);
         Assert.assertEquals(userlist.getTotalPages(), 1);
         Assert.assertEquals(userlist.getList().size(), 0);
     }
@@ -241,28 +266,40 @@ public class UserDaoImplTest {
 
         Object[] params = {UserTestModels.getUser5().getId()};
         List<Long> gameIds = jdbcTemplate.queryForList("Select gameid from favoritegames where userid = ?", params, Long.class);
-        Assert.assertEquals(2, gameIds.size());
+        Assert.assertEquals(1, gameIds.size());
     }
 
     @Rollback
     @Test
     public void testGetFollowers() {
-        Optional<List<User>> followers = userDao.getFollowers(testFollowingUser.getId());
+        Optional<Paginated<User>> followers = userDao.getFollowers(testFollowingUser.getId(), Page.with(1, 100));
         Assert.assertTrue(followers.isPresent());
-        Assert.assertEquals(3, followers.get().size());
+        Assert.assertEquals(3, followers.get().getList().size());
         List<User> expected = Arrays.asList(UserTestModels.getUser2(), UserTestModels.getUser4(), UserTestModels.getUser3());
-        Assert.assertEquals(new HashSet<>(expected), new HashSet<>(followers.get()));
+        Assert.assertEquals(new HashSet<>(expected), new HashSet<>(followers.get().getList()));
     }
 
 
     @Rollback
     @Test
     public void testGetFollowing() {
-        Optional<List<User>> following = userDao.getFollowing(testFollowingUser.getId());
+        Optional<Paginated<User>> following = userDao.getFollowing(testFollowingUser.getId(), Page.with(1, 20));
         Assert.assertTrue(following.isPresent());
-        Assert.assertEquals(1, following.get().size());
+        Assert.assertEquals(1, following.get().getList().size());
         User[] expectedUsers = {UserTestModels.getUser3()};
-        Assert.assertArrayEquals(expectedUsers, following.get().toArray());
+        Assert.assertArrayEquals(expectedUsers, following.get().getList().toArray());
+    }
+
+    @Rollback
+    @Test
+    public void testGetUsersWithFollowing() {
+        Paginated<User> allUsers = userDao.findAll(Page.with(1, 20), new UserFilterBuilder().build(), new Ordering<>(OrderDirection.DESCENDING, UserOrderCriteria.LEVEL), testFollowingUser.getId());
+
+        User[] expectedUser = {UserTestModels.getUser5(), UserTestModels.getUser1(), UserTestModels.getUser2(), UserTestModels.getUser3(), UserTestModels.getUser4()};
+        Boolean[] isFollowing = {false, false, false, true, false};
+        Assert.assertEquals(expectedUser.length, allUsers.getList().size());
+        Assert.assertArrayEquals(expectedUser, allUsers.getList().toArray());
+        Assert.assertArrayEquals(isFollowing, allUsers.getList().stream().map(User::isFollowing).toArray());
     }
 
     @Rollback
@@ -309,8 +346,7 @@ public class UserDaoImplTest {
     public void testDeleteNonexistentFollow() {
         User supposedFollowing = UserTestModels.getUser3();
         Optional<User> user = userDao.deleteFollow(testNonFollowingUser.getId(), supposedFollowing.getId());
-        Assert.assertTrue(user.isPresent());
-        Assert.assertFalse(user.get().getFollowing().contains(supposedFollowing));
+        Assert.assertFalse(user.isPresent());
     }
 
     @Rollback
@@ -370,5 +406,21 @@ public class UserDaoImplTest {
         userDao.disableNotification(disabledNotifUser.getId(), NotificationType.MY_REVIEW_IS_DELETED.getTypeName());
         em.flush();
         Assert.assertEquals(1, JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, "user_disabled_notifications", String.format("userid ='%s' and notification = '%s'", disabledNotifUser.getId(), NotificationType.MY_REVIEW_IS_DELETED.getTypeName())));
+    }
+
+    @Rollback
+    @Test
+    public void testAddFavoriteGame() {
+        userDao.addFavoriteGame(testUser.getId(), GameTestModels.getSuperGameA().getId());
+        em.flush();
+        Assert.assertEquals(1, JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, "favoritegames", String.format("userid ='%s' and gameid = '%s'", testUser.getId(), GameTestModels.getSuperGameA().getId())));
+    }
+
+    @Rollback
+    @Test
+    public void testAddRepeatedFavoriteGame() {
+        userDao.addFavoriteGame(testUserWithFavoriteGame.getId(), 1);
+        em.flush();
+        Assert.assertEquals(testUserWithFavoriteGame.getFavoriteGames().size(), JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, "favoritegames", String.format("userid ='%s'", testUserWithFavoriteGame.getId())));
     }
 }

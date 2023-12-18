@@ -1,0 +1,14 @@
+<mat-expansion-panel>
+  <mat-expansion-panel-header class="header">
+    <mat-panel-title class="title">
+      <mat-icon class="icon">gavel</mat-icon>
+      <span>
+        {{ 'guidelines.title' | translate }}
+      </span>
+    </mat-panel-title>
+  </mat-expansion-panel-header>
+  <ng-container *ngFor="let guideline of guidelines; let i = index">
+    <span>{{ i + 1 }}. {{ guideline | translate }}</span>
+    <br /><br />
+  </ng-container>
+</mat-expansion-panel>

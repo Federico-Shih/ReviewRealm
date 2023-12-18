@@ -1,0 +1,123 @@
+.all-container {
+  width: 80%;
+  margin: 0 auto;
+}
+
+.search-section {
+  width: 90%;
+  margin: 1em auto;
+
+  .tabs-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+    background-color: var(--color-surface);
+    .label {
+      font-size: 14px;
+      margin: auto 8px;
+    }
+  }
+
+  .tab-group {
+    border: 0 !important;
+
+    .mat-button-toggle {
+      background-color: var(--color-surface) !important;
+      font-weight: 600;
+      color: #aaaaaa !important;
+      border: 0px !important;
+    }
+
+    .mat-button-toggle-checked {
+      background-color: #2b2a3d !important;
+      color: white !important;
+    }
+
+    .tab-icon {
+      margin-right: 10px;
+    }
+  }
+}
+
+.recommendations-section {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  width: 100%;
+
+  .panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  @media only screen and (min-width: 992px) {
+    .panel {
+      width: 50%;
+    }
+  }
+
+  @media only screen and (max-width: 992px) {
+    .panel {
+      width: 100%;
+    }
+  }
+}
+
+.result-list {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  width: 100%;
+}
+
+.panel-no-results {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  a {
+    color: #039be5;
+  }
+}
+
+.no-results {
+  width: 100%;
+  margin: 1em auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2em;
+  .icon {
+    font-size: 48px;
+    height: 48px;
+    width: 48px;
+  }
+}
+
+.profile-card-container {
+  margin: 0.5em auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+@media only screen and (min-width: 992px) {
+  .profile-card-container {
+    width: 40%;
+  }
+}
+
+@media only screen and (max-width: 992px) {
+  .profile-card-container {
+    width: 100%;
+  }
+}
+
+.paginator {
+  background-color: var(--color-background);
+}

@@ -1,8 +1,10 @@
 package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.dtos.Page;
+import ar.edu.itba.paw.dtos.PaginationTotals;
 import ar.edu.itba.paw.dtos.filtering.ReportFilter;
 import ar.edu.itba.paw.enums.ReportReason;
+import ar.edu.itba.paw.enums.ReportState;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.persistence.helpers.QueryBuilder;
 import ar.edu.itba.paw.persistenceinterfaces.PaginationDao;
@@ -31,7 +33,7 @@ public class ReportHibernateDao implements ReportDao, PaginationDao<ReportFilter
     public Report create(long reporterId, long reviewId, ReportReason reason) {
         Review reportedReview = em.find(Review.class, reviewId);
         User reporter = em.find(User.class, reporterId);
-        if(reportedReview == null || reporter == null|| reason == null) {
+        if(reportedReview == null || reportedReview.getDeleted() || reporter == null || reason == null) {
             return null;
         }
         Report report = new Report(reporter, reportedReview, reason, LocalDateTime.now());
@@ -41,15 +43,17 @@ public class ReportHibernateDao implements ReportDao, PaginationDao<ReportFilter
 
 
     @Override
-    public Long count(ReportFilter filter) {
+    public long count(ReportFilter filter) {
         final CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
         final CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         final Root<Report> root = criteriaQuery.from(Report.class);
         criteriaQuery.select(criteriaBuilder.count(root));
         addReportFilterQuery(filter, criteriaQuery, criteriaBuilder, root);
         final TypedQuery<Long> query = em.createQuery(criteriaQuery);
-        return query.getSingleResult();
+        Long result = query.getSingleResult();
+        return result == null? 0: result;
     }
+
     private <T> void addReportFilterQuery(ReportFilter filter, CriteriaQuery<T> criteriaQuery, CriteriaBuilder criteriaBuilder, Root<Report> root) {
         if(filter.getReporterId() != null) {
             criteriaQuery.where(criteriaBuilder.equal(root.get("reporter"), filter.getReporterId()));
@@ -63,8 +67,8 @@ public class ReportHibernateDao implements ReportDao, PaginationDao<ReportFilter
         if(filter.getReportedUserId() != null) {
             criteriaQuery.where(criteriaBuilder.equal(root.get("reportedUser"), filter.getReportedUserId()));
         }
-        if(filter.getResolved() != null) {
-            criteriaQuery.where(criteriaBuilder.equal(root.get("resolved"), filter.getResolved()));
+        if(filter.getState() != null) {
+            criteriaQuery.where(criteriaBuilder.equal(root.get("state"), filter.getState()));
         }
         if(filter.getModeratorId() != null) {
             criteriaQuery.where(criteriaBuilder.equal(root.get("moderator"), filter.getModeratorId()));
@@ -75,41 +79,35 @@ public class ReportHibernateDao implements ReportDao, PaginationDao<ReportFilter
                 .withExact("reporterid", filter.getReporterId())
                 .withExact("reviewid", filter.getReviewId())
                 .withExact("reporteduserid",filter.getReportedUserId())
-                .withExact("resolved", filter.getResolved())
+                .withExact("state", (filter.getState() != null)? filter.getState().toString():null)
                 .withExact("moderatorid", filter.getModeratorId())
                 .withSimilar("reason", (filter.getReason() != null )? filter.getReason().toString():null);
-        if(filter.getClosed() != null) {
-            if(filter.getClosed()) {
-                queryBuilder.isNull("reviewid");
-            } else {
-                queryBuilder.NOT().isNull("reviewid");
-            }
-        }
+
         return queryBuilder;
 
     }
     @Override
     public Paginated<Report> findAll(Page page, ReportFilter filter) {
-        int pages = getPageCount(filter, page.getPageSize());
-        if(page.getPageNumber() > pages) {
-            return new Paginated<>(page.getPageNumber(), page.getPageSize(), pages, Collections.emptyList());
+        PaginationTotals totals = getPaginationTotals(filter, page.getPageSize());
+        if(page.getPageNumber() > totals.getTotalPages()) {
+            return new Paginated<>(page.getPageNumber(), page.getPageSize(), totals.getTotalPages(), totals.getTotalElements(), Collections.emptyList());
         }
         QueryBuilder queryBuilder = getQueryBuilderFromFilter(filter);
         Query nativeQuery = em.createNativeQuery("SELECT id from reports " + queryBuilder.toQuery());
         prepareParametersForNativeQuery(queryBuilder, nativeQuery);
-        nativeQuery.setFirstResult(page.getOffset().intValue());
+        nativeQuery.setFirstResult(page.getOffset());
         nativeQuery.setMaxResults(page.getPageSize());
 
         @SuppressWarnings("unchecked")
-        List<Long> ids = (List<Long>) (List<Long>) nativeQuery.getResultList().stream().map(n -> ((Number) n).longValue()).collect(Collectors.toList());
+        List<Long> ids = (List<Long>) nativeQuery.getResultList().stream().map(n -> ((Number) n).longValue()).collect(Collectors.toList());
 
         if(ids.isEmpty()) {
-            return new Paginated<>(page.getPageNumber(), page.getPageSize(), pages, Collections.emptyList());
+            return new Paginated<>(page.getPageNumber(), page.getPageSize(), totals.getTotalPages(), totals.getTotalElements(), Collections.emptyList());
         }
         final TypedQuery<Report> query = em.createQuery("from Report where id in :ids ORDER BY submissionDate ASC ", Report.class);
         query.setParameter("ids", ids);
 
-        return new Paginated<>(page.getPageNumber(), page.getPageSize(), pages, query.getResultList());
+        return new Paginated<>(page.getPageNumber(), page.getPageSize(), totals.getTotalPages(), totals.getTotalElements(), query.getResultList());
     }
 
 
@@ -119,6 +117,15 @@ public class ReportHibernateDao implements ReportDao, PaginationDao<ReportFilter
         if(report == null) { return false;}
         em.remove(report);
         return true;
+    }
+
+    @Override
+    public long deleteReportsFromReview(long reviewId) {
+        Review review = em.find(Review.class, reviewId);
+        if(review == null) return 0;
+        final Query query = em.createQuery("update Report set state = 'DELETED_REVIEW' where reportedReview = :review");
+        query.setParameter("review", review);
+        return query.executeUpdate();
     }
     @Override
     public Optional<Report> get(long id) {
@@ -134,10 +141,7 @@ public class ReportHibernateDao implements ReportDao, PaginationDao<ReportFilter
         }
         report.setModerator(moderator);
         report.setResolvedDate(LocalDateTime.now());
-        if(resolved) {
-            report.setReportedReview(null);
-        }
-        report.setResolved(true);
+        report.setState(resolved? ReportState.ACCEPTED: ReportState.REJECTED);
         return report;
     }
 

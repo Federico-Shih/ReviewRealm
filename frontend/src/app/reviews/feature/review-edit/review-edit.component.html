@@ -1,0 +1,18 @@
+<div *ngIf="review$ | async as review">
+  <div class="all-container">
+    <div class="review-section">
+      <app-review-form
+        [reviewFormType]="ReviewFormType.Edit"
+        [loading]="loading$ | async"
+        [game]="review.game"
+        [editReview]="review"
+        (reviewFormEvent)="editReview($event)"></app-review-form>
+    </div>
+    <ng-container *ngIf="review.game">
+      <div class="game-section">
+        <app-game-card [game]="review.game" [small]="true"></app-game-card>
+        <app-community-guidelines></app-community-guidelines>
+      </div>
+    </ng-container>
+  </div>
+</div>

@@ -1,0 +1,181 @@
+<div class="all-container">
+  <div class="search-section">
+    <div>
+      <app-search-bar
+        (search)="setSearch($event)"
+        (searchSubmit)="submitSearch()"
+        [label]="'community.search' | translate"
+        [value]="search.value!">
+
+      </app-search-bar>
+    </div>
+    <div class="tabs-container">
+      <mat-button-toggle-group
+        [formControl]="orderBy"
+        class="tab-group sort-tab">
+        <span class="label">{{ 'filter-drawer.order-by' | translate }}</span>
+        <mat-button-toggle class="tab" [value]="UserSortCriteria.LEVEL">
+          <mat-icon class="tab-icon">sports_esports</mat-icon>
+          {{ 'user.level' | translate | titlecase }}
+        </mat-button-toggle>
+        <mat-button-toggle class="tab" [value]="UserSortCriteria.FOLLOWERS">
+          <mat-icon class="tab-icon">people</mat-icon>
+          {{ 'user.followers' | translate | titlecase }}
+        </mat-button-toggle>
+        <mat-button-toggle class="tab" [value]="UserSortCriteria.REPUTATION">
+          <mat-icon class="tab-icon">thumbs_up_down</mat-icon>
+          {{ 'user.reputation' | translate | titlecase }}
+        </mat-button-toggle>
+      </mat-button-toggle-group>
+      <mat-button-toggle-group
+        [formControl]="orderDirection"
+        class="tab-group direction-tab">
+        <mat-button-toggle class="tab" [value]="SortDirection.DESC">
+          <mat-icon class="tab-icon">arrow_downward</mat-icon>
+        </mat-button-toggle>
+        <mat-button-toggle class="tab" [value]="SortDirection.ASC">
+          <mat-icon class="tab-icon">arrow_upward</mat-icon>
+        </mat-button-toggle>
+      </mat-button-toggle-group>
+    </div>
+  </div>
+  <ng-container *ngIf="currentUser$ | async as currentUser">
+    <ng-container *ngIf="currentUser !== null && search.value?.length === 0">
+      <div class="recommendations-section">
+        <div class="panel">
+          <h3 class="title">{{ 'community.same-preferences' | translate }}</h3>
+          <ng-container
+            *ngIf="currentUser.preferences.length === 0; else hasPreferences">
+            <div class="panel-no-results">
+              <span>{{ 'community.no-preferences' | translate }}</span>
+              <br />
+              <a routerLink="/settings/genres">{{
+                'community.set-preferences' | translate
+              }}</a>
+            </div>
+          </ng-container>
+          <ng-template #hasPreferences>
+            <ng-container
+              *ngIf="
+                (loadingSamePreferencesUsers$ | async) === false &&
+                  (samePreferencesUsers$ | async) as users;
+                else loading2
+              ">
+              <div
+                [class]="
+                  (loadingSamePreferencesUsers$ | async) ? 'hidden' : ''
+                ">
+                <ng-container *ngFor="let user of users.content">
+                  <div class="profile-card-container">
+                    <app-profile-card [user]="user" />
+                  </div>
+                </ng-container>
+                <ng-container *ngIf="users.content.length === 0">
+                  <div class="panel-no-results">
+                    <span>{{
+                      'community.no-recommendations' | translate
+                    }}</span>
+                  </div>
+                </ng-container>
+              </div>
+              <div
+                [class]="
+                  (loadingSamePreferencesUsers$ | async) === false
+                    ? 'hidden'
+                    : ''
+                ">
+                <app-loading-spinner />
+              </div>
+            </ng-container>
+            <ng-template #loading2>
+              <app-loading-spinner />
+            </ng-template>
+          </ng-template>
+        </div>
+        <div class="panel">
+          <h3 class="title">{{ 'community.same-games' | translate }}</h3>
+          <ng-container
+            *ngIf="(noGamesPlayed$ | async) === true; else hasGamesPlayed">
+            <div class="panel-no-results">
+              <span>{{ 'community.no-gamesplayed' | translate }}</span>
+              <br />
+              <a routerLink="/reviews/submit/search">{{
+                'community.review-game' | translate
+              }}</a>
+            </div>
+          </ng-container>
+          <ng-template #hasGamesPlayed>
+            <ng-container
+              *ngIf="sameGamesUsers$ | async as users; else loading2">
+              <div [class]="(loadingSameGamesUsers$ | async) ? 'hidden' : ''">
+                <ng-container *ngFor="let user of users.content">
+                  <div class="profile-card-container">
+                    <app-profile-card [user]="user" />
+                  </div>
+                </ng-container>
+                <ng-container *ngIf="users.content.length === 0">
+                  <div class="panel-no-results">
+                    <span>{{
+                      'community.no-recommendations' | translate
+                    }}</span>
+                  </div>
+                </ng-container>
+              </div>
+              <div
+                [class]="
+                  (loadingSameGamesUsers$ | async) === false ? 'hidden' : ''
+                ">
+                <app-loading-spinner />
+              </div>
+            </ng-container>
+            <ng-template #loading2>
+              <app-loading-spinner />
+            </ng-template>
+          </ng-template>
+        </div>
+      </div>
+      <br />
+      <mat-divider></mat-divider>
+      <h3 class="title">{{ 'community.other-users' | translate }}</h3>
+    </ng-container>
+  </ng-container>
+  <div class="results-section">
+    <ng-container *ngIf="users$ | async as users; else loading">
+      <div
+        class="result-list"
+        [class]="(loadingResults$ | async) ? 'hidden' : ''">
+        <ng-container *ngFor="let user of users.content">
+          <div class="profile-card-container">
+            <app-profile-card [user]="user" />
+          </div>
+        </ng-container>
+        <ng-container *ngIf="users.content.length % 2 !== 0">
+          <div class="profile-card-container"></div>
+        </ng-container>
+        <ng-container *ngIf="users.content.length === 0">
+          <div class="no-results">
+            <mat-icon class="icon">sentiment_dissatisfied</mat-icon>
+            <span>{{ 'community.no-results' | translate }}</span>
+          </div>
+        </ng-container>
+      </div>
+      <div [class]="(loadingResults$ | async) === false ? 'hidden' : ''">
+        <app-loading-spinner />
+      </div>
+      <div *ngIf="combinedPagination$ | async as combined">
+        <mat-paginator
+          #paginator
+          (page)="handlePageEvent($event)"
+          *ngIf="combined[1].totalPages !== 0"
+          [length]="combined[1].totalElements"
+          [pageIndex]="(combined[0].page || 1) - 1"
+          [pageSize]="combined[0].pageSize || 6"
+          class="paginator">
+        </mat-paginator>
+      </div>
+    </ng-container>
+    <ng-template #loading>
+      <app-loading-spinner />
+    </ng-template>
+  </div>
+</div>

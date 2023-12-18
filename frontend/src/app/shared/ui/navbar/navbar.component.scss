@@ -1,0 +1,94 @@
+.navbar {
+  display: flex;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 70px;
+  width: 100vw;
+  z-index: 1000;
+}
+
+.icon {
+  height: 85%;
+}
+
+.navbar-icon-container {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+
+.navbar-text {
+  font-size: 40px;
+  text-decoration: none;
+  color: white;
+  text-underline: none;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+a {
+  color: white;
+  text-underline: none;
+  text-decoration: none;
+  cursor: pointer;
+  height: 100%;
+
+  div {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    height: 100%;
+    padding: 0 1vw;
+  }
+}
+
+.menu-button {
+  margin: 10px;
+}
+
+.action-container {
+  display: flex;
+  flex-direction: row;
+  gap: 0.5vw;
+  height: 100%;
+  align-items: center;
+}
+
+.active {
+  background: rgba(0, 0, 0, 0.4);
+  color: white !important;
+}
+
+a div:hover {
+  background: rgba(0, 0, 0, 0.3);
+  color: white !important;
+}
+
+.menu {
+  background-color: var(--color-surface);
+  padding: 0;
+  margin: 0;
+}
+
+@media screen and (max-width: 992px) {
+  .navbar-text {
+    display: none;
+  }
+}
+
+.navbar-search {
+  display: flex;
+  width: 100%;
+  padding: 8px 0;
+  height: 100%;
+  align-items: center;
+  margin-left: 20px;
+}

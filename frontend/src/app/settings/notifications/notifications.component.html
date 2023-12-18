@@ -1,0 +1,27 @@
+<div class="top-container f-column">
+  <span class="titletext" i18n>{{ 'settings.notifications' | translate }}</span>
+  <div class="divider-h"></div>
+  <div class="f-column f-gap-2">
+    <ng-container *ngIf="currentNotificationSettings$ | async as notifcations">
+      <ng-container *ngFor="let notif of notifcations; index as i">
+        <div class="margin-top-bot">
+          <input
+            type="checkbox"
+            class="clickable"
+            [checked]="notif.value.enabled"
+            #myCheckbox
+            (change)="
+              changingCheckbox(notif.notifInfo.id, myCheckbox.checked)
+            " />
+          <span>{{ notif.notifInfo.localized }}</span>
+        </div>
+      </ng-container>
+    </ng-container>
+    <button class="btn margin-top-1 width-fit-content" (click)="onSubmit()">
+      <i class="material-icons white">save</i>
+      <span i18n class="white">{{
+        'settings.notification.save' | translate
+      }}</span>
+    </button>
+  </div>
+</div>

@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.dtos.filtering;
 
 import ar.edu.itba.paw.enums.ReportReason;
+import ar.edu.itba.paw.enums.ReportState;
 
 import java.time.LocalDateTime;
 
@@ -12,17 +13,12 @@ public class ReportFilterBuilder {
 
     private ReportReason reason = null;
 
-    private LocalDateTime from = null;
-
-    private LocalDateTime to = null;
-
     private Long reportedUserId = null;
 
-    private Boolean resolved = null;
+    private ReportState state = null;
 
     private Long moderatorId = null;
 
-    private Boolean closed = null;
 
     public ReportFilterBuilder withReviewId(Long reviewId) {
         this.reviewId = reviewId;
@@ -39,8 +35,8 @@ public class ReportFilterBuilder {
         return this;
     }
 
-    public ReportFilterBuilder withResolved(Boolean resolved) {
-        this.resolved = resolved;
+    public ReportFilterBuilder withState(ReportState state) {
+        this.state = state;
         return this;
     }
     public ReportFilterBuilder withModeratorId(Long moderatorId) {
@@ -51,13 +47,9 @@ public class ReportFilterBuilder {
         this.reportedUserId = reportedUserId;
         return this;
     }
-    public ReportFilterBuilder withClosed(Boolean closed) {
-        this.closed = closed;
-        return this;
-    }
 
 
     public ReportFilter build() {
-        return new ReportFilter(reviewId, reporterId, reason, resolved, moderatorId, reportedUserId,closed);
+        return new ReportFilter(reviewId, reporterId, reason, state, moderatorId, reportedUserId);
     }
 }

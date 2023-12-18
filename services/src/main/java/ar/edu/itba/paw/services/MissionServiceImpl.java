@@ -17,7 +17,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class MissionServiceImpl implements MissionService {
@@ -86,10 +89,34 @@ public class MissionServiceImpl implements MissionService {
         return missionProgress;
     }
 
+    @Transactional
+    @Override
+    public Optional<Mission> getMissionById(String missionName) {
+        for (Mission mission : Mission.values()) {
+            if (mission.name().equals(missionName)) {
+                return Optional.of(mission);
+            }
+        }
+        return Optional.empty();
+    }
+
+    @Transactional
+    @Override
+    public List<Mission> getMissions(User user) {
+        return Arrays.stream(Mission.values()).filter((mission -> mission.getRoleType() == null || (user != null && user.getRoles().stream().anyMatch((roleType -> roleType.equals(mission.getRoleType())))))).collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<MissionProgress> getMissionProgresses(long userId) {
+        return this.userDao.findById(userId).orElseThrow(UserNotFoundException::new).getMissions();
+    }
+
     @Scheduled(cron = "0 0 0 * * 0")
     @Transactional
     public void resetMissionsWeekly() {
         List<MissionProgress> missionProgresses = missionDao.findAll();
+        LOGGER.info("Resetting weekly missions");
         for (MissionProgress missionProgress : missionProgresses) {
             if (missionProgress.getMission().getFrequency() == Mission.MissionFrequency.WEEKLY && missionProgress.getMission().isRepeatable()) {
                 missionDao.resetProgress(missionProgress.getUser(), missionProgress.getMission());
@@ -101,6 +128,7 @@ public class MissionServiceImpl implements MissionService {
     @Transactional
     public void resetMissionsDaily() {
         List<MissionProgress> missionProgresses = missionDao.findAll();
+        LOGGER.info("Resetting daily missions");
         for (MissionProgress missionProgress : missionProgresses) {
             if (missionProgress.getMission().getFrequency() == Mission.MissionFrequency.DAILY && missionProgress.getMission().isRepeatable()) {
                 missionDao.resetProgress(missionProgress.getUser(), missionProgress.getMission());
@@ -112,6 +140,7 @@ public class MissionServiceImpl implements MissionService {
     @Transactional
     public void resetMissionsMonthly() {
         List<MissionProgress> missionProgresses = missionDao.findAll();
+        LOGGER.info("Resetting monthly missions");
         for (MissionProgress missionProgress : missionProgresses) {
             if (missionProgress.getMission().getFrequency() == Mission.MissionFrequency.MONTHLY && missionProgress.getMission().isRepeatable()) {
                 missionDao.resetProgress(missionProgress.getUser(), missionProgress.getMission());

@@ -1,0 +1,41 @@
+.card-container {
+  width: 100%;
+  min-width: 500px;
+  background-color: var(--color-surface);
+}
+
+.card-header {
+  color: white;
+  font-size: 2rem;
+}
+
+.input-container {
+  padding-top: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+.text-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.submit-btn {
+  font-size: 1.2rem;
+  margin-top: 5px;
+
+  padding: 10px 0 !important;
+  height: 50px;
+}
+
+.btn-label {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+}
+
+.router-link {
+  color: var(--color-link);
+}

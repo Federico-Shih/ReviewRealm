@@ -1,37 +1,44 @@
 package ar.edu.itba.paw.webapp.controller;
 
-import ar.edu.itba.paw.dtos.Page;
-import ar.edu.itba.paw.dtos.filtering.ReportFilter;
-import ar.edu.itba.paw.dtos.filtering.ReportFilterBuilder;
 import ar.edu.itba.paw.enums.ReportReason;
+import ar.edu.itba.paw.exceptions.ReportAlreadyExistsException;
+import ar.edu.itba.paw.exceptions.ReportAlreadyResolvedException;
+import ar.edu.itba.paw.exceptions.ReviewNotFoundException;
 import ar.edu.itba.paw.models.Paginated;
-import ar.edu.itba.paw.models.Pair;
 import ar.edu.itba.paw.models.Report;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.servicesinterfaces.ReportService;
 import ar.edu.itba.paw.servicesinterfaces.UserService;
 import ar.edu.itba.paw.webapp.auth.AuthenticationHelper;
-import ar.edu.itba.paw.webapp.controller.helpers.PaginationHelper;
-import ar.edu.itba.paw.webapp.controller.helpers.QueryHelper;
-
+import ar.edu.itba.paw.webapp.controller.forms.AcceptRejectReportForm;
+import ar.edu.itba.paw.webapp.controller.forms.SubmitReportForm;
+import ar.edu.itba.paw.webapp.controller.mediatypes.VndType;
+import ar.edu.itba.paw.webapp.controller.querycontainers.ReportSearchQuery;
+import ar.edu.itba.paw.webapp.controller.responses.PaginatedResponseHelper;
+import ar.edu.itba.paw.webapp.controller.responses.ReportResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 import java.util.List;
-@Controller
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+@Path("reports")
+@Component
 public class ReportController {
 
     private final ReportService reportService;
 
     private final UserService userService;
-    private static final int PAGE_SIZE = 8;
-    private static final int INITIAL_PAGE = 1;
+
+    @Context
+    private UriInfo uriInfo;
 
 
     @Autowired
@@ -39,54 +46,59 @@ public class ReportController {
         this.reportService = reportService;
         this.userService = userService;
     }
-    @RequestMapping(value = "/report/review/{id:\\d+}", method = RequestMethod.POST)
-    ModelAndView reviewReportSubmit(@PathVariable(value = "id") Long reviewId,
-                                    @RequestParam(value = "reason") String reason) {
-        User loggedUser = AuthenticationHelper.getLoggedUser(userService);
-        ReportReason rs;
-        try {
-            rs = ReportReason.valueOf(reason);
-        } catch (IllegalArgumentException e) {
-            return new ModelAndView("redirect:/review/" + reviewId);
+
+    @GET
+    @Path("{id:\\d+}")
+    @Produces(VndType.APPLICATION_REPORT)
+    public Response getById(@PathParam("id") final long id) {
+        final Optional<Report> report = reportService.getReportById(id);
+        if(!report.isPresent()) {
+            return Response.status(Response.Status.NOT_FOUND).build();
         }
-        reportService.createReport(loggedUser.getId(), reviewId, rs);
-
-        return new ModelAndView("redirect:/review/" + reviewId + "?reported=true");
+        return Response.ok(ReportResponse.fromEntity(uriInfo, report.get())).build();
     }
 
-    @RequestMapping(value = "/report/reviews", method = RequestMethod.GET)
-    ModelAndView viewReports(@RequestParam(value = "page", defaultValue = "1") Integer page,
-                             @RequestParam(value = "pagesize", defaultValue = "8") Integer pageSize) {
-        ModelAndView mav = new ModelAndView("/reports/reports-view");
-        ReportFilter filter = new ReportFilterBuilder().withResolved(false).withClosed(false).build();
-        if(pageSize == null || pageSize < 1) {
-            pageSize = PAGE_SIZE;
+    @GET
+    @Produces(VndType.APPLICATION_REPORT_LIST)
+    public Response getReports(@Valid @BeanParam ReportSearchQuery reportSearchQuery) {
+        final Paginated<Report> reports = reportService.getReports(reportSearchQuery.getPage(), reportSearchQuery.getFilter());
+        if (reports.getTotalPages() == 0 || reports.getList().isEmpty()) {
+            return Response.noContent().build();
         }
-        if(page<=0)
-            page = INITIAL_PAGE;
-        List<Pair<String, Object>> queriesToKeepAtPageChange = new ArrayList<>();
-        queriesToKeepAtPageChange.add(new Pair<>("pagesize", pageSize));
-        mav.addObject("queriesToKeepAtPageChange", QueryHelper.toQueryString(queriesToKeepAtPageChange));
-
-        Paginated<Report> reports = reportService.getReports(Page.with(page, pageSize),filter);
-        PaginationHelper.paginate(mav, reports);
-        mav.addObject("reports", reports.getList());
-        mav.addObject("pageSize", pageSize);
-        return mav;
+        List<ReportResponse> reportResponseList = reports.getList().stream().map(report -> ReportResponse.fromEntity(uriInfo,report)).collect(Collectors.toList());
+        return PaginatedResponseHelper.fromPaginated(uriInfo, reportResponseList, reports).build();
     }
 
-    @RequestMapping(value = "/report/reviews/{id:\\d+}/resolve", method = RequestMethod.POST)
-    ModelAndView resolveReport(@PathVariable(value = "id") Long reportId, @RequestParam(value = "page") Integer page,
-                               @RequestParam(value = "pagesize") Integer pageSize) {
-        reportService.resolveReport(reportId,AuthenticationHelper.getLoggedUser(userService).getId());
-        return new ModelAndView("redirect:/report/reviews" + "?page="+page+"&pagesize="+pageSize);
+    @POST
+    @Consumes(VndType.APPLICATION_REPORT_FORM)
+    @Produces(VndType.APPLICATION_REPORT)
+    public Response submitReport(@Valid @NotNull(message = "error.body.empty") SubmitReportForm reportForm) throws ReportAlreadyExistsException {
+        long reporterId = AuthenticationHelper.getLoggedUser(userService).getId();
+        ReportReason rs = ReportReason.valueOf(reportForm.getReason().toUpperCase());
+        final Report report;
+        User loggedIn = AuthenticationHelper.getLoggedUser(userService);
+        report = reportService.createReport(reporterId, reportForm.getReviewId(), rs);
+        return Response
+                .created(uriInfo.getAbsolutePathBuilder().path("/reports").path(report.getId().toString()).build())
+                .entity(ReportResponse.ReportResponseBuilder
+                        .fromReport(report, uriInfo)
+                        .withAuthed(loggedIn)
+                        .build())
+                .build();
     }
 
-    @RequestMapping(value = "/report/reviews/{id:\\d+}/reject", method = RequestMethod.POST)
-    ModelAndView rejectReport(@PathVariable(value = "id") Long reportId,  @RequestParam(value = "page") Integer page,
-                              @RequestParam(value = "pagesize") Integer pageSize) {
-        reportService.rejectReport(reportId,AuthenticationHelper.getLoggedUser(userService).getId());
-        return new ModelAndView("redirect:/report/reviews" + "?page="+page+"&pagesize="+pageSize);
+    @PATCH
+    @Path("{id:\\d+}")
+    @Consumes(VndType.APPLICATION_REPORT_HANDLE_FORM)
+    @Produces(VndType.APPLICATION_REPORT)
+    public Response acceptRejectReport(@PathParam("id") final long id, @Valid @NotNull(message = "error.body.empty") AcceptRejectReportForm reportForm) throws ReportAlreadyResolvedException {
+        long userId = AuthenticationHelper.getLoggedUser(userService).getId();
+        Report report;
+        if (reportForm.getState().equals("accepted")) {
+            report = reportService.resolveReport(id, userId);
+        } else {
+            report = reportService.rejectReport(id, userId);
+        }
+        return Response.ok(ReportResponse.fromEntity(uriInfo, report)).build();
     }
-
 }

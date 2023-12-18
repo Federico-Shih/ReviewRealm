@@ -1,0 +1,54 @@
+<div class="container">
+  <div class="main-fav">
+    <h2 class="center">{{ 'fav-games.title' | translate }}</h2>
+    <ng-container *ngIf="favGames$ | async as favGames">
+      <div
+        (scrollend)="loadNextPage(favGames.links.next)"
+        class="favorite-game-container">
+        <ng-container *ngFor="let game of favGames.content">
+          <div
+            tabindex="0"
+            (keydown.enter)="deleteFavoriteGame(game)"
+            (click)="deleteFavoriteGame(game)"
+            class="game-card-container favorite-container">
+            <div class="cover"></div>
+            <mat-icon class="delete-icon"> delete </mat-icon>
+            <app-game-card [game]="game" [tiny]="true" class="game-card">
+            </app-game-card>
+          </div>
+        </ng-container>
+        <ng-container *ngIf="favGames.content.length === 0">
+          <p class="center">{{ 'fav-games.no-favorites-label' | translate }}</p>
+        </ng-container>
+      </div>
+    </ng-container>
+  </div>
+
+  <div class="search-results">
+    <h3 [style.text-align]="'center'">
+      {{ 'fav-games.selection-label' | translate }}
+    </h3>
+    <app-search-bar
+      (search)="search$.next($event)"
+      [label]="'navbar.search' | translate">
+    </app-search-bar>
+    <div *ngIf="searchedGames$ | async as results" class="search-container">
+      <ng-container *ngFor="let game of results.content">
+        <div
+          tabindex="0"
+          (keydown.enter)="addFavoriteGame(game)"
+          (click)="addFavoriteGame(game)"
+          *ngIf="!game.isFavourite"
+          class="game-card-container">
+          <div class="cover"></div>
+          <mat-icon class="add-icon">add</mat-icon>
+          <app-game-card [game]="game" [tiny]="true" class="game-card">
+          </app-game-card>
+        </div>
+      </ng-container>
+    </div>
+    <ng-container *ngIf="loadingSearch$ | async">
+      <app-loading-spinner></app-loading-spinner>
+    </ng-container>
+  </div>
+</div>

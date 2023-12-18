@@ -20,5 +20,7 @@ public interface ReportDao {
 
     Report updateStatus(long id, long moderatorId, boolean resolved);
 
+    long deleteReportsFromReview(long reviewId);
+
 
 }

@@ -4,70 +4,213 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee
 http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
-  <display-name>PAW </display-name>
+  <display-name>PAW</display-name>
 
-  <servlet>
-    <servlet-name>dispatcher</servlet-name>
-    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
-    <init-param>
-      <param-name>contextClass</param-name>
-      <param-value>org.springframework.web.context.support.AnnotationConfigWebApplicationContext</param-value>
-    </init-param>
-    <init-param>
-      <param-name>throwExceptionIfNoHandlerFound</param-name>
-      <param-value>true</param-value>
-    </init-param>
-    <load-on-startup>1</load-on-startup>
-  </servlet>
-  <context-param>
-    <param-name>contextClass</param-name>
-    <param-value>org.springframework.web.context.support.AnnotationConfigWebApplicationContext</param-value>
-  </context-param>
-  <context-param>
-    <param-name>contextConfigLocation</param-name>
-    <param-value>
-      ar.edu.itba.paw.webapp.config.WebConfig,
-      ar.edu.itba.paw.webapp.config.WebAuthConfig,
-      ar.edu.itba.paw.webapp.config.MailConfig,
-    </param-value>
-  </context-param>
-  <listener>
-    <listener-class>
-      org.springframework.web.context.ContextLoaderListener
-    </listener-class>
-  </listener>
+<!--  <servlet>-->
+<!--    <servlet-name>dispatcher</servlet-name>-->
+<!--    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>-->
+<!--    <init-param>-->
+<!--      <param-name>contextClass</param-name>-->
+<!--      <param-value>org.springframework.web.context.support.AnnotationConfigWebApplicationContext</param-value>-->
+<!--    </init-param>-->
+<!--    <init-param>-->
+<!--      <param-name>throwExceptionIfNoHandlerFound</param-name>-->
+<!--      <param-value>true</param-value>-->
+<!--    </init-param>-->
+<!--    <load-on-startup>1</load-on-startup>-->
+<!--  </servlet>-->
+<!--    <servlet-mapping>-->
+<!--        <servlet-name>dispatcher</servlet-name>-->
+<!--        <url-pattern>/</url-pattern>-->
+<!--    </servlet-mapping>-->
+    <context-param>
+        <param-name>contextClass</param-name>
+        <param-value>org.springframework.web.context.support.AnnotationConfigWebApplicationContext</param-value>
+    </context-param>
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>
+          ar.edu.itba.paw.webapp.config.WebConfig,
+          ar.edu.itba.paw.webapp.config.WebAuthConfig,
+          ar.edu.itba.paw.webapp.config.MailConfig,
+        </param-value>
+    </context-param>
+    <listener>
+        <listener-class>
+            org.springframework.web.context.ContextLoaderListener
+        </listener-class>
+    </listener>
     <listener>
         <listener-class>
             org.springframework.web.context.request.RequestContextListener
         </listener-class>
     </listener>
-    <servlet-mapping>
-        <servlet-name>dispatcher</servlet-name>
-        <url-pattern>/</url-pattern>
-    </servlet-mapping>
+
+<!--    <filter>-->
+<!--        <filter-name>jersey</filter-name>-->
+<!--        <filter-class>org.glassfish.jersey.servlet.ServletContainer</filter-class>-->
+<!--        <init-param>-->
+<!--            <param-name>jersey.config.server.provider.packages</param-name>-->
+<!--            <param-value>ar.edu.itba.paw.webapp.controller, ar.edu.itba.paw.webapp.mappers, com.fasterxml.jackson.jaxrs.json</param-value>-->
+<!--        </init-param>-->
+<!--        <init-param>-->
+<!--            <param-name>jersey.config.beanValidation.enableOutputValidationErrorEntity.server</param-name>-->
+<!--            <param-value>true</param-value>-->
+    <!--        </init-param>-->
+    <!--        <init-param>-->
+    <!--            <param-name>jersey.config.servlet.filter.forwardOn404</param-name>-->
+    <!--            <param-value>true</param-value>-->
+    <!--        </init-param>-->
+    <!--    </filter>-->
+    <!--    <filter-mapping>-->
+    <!--        <filter-name>jersey</filter-name>-->
+    <!--        <url-pattern>/*</url-pattern>-->
+    <!--    </filter-mapping>-->
+    <filter-mapping>
+        <filter-name>openEntityManagerInViewFilter</filter-name>
+        <url-pattern>/api/*</url-pattern>
+    </filter-mapping>
     <filter>
         <filter-name>springSecurityFilterChain</filter-name>
         <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
     </filter>
-    <filter>
-        <filter-name>openEntityManagerInView</filter-name>
-        <filter-class>org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter</filter-class>
-    </filter>
-    <filter-mapping>
-        <filter-name>openEntityManagerInView</filter-name>
-        <url-pattern>/*</url-pattern>
-    </filter-mapping>
     <filter-mapping>
         <filter-name>springSecurityFilterChain</filter-name>
-        <url-pattern>/*</url-pattern>
+        <url-pattern>/api/*</url-pattern>
     </filter-mapping>
-    <error-page>
-        <error-code>400</error-code>
-        <location>/errors/404</location>
-    </error-page>
-    <error-page>
-        <error-code>405</error-code>
-    <location>/errors/404</location>
-  </error-page>
+    <filter>
+        <filter-name>openEntityManagerInViewFilter</filter-name>
+        <filter-class>org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter</filter-class>
+    </filter>
+    <filter>
+        <filter-name>encoding-filter</filter-name>
+        <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+        <init-param>
+            <param-name>encoding</param-name>
+            <param-value>UTF-8</param-value>
+        </init-param>
+        <init-param>
+            <param-name>forceEncoding</param-name>
+            <param-value>FALSE</param-value>
+        </init-param>
+    </filter>
+    <filter-mapping>
+        <filter-name>encoding-filter</filter-name>
+        <url-pattern>/api/*</url-pattern>
+    </filter-mapping>
+    <servlet>
+        <servlet-name>jersey-servlet</servlet-name>
+        <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
+        <init-param>
+            <param-name>jersey.config.server.provider.packages</param-name>
+            <param-value>ar.edu.itba.paw.webapp.controller, ar.edu.itba.paw.webapp.mappers,
+                com.fasterxml.jackson.jaxrs.json
+            </param-value>
+        </init-param>
+        <init-param>
+            <param-name>jersey.config.servlet.filter.contextPath</param-name>
+            <param-value>/</param-value>
+        </init-param>
+        <init-param>
+            <param-name>jersey.config.beanValidation.enableOutputValidationErrorEntity.server</param-name>
+            <param-value>true</param-value>
+        </init-param>
+        <init-param>
+            <param-name>jersey.config.server.provider.classnames</param-name>
+            <param-value>org.glassfish.jersey.media.multipart.MultiPartFeature</param-value>
+        </init-param>
+        <init-param>
+            <param-name>jersey.config.server.response.setStatusOverSendError</param-name>
+            <param-value>true</param-value>
+        </init-param>
+
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>jersey-servlet</servlet-name>
+        <url-pattern>/api/*</url-pattern>
+    </servlet-mapping>
+
+    <filter>
+        <filter-name>StaticCacheFilter</filter-name>
+        <filter-class>ar.edu.itba.paw.webapp.config.filters.UnconditionalCacheFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>StaticCacheFilter</filter-name>
+        <url-pattern>/static/*</url-pattern>
+    </filter-mapping>
+    <servlet-mapping>
+        <servlet-name>default</servlet-name>
+        <url-pattern>/static/*</url-pattern>
+    </servlet-mapping>
+    <filter-mapping>
+        <filter-name>StaticCacheFilter</filter-name>
+        <url-pattern>/assets/*</url-pattern>
+    </filter-mapping>
+    <servlet-mapping>
+        <servlet-name>default</servlet-name>
+        <url-pattern>/assets/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>index</servlet-name>
+        <jsp-file>/index.html</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>index</servlet-name>
+        <url-pattern>/</url-pattern>
+    </servlet-mapping>
+
+    <!--    <filter>-->
+    <!--        <filter-name>jersey-servlet</filter-name>-->
+    <!--        <filter-class>org.glassfish.jersey.servlet.ServletContainer</filter-class>-->
+    <!--        <init-param>-->
+    <!--            <param-name>jersey.config.server.provider.packages</param-name>-->
+    <!--            <param-value>ar.edu.itba.paw.webapp.controller, ar.edu.itba.paw.webapp.mappers,-->
+    <!--                com.fasterxml.jackson.jaxrs.json-->
+    <!--            </param-value>-->
+    <!--        </init-param>-->
+    <!--        <init-param>-->
+    <!--            <param-name>jersey.config.servlet.filter.contextPath</param-name>-->
+    <!--            <param-value>/</param-value>-->
+    <!--        </init-param>-->
+    <!--        <init-param>-->
+    <!--            <param-name>jersey.config.beanValidation.enableOutputValidationErrorEntity.server</param-name>-->
+    <!--            <param-value>true</param-value>-->
+    <!--        </init-param>-->
+    <!--        <init-param>-->
+    <!--            <param-name>jersey.config.server.provider.classnames</param-name>-->
+    <!--            <param-value>org.glassfish.jersey.media.multipart.MultiPartFeature</param-value>-->
+    <!--        </init-param>-->
+    <!--        <init-param>-->
+    <!--            <param-name>jersey.config.server.response.setStatusOverSendError</param-name>-->
+    <!--            <param-value>true</param-value>-->
+    <!--        </init-param>-->
+    <!--        <init-param>-->
+    <!--            <param-name>jersey.config.servlet.filter.forwardOn404</param-name>-->
+    <!--            <param-value>true</param-value>-->
+    <!--        </init-param>-->
+    <!--    </filter>-->
+    <!--    <filter-mapping>-->
+    <!--        <filter-name>jersey-servlet</filter-name>-->
+    <!--        <url-pattern>/*</url-pattern>-->
+    <!--    </filter-mapping>-->
+    <!--    MIME-->
+    <mime-mapping>
+        <extension>ico</extension>
+        <mime-type>image/x-icon</mime-type>
+    </mime-mapping>
+    <mime-mapping>
+        <extension>png</extension>
+        <mime-type>image/png</mime-type>
+    </mime-mapping>
+    <mime-mapping>
+        <extension>jpeg</extension>
+        <mime-type>image/jpeg</mime-type>
+    </mime-mapping>
+    <mime-mapping>
+        <extension>jpg</extension>
+        <mime-type>image/jpeg</mime-type>
+    </mime-mapping>
 </web-app>
 

@@ -5,14 +5,14 @@ import java.util.Optional;
 public enum Difficulty {
     HARD(0, "difficulty.hard"), MEDIUM(1, "difficulty.medium"), EASY(2, "difficulty.easy");
 
-    private final Integer id;
+    private final int id;
     private final String code;
-    Difficulty(Integer id, String code) {
+    Difficulty(int id, String code) {
         this.id = id;
         this.code = code;
     }
 
-    public Integer getId() {
+    public int getId() {
         return id;
     }
 

@@ -1,0 +1,254 @@
+<div class="form-container card">
+  <div class="header">
+    {{
+      (gameFormType === GameFormType.Suggest
+        ? 'game-suggest.title'
+        : gameFormType === GameFormType.Edit
+          ? 'game-edit.title'
+          : 'game-create.title'
+      ) | translate
+    }}
+  </div>
+  <div class="content">
+    <form (ngSubmit)="createGame()" [formGroup]="gameForm" class="fields">
+      <mat-form-field class="input-field">
+        <mat-label>{{ 'game-form.name' | translate }}</mat-label>
+        <input
+          [placeholder]="'game-form.placeholder.name' | translate"
+          formControlName="name"
+          matInput />
+        <mat-error>
+          <ng-container *ngIf="gameForm.controls['name'].errors?.['required']">
+            {{ 'game-form.name-required' | translate }}</ng-container
+          >
+          <ng-container
+            *ngIf="gameForm.controls['name'].errors?.['minlength'] as error">
+            {{
+              'game-form.name-minlength'
+                | translate: { value: error?.requiredLength }
+            }}</ng-container
+          >
+          <ng-container
+            *ngIf="gameForm.controls['name'].errors?.['maxlength'] as error">
+            {{
+              'game-form.name-maxlength'
+                | translate: { value: error?.requiredLength }
+            }}</ng-container
+          >
+        </mat-error>
+      </mat-form-field>
+      <mat-form-field class="input-field">
+        <mat-label>{{ 'game-form.description' | translate }}</mat-label>
+        <textarea
+          [placeholder]="'game-form.placeholder.description' | translate"
+          formControlName="description"
+          matInput></textarea>
+        <mat-error>
+          <ng-container
+            *ngIf="gameForm.controls['description'].errors?.['required']">
+            {{ 'game-form.description-required' | translate }}</ng-container
+          >
+          <ng-container
+            *ngIf="
+              gameForm.controls['description'].errors?.['minlength'] as error
+            ">
+            {{
+              'game-form.description-minlength'
+                | translate: { value: error?.requiredLength }
+            }}</ng-container
+          >
+          <ng-container
+            *ngIf="
+              gameForm.controls['description'].errors?.['maxlength'] as error
+            ">
+            {{
+              'game-form.description-maxlength'
+                | translate: { value: error?.requiredLength }
+            }}</ng-container
+          >
+        </mat-error>
+      </mat-form-field>
+      <div class="grid">
+        <div class="grid-item">
+          <mat-form-field class="input-field">
+            <!-- developer-->
+            <mat-label>{{ 'game-form.developer' | translate }}</mat-label>
+            <input
+              matInput
+              [placeholder]="'game-form.placeholder.developer' | translate"
+              formControlName="developer"
+              class="full-width" />
+            <mat-error>
+              <ng-container
+                *ngIf="gameForm.controls['developer'].errors?.['required']">
+                {{ 'game-form.developer-required' | translate }}</ng-container
+              >
+              <ng-container
+                *ngIf="
+                  gameForm.controls['developer'].errors?.['minlength'] as error
+                ">
+                {{
+                  'game-form.developer-minlength'
+                    | translate: { value: error?.requiredLength }
+                }}</ng-container
+              >
+              <ng-container
+                *ngIf="
+                  gameForm.controls['developer'].errors?.['maxlength'] as error
+                ">
+                {{
+                  'game-form.developer-maxlength'
+                    | translate: { value: error?.requiredLength }
+                }}</ng-container
+              >
+            </mat-error>
+          </mat-form-field>
+        </div>
+        <div class="grid-item">
+          <mat-form-field class="input-field">
+            <mat-label>{{ 'game-form.publisher' | translate }}</mat-label>
+            <input
+              matInput
+              [placeholder]="'game-form.placeholder.publisher' | translate"
+              formControlName="publisher" />
+            <mat-error>
+              <ng-container
+                *ngIf="gameForm.controls['publisher'].errors?.['required']">
+                {{ 'game-form.publisher-required' | translate }}</ng-container
+              >
+              <ng-container
+                *ngIf="
+                  gameForm.controls['publisher'].errors?.['minlength'] as error
+                ">
+                {{
+                  'game-form.publisher-minlength'
+                    | translate: { value: error?.requiredLength }
+                }}</ng-container
+              >
+              <ng-container
+                *ngIf="
+                  gameForm.controls['publisher'].errors?.['maxlength'] as error
+                ">
+                {{
+                  'game-form.publisher-maxlength'
+                    | translate: { value: error?.requiredLength }
+                }}</ng-container
+              >
+            </mat-error>
+          </mat-form-field>
+        </div>
+        <div class="grid-item">
+          <mat-form-field class="input-field">
+            <mat-label>{{ 'game-form.release-date' | translate }}</mat-label>
+            <input
+              matInput
+              [matDatepicker]="picker"
+              [max]="maxDate"
+              formControlName="releaseDate" />
+            <mat-datepicker-toggle
+              matSuffix
+              [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+            <mat-error>
+              <ng-container
+                *ngIf="gameForm.controls['releaseDate'].errors?.['required']">
+                {{
+                  'game-form.release-date-required' | translate
+                }}</ng-container
+              >
+            </mat-error>
+          </mat-form-field>
+        </div>
+        <div class="grid-item">
+          <mat-form-field class="input-field">
+            <!-- image upload-->
+            <mat-label>{{ 'game-form.image' | translate }}</mat-label>
+            <button mat-icon-button matIconPrefix (click)="imageUpload.click()">
+              <mat-icon>image</mat-icon>
+            </button>
+            <input
+              matInput
+              [placeholder]="'game-form.placeholder.image' | translate"
+              formControlName="_image"
+              [readonly]="true"
+              (click)="imageUpload.click()" />
+            <mat-error>
+              <ng-container
+                *ngIf="gameForm.controls['_image'].errors?.['required']">
+                {{ 'game-form.image-required' | translate }} </ng-container
+              ><ng-container
+                *ngIf="
+                  gameForm.controls['_image'].errors?.['invalid-file-type']
+                ">
+                {{ 'game-form.image-file-type' | translate }}
+              </ng-container>
+              <ng-container
+                *ngIf="
+                  gameForm.controls['_image'].errors?.['invalid-file-size']
+                ">
+                {{ 'game-form.image-file-size' | translate }}
+              </ng-container>
+            </mat-error>
+            <input
+              #imageUpload
+              (change)="handleImage($event)"
+              accept="image/gif, image/png, image/jpeg"
+              style="display: none"
+              type="file" />
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="centered-container" *ngIf="imageURL !== ''">
+        <div class="card-for-preview mat-elevation-z2">
+          <img [src]="imageURL" alt="image preview" />
+        </div>
+      </div>
+      <mat-error>
+        <ng-container *ngIf="genreError">
+          {{ 'game-form.genres-required' | translate }}
+        </ng-container>
+      </mat-error>
+      <div>
+        <mat-expansion-panel class="input-field">
+          <mat-expansion-panel-header>
+            <mat-panel-title i18n>
+              <mat-icon>sports_esports</mat-icon>
+              {{ 'game-genres-filter' | translate }}
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <div formArrayName="genres">
+            <mat-checkbox
+              *ngFor="let genre of genres; let i = index"
+              [formControlName]="i">
+              {{ genres[i].localized }}
+            </mat-checkbox>
+          </div>
+        </mat-expansion-panel>
+      </div>
+      <mat-divider />
+      <div class="footer-button">
+        <button
+          class="submit-btn"
+          color="accent"
+          i18n
+          mat-raised-button
+          type="submit">
+          <span *ngIf="!loading; else loadingSpinner">
+            {{
+              (gameFormType === GameFormType.Suggest
+                ? 'game-suggest.submit'
+                : gameFormType === GameFormType.Edit
+                  ? 'game-edit.submit'
+                  : 'game-create.submit'
+              ) | translate
+            }}
+            <mat-icon>send</mat-icon>
+          </span>
+          <ng-template #loadingSpinner>
+            <mat-spinner diameter="20"></mat-spinner>
+          </ng-template>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

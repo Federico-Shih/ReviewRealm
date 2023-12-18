@@ -1,0 +1,89 @@
+<div class="top-container">
+  <div class="profile-info-panel f-row f-jc-sbetween">
+    <div class="top-part">
+      <img
+        src="{{ userInfo.avatar }}"
+        alt="Profile Picture"
+        class="profile-info-panel-image" />
+      <div class="profile-info-panel">
+        <div class="profile-info-panel-basic-info">
+          <span class="profile-user-name white-text">
+            {{ userInfo.username }}
+          </span>
+          <div class="f-row f-ai-center f-gap-2 margin-left-2">
+            <div class="level-badge-container">
+              <i class="material-icons level-badge-icon level-gold"
+                >sports_esports</i
+              >
+              <span class="level-badge-text">{{
+                userInfo.xp / 100 | number: '1.0-0'
+              }}</span>
+            </div>
+          </div>
+          <ng-container *ngIf="userInfo.role === Role.MODERATOR">
+            <i class="material-icons moderator-badge"> engineering </i>
+          </ng-container>
+        </div>
+        <ng-container *ngIf="true">
+          <div class="profile-preferences">
+            <ng-container *ngIf="userInfo.preferences.length!==0">
+            <span class="no-wrap" i18n>{{ 'profile.fan' | translate }}</span>
+            <div class="profile-preferences-list f-gap-1 full-width">
+              <div
+                *ngFor="let genre of userInfo.preferences"
+                routerLink="/games"
+                [queryParams]="{ genres: genre.id }"
+                class="clickable-chip">
+                <span class="chip-small-inverted">
+                  {{ genre.localized }}
+                </span>
+              </div>
+            </div>
+            </ng-container>
+          </div>
+        </ng-container>
+
+        <div class="profile-followers">
+          <span class="no-wrap clickable" i18n routerLink="/profile/{{userInfo.id}}/following">{{
+            'profile.following' | translate: { value: userInfo.following }
+          }}</span>
+          <div class="divider-v profile-followers-text-divider"></div>
+          <span class="no-wrap clickable" i18n routerLink="/profile/{{userInfo.id}}/followers">{{
+            'profile.followers' | translate: {value: userInfo.followers}
+            }}</span>
+          <div class="divider-v profile-followers-text-divider"></div>
+          <span i18n [class]="userInfo.reputation>=0?'green-text':'red-text'">{{
+            'profile.reputation' | translate: {value: userInfo.reputation}
+            }}
+          </span>
+        </div>
+      </div>
+    </div>
+    <div>
+      <ng-container *ngIf="loggedUser && loggedUser?.id !== userInfo.id">
+        <ng-container *ngIf="isFollowing">
+          <button (click)="onSubmit(true)" [disabled]="loading" color="accent" mat-flat-button>
+            <span *ngIf="!loading">{{ 'profile.unfollow' | translate }}</span>
+            <mat-spinner *ngIf="loading" [diameter]="20"></mat-spinner>
+          </button>
+        </ng-container>
+        <ng-container *ngIf="!isFollowing">
+          <button (click)="onSubmit(false)" [disabled]="loading" color="accent" mat-flat-button>
+            <span *ngIf="!loading">{{ 'profile.follow' | translate }}</span>
+            <mat-spinner *ngIf="loading" [diameter]="20"></mat-spinner>
+          </button>
+        </ng-container>
+      </ng-container>
+    </div>
+    <div>
+      <ng-container *ngIf="loggedUser !== null && userInfo.id === loggedUser.id">
+        <i
+          class="material-icons settings"
+          aria-hidden="true"
+          routerLink="/settings"
+        >settings</i
+        >
+      </ng-container>
+    </div>
+  </div>
+</div>

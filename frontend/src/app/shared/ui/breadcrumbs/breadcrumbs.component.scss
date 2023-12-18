@@ -1,0 +1,27 @@
+.breadcrumb {
+  font-size: 22px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.breadcrumb-last {
+  font-size: 22px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  color: #fff;
+}
+
+.breadcrumbs-arrow {
+  margin: 0 10px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.breadcrumbs {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  margin: 20px;
+}

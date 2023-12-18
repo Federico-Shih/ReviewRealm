@@ -16,7 +16,7 @@ import java.util.Optional;
 public interface ReviewDao {
     Review create(String title,
                          String content,
-                         Integer rating,
+                         int rating,
                          Game reviewedGame,
                          User author,
                          Difficulty difficulty,
@@ -34,6 +34,8 @@ public interface ReviewDao {
     List<Review> findAll(ReviewFilter filter, Ordering<ReviewOrderCriteria> ordering, Long activeUserId);
 
     boolean deleteReview(long id);
+
+    int deleteReviewsOfGame(long gameId);
 
     Optional<ReviewFeedback> editReviewFeedback(long reviewId, long userId, FeedbackType oldFeedback, FeedbackType feedback);
 

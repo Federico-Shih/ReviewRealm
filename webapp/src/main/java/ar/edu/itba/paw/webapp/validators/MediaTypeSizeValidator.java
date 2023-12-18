@@ -1,6 +1,6 @@
 package ar.edu.itba.paw.webapp.validators;
 
-import ar.edu.itba.paw.webapp.annotations.ValidMediaSize;
+import ar.edu.itba.paw.webapp.controller.annotations.ValidMediaSize;
 import org.springframework.web.multipart.MultipartFile;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;

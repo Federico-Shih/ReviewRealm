@@ -107,7 +107,7 @@ public class GameTestModels {
                 CREATE_GAME_DEVELOPER,
                 CREATE_GAME_PUBLISHER,
                 new Image(CREATE_GAME_IMAGE_ID, "jpeg", image),
-                new ArrayList<>(),
+                Collections.emptyList(),
                 LocalDate.parse(CREATE_GAME_RELEASE_DATE),
                 CREATE_GAME_SUGGESTED,
                 UserTestModels.getUser1());

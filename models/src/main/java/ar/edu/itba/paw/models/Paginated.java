@@ -6,12 +6,14 @@ public class Paginated<T> {
     private final int page;
     private final int pageSize;
     private final int totalPages;
+    private final long totalElements;
     private final List<T> list;
 
-    public Paginated(int page, int pageSize, int totalPages, List<T> list) {
+    public Paginated(int page, int pageSize, int totalPages, long totalElements, List<T> list) {
         this.page = page;
         this.pageSize = pageSize;
         this.totalPages = totalPages;
+        this.totalElements = totalElements;
         this.list = list;
     }
 
@@ -25,6 +27,10 @@ public class Paginated<T> {
 
     public int getTotalPages() {
         return totalPages;
+    }
+
+    public long getTotalElements() {
+        return totalElements;
     }
 
     public List<T> getList() {

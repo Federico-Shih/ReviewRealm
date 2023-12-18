@@ -1,0 +1,16 @@
+<div [ngClass]="bannerType" class="row">
+  <mat-icon class="icon-size">{{ icon }}</mat-icon>
+  <div class="card-cta">
+    <span class="card-title">{{ title }}</span>
+    <div>
+      <span *ngIf="description" class="description">{{ description }}</span>
+      <button
+        *ngIf="buttonLabel"
+        [routerLink]="routerLink"
+        class="button-cta"
+        mat-stroked-button>
+        <span>{{ buttonLabel }}</span>
+      </button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,1 @@
+UPDATE reports SET state = 'ACCEPTED' WHERE resolveddate IS NOT NULL AND state = 'DELETED_REVIEW';

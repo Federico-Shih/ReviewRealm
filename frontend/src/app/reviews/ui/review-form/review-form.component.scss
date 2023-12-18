@@ -1,0 +1,41 @@
+.form-container {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-primary-variant-1);
+  border-radius: 10px;
+  width: 100%;
+  margin: 1em 0;
+  padding: 1em;
+  .title-rating-section {
+    display: flex;
+    margin-top: 1em;
+    flex-direction: row;
+    justify-content: space-between;
+    .suffix {
+      margin-right: 1em;
+    }
+  }
+  .time-section {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+  .checkbox-section {
+    display: flex;
+    flex-direction: column;
+  }
+  .footer-button {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    margin-top: 1em;
+
+    .cancel-btn {
+      margin-right: 10px;
+    }
+  }
+}
+
+.input-field {
+  margin: 0.5em 0.5em 1em 0.5em;
+  width: 100%;
+}

@@ -54,7 +54,11 @@ public interface ReviewService {
 
     boolean deleteReviewById(long id, long deleteUserId);
 
+    void deleteReviewsOfGame(long gameId);
+
     ReviewFeedback updateOrCreateReviewFeedback(long reviewId, long userId, FeedbackType feedback);
+
+    boolean deleteReviewFeedback(long reviewId, long userId);
 
     Optional<Review> getReviewOfUserForGame(long userId, long gameId);
 }

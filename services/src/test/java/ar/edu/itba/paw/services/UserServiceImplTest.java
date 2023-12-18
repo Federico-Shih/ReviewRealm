@@ -20,8 +20,7 @@ import java.time.LocalDateTime;
 import java.util.Locale;
 import java.util.Optional;
 
-import static ar.edu.itba.paw.services.utils.UserTestModels.getUser1;
-import static ar.edu.itba.paw.services.utils.UserTestModels.getUser2;
+import static ar.edu.itba.paw.services.utils.UserTestModels.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
@@ -64,7 +63,7 @@ public class UserServiceImplTest {
     public void testCreate() throws UsernameAlreadyExistsException, EmailAlreadyExistsException {
         //1.prepare
         Mockito.when(passwordEncoder.encode(PASSWORD)).thenReturn(PASSWORD);
-        Mockito.when(userDao.create(eq(USERNAME), eq(EMAIL), eq("")))
+        Mockito.when(userDao.create(eq(USERNAME), eq(EMAIL), anyString()))
                 .thenReturn(new User(ID, USERNAME, EMAIL, PASSWORD));
         Mockito.when(userDao.findById(eq(ID))).thenReturn(Optional.of(USER));
         Mockito.when(userDao.update(eq(ID), any())).thenReturn(Optional.of(USER));
@@ -181,7 +180,7 @@ public class UserServiceImplTest {
 
     @Test(expected = TokenExpiredException.class)
     public void validateTokenExpired() throws TokenExpiredException {
-        Mockito.when(tokenDao.create(anyLong(), any(), any())).thenReturn(new ExpirationToken(TOKEN, USER, PASSWORD, EXPIRED_DATE));
+        Mockito.when(tokenDao.create(anyLong(), any())).thenReturn(new ExpirationToken(TOKEN, USER, PASSWORD, EXPIRED_DATE));
         Mockito.when(tokenDao.getByToken(any())).thenReturn(Optional.of(new ExpirationToken(TOKEN, USER, PASSWORD, EXPIRED_DATE)));
 
         us.validateToken(PASSWORD);
@@ -223,5 +222,24 @@ public class UserServiceImplTest {
         us.resendToken(EMAIL);
     }
 
+    @Test
+    public void patchUser() {
+        User user = getUser1();
+        Mockito.when(userDao.findById(eq(ID))).thenReturn(Optional.of(user));
+        Mockito.when(userDao.update(eq(ID), any())).thenReturn(Optional.of(user));
+        Assert.assertEquals(user, us.patchUser(user.getId(), OTHER_PASSWORD, true));
+    }
 
+    @Test(expected = UserNotFoundException.class)
+    public void patchUserNotFound() {
+        Mockito.when(userDao.findById(eq(ID))).thenReturn(Optional.empty());
+        us.patchUser(USER.getId(), OTHER_PASSWORD, true);
+    }
+
+    @Test(expected = UserAlreadyEnabled.class)
+    public void patchUserIsAlreadyEnabled() {
+        User user = getUser5();
+        Mockito.when(userDao.findById(eq(user.getId()))).thenReturn(Optional.of(user));
+        us.patchUser(user.getId(), OTHER_PASSWORD, true);
+    }
 }

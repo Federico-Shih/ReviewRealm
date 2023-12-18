@@ -1,0 +1,20 @@
+<app-navbar
+  (logout)="logout()"
+  (search)="search($event)"
+  (searchSubmit)="submit()"
+  [user]="loggedInUser$ | async">
+</app-navbar>
+<div style="top: 70px; height: calc(100vh - 70px); position: relative">
+  <router-outlet></router-outlet>
+</div>
+
+<div class="floating-action-button">
+  <button
+    mat-fab
+    color="accent"
+    routerLink="/reviews/submit/search"
+    matTooltip="{{ 'review.submit.button.create' | translate }}"
+    matTooltipPosition="left">
+    <mat-icon>create</mat-icon>
+  </button>
+</div>

@@ -1,7 +1,7 @@
 package ar.edu.itba.paw.dtos.ordering;
 
 public interface OrderCriteria {
-    Integer getValue();
+    int getValue();
     String getAltName();
 
     String getTableName();

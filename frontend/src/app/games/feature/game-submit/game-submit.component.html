@@ -1,0 +1,9 @@
+<div *ngIf="genres$ | async as genres">
+  <app-game-form
+    [gameFormType]="
+      (isModerator$ | async) ? GameFormType.Create : GameFormType.Suggest
+    "
+    [loading]="loading$ | async"
+    [genres]="genres"
+    (gameFormEvent)="createGame($event)"></app-game-form>
+</div>

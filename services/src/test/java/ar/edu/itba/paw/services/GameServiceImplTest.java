@@ -1,12 +1,17 @@
 package ar.edu.itba.paw.services;
 
+import ar.edu.itba.paw.dtos.Page;
+import ar.edu.itba.paw.dtos.filtering.GameFilter;
+import ar.edu.itba.paw.dtos.filtering.GameFilterBuilder;
+import ar.edu.itba.paw.dtos.ordering.GameOrderCriteria;
+import ar.edu.itba.paw.dtos.ordering.OrderDirection;
+import ar.edu.itba.paw.dtos.ordering.Ordering;
 import ar.edu.itba.paw.dtos.saving.SubmitGameDTO;
 import ar.edu.itba.paw.enums.Difficulty;
 import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.enums.Platform;
 import ar.edu.itba.paw.enums.RoleType;
-import ar.edu.itba.paw.exceptions.GameNotFoundException;
-import ar.edu.itba.paw.exceptions.UserNotFoundException;
+import ar.edu.itba.paw.exceptions.*;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.persistenceinterfaces.GameDao;
 import ar.edu.itba.paw.servicesinterfaces.*;
@@ -19,8 +24,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import java.util.*;
 
-import static ar.edu.itba.paw.services.utils.GameTestModels.getSuperGameA;
-import static ar.edu.itba.paw.services.utils.GameTestModels.getSuperGameB;
+import static ar.edu.itba.paw.services.utils.GameTestModels.*;
 import static ar.edu.itba.paw.services.utils.ReviewTestModels.*;
 import static ar.edu.itba.paw.services.utils.UserTestModels.getUser1;
 import static org.mockito.ArgumentMatchers.*;
@@ -50,25 +54,26 @@ public class GameServiceImplTest {
 
     @Mock
     private SubmitGameDTO dto;
+    @Mock
+    private GameFilterBuilder filterBuilder;
+
 
     @Test
     public void testGetGameById() {
-        Mockito.when(gameDao.getById(getSuperGameA().getId()))
+        Mockito.when(gameDao.getById(getSuperGameA().getId(),null))
                 .thenReturn(Optional.of(getSuperGameA()));
 
-        Optional<Game> opt = gs.getGameById(getSuperGameA().getId());
+        Optional<Game> opt = gs.getGameById(getSuperGameA().getId(),null);
 
         Assert.assertTrue(opt.isPresent());
         Long id = opt.get().getId();
         Assert.assertEquals(getSuperGameA().getId(), id);
         Assert.assertEquals(getSuperGameA().getName(), opt.get().getName());
     }
-
     @Test
     public void testCantFindGameById() {
-        Mockito.when(gameDao.getById(getSuperGameA().getId()))
-                .thenReturn(Optional.empty());
-        Optional<Game> opt = gs.getGameById(getSuperGameA().getId());
+        Mockito.when(gameDao.getById(anyLong(), any())).thenReturn(Optional.empty());
+        Optional<Game> opt = gs.getGameById(getSuperGameA().getId(),null);
 
         Assert.assertFalse(opt.isPresent());
 
@@ -113,7 +118,7 @@ public class GameServiceImplTest {
 
     @Test(expected = GameNotFoundException.class)
     public void testAcceptGameError(){
-        Mockito.when(gameDao.setSuggestedFalse(anyLong())).thenReturn(Optional.empty());
+        Mockito.when(gameDao.getById(anyLong())).thenReturn(Optional.empty());
 
         gs.acceptGame(getSuperGameA().getId(), getUser1().getId());
     }
@@ -133,9 +138,9 @@ public class GameServiceImplTest {
         Mockito.when(user.getPreferences()).thenReturn(new HashSet<>(Arrays.asList(Genre.ACTION, Genre.ADVENTURE)));
         Mockito.when(user.hasPreferencesSet()).thenReturn(true);
         Mockito.when(gameDao.getGamesReviewedByUser(anyLong())).thenReturn(Optional.of(new HashSet<>(Arrays.asList(getSuperGameA()))));
-        Mockito.when(gameDao.getRecommendationsForUser(any(), any())).thenReturn(Arrays.asList(getSuperGameB()));
+        Mockito.when(gameDao.findAll(any(), any(),any(),any())).thenReturn(new Paginated<>(1,10,1, 1, Arrays.asList(getSuperGameB())));
 
-        List<Game> games = gs.getRecommendationsOfGamesForUser(getUser1().getId());
+        List<Game> games = gs.getRecommendationsOfGamesForUser(Page.with(1,10),getUser1().getId()).getList();
 
         Assert.assertEquals(1, games.size());
         Assert.assertEquals(getSuperGameB().getId(), games.get(0).getId());
@@ -144,7 +149,22 @@ public class GameServiceImplTest {
     @Test(expected = UserNotFoundException.class)
     public void testGetRecommendationsOfGamesForUserError() {
         Mockito.when(userService.getUserById(anyLong())).thenReturn(Optional.empty());
-        gs.getRecommendationsOfGamesForUser(getUser1().getId());
+        gs.getRecommendationsOfGamesForUser(Page.with(1,10),getUser1().getId());
+    }
+
+    @Test(expected = ExclusiveFilterException.class)
+    public void testExclusiveFavoriteFilter(){
+        GameFilter filter = new GameFilterBuilder().withFavoriteGamesOf(getUser1().getId()).withRecommendedFor(getUser1().getId()).build();
+
+        gs.searchGames(Page.with(1,10),filter,
+                new Ordering<>(OrderDirection.DESCENDING, GameOrderCriteria.AVERAGE_RATING),null);
+    }
+    @Test(expected = ExclusiveFilterException.class)
+    public void testExclusiveRecommendedFilter(){
+        GameFilter filter = new GameFilterBuilder().withRecommendedFor(getUser1().getId()).withFavoriteGamesOf(getUser1().getId()).build();
+
+        gs.searchGames(Page.with(1,10),filter,
+                new Ordering<>(OrderDirection.DESCENDING, GameOrderCriteria.AVERAGE_RATING),null);
     }
 
     @Test
@@ -156,10 +176,10 @@ public class GameServiceImplTest {
 
         Mockito.when(gameDao.create(any(),any(),any(),any(),any(),any(),any(),eq(false),any())).thenReturn(getSuperGameA());
 
-        Optional<Game> game = gs.createGame(dto,getUser1().getId());
+        Game game = gs.createGame(dto,getUser1().getId());
 
-        Assert.assertTrue(game.isPresent());
-        Assert.assertEquals(getSuperGameA().getId(),game.get().getId());
+        Assert.assertNotNull(game);
+        Assert.assertEquals(getSuperGameA().getId(),game.getId());
     }
 
     @Test
@@ -171,9 +191,9 @@ public class GameServiceImplTest {
 
         Mockito.when(gameDao.create(any(),any(),any(),any(),any(),any(),any(),eq(true),any())).thenReturn(getSuperGameA());
 
-        Optional<Game> game = gs.createGame(dto,getUser1().getId());
+        Game game = gs.createGame(dto,getUser1().getId());
 
-        Assert.assertFalse(game.isPresent());
+        Assert.assertNotNull(game);
     }
 
     @Test(expected = UserNotFoundException.class)

@@ -23,7 +23,8 @@ public interface CommonRowMappers{
                     resultSet.getString("publisher"),
                     resultSet.getTimestamp("publishDate").toLocalDateTime().toLocalDate(),
                     resultSet.getInt("ratingsum"),
-                    resultSet.getInt("reviewcount"));
+                    resultSet.getInt("reviewcount"),
+                    resultSet.getBoolean("deleted"));
 
     RowMapper<Review> TEST_REVIEW_MAPPER = (resultSet, i) -> {
         String difficulty = resultSet.getString("difficulty");
@@ -40,7 +41,8 @@ public interface CommonRowMappers{
                 resultSet.getBoolean("completed"),
                 resultSet.getBoolean("replayability"),
                 resultSet.getLong("likes"),
-                resultSet.getLong("dislikes"));
+                resultSet.getLong("dislikes"),
+                resultSet.getBoolean("deleted"));
     };
     
     RowMapper<User> TEST_USER_MAPPER = ((resultSet, i) -> (

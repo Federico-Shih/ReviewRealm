@@ -1,0 +1,80 @@
+<div>
+  <ng-container *ngIf="combinedUsers$ | async as users; else loading">
+    <mat-grid-list cols="2">
+      <app-user-details
+        [userInfo]="users[1]"
+        [loggedUser]="users[0]"
+        (followClick)="followToggle()"
+        [isFollowing]="users[2]"
+        [loading]="(followLoading | async) === true"
+      ></app-user-details>
+    </mat-grid-list>
+  </ng-container>
+
+  <div class="divider-h"></div>
+  <div class="second-part">
+    <span class="titletext" i18n>{{ 'profile.favgames' | translate }}</span>
+    <ng-container *ngIf="favgames$ | async as games; else loading2">
+      <ng-container *ngIf="games.content.length!==0">
+      <mat-grid-list class="m-t" cols="3" gutterSize="10px">
+        <mat-grid-tile *ngFor="let game of (games.content | slice : 0 : 3)" [colspan]="1">
+          <div class="game-container">
+            <app-game-card [game]="game" [tiny]="true"></app-game-card>
+          </div>
+        </mat-grid-tile>
+      </mat-grid-list>
+      </ng-container>
+      <ng-container *ngIf="games.content.length===0">
+        <div class="nofavgames-container">
+          <span i18n>{{ 'profile.nofavgames' | translate }}</span>
+        </div>
+      </ng-container>
+    </ng-container>
+  </div>
+
+  <div class="divider-h no-margin-top"></div>
+  <div
+    class="second-part"
+    *ngIf="userReviews$ | async as reviews; else loading3">
+    <span class="titletext" i18n>{{ 'profile.reviews' | translate }}</span>
+    <mat-grid-list
+      cols="2"
+      gutterSize="20px"
+      rowHeight="300px"
+      style="display: flex">
+      <mat-grid-tile
+        *ngFor="let review of reviews.content"
+        colspan="1"
+        rowspan="1"
+        style="">
+        <app-review-card
+          [review]="review"
+          style="width: 100%"></app-review-card>
+      </mat-grid-tile>
+    </mat-grid-list>
+    <div *ngIf="reviews.links.next" class="centered-container view-more-button">
+      <button
+        mat-raised-button
+        color="accent"
+        (click)="showMore(reviews.links.next)"
+        i18n>
+        {{ 'profile.view-more-button' | translate }}
+      </button>
+    </div>
+  </div>
+  <ng-template #loading>
+    <div class="centered-container">
+      <mat-spinner mode="indeterminate"></mat-spinner>
+    </div>
+  </ng-template>
+  <ng-template #loading2>
+    <div class="centered-container">
+      <mat-spinner mode="indeterminate"></mat-spinner>
+    </div>
+  </ng-template>
+  <ng-template #loading3>
+    <div class="centered-container">
+      <mat-spinner mode="indeterminate"></mat-spinner>
+    </div>
+  </ng-template>
+</div>

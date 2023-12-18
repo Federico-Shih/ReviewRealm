@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.dtos.Page;
+import ar.edu.itba.paw.dtos.PaginationTotals;
 import ar.edu.itba.paw.dtos.SaveReviewDTO;
 import ar.edu.itba.paw.dtos.filtering.ReviewFilter;
 import ar.edu.itba.paw.dtos.ordering.Ordering;
@@ -8,6 +9,7 @@ import ar.edu.itba.paw.dtos.ordering.ReviewOrderCriteria;
 import ar.edu.itba.paw.enums.Difficulty;
 import ar.edu.itba.paw.enums.FeedbackType;
 import ar.edu.itba.paw.enums.Platform;
+import ar.edu.itba.paw.enums.ReportState;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.models.keys.ReviewFeedbackId;
 import ar.edu.itba.paw.persistence.helpers.DaoUtils;
@@ -20,10 +22,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Repository
@@ -33,7 +32,7 @@ public class ReviewHibernateDao implements ReviewDao, PaginationDao<ReviewFilter
 
     public Review create(String title,
                          String content,
-                         Integer rating,
+                         int rating,
                          Game reviewedGame,
                          User author,
                          Difficulty difficulty,
@@ -49,6 +48,7 @@ public class ReviewHibernateDao implements ReviewDao, PaginationDao<ReviewFilter
     @Override
     public Optional<Review> findById(long id, Long activeUserId) {
         Review review = em.find(Review.class, id);
+        if(review == null || review.getDeleted()) return Optional.empty();
         User user = em.find(User.class, activeUserId != null ? activeUserId : -1);
         if (user != null) {
             ReviewFeedback reviewFeedback = em.find(ReviewFeedback.class, new ReviewFeedbackId(user, review));
@@ -56,13 +56,13 @@ public class ReviewHibernateDao implements ReviewDao, PaginationDao<ReviewFilter
                 review.setFeedback(reviewFeedback.getFeedback());
             }
         }
-        return Optional.ofNullable(review);
+        return Optional.of(review);
     }
 
     @Override
     public Optional<Review> update(long id, SaveReviewDTO reviewDTO) {
         Review review = em.find(Review.class, id);
-        if (review == null) {
+        if (review == null || review.getDeleted()) {
             return Optional.empty();
         }
         if (reviewDTO.getTitle() != null) {
@@ -112,7 +112,8 @@ public class ReviewHibernateDao implements ReviewDao, PaginationDao<ReviewFilter
                 .withList("r.authorid", filter.getAuthors())
                 .withExact("r.gameid", filter.getGameId())
                 .withExact("r.completed", filter.getCompleted())
-                .withExact("r.replayability", filter.getReplayable());
+                .withExact("r.replayability", filter.getReplayable())
+                .withExact("r.deleted", filter.getDeleted());
         if (filter.getMinTimePlayed() != null) {
             queryBuilder = queryBuilder.withGreaterOrEqual("COALESCE(r.gamelength, 0)", 3600 * filter.getMinTimePlayed());
         }
@@ -127,25 +128,25 @@ public class ReviewHibernateDao implements ReviewDao, PaginationDao<ReviewFilter
 
     @Override
     public Paginated<Review> findAll(Page pagination, ReviewFilter filter, Ordering<ReviewOrderCriteria> ordering, Long activeUserId) {
-        int totalPages = getPageCount(filter, pagination.getPageSize());
-        if (pagination.getPageNumber() > totalPages || pagination.getPageNumber() <= 0) {
-            return new Paginated<>(pagination.getPageNumber(), pagination.getPageSize(), totalPages, new ArrayList<>());
+        PaginationTotals totals = getPaginationTotals(filter, pagination.getPageSize());
+        if (pagination.getPageNumber() > totals.getTotalPages() || pagination.getPageNumber() <= 0) {
+            return new Paginated<>(pagination.getPageNumber(), pagination.getPageSize(), totals.getTotalPages(), totals.getTotalElements(), Collections.emptyList());
         }
         QueryBuilder queryBuilder = getQueryBuilderFromFilter(filter);
         Query nativeQuery = em.createNativeQuery(
                 "SELECT reviewid FROM ("+ "SELECT distinct r.id as reviewid, r.createddate, r.rating, r.likes + r.dislikes as controversial, r.likes - r.dislikes as popularity FROM "
                         + toTableString(filter)
                         + queryBuilder.toQuery() + ") as review"
-                        + DaoUtils.toOrderString(ordering, true));
+                        + DaoUtils.toOrderString(ordering, true,"reviewid"));
 
         DaoUtils.setNativeParameters(queryBuilder, nativeQuery);
         nativeQuery.setMaxResults(pagination.getPageSize());
-        nativeQuery.setFirstResult(pagination.getOffset().intValue());
+        nativeQuery.setFirstResult(pagination.getOffset());
 
         @SuppressWarnings("unchecked")
         final List<Long> idlist = (List<Long>) nativeQuery.getResultList().stream().map(n -> ((Number) n).longValue()).collect(Collectors.toList());
 
-        final TypedQuery<Review> query = em.createQuery("from Review WHERE id IN :ids " + DaoUtils.toOrderString(ordering, false), Review.class);
+        final TypedQuery<Review> query = em.createQuery("from Review WHERE id IN :ids " + DaoUtils.toOrderString(ordering, false,null), Review.class);
         query.setParameter("ids", idlist);
         User currentUser = em.find(User.class, activeUserId != null ? activeUserId : -1);
         List<Review> reviewList = query.getResultList();
@@ -158,19 +159,19 @@ public class ReviewHibernateDao implements ReviewDao, PaginationDao<ReviewFilter
                 review.setFeedback(feedbackTypeMap.get(review.getId()));
             }
         }
-        return new Paginated<>(pagination.getPageNumber(), pagination.getPageSize(), totalPages, reviewList);
+        return new Paginated<>(pagination.getPageNumber(), pagination.getPageSize(), totals.getTotalPages(), totals.getTotalElements(), reviewList);
     }
 
     public List<Review> findAll(ReviewFilter filter, Ordering<ReviewOrderCriteria> ordering, Long activeUserId) {
-        Page page = Page.with(1, count(filter).intValue());
+        Page page = Page.with(1, (int) count(filter));
         if (page.getPageSize() <= 0) {
-            return new ArrayList<>();
+            return Collections.emptyList();
         }
         return findAll(page, filter, ordering, activeUserId).getList();
     }
 
     @Override
-    public Long count(ReviewFilter filter) {
+    public long count(ReviewFilter filter) {
         QueryBuilder queryBuilder = getQueryBuilderFromFilter(filter);
         Query nativeQuery = em.createNativeQuery("SELECT count(distinct r.id) FROM " + toTableString(filter) + queryBuilder.toQuery());
         DaoUtils.setNativeParameters(queryBuilder, nativeQuery);
@@ -181,14 +182,27 @@ public class ReviewHibernateDao implements ReviewDao, PaginationDao<ReviewFilter
     @Override
     public boolean deleteReview(long id) {
         Review review = em.find(Review.class, id);
-        if(review == null) return false;
-        em.remove(review);
+        if(review == null || review.getDeleted()) return false;
+        review.setDeleted(true);
         return true;
     }
 
     @Override
+    public int deleteReviewsOfGame(long gameId) {
+        Game game = em.find(Game.class, gameId);
+        if (game == null || game.getDeleted()) return 0;
+        final TypedQuery<Review> query = em.createQuery("update Review set deleted = true where reviewedGame = :game", Review.class);
+        query.setParameter("game", game);
+        return query.executeUpdate();
+    }
+
+    @Override
     public Optional<FeedbackType> getReviewFeedback(long reviewId, long userId) {
-        ReviewFeedback feedback = em.find(ReviewFeedback.class, new ReviewFeedbackId(em.find(User.class, userId), em.find(Review.class, reviewId)));
+        User user = em.find(User.class, userId);
+        Review review = em.find(Review.class, reviewId);
+        if(review == null || review.getDeleted())
+            return Optional.empty();
+        ReviewFeedback feedback = em.find(ReviewFeedback.class, new ReviewFeedbackId(user, review));
         if(feedback == null) return Optional.empty();
         return Optional.of(feedback.getFeedback());
     }
@@ -197,7 +211,7 @@ public class ReviewHibernateDao implements ReviewDao, PaginationDao<ReviewFilter
     public Optional<ReviewFeedback> editReviewFeedback(long reviewId, long userId, FeedbackType oldFeedback, FeedbackType feedback) {
         Review review = em.find(Review.class, reviewId);
         ReviewFeedback reviewFeedback = em.find(ReviewFeedback.class, new ReviewFeedbackId(em.find(User.class, userId), review));
-        if(reviewFeedback == null || review == null) {
+        if(reviewFeedback == null || review == null || review.getDeleted()) {
             return Optional.empty();
         }
         if (oldFeedback != feedback) {
@@ -214,7 +228,7 @@ public class ReviewHibernateDao implements ReviewDao, PaginationDao<ReviewFilter
     public Optional<ReviewFeedback> addReviewFeedback(long reviewId, long userId, FeedbackType feedback) {
         Review likedReview = em.find(Review.class, reviewId);
         User likedUser = em.find(User.class, userId);
-        if (likedReview == null || likedUser == null) return Optional.empty();
+        if (likedReview == null || likedReview.getDeleted() || likedUser == null) return Optional.empty();
         ReviewFeedback possibleFeedback = em.find(ReviewFeedback.class, new ReviewFeedbackId(likedUser, likedReview));
         if (possibleFeedback != null) return Optional.empty();
         ReviewFeedback reviewFeedback = new ReviewFeedback(likedUser, likedReview, feedback);
@@ -233,7 +247,7 @@ public class ReviewHibernateDao implements ReviewDao, PaginationDao<ReviewFilter
     public boolean deleteReviewFeedback(long reviewId, long userId, FeedbackType oldFeedback) {
         Review likedReview = em.find(Review.class, reviewId);
         User likedUser = em.find(User.class, userId);
-        if (likedReview == null || likedUser == null) return false;
+        if (likedReview == null || likedReview.getDeleted() || likedUser == null) return false;
         ReviewFeedback possibleFeedback = em.find(ReviewFeedback.class, new ReviewFeedbackId(likedUser, likedReview));
         if (possibleFeedback == null) return false;
         em.remove(possibleFeedback);

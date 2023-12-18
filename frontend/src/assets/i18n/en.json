@@ -1,0 +1,486 @@
+{
+  "NINTENDO": "Nintendo",
+  "PC": "PC",
+  "PS": "PlayStation",
+  "XBOX": "Xbox",
+  "apply-filters": "Apply filters",
+  "asc": "Ascending",
+  "average-rating": "Average Rating",
+  "cancel": "Cancel",
+  "change-password": {
+    "button": "Change password",
+    "confirmPassword": "Confirm password",
+    "dismiss": "Dismiss",
+    "header": "Change password",
+    "password": "Password",
+    "success": "Password change was a success!"
+  },
+  "community": {
+    "no-gamesplayed": "Review some games, so we can recommend you other profiles who played the same games.",
+    "no-preferences": "Set your preferences to finde players that share your likings.",
+    "no-recommendations": "Sorry, we could not find any players to recommend you yet.",
+    "no-results": "We found no results for your search",
+    "other-users": "Other people in Review Realm",
+    "review-game": "Write a Review",
+    "same-games": "Others who have played the same games as you",
+    "same-preferences": "Players who share your preferences",
+    "search": "Looking for someone in particular?",
+    "set-preferences": "Set your preferences"
+  },
+  "delete": "Delete",
+  "desc": "Descending",
+  "developer": {
+    "card": "Developer: {{value}}"
+  },
+  "difficulty": {
+    "easy": "Easy",
+    "hard": "Hard",
+    "medium": "Medium"
+  },
+  "edit": "Edit",
+  "edit-own-review": "Edit your Review",
+  "errors": {
+    "dismiss": "Dismiss",
+    "unknown": "Unknown error, please try again later."
+  },
+  "fav-games": {
+    "errors": {
+      "add": "Unknown error when adding favorite game",
+      "delete": "Unknown error deleting favorite game"
+    },
+    "no-favorites-label": "You have no favorite games selected yet!",
+    "no-results-label": "There are no more unfavorited games",
+    "selection-label": "Select your favorite game",
+    "success": {
+      "add": "Favorite game added successfully",
+      "delete": "Favorite game deleted"
+    },
+    "title": "Your favorite games"
+  },
+  "filter-drawer": {
+    "apply": "Apply filters",
+    "order-by": "Order by"
+  },
+  "filter-title": "Filter by",
+  "following": "Following",
+  "forbidden": {
+    "description": "You do not have enough clearance",
+    "header": "Access denied",
+    "image": "Prohibited",
+    "solution": "Contact an admin if you think this is incorrect"
+  },
+  "game": {
+    "accept": "Accept",
+    "create": {
+      "title": "Are you sure you want to create this game?"
+    },
+    "created": "The game has been created.",
+    "delete": "Delete Game",
+    "deleted": "The game has been deleted.",
+    "deletedialog": {
+      "title": "Are you sure you want to delete this game?"
+    },
+    "edit": "Edit Game",
+    "editdialog": {
+      "title": "Are you sure you want to edit this game?"
+    },
+    "edited": "Game edited succesfully.",
+    "reject": "Reject",
+    "submit": {
+      "title": "Are you sure you want to suggest this game?"
+    },
+    "submitted": "The game has been suggested.",
+    "suggest": {
+      "title": "Are you sure you want to suggest this game?"
+    }
+  },
+  "game-create": {
+    "submit": "Send Creation",
+    "title": "Create a New Game"
+  },
+  "game-details": {
+    "completability": "Average completion",
+    "difficulty": "Average Perceived difficulty",
+    "gametime": "Average game time",
+    "no-personal-review": "Write a review on this game!",
+    "no-reviews": "It looks like this game has no reviews from other players.",
+    "personal-review": "Your review for this game",
+    "platform": "Most popular platform",
+    "rating": "Average rating",
+    "replayability": "Average replay-ability",
+    "reviews": "Other Users' Reviews",
+    "statistics": "Statistics based on Reviews"
+  },
+  "game-edit": {
+    "submit": "Finish Editing",
+    "title": "Edit a Game"
+  },
+  "game-filter": {
+    "averageRating": "Average Rating",
+    "name": "Name",
+    "publishDate": "Publishing Date"
+  },
+  "game-form": {
+    "description": "Description",
+    "description-maxlength": "A description must be at most {{value}} characters long.",
+    "description-minlength": "A description must be at least {{value}} characters long.",
+    "description-required": "A description is required.",
+    "developer": "Developer",
+    "developer-maxlength": "A developer must be at most {{value}} characters long.",
+    "developer-minlength": "A developer must be at least {{value}} characters long.",
+    "developer-required": "A developer is required.",
+    "genres-required": "At least one genre must be selected.",
+    "image": "Image",
+    "image-file-size": "Image size must weight less than 128MB.",
+    "image-file-type": "Invalid File Type must be a jpeg/gif/png.",
+    "image-required": "An Image is required.",
+    "name": "Game Title",
+    "name-maxlength": "A title must be at most {{value}} characters long.",
+    "name-minlength": "A title must be at least {{value}} characters long.",
+    "name-required": "A Title is required.",
+    "placeholder": {
+      "description": "Write the description...",
+      "developer": "Developer Name",
+      "image": "Select an Image...",
+      "name": "Write the game title...",
+      "publisher": "Publisher Name"
+    },
+    "publisher": "Publisher",
+    "publisher-maxlength": "A publisher must be at most {{value}} characters long.",
+    "publisher-minlength": "A publisher must be at least {{value}} characters long.",
+    "publisher-required": "A publisher is required.",
+    "release-date": "Release Date",
+    "release-date-required": "A release date is required."
+  },
+  "game-genres-filter": "Game's genres",
+  "game-image": "Uploaded Game Image",
+  "game-search": {
+    "avg-rating": {
+      "filter": "Average Rating"
+    },
+    "exclude-no-rating": "Exclude games without rating",
+    "no-results": "No games found..."
+  },
+  "game-suggest": {
+    "submit": "Send Suggestion",
+    "title": "Suggest a New Game"
+  },
+  "games": {
+    "search": {
+      "non-submitted": {
+        "button": "Look for already added games!",
+        "header": "Want to check which games are already on the platform?"
+      },
+      "title": "Search Games"
+    }
+  },
+  "genres": "Genres:",
+  "guidelines": {
+    "disrespect": "Be Respectful: treat other community members with respect and courtesy. Avoid personal attacks, harassment and discrimination towards others.",
+    "irrelevant": "Relevant Content: content shared in a review should be relevant to the gaming industry and its adjacent branches.",
+    "piracy": "Intellectual Property and Piracy: although you may mention and discuss piracy of games, you must avoid sharing links to unauthorized game files, cracks, or pirated content.",
+    "privacy": "Privacy and Personal Information: you must respect each other's privacy and not share personal information without consent.",
+    "spam": "No Spam or Self-Promotion: promoting other sites is purely prohibited and self-promoting is to be kept to a minimum.",
+    "spoiler": "No Spoilers: avoid posting spoilers without proper warnings, these must be stated in the title and the first few lines of the review should not contain spoiler.",
+    "title": "Community Guidelines"
+  },
+  "hours": "{{number}} hours",
+  "login-form": {
+    "email-invalid": "Email is invalid.",
+    "email-required": "Email is required.",
+    "forgot-password": "Change your password here.",
+    "forgot-password-label": "Forgot password?",
+    "invalid-credentials": "Invalid email or password",
+    "login-btn": "Login",
+    "login-header": "Login",
+    "password-required": "Password is required.",
+    "register-label": "Don't have an account yet?",
+    "register-link": "Register here!"
+  },
+  "mainfeed": {
+    "header": {
+      "following": "Reviews from people who you follow",
+      "new": "Reviews that were written recently",
+      "recommended": "Reviews we recommend based on your preferences "
+    },
+    "noFollowing": "You have no following yet...",
+    "noReviews": "No reviews found...",
+    "nopreferencesset": {
+      "cta": "Lets do it!",
+      "title": "Whoops! Looks like you haven't set your preferences yet!"
+    },
+    "preferences": {
+      "cta": "Discovery queue",
+      "title": "Check out our new game recommendations!"
+    }
+  },
+  "minutes": "{{number}} minutes",
+  "missions": {
+    "completedtimes": "Times Completed: {{value}}",
+    "exp": "Total Experience: {{value}}",
+    "lvl": "LVL. {{value}}",
+    "yourmissions": "Your Missions",
+    "yourprogress": "Your Progress"
+  },
+  "navbar": {
+    "community-link": "Community",
+    "for-you": "For you",
+    "games-link": "Games",
+    "login": "Login",
+    "logout": "Logout",
+    "missions": "Missions",
+    "profile": "Profile",
+    "register": "Register",
+    "reports": "Reports",
+    "reviews-link": "Reviews",
+    "search": "Search...",
+    "settings": "Settings",
+    "submissions": "Submissions",
+    "suggest-game": "Suggest new game",
+    "upload-game": "Upload game",
+    "welcome": "Welcome {{value}}",
+    "write-review": "Write review"
+  },
+  "new": "New",
+  "new-review": "New Review",
+  "no-reports": "There are no unanalysed reports!",
+  "no-results": "We found no results for your search",
+  "no-submissions": "There are no suggestions of new games provided by users!",
+  "not-found": {
+    "description": "Nothing to see in this wasteland...",
+    "header": "Nothing to see here, keep moving!",
+    "image": "This is the Orange Portal",
+    "solution": "But don't worry! I left a Blue portal in the main page"
+  },
+  "platform": {
+    "nintendo": "Nintendo",
+    "pc": "PC",
+    "ps": "PlayStation",
+    "xbox": "XBox"
+  },
+  "profile": {
+    "favgames": "Favorite Games",
+    "follow": "Follow",
+    "followers": "Followers: {{value}}",
+    "followerstitle": "Followers",
+    "following": "Following: {{value}}",
+    "followingtitle": "Following",
+    "nofavgames": "This User Does Not Have Any Favorite Games!",
+    "reputation": "Reputation: {{value}}",
+    "reviews": "Reviews",
+    "unfollow": "Unfollow",
+    "view-more-button": "View More"
+  },
+  "profile-card": {
+    "whoprefers": "who prefers"
+  },
+  "publisher": {
+    "card": "Publisher: {{value}}"
+  },
+  "publishing": {
+    "date": "Publishing Date: {{value}}"
+  },
+  "recommendations": {
+    "backtofeed": "Back to for you",
+    "next": "Next game",
+    "prev": "Previous game"
+  },
+  "recommended": "Recommended",
+  "recover-password": {
+    "button": "Recover password",
+    "description": "Change your password using the link in your email. Check your spam folder.",
+    "email-not-found": "User does not exist",
+    "header": "Recover password",
+    "title": "Password recovery email sent!"
+  },
+  "register-form": {
+    "confirm-password": "Confirm password",
+    "confirm-password-required": "Password confirmation is required.",
+    "email": "Email",
+    "email-placeholder": "example@email.com",
+    "password": "Password",
+    "password-minlength": "Password must be at least 8 characters long.",
+    "password-mismatch": "Passwords do not match.",
+    "password-required": "Password is required.",
+    "register-btn": "Register",
+    "register-header": "Register new account",
+    "used-email": "Email is already taken.",
+    "used-username": "Username is already taken.",
+    "username": "Username",
+    "username-maxlength": "Username must be at most {{value}} characters long.",
+    "username-minlength": "Username must be at least {{value}} characters long.",
+    "username-required": "Username is required."
+  },
+  "report": {
+    "accept": "Delete Review",
+    "handled": "Report handled.",
+    "reason": {
+      "disrespect": "Disrespectful content towards other members",
+      "irrelevant": "Irrelevant content regarding gaming or its adjacent branches",
+      "piracy": "Sharing links to unauthorized game files, cracks, or pirated content",
+      "privacy": "Sharing personal information without consent",
+      "spam": "Spam or Self-Promotion",
+      "spoiler": "Spoilers without any warnings or in the first lines of the review"
+    },
+    "reject": "Reject Report"
+  },
+  "reset-filters": "Reset Filters",
+  "review": {
+    "confirm": {
+      "title": "Confirm review creation?"
+    },
+    "created": "The review has been created",
+    "delete": "Delete Review",
+    "deleted": "The review has been deleted",
+    "deletedialog": {
+      "title": "Are you sure you want to delete this review?"
+    },
+    "edit": "Edit Review",
+    "edited": "The review has been edited",
+    "form": {
+      "searchgame": "New Review - Please search for a game first"
+    },
+    "found_useful?": "Did you find this review useful?",
+    "report": "Report Review",
+    "reportdialog": {
+      "title": "Select a reason for reporting this review according to our guidelines:"
+    },
+    "reported": "The report has been submitted!",
+    "search": "Search Reviews",
+    "submit": {
+      "button": {
+        "create": "Create Review",
+        "edit": "Edit Review"
+      },
+      "completed": {
+        "label": "Completed"
+      },
+      "content": {
+        "charcount": "{{count}} characters",
+        "label": "Content",
+        "minlength": "Review content must be at least {{value}} characters long.",
+        "placeholder": "Tell us what your thought about it",
+        "required": "A review content is required"
+      },
+      "difficulty": {
+        "label": "Perceived Difficulty",
+        "placeholder": "Select a difficulty"
+      },
+      "gameLength": {
+        "label": "Time played",
+        "max": "Time played must be no larger than {{value}}",
+        "min": "Time played must be at least {{value}}"
+      },
+      "platform": {
+        "label": "Platform",
+        "placeholder": "Select a platform"
+      },
+      "rating": {
+        "label": "Rating",
+        "max": "Rating must be less or equal than 10",
+        "min": "Rating must be greater or equal than 1",
+        "required": "A rating is required"
+      },
+      "replayability": {
+        "label": "Replayable?"
+      },
+      "reviewtitle": {
+        "label": "Title",
+        "maxlength": "A title must be at most {{value}} characters long.",
+        "minlength": "A title must be at least {{value}} characters long",
+        "placeholder": "Give us a great title!",
+        "required": "A title is required"
+      },
+      "title": "Review about {{game}}"
+    },
+    "tags": "Tags",
+    "timeplayed": "Time played"
+  },
+  "review-card": {
+    "author-alt": "{{author}} profile picture",
+    "by": "by @{{author}}",
+    "img-alt": "{{game}} image preview"
+  },
+  "review-filter": {
+    "controversial": "Controversial",
+    "created": "Time of creation",
+    "popularity": "Popularity",
+    "rating": "Rating"
+  },
+  "review-search": {
+    "apply-filters": "Apply filters",
+    "completed": "Completed",
+    "difficulty-filter": "Perceived difficulty",
+    "favoritegenres": "Select favorites",
+    "filter-title": "Filter by",
+    "game-genres-filter": "Game's genres",
+    "no-results": "No reviews found.",
+    "platform-filter": "Platform",
+    "replayable": "Replayable",
+    "reset-filters": "Reset filters",
+    "search-label": "Search",
+    "timeplayed-filter": "Minimum hours played",
+    "toggle-filters": "Filters",
+    "user-preference-filter": "User preferences"
+  },
+  "search": {
+    "games-title": "Games",
+    "noresults": "No results found...",
+    "review-title": "Reviews",
+    "users-title": "Users"
+  },
+  "settings": {
+    "avatar": "Profile Avatar",
+    "avatarchoose": "Choose your Avatar!",
+    "fav-games": "Favorite Games",
+    "fav-genres": "Favorite Genres",
+    "fg": {
+      "choose": "Choose your Favorite Games!",
+      "consideration": "Only games you have given a 7+ rating to will appear here...",
+      "create": "Create Review",
+      "empty": "You have no reviews with a higher than 7 rating. Add reviews of your favorite games to see them here!",
+      "save": "Save Favorite Games"
+    },
+    "genres": {
+      "choose": "Choose other genres:",
+      "nofavgames": "You have no favorite genres, yet!",
+      "yourfavgenres": "Your Current Favorite Genres:"
+    },
+    "notification": {
+      "deletion": "When one of my reviews gets deleted by a moderator",
+      "following": "When one of the users I follow writes a review",
+      "save": "Save New Settings"
+    },
+    "notifications": "Email Notification ",
+    "title": "Account Settings"
+  },
+  "submission": {
+    "handled": "Submission handled."
+  },
+  "time": {
+    "hours": "{{number}} hours",
+    "minutes": "{{number}} minutes"
+  },
+  "toggle-filters": "Filters",
+  "unit": {
+    "hours": "Hours",
+    "minutes": "Minutes"
+  },
+  "user": {
+    "followers": "Followers",
+    "level": "Level",
+    "reputation": "Reputation"
+  },
+  "validate-user-form": {
+    "email": "example@gmail.com",
+    "email-invalid": "Invalid email",
+    "email-required": "Email is required",
+    "header": "Validar usuario",
+    "submit": "Validate token",
+    "token": "Verification Code",
+    "token-required": "Token is required",
+    "token-unknown": "Unknown token. ",
+    "welcome": "Welcome {{value}}",
+    "write-review": "Write review"
+  }
+}

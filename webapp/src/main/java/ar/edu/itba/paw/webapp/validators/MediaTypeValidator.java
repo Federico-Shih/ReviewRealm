@@ -2,7 +2,7 @@ package ar.edu.itba.paw.webapp.validators;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
-import ar.edu.itba.paw.webapp.annotations.ValidMediaType;
+import ar.edu.itba.paw.webapp.controller.annotations.ValidMediaType;
 import org.springframework.http.MediaType;
 import org.springframework.web.multipart.MultipartFile;
 import java.util.Arrays;

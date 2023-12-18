@@ -22,15 +22,13 @@ public interface GameDao {
 
     Optional<Game> getById(long id);
 
-    Paginated<Game> findAll(Page page, GameFilter filter, Ordering<GameOrderCriteria> ordering);
+    Optional<Game> getById(long id, Long currentUserId);
 
-    List<Genre> getGenresByGame(long id);
+    Paginated<Game> findAll(Page page, GameFilter filter, Ordering<GameOrderCriteria> ordering, Long currentUserId);
 
-    Optional<List<Game>> getFavoriteGamesFromUser(long userId);
+    Set<Genre> getGenresByGame(long id);
 
     List<Game> getFavoriteGamesCandidates(long userId, int minRating);
-
-    List<Game> getRecommendationsForUser(List<Integer> userPreferences,List<Long> gamesToExclude);
 
     Optional<Set<Game>> getGamesReviewedByUser(long userId);
 

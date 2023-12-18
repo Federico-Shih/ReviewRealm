@@ -1,11 +1,14 @@
 package ar.edu.itba.paw.persistenceinterfaces;
 
-public interface PaginationDao<T> {
-    Long count(T filter);
+import ar.edu.itba.paw.dtos.PaginationTotals;
 
-    default int getPageCount(T filter, int pageSize) {
+public interface PaginationDao<T> {
+    long count(T filter);
+
+    default PaginationTotals getPaginationTotals(T filter, int pageSize) {
         if (pageSize <= 0)
             throw new IllegalArgumentException("Page size must be positive");
-        return (int) Math.ceil((double) count(filter) / pageSize);
+        long count = count(filter);
+        return new PaginationTotals((int) Math.ceil((double) count / pageSize), count);
     }
 }

@@ -1,0 +1,104 @@
+<mat-toolbar class="navbar" color="primary">
+  <a class="navbar-icon-container" routerLink="/">
+    <img
+      alt="Review Realm"
+      class="icon"
+      height="630"
+      src="./assets/review_realm_logo_white_630px.png"/>
+    <p class="navbar-text">Review Realm</p>
+  </a>
+
+  <div class="navbar-search">
+    <app-search-bar
+      (search)="search.emit($event)"
+      (searchSubmit)="searchSubmit.emit()"
+      [label]="'navbar.search' | translate"></app-search-bar>
+  </div>
+  <div class="spacer"></div>
+  <section class="action-container">
+    <a *ngIf="isLoggedIn" routerLink="/for-you" routerLinkActive="active">
+      <div id="for-you-link">
+        {{ 'navbar.for-you' | translate }}
+      </div>
+    </a>
+    <a routerLink="/games" routerLinkActive="active">
+      <div id="games-link">
+        {{ 'navbar.games-link' | translate }}
+      </div>
+    </a>
+    <a [routerLinkActiveOptions]="{exact: true}" routerLink="/" routerLinkActive="active">
+      <div id="reviews-link">
+        {{ 'navbar.reviews-link' | translate }}
+      </div>
+    </a>
+    <a routerLink="/community" routerLinkActive="active">
+      <div id="community-link">
+        {{ 'navbar.community-link' | translate }}
+      </div>
+    </a>
+    <ng-container *ngIf="!isLoggedIn">
+      <a routerLink="/login" routerLinkActive="active">
+        <div id="login-link">
+          {{ 'navbar.login' | translate }}
+        </div>
+      </a>
+      <a routerLink="/register" routerLinkActive="active">
+        <div id="register-link">
+          {{ 'navbar.register' | translate }}
+        </div>
+      </a>
+    </ng-container>
+    <button
+      id="logged-in-button"
+      *ngIf="isLoggedIn"
+      [matMenuTriggerFor]="menu"
+      class="menu-button"
+      color="accent"
+      mat-raised-button>
+      {{ 'navbar.welcome' | translate: { value: user?.username } }}
+      <mat-icon>arrow_drop_down</mat-icon>
+    </button>
+    <mat-menu #menu="matMenu">
+      <div class="menu">
+        <button mat-menu-item routerLink="/profile/{{ user?.id }}" routerLinkActive="active">
+          <mat-icon>account_circle</mat-icon>
+          <span>{{ 'navbar.profile' | translate }}</span>
+        </button>
+        <button mat-menu-item routerLink="/settings/missions" routerLinkActive="active">
+          <mat-icon>receipt</mat-icon>
+          <span>{{ 'navbar.missions' | translate }}</span>
+        </button>
+        <button mat-menu-item routerLink="/reviews/submit/search" routerLinkActive="active">
+          <mat-icon>create</mat-icon>
+          <span>{{ 'navbar.write-review' | translate }}</span>
+        </button>
+        <button *ngIf="user?.role === Role.USER" mat-menu-item>
+          <mat-icon>add</mat-icon>
+          <span>{{ 'navbar.suggest-game' | translate }}</span>
+        </button>
+        <ng-container *ngIf="user?.role === Role.MODERATOR">
+          <button mat-menu-item routerLink="/games/submit" routerLinkActive="active">
+            <mat-icon>add</mat-icon>
+            <span>{{ 'navbar.upload-game' | translate }}</span>
+          </button>
+          <button mat-menu-item routerLink="/games/submissions" routerLinkActive="active">
+            <mat-icon>playlist_add_check</mat-icon>
+            <span>{{ 'navbar.submissions' | translate }}</span>
+          </button>
+          <button mat-menu-item routerLink="/reports" routerLinkActive="active">
+            <mat-icon>flag</mat-icon>
+            <span>{{ 'navbar.reports' | translate }}</span>
+          </button>
+        </ng-container>
+        <button mat-menu-item routerLink="/settings" routerLinkActive="active">
+          <mat-icon>settings</mat-icon>
+          <span>{{ 'navbar.settings' | translate }}</span>
+        </button>
+        <button (click)="logout.emit()" mat-menu-item>
+          <mat-icon>logout</mat-icon>
+          <span>{{ 'navbar.logout' | translate }}</span>
+        </button>
+      </div>
+    </mat-menu>
+  </section>
+</mat-toolbar>

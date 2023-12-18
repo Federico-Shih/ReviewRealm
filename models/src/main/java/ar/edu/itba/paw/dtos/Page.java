@@ -1,10 +1,10 @@
 package ar.edu.itba.paw.dtos;
 
 public class Page {
-    Integer pageNumber = 0;
-    Integer pageSize = 10;
+    private int pageNumber = 0;
+    private int pageSize = 10;
 
-    public static Page with(Integer pageNumber, Integer pageSize) {
+    public static Page with(int pageNumber, int pageSize) {
         Page page = new Page();
         page.pageNumber = pageNumber;
         page.pageSize = pageSize;
@@ -14,15 +14,15 @@ public class Page {
 
     }
 
-    public Integer getPageNumber() {
+    public int getPageNumber() {
         return pageNumber;
     }
 
-    public Long getOffset() {
-        return (long) (pageNumber - 1) * pageSize;
+    public  int getOffset() {
+        return (pageNumber - 1) * pageSize;
     }
 
-    public Integer getPageSize() {
+    public int getPageSize() {
         return pageSize;
     }
 }

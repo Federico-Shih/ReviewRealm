@@ -25,6 +25,7 @@ dist/
 
 # JetBrains IDE
 .idea/
+*.iml
 
 # Unit test reports
 TEST*.xml
@@ -47,7 +48,6 @@ Thumbs.db
 *.flv
 *.mov
 *.wmv
-
 # Keys
 *.pem
 /webapp/src/main/resources/mailing/mailing.properties

@@ -1,0 +1,19 @@
+<div class="container">
+  <div class="f-row wrap contained-width">
+    <div class="full-width m-b-30 f-row-jc-center">
+      <span class="avatar-section-header" i18n>{{
+        'settings.avatarchoose' | translate
+      }}</span>
+    </div>
+    <ng-container *ngFor="let avatar of avatars; let i = index" class="wrap">
+      <div class="margin-for-avatars">
+        <button
+          class="avatar-button"
+          type="submit"
+          (click)="changeAvatar(i + 1)">
+          <img class="profile-avatar-card" [src]="avatar" alt="AVATAR" />
+        </button>
+      </div>
+    </ng-container>
+  </div>
+</div>

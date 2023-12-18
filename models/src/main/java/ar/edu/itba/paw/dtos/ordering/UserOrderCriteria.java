@@ -8,13 +8,13 @@ public enum UserOrderCriteria implements OrderCriteria {
     FOLLOWERS(1, "order.criteria.user.followers", "followers.size", "follower_count"),
     REPUTATION(2, "order.criteria.user.reputation", "reputation", "reputation");
 
-    final Integer value;
+    final int value;
     final String localizedNameCode;
     final String altName;
 
     final String tableName;
 
-    public Integer getValue() {
+    public int getValue() {
         return value;
     }
 
@@ -30,7 +30,8 @@ public enum UserOrderCriteria implements OrderCriteria {
         return tableName;
     }
 
-    UserOrderCriteria(Integer value, String localizedNameCode, String altName, String tableName) {
+    // TODO: consider removing value
+    UserOrderCriteria(int value, String localizedNameCode, String altName, String tableName) {
         this.value = value;
         this.localizedNameCode = localizedNameCode;
         this.altName = altName;
@@ -40,6 +41,15 @@ public enum UserOrderCriteria implements OrderCriteria {
     public static UserOrderCriteria fromValue(Integer value) {
         for (UserOrderCriteria orderCriteria : values()) {
             if (Objects.equals(orderCriteria.getValue(), value)){
+                return orderCriteria;
+            }
+        }
+        return null;
+    }
+
+    public static UserOrderCriteria fromString(String string) {
+        for (UserOrderCriteria orderCriteria : values()) {
+            if (orderCriteria.name().equals(string.toUpperCase())){
                 return orderCriteria;
             }
         }

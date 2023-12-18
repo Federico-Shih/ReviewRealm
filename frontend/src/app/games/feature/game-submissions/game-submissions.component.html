@@ -1,0 +1,36 @@
+<div (scroll)="nextPage($event)" class="main-container">
+  <div class="header">
+    <span class="search-title">
+      {{ 'games.search.non-submitted.header' | translate }}</span
+    >
+    <button mat-raised-button color="primary" (click)="openSearch()">
+      {{ 'games.search.non-submitted.button' | translate }}
+    </button>
+  </div>
+  <ng-container *ngIf="loadingSubmissions$ | async as loadingSubmissions">
+    <div *ngIf="loadingSubmissions.loading" class="centered-container spinner">
+      <mat-spinner />
+    </div>
+    <div
+      [style.visibility]="loadingSubmissions.loading ? 'hidden' : 'visible'"
+      class="submissions">
+      <ng-container *ngIf="loadingSubmissions.submissions.content.length === 0">
+        <div class="centered-container">
+          <h1>{{ 'no-submissions' | translate }}</h1>
+        </div>
+      </ng-container>
+      <div
+        *ngFor="let submission of loadingSubmissions.submissions.content"
+        class="full-width">
+        <app-game-submission-card
+          [game]="submission"
+          (handleSubmission)="handleSubmission($event)" />
+      </div>
+      <div
+        *ngIf="loadingSubmissions.loadingInfinite"
+        class="centered-container">
+        <mat-spinner />
+      </div>
+    </div>
+  </ng-container>
+</div>

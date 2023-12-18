@@ -11,8 +11,11 @@ public class GameFilterBuilder {
     private Float minRating = null;
     private Float maxRating = null;
     private boolean includeNoRating = true;
-    private Boolean isSuggested = null;
+    private Boolean isSuggested = false;
     private List<Long> gamesToExclude = null;
+    private Long favoriteGamesOf = null;
+    private Long recommendedFor = null;
+    private Long notReviewedBy = null;
 
     public GameFilterBuilder withGameGenres(List<Integer> genres) {
         this.gameGenres = genres;
@@ -50,8 +53,21 @@ public class GameFilterBuilder {
         this.gamesToExclude = gamesToExclude;
         return this;
     }
+    public GameFilterBuilder withFavoriteGamesOf(Long favoriteGamesOf) {
+        this.favoriteGamesOf = favoriteGamesOf;
+        return this;
+    }
+    public GameFilterBuilder withRecommendedFor(Long recommendedFor) {
+        this.recommendedFor = recommendedFor;
+        return this;
+    }
+
+    public GameFilterBuilder withNotReviewedBy(Long notReviewedBy) {
+        this.notReviewedBy = notReviewedBy;
+        return this;
+    }
 
     public GameFilter build() {
-        return new GameFilter(gameGenres, gameContent, developer, publisher, minRating, maxRating, includeNoRating, isSuggested, gamesToExclude);
+        return new GameFilter(gameGenres, gameContent, developer, publisher, minRating, maxRating, includeNoRating, isSuggested, gamesToExclude,favoriteGamesOf, recommendedFor, notReviewedBy, false);
     }
 }

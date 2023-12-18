@@ -1,0 +1,22 @@
+<div (scroll)="nextPage($event)" class="main-container">
+  <div *ngIf="loadingReports$ | async as loadingReports" class="reports">
+    <div *ngIf="loadingReports.loading" class="centered-container spinner">
+      <mat-spinner />
+    </div>
+    <div [style.visibility]="loadingReports.loading ? 'hidden' : 'visible'">
+      <ng-container *ngIf="loadingReports.reports.content.length === 0">
+        <div class="centered-container">
+          <h1>{{ 'no-reports' | translate }}</h1>
+        </div>
+      </ng-container>
+      <div *ngFor="let report of loadingReports.reports.content">
+        <app-report-card
+          [report]="report"
+          (handleReport)="handleReport($event)" />
+      </div>
+      <div *ngIf="loadingReports.loadingInfinite" class="centered-container">
+        <mat-spinner />
+      </div>
+    </div>
+  </div>
+</div>

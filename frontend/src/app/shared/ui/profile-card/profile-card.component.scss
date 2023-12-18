@@ -1,0 +1,160 @@
+.level-basic {
+  color: #243276;
+}
+
+.level-basic-background {
+  background: #19224f;
+}
+
+.level-basic-border {
+  border: 2px solid #243276;
+}
+
+.level-bronze {
+  color: #593d1b;
+}
+
+.level-bronze-background {
+  background: #382711;
+}
+
+.level-bronze-border {
+  border: 2px solid #593d1b;
+}
+
+.level-silver {
+  color: #4d4d4d;
+}
+
+.level-silver-background {
+  background: #2f2f2f;
+}
+
+.level-silver-border {
+  border: 2px solid #4d4d4d;
+}
+
+.level-gold {
+  color: #8a7919;
+}
+
+.level-gold-background {
+  background: #574c10;
+}
+
+.level-gold-border {
+  border: 2px solid #8a7919;
+}
+
+.level-epic {
+  color: #82108a;
+}
+
+.level-epic-background {
+  background: #450949;
+}
+
+.level-epic-border {
+  border: 2px solid #82108a;
+}
+
+.profile-card {
+  display: flex;
+  flex-direction: row;
+  width: 350px;
+  height: 100px;
+  align-items: center;
+  border: 0 solid #fff;
+  border-radius: 10px;
+  color: white;
+}
+
+.profile-image {
+  margin: 10px;
+  .img {
+    border-radius: 50%;
+    object-fit: cover;
+  }
+}
+
+.username {
+  font-size: 1.2rem;
+  text-decoration: none;
+  color: white;
+  font-weight: 500;
+  letter-spacing: 1px;
+}
+
+.likes {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  font-size: 0.9rem;
+}
+
+.level-container {
+  justify-self: flex-end;
+  position: relative;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.level-badge-text {
+  font-size: 20px;
+  font-weight: 700;
+  text-align: center;
+  z-index: 100;
+  position: absolute;
+  transform: translate(-50%);
+  left: 50%;
+  top: -5px;
+}
+
+.level-badge-icon {
+  position: absolute;
+  transform: scale(1.8);
+  left: 10px;
+}
+
+.level-badge-container {
+  width: 45px;
+  height: 45px;
+  position: relative;
+}
+
+.badge-icon {
+  position: absolute;
+  left: 10px;
+}
+
+.chip {
+  border: 1px solid #666;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  padding: 5px 8px;
+}
+
+.chip-small-inverted {
+  background: #ddd7ff;
+  color: var(--color-surface);
+  border: 1px solid var(--color-primary-variant-1);
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 2px 6px;
+  white-space: nowrap;
+}
+
+.pointer {
+  cursor: pointer;
+}
+
+.heart-icon {
+  margin: 2px;
+  width: 15px;
+  height: 15px;
+  font-size: 15px;
+  color: #dbd5fd;
+}

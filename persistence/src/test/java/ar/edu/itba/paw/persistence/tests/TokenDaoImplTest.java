@@ -56,7 +56,7 @@ public class TokenDaoImplTest {
     @Rollback
     @Test
     public void createExpirationTokenTest() {
-        ExpirationToken token = tokenDao.create(createToken.getUser().getId(), createToken.getPassword(), createToken.getExpiration());
+        ExpirationToken token = tokenDao.create(createToken.getUser().getId(), createToken.getExpiration());
         Assert.assertNotNull(token);
         em.flush();
 

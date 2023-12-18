@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface MissionDao {
-    MissionProgress create(User user, Mission mission, Float progress, LocalDate date);
+    MissionProgress create(User user, Mission mission, float progress, LocalDate date);
 
     Optional<MissionProgress> findById(User user, Mission mission);
 

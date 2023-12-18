@@ -2,6 +2,7 @@ package ar.edu.itba.paw.dtos.saving;
 
 import java.util.Locale;
 
+// Cuando las propiedades son null, no se aplican.
 public class SaveUserBuilder {
     private String username = null;
     private String email = null;

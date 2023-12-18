@@ -4,6 +4,7 @@ package ar.edu.itba.paw.persistence.tests;
 import ar.edu.itba.paw.dtos.Page;
 import ar.edu.itba.paw.dtos.filtering.ReportFilter;
 import ar.edu.itba.paw.dtos.filtering.ReportFilterBuilder;
+import ar.edu.itba.paw.enums.ReportState;
 import ar.edu.itba.paw.models.Report;
 import ar.edu.itba.paw.models.Review;
 import ar.edu.itba.paw.models.User;
@@ -178,8 +179,9 @@ public class ReportDaoTest{
         Report ans = reportDao.updateStatus(testReport.getId(), UserTestModels.getUser4().getId(),true);
 
         Assert.assertNotNull(ans);
-        Assert.assertNull(ans.getReportedReview());
+        Assert.assertNotNull(ans.getReportedReview());
         Assert.assertTrue(ans.isResolved());
+        Assert.assertEquals(ReportState.ACCEPTED, ans.getState());
         Assert.assertEquals(UserTestModels.getUser4().getId(), ans.getModerator().getId());
     }
     @Rollback
@@ -191,6 +193,7 @@ public class ReportDaoTest{
         Assert.assertNotNull(ans);
         Assert.assertNotNull(ans.getReportedReview());
         Assert.assertTrue(ans.isResolved());
+        Assert.assertEquals(ReportState.REJECTED, ans.getState());
         Assert.assertEquals(UserTestModels.getUser4().getId(), ans.getModerator().getId());
     }
 

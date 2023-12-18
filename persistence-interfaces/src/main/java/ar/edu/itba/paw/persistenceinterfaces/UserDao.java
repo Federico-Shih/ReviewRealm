@@ -26,13 +26,15 @@ public interface UserDao {
 
     Optional<User> getByUsername(String username);
 
-    Paginated<User> findAll(Page page, UserFilter userFilter, Ordering<UserOrderCriteria> ordering);
+    Paginated<User> findAll(Page page, UserFilter userFilter, Ordering<UserOrderCriteria> ordering, Long currentUserId);
+
+    Optional<User> findById(final long id, Long currentUserId);
 
     Optional<User> findById(final long id);
 
-    Optional<List<User>> getFollowers(final long id);
+    Optional<Paginated<User>> getFollowers(long id, Page page);
 
-    Optional<List<User>> getFollowing(final long id);
+    Optional<Paginated<User>> getFollowing(final long id, Page page);
 
     Optional<FollowerFollowingCount> getFollowerFollowingCount(final long id);
 
@@ -54,4 +56,6 @@ public interface UserDao {
 
     boolean deleteFavoriteGameForUser(long userId, long gameId);
     Optional<User> replaceAllFavoriteGames(long userId, List<Long> gameIds);
+
+    boolean addFavoriteGame(long userId, long gameid);
 }

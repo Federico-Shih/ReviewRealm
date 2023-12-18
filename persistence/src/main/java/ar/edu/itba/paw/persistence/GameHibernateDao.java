@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.dtos.Page;
+import ar.edu.itba.paw.dtos.PaginationTotals;
 import ar.edu.itba.paw.dtos.filtering.GameFilter;
 import ar.edu.itba.paw.dtos.ordering.GameOrderCriteria;
 import ar.edu.itba.paw.dtos.ordering.Ordering;
@@ -37,18 +38,24 @@ public class GameHibernateDao implements GameDao, PaginationDao<GameFilter> {
     public Optional<Game> edit(long gameId,String name, String description, String developer, String publisher, String imageid, List<Genre> genres, LocalDate publishDate) {
 
         final Game game = em.find(Game.class, gameId);
-        if(game==null)
+        if(game==null || game.getDeleted())
             return Optional.empty();
-        game.setName(name);
-        game.setDescription(description);
-        game.setDeveloper(developer);
-        game.setPublisher(publisher);
+        if(name!=null)
+            game.setName(name);
+        if(description!=null)
+            game.setDescription(description);
+        if(developer!=null)
+            game.setDeveloper(developer);
+        if(publisher!=null)
+            game.setPublisher(publisher);
         if(imageid!=null) {
             final Image image = em.find(Image.class, imageid);
             game.setImage(image);
         }
-        game.setGenres(genres);
-        game.setPublishDate(publishDate);
+        if(genres!=null && !genres.isEmpty())
+            game.setGenres(genres);
+        if(publishDate!=null)
+            game.setPublishDate(publishDate);
         em.persist(game);
         return Optional.of(game);
     }
@@ -56,14 +63,26 @@ public class GameHibernateDao implements GameDao, PaginationDao<GameFilter> {
     @Override
     public Optional<Game> getById(long id) {
         final Game game = em.find(Game.class, id);
-        return Optional.ofNullable(game);
+        if(game == null || game.getDeleted()) return Optional.empty();
+        return Optional.of(game);
     }
 
     @Override
-    public Paginated<Game> findAll(Page page, GameFilter filter, Ordering<GameOrderCriteria> ordering) {
-        int totalPages = getPageCount(filter, page.getPageSize());
-        if (page.getPageNumber() > totalPages || page.getPageNumber() <= 0) {
-            return new Paginated<>(page.getPageNumber(), page.getPageSize(), totalPages, new ArrayList<>());
+    public Optional<Game> getById(long id, Long currentUserId) {
+        final Game game = em.find(Game.class, id);
+        if(game == null || game.getDeleted()) return Optional.empty();
+        if(currentUserId != null){
+            game.setFavorite(game.getFavoriteUsers().stream().anyMatch(u -> u.getId().equals(currentUserId)));
+        }
+        return Optional.of(game);
+    }
+
+    @Override
+    public Paginated<Game> findAll(Page page, GameFilter filter, Ordering<GameOrderCriteria> ordering, Long currentUserId) {
+        PaginationTotals totals = getPaginationTotals(filter, page.getPageSize());
+
+        if (page.getPageNumber() > totals.getTotalPages() || page.getPageNumber() <= 0) {
+            return new Paginated<>(page.getPageNumber(), page.getPageSize(), totals.getTotalPages(), totals.getTotalElements(), Collections.emptyList());
         }
         QueryBuilder queryBuilder = getQueryBuilderFromFilter(filter);
         Query nativeQuery = em.createNativeQuery(
@@ -72,36 +91,35 @@ public class GameHibernateDao implements GameDao, PaginationDao<GameFilter> {
                         toTableString(filter) +
                         queryBuilder.toQuery() +
                         ") as games" +
-                        DaoUtils.toOrderString(ordering, true));
+                        DaoUtils.toOrderString(ordering, true,"gameid"));
         DaoUtils.setNativeParameters(queryBuilder, nativeQuery);
 
         nativeQuery.setMaxResults(page.getPageSize());
-        nativeQuery.setFirstResult(page.getOffset().intValue());
+        nativeQuery.setFirstResult(page.getOffset());
 
         @SuppressWarnings("unchecked")
         final List<Long> idlist = (List<Long>) nativeQuery.getResultList().stream().map(n -> ((Number) n).longValue()).collect(Collectors.toList());
 
-        final TypedQuery<Game> query = em.createQuery("from Game WHERE id IN :ids " + DaoUtils.toOrderString(ordering, true), Game.class);
+        final TypedQuery<Game> query = em.createQuery("from Game WHERE id IN :ids " + DaoUtils.toOrderString(ordering, true,null), Game.class);
         query.setParameter("ids", idlist);
-        return new Paginated<>(page.getPageNumber(), page.getPageSize(), totalPages, query.getResultList());
+        final List<Game> games = query.getResultList();
+        if(currentUserId != null){
+            final TypedQuery<Long> favoriteQuery = em.createQuery("select g.id from Game g join g.favoriteUsers u where u.id = :userId", Long.class);
+            favoriteQuery.setParameter("userId", currentUserId);
+            Set<Long> favoriteIds = new HashSet<>(favoriteQuery.getResultList());
+            games.forEach(g -> g.setFavorite(favoriteIds.contains(g.getId())));
+        }
+
+        return new Paginated<>(page.getPageNumber(), page.getPageSize(), totals.getTotalPages(), totals.getTotalElements(), games);
     }
 
     @Override
-    public List<Genre> getGenresByGame(long id) {
+    public Set<Genre> getGenresByGame(long id) {
         final Game game = em.find(Game.class, id);
-        if(game == null) {
-            return new ArrayList<>();
+        if(game == null || game.getDeleted()) {
+            return new HashSet<>();
         }
         return game.getGenres();
-    }
-
-    @Override
-    public Optional<List<Game>> getFavoriteGamesFromUser(long userId) {
-        final User user = em.find(User.class, userId);
-        if(user == null) {
-            return Optional.empty();
-        }
-        return Optional.of(user.getFavoriteGames());
     }
 
 
@@ -114,16 +132,6 @@ public class GameHibernateDao implements GameDao, PaginationDao<GameFilter> {
         return query.getResultList().stream().map(Review::getReviewedGame).collect(Collectors.toList());
     }
 
-    @Override
-    public List<Game> getRecommendationsForUser(List<Integer> userPreferences, List<Long> gamesToExclude) {
-        final TypedQuery<Game> query = em.createQuery("select distinct g from Game g inner join g.genres genre " +
-                "where " + (gamesToExclude.size() > 0 ? "g.id not in :exclude and " : "") + (userPreferences.size() > 0 ? "genre in :preferences" : "1 = 2") +
-                " order by g.averageRating desc", Game.class);
-        if (gamesToExclude.size() > 0) query.setParameter("exclude", gamesToExclude);
-        if (userPreferences.size() > 0)
-            query.setParameter("preferences", userPreferences.stream().map(Genre::valueFrom).collect(Collectors.toList()));
-        return query.getResultList();
-    }
 
     @Override
     public Optional<Set<Game>> getGamesReviewedByUser(long userId) {
@@ -135,36 +143,39 @@ public class GameHibernateDao implements GameDao, PaginationDao<GameFilter> {
     @Override
     public Optional<Game> addNewReview(long gameId, int rating) {
         final Optional<Game> game = Optional.ofNullable(em.find(Game.class, gameId));
-        game.ifPresent((g) -> {
+        if (game.isPresent() && !game.get().getDeleted()) {
+            Game g = game.get();
             g.setReviewCount(g.getReviewCount() + 1);
             g.setRatingSum(g.getRatingSum() + rating);
-        });
+        }
         return game;
     }
 
     @Override
     public Optional<Game> modifyReview(long gameId, int oldRating, int newRating) {
         final Optional<Game> game = Optional.ofNullable(em.find(Game.class, gameId));
-        game.ifPresent((g) -> {
+        if (game.isPresent() && !game.get().getDeleted()) {
+            Game g = game.get();
             g.setRatingSum(g.getRatingSum() + newRating - oldRating);
-        });
+        }
         return game;
     }
 
     @Override
     public Optional<Game> deleteReviewFromGame(long gameId, int rating) {
         final Optional<Game> game = Optional.ofNullable(em.find(Game.class, gameId));
-        game.ifPresent((g) -> {
+        if (game.isPresent() && !game.get().getDeleted()) {
+            Game g = game.get();
             g.setReviewCount(g.getReviewCount() - 1);
             g.setRatingSum(g.getRatingSum() - rating);
-        });
+        }
         return game;
     }
 
     @Override
     public Optional<Game> setSuggestedFalse(long gameId) {
         final Optional<Game> game = Optional.ofNullable(em.find(Game.class, gameId));
-        if(game.isPresent()) {
+        if(game.isPresent() && !game.get().getDeleted()) {
             game.get().setSuggestion(false);
             em.persist(game.get());
         }
@@ -173,11 +184,10 @@ public class GameHibernateDao implements GameDao, PaginationDao<GameFilter> {
 
     @Override
     public boolean deleteGame(long gameId) {
-        final Game game = em.find(Game.class, gameId);
-        if(game != null) {
-            em.remove(game);
-        }
-        return game!=null;
+        Game game = em.find(Game.class, gameId);
+        if(game == null) return false;
+        game.setDeleted(true);
+        return true;
     }
 
 
@@ -185,6 +195,7 @@ public class GameHibernateDao implements GameDao, PaginationDao<GameFilter> {
         return new QueryBuilder()
                 .withSimilar("g.name", filter.getGameContent())
                 .withList("gg.genreid", filter.getGameGenres())
+                .withExact("fg.userid", filter.getFavoriteGamesOf())
                 .withExact("g.publisher", filter.getPublisher())
                 .withExact("g.suggestion", filter.getSuggested())
                 .NOT().withList("g.id", filter.getGamesToExclude())
@@ -195,7 +206,8 @@ public class GameHibernateDao implements GameDao, PaginationDao<GameFilter> {
                 .withLess("g.reviewcount", filter.getIncludeNoRating() ? 1 : 0)
                 .PARENTHESIS_CLOSE()
                 .AND()
-                .withExact("g.developer", filter.getDeveloper());
+                .withExact("g.developer", filter.getDeveloper())
+                .withExact("g.deleted", filter.getDeleted());
     }
 
     private String toTableString(GameFilter filter) {
@@ -203,12 +215,14 @@ public class GameHibernateDao implements GameDao, PaginationDao<GameFilter> {
         str.append("games as g ");
         if (filter.getGameGenres() != null && !filter.getGameGenres().isEmpty()) {
             str.append("JOIN genreforgames as gg ON g.id = gg.gameid ");
+        } else if (filter.getFavoriteGamesOf() != null) {
+            str.append("JOIN favoritegames as fg ON g.id = fg.gameid ");
         }
         return str.toString();
     }
 
     @Override
-    public Long count(GameFilter filter) {
+    public long count(GameFilter filter) {
         QueryBuilder queryBuilder = getQueryBuilderFromFilter(filter);
         Query nativeQuery = em.createNativeQuery("SELECT count(distinct g.id) FROM " + toTableString(filter) + queryBuilder.toQuery());
         DaoUtils.setNativeParameters(queryBuilder, nativeQuery);

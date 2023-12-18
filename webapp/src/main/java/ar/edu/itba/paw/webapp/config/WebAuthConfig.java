@@ -2,14 +2,15 @@ package ar.edu.itba.paw.webapp.config;
 
 import ar.edu.itba.paw.enums.RoleType;
 import ar.edu.itba.paw.webapp.auth.AccessControl;
-import ar.edu.itba.paw.webapp.config.filters.AuthenticationPageFilter;
-import ar.edu.itba.paw.webapp.config.handlers.CustomAuthenticationFailureHandler;
-import org.apache.commons.io.IOUtils;
+import ar.edu.itba.paw.webapp.auth.BasicAuthFilter;
+import ar.edu.itba.paw.webapp.auth.JwtTokenFilter;
+import ar.edu.itba.paw.webapp.mappers.ForbiddenRequestHandler;
+import ar.edu.itba.paw.webapp.mappers.UnauthorizedRequestHandler;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.access.AccessDecisionManager;
@@ -17,31 +18,38 @@ import org.springframework.security.access.AccessDecisionVoter;
 import org.springframework.security.access.vote.AuthenticatedVoter;
 import org.springframework.security.access.vote.RoleVoter;
 import org.springframework.security.access.vote.UnanimousBased;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 import org.springframework.security.web.access.expression.WebExpressionVoter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-import java.util.Base64;
+import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
+
+import static org.springframework.web.cors.CorsConfiguration.ALL;
 
 
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 @ComponentScan({"ar.edu.itba.paw.webapp.auth"})
 @Configuration
 public class WebAuthConfig extends WebSecurityConfigurerAdapter {
+    @Autowired
+    private MessageSource messageSource;
 
     @Autowired
     private UserDetailsService userDetailsService;
@@ -51,6 +59,12 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private AccessControl accessControl;
+
+    @Autowired
+    private BasicAuthFilter basicAuthFilter;
+
+    @Autowired
+    private JwtTokenFilter jwtTokenFilter;
 
     private static final String ACCESS_CONTROL_CHECK_REVIEW_OWNER = "@accessControl.checkReviewAuthorOwner(#id)";
 
@@ -95,60 +109,68 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-                .addFilterAfter(new AuthenticationPageFilter(), BasicAuthenticationFilter.class)
                 // redirecciona si uno trata de ir a login o register y ya está conectado
                 .sessionManagement()
-                .invalidSessionUrl("/login")
-            .and().authorizeRequests()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and().authorizeRequests()
                 .accessDecisionManager(accessDecisionManager())
-
+                .antMatchers(HttpMethod.PATCH, "/api/users/{id:\\d+}").authenticated()
+                .antMatchers(HttpMethod.POST, "/api/reports", "/api/games","/api/reviews").authenticated()
+                .antMatchers("/api/reports/**").hasRole(RoleType.MODERATOR.getRole())
+                .antMatchers(HttpMethod.PATCH, "/api/games/{id:\\d+}").hasRole(RoleType.MODERATOR.getRole())
+                .antMatchers(HttpMethod.DELETE, "/api/games/{id:\\d+}").hasRole(RoleType.MODERATOR.getRole())
+                .antMatchers(HttpMethod.POST,"/api/reviews/{id:\\d+}").authenticated()
+                .antMatchers(HttpMethod.DELETE,"/api/reviews/{id:\\d+}").authenticated()
+                .antMatchers(HttpMethod.PATCH,"/api/reviews/{id:\\d+}").authenticated()
+// todo: agregar rutas a medida que se van haciendo las APIs
                 //.antMatchers("/admin/**").hasRole("ADMIN")  lo que requiera un rol especial
                 //.antMatchers("/review/edit/").access("@AccessHelper.canEdit") cuando se requiera un acceso especial segun el usuario (Spring Expression Language)
-                .antMatchers("/review/{id:\\d+}/edit").access(ACCESS_CONTROL_CHECK_REVIEW_OWNER)
-                .antMatchers(HttpMethod.POST,"/review/feedback/{id:\\d+}").access(ACCESS_CONTROL_CHECK_REVIEW_FEEDBACK)
-                .antMatchers("/review/submit/{id:\\d+}").access(ACCESS_CONTROL_CHECK_GAME_REVIEWED)
-                /* ACÁ PONEMOS TODOS LOS PATHS QUE REQUIERAN INICIAR SESIÓN Y TENER UN ROL */
-                .antMatchers("/review/delete/{\\d+}", "/game/submissions", "/game/submissions/**", "/game/{\\d+}/edit", "/game/delete/{\\d+}", "/report/reviews/**", "/report/reviews").hasRole(RoleType.MODERATOR.getRole())
-                /* ACÁ PONEMOS TODOS LOS PATHS QUE REQUIERAN INICIAR SESIÓN, PERO NO ROLES */
-                .antMatchers("/review/submit/**",
-                        "/profile/following",
-                        "/profile/followers",
-                        "/profile/follow/{\\d+}",
-                        "/profile/unfollow/{\\d+}",
-                        "/for-you/**",
-                        "/profile/settings/**",
-                        "/profile/settings/**",
-                        "/game/submit",
-                        "/profile/missions"
-                ).authenticated()
+//                .antMatchers("/review/{id:\\d+}/edit").access(ACCESS_CONTROL_CHECK_REVIEW_OWNER)
+//                .antMatchers(HttpMethod.POST,"/review/feedback/{id:\\d+}").access(ACCESS_CONTROL_CHECK_REVIEW_FEEDBACK)
+//                .antMatchers("/review/submit/{id:\\d+}").access(ACCESS_CONTROL_CHECK_GAME_REVIEWED)
+//                /* ACÁ PONEMOS TODOS LOS PATHS QUE REQUIERAN INICIAR SESIÓN Y TENER UN ROL */
+//                .antMatchers("/review/delete/{\\d+}", "/game/submissions", "/game/submissions/**", "/game/{\\d+}/edit", "/game/delete/{\\d+}", "/report/reviews/**", "/report/reviews").hasRole(RoleType.MODERATOR.getRole())
+//                /* ACÁ PONEMOS TODOS LOS PATHS QUE REQUIERAN INICIAR SESIÓN, PERO NO ROLES */
+//                .antMatchers(HttpMethod.GET, "/api/users").authenticated()
+//                .antMatchers("/review/submit/**",
+//                        "/profile/following",
+//                        "/profile/followers",
+//                        "/profile/follow/{\\d+}",
+//                        "/profile/unfollow/{\\d+}",
+//                        "/for-you/**",
+//                        "/profile/settings/**",
+//                        "/profile/settings/**",
+//                        "/game/submit",
+//                        "/profile/missions"
+//                ).authenticated()
+                .antMatchers("/api/**").permitAll()
                 /* ACÁ PONEMOS TODOS LOS PATHS QUE REQUIERAN NO HABER INICIADO SESIÓN */
 
                 /* POR DEFAULT NO ES NECESARIO INICIAR SESIÓN */
-                .antMatchers( "/**").permitAll()
-            .and().formLogin()
-                .loginPage("/login")
-                .usernameParameter("email")
-                .passwordParameter("password")
-                .defaultSuccessUrl("/", false)
-                .failureHandler(new CustomAuthenticationFailureHandler())
-            .and().rememberMe()
-                .rememberMeParameter("remember-me")
-                .userDetailsService(userDetailsService)
-                .key(getRememberMeKey())
-                .tokenValiditySeconds((int) TimeUnit.DAYS.toSeconds(30))
-            .and().logout()
-                .logoutUrl("/logout")
-                .logoutSuccessUrl("/login")
-            .and().exceptionHandling()
-                .accessDeniedPage("/errors/403")
-            .and().csrf().disable();
+                .and().exceptionHandling()
+                .authenticationEntryPoint(new UnauthorizedRequestHandler(messageSource))
+                .accessDeniedHandler(new ForbiddenRequestHandler(messageSource))
+                .and().headers().cacheControl().disable()
+                .and().cors().and().csrf().disable()
+                .addFilterBefore(basicAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class);
     }
 
-
-    private String getRememberMeKey() throws IOException {
-        ClassPathResource resource = new ClassPathResource("keys/rememberme_key.pem");
-        byte[] bytes = IOUtils.toByteArray(resource.getInputStream());
-        return new String(Base64.getEncoder().encode(bytes), StandardCharsets.UTF_8);
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(Collections.singletonList(ALL));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+        configuration.addAllowedHeader(ALL);
+        configuration.setExposedHeaders(Arrays.asList("Authorization", "X-Refresh", "Link", "Location", "ETag", "X-Reviewrealm-TotalPages", "X-Reviewrealm-TotalElements"));
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 
+    @Bean
+    @Override
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
+    }
 }

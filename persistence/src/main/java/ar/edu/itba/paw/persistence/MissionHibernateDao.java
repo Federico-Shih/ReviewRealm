@@ -20,7 +20,7 @@ public class MissionHibernateDao implements MissionDao {
     private EntityManager em;
 
     @Override
-    public MissionProgress create(User user, Mission mission, Float progress, LocalDate date) {
+    public MissionProgress create(User user, Mission mission, float progress, LocalDate date) {
         MissionProgress missionProgress = new MissionProgress(user, mission, progress, date, 0);
         em.persist(missionProgress);
         em.flush();

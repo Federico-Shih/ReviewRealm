@@ -1,0 +1,41 @@
+<ng-container
+  *ngIf="
+    report !== null &&
+    report.reportedReview !== undefined &&
+    report.reportedReview.author !== undefined
+  ">
+  <div class="container">
+    <div class="user">
+      <span class="header">{{ getMessage(report.reason) | translate }}</span>
+      <app-profile-card
+        [user]="report.reportedReview.author"></app-profile-card>
+      <div class="handlers">
+        <button
+          mat-raised-button
+          class="accept"
+          (click)="
+            handleReport.emit({
+              report: report,
+              new_status: STATE_CHANGE.REJECT
+            })
+          ">
+          {{ 'report.reject' | translate }}
+        </button>
+        <button
+          mat-raised-button
+          class="reject"
+          (click)="
+            handleReport.emit({
+              report: report,
+              new_status: STATE_CHANGE.APPROVE
+            })
+          ">
+          {{ 'report.accept' | translate }}
+        </button>
+      </div>
+    </div>
+    <div class="review">
+      <app-review-card [review]="report.reportedReview!"></app-review-card>
+    </div>
+  </div>
+</ng-container>

@@ -6,8 +6,6 @@ import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.enums.LevelRange;
 import ar.edu.itba.paw.enums.NotificationType;
 import ar.edu.itba.paw.enums.RoleType;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.util.*;
@@ -30,7 +28,7 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-    @ElementCollection(targetClass = Genre.class, fetch = FetchType.LAZY)
+    @ElementCollection(targetClass = Genre.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "genreforusers", joinColumns = @JoinColumn(name = "userid", referencedColumnName = "id"))
     @Column(name = "genreid")
     @Convert(converter = GenreAttributeConverter.class)
@@ -42,13 +40,13 @@ public class User {
     @Column(name = "reputation")
     private Long reputation = 0L;
 
-    @ElementCollection(targetClass = NotificationType.class, fetch = FetchType.LAZY)
+    @ElementCollection(targetClass = NotificationType.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "user_disabled_notifications", joinColumns = @JoinColumn(name = "userid", referencedColumnName = "id"))
     @Column(name = "notification")
     @Convert(converter = NotificationTypeAttributeConverter.class)
     private Set<NotificationType> disabledNotifications = new HashSet<>();
 
-    @ElementCollection(targetClass = RoleType.class, fetch = FetchType.LAZY)
+    @ElementCollection(targetClass = RoleType.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "userid", referencedColumnName = "id"))
     @Column(name = "role")
     @Enumerated(EnumType.STRING)
@@ -71,6 +69,12 @@ public class User {
 
     @Column(name = "language")
     private Locale language;
+
+    @Column(name = "followers")
+    private int followersCount;
+
+    @Column(name = "following")
+    private int followingCount;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
     private List<ReviewFeedback> reviewFeedbackList;
@@ -111,6 +115,9 @@ public class User {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "moderator")
     private List<Report> resolvedReports;
+
+    @Transient
+    private boolean isFollowing = false;
 
     public User(String username,
                 String email,
@@ -271,7 +278,7 @@ public class User {
     }
 
     public boolean isEnabled() {
-        return enabled;
+        return enabled != null && enabled;
     }
 
     public Set<RoleType> getRoles() {
@@ -340,10 +347,36 @@ public class User {
         this.roles = objects;
     }
 
-    public boolean isModerator() { return roles.contains(RoleType.MODERATOR); }
+    public boolean isModerator() {
+        return roles.contains(RoleType.MODERATOR);
+    }
 
     public List<Report> getReportsMade() {
         return reportsMade;
+    }
+
+    public boolean isFollowing() {
+        return isFollowing;
+    }
+
+    public void setFollowing(boolean following) {
+        isFollowing = following;
+    }
+
+    public int getFollowersCount() {
+        return followersCount;
+    }
+
+    public void setFollowersCount(int followersCount) {
+        this.followersCount = followersCount;
+    }
+
+    public int getFollowingCount() {
+        return followingCount;
+    }
+
+    public void setFollowingCount(int followingCount) {
+        this.followingCount = followingCount;
     }
 }
 

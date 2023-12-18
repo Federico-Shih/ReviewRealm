@@ -1,0 +1,16 @@
+.drawer-content {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  width: 300px;
+  padding: 0 10px;
+
+  .title {
+    margin: 0.5em;
+  }
+}
+
+.radio-group {
+  display: flex;
+  flex-direction: column;
+}

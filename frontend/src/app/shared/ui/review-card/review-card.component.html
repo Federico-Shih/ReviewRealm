@@ -1,0 +1,82 @@
+<mat-card class="card">
+  <mat-card-header class="card-header">
+    <div class="card-title pointer" routerLink="/reviews/{{ review.id }}">
+      {{ review.title }}
+    </div>
+    <div class="author-container">
+      <span class="name">{{
+        'review-card.by' | translate: { author: review.author?.username }
+      }}</span>
+      <img
+        [ngSrc]="review.author?.avatar || ''"
+        alt="{{
+          'review-card.author-alt'
+            | translate: { author: review.author?.username }
+        }}"
+        height="25"
+        style="margin-left: 5px"
+        width="25"
+        class="img level-{{ userRank() }}-border" />
+      <div class="profile-card">
+        <app-profile-card *ngIf="review.author" [user]="review.author" />
+      </div>
+    </div>
+    <div
+      class="review-rating-container pointer"
+      routerLink="/reviews/{{ review.id }}">
+      <span class="review-rating">{{ review.rating }}</span
+      >/10
+      <mat-icon>star</mat-icon>
+    </div>
+    <div class="review-date">
+      {{ review.created | date: 'yyyy-MM-dd HH:mm' }}
+    </div>
+  </mat-card-header>
+  <mat-divider />
+  <mat-card-content
+    class="card-content pointer"
+    routerLink="/reviews/{{ review.id }}">
+    <p class="clamp">
+      {{ review.content }}
+    </p>
+    <div class="likes">
+      {{ review.getPopularity() }}
+      <mat-icon>thumbs_up_down</mat-icon>
+    </div>
+  </mat-card-content>
+  <ng-container *ngIf="!hideActions">
+    <mat-divider />
+    <mat-card-actions class="game-container">
+      <div
+        class="image-container pointer"
+        routerLink="/games/{{ review.game?.id }}">
+        <img
+          [ngSrc]="review.game?.links?.image || ''"
+          fill="true"
+          alt="{{
+            'review-card.img-alt' | translate: { game: review.game?.name }
+          }}"
+          priority="high" />
+      </div>
+      <section class="title-container">
+        <div
+          class="review-game pointer"
+          routerLink="/games/{{ review.game?.id }}">
+          <span>{{ review.game?.name }}</span>
+        </div>
+        <div *ngIf="review.game && review.game.genres">
+          <span
+            *ngFor="let genre of review.game.genres | slice: 0 : 2"
+            class="small-chip pointer"
+            routerLink="/games"
+            [queryParams]="{ genres: [genre.id] }">
+            {{ genre.localized }}
+          </span>
+          <span *ngIf="review.game.genres!.length > 2" class="small-chip">
+            +{{ review.game.genres!.length - 2 }}
+          </span>
+        </div>
+      </section>
+    </mat-card-actions>
+  </ng-container>
+</mat-card>

@@ -7,7 +7,7 @@ import java.util.Optional;
 
 public interface ValidationTokenDao {
 
-    ExpirationToken create(long userId, String password, LocalDateTime expiration);
+    ExpirationToken create(long userId, LocalDateTime expiration);
 
     Optional<ExpirationToken> findLastPasswordToken(long userId);
 

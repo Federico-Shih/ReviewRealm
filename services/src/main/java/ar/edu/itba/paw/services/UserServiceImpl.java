@@ -1,7 +1,12 @@
 package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.dtos.Page;
+import ar.edu.itba.paw.dtos.filtering.GameFilter;
+import ar.edu.itba.paw.dtos.filtering.GameFilterBuilder;
+import ar.edu.itba.paw.dtos.filtering.UserFilter;
 import ar.edu.itba.paw.dtos.filtering.UserFilterBuilder;
+import ar.edu.itba.paw.dtos.ordering.GameOrderCriteria;
+import ar.edu.itba.paw.dtos.ordering.OrderDirection;
 import ar.edu.itba.paw.dtos.ordering.Ordering;
 import ar.edu.itba.paw.dtos.ordering.UserOrderCriteria;
 import ar.edu.itba.paw.dtos.saving.SaveUserBuilder;
@@ -70,14 +75,13 @@ public class UserServiceImpl implements UserService {
         if(userDao.getByUsername(username).isPresent())
             throw new UsernameAlreadyExistsException();
         User createdUser;
-        LOGGER.info("Creating user: {}", email);
-        createdUser = userDao.create(username, email, "");
+        LOGGER.info("Creating user with username: {} and email: {}",username, email);
+        createdUser = userDao.create(username, email, passwordEncoder.encode(password));
         changeUserLanguage(createdUser.getId(), locale);
         createdUser.setLanguage(locale);
 
         ExpirationToken token = this.tokenDao.create(
                 createdUser.getId(),
-                passwordEncoder.encode(password),
                 LocalDateTime.now().plusHours(EXPIRATION_TIME));
         mailingService.sendValidationTokenEmail(token, createdUser);
         return createdUser;
@@ -103,6 +107,12 @@ public class UserServiceImpl implements UserService {
 
     @Transactional(readOnly = true)
     @Override
+    public Optional<User> getUserById(long id, Long currentUserId) {
+        return userDao.findById(id, currentUserId);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
     public Optional<User> getUserByToken(String token) {
         ExpirationToken expirationToken = tokenDao.getByToken(token).orElseThrow(UserNotFoundException::new);
         return getUserById(expirationToken.getUser().getId());
@@ -119,16 +129,17 @@ public class UserServiceImpl implements UserService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<User> getFollowers(long id) {
-        return userDao.getFollowers(id).orElseThrow(UserNotFoundException::new);
+    public Paginated<User> getFollowers(long id, Page page) {
+        return userDao.getFollowers(id, page).orElseThrow(UserNotFoundException::new);
     }
 
     @Transactional(readOnly = true)
     @Override
-    public List<User> getFollowing(long id) {
-        return userDao.getFollowing(id).orElseThrow(UserNotFoundException::new);
+    public Paginated<User> getFollowing(long id, Page page) {
+        return userDao.getFollowing(id, page).orElseThrow(UserNotFoundException::new);
     }
 
+    // TODO: remove
     @Transactional(readOnly = true)
     @Override
     public FollowerFollowingCount getFollowerFollowingCount(long id) {
@@ -144,6 +155,8 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public User followUserById(long userId, long otherId) {
+        if (userId == otherId) throw new UserIsSameException();
+        if (userDao.follows(userId, otherId)) throw new UserAlreadyFollowing();
         User toReturn = userDao.createFollow(userId, otherId).orElseThrow(UserNotFoundException::new);
         LOGGER.info("User {} followed user {}", userId, otherId);
         missionService.addMissionProgress(userId, Mission.FOLLOWING_GOAL, 1);
@@ -154,11 +167,34 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public User unfollowUserById(long userId, long otherId) {
-        User toReturn = userDao.deleteFollow(userId, otherId).orElseThrow(UserNotFoundException::new);
-        LOGGER.info("User {} possibly unfollowed user {}", userId, otherId);
-        missionService.addMissionProgress(userId, Mission.FOLLOWING_GOAL, -1);
-        missionService.addMissionProgress(otherId, Mission.FOLLOWERS_GOAL, -1);
-        return toReturn;
+        if (!userDao.follows(userId, otherId)) return null;
+        Optional<User> toReturn = userDao.deleteFollow(userId, otherId);
+        LOGGER.info("User {} unfollowed user {}", userId, otherId);
+        if (toReturn.isPresent()) {
+            missionService.addMissionProgress(userId, Mission.FOLLOWING_GOAL, -1);
+            missionService.addMissionProgress(otherId, Mission.FOLLOWERS_GOAL, -1);
+        }
+        return toReturn.orElse(null);
+    }
+
+    @Transactional()
+    @Override
+    public User patchUser(long id, String password, Boolean enabled) {
+        User user = userDao.findById(id).orElseThrow(UserNotFoundException::new);
+
+        SaveUserBuilder builder = new SaveUserBuilder();
+        if (password != null) {
+            builder.withPassword(passwordEncoder.encode(password));
+        }
+        if (enabled != null) {
+            if (user.isEnabled()) throw new UserAlreadyEnabled();
+            builder.withEnabled(enabled);
+        }
+        User updated = userDao.update(
+                        id, builder.build())
+                .orElseThrow(UserNotFoundException::new);
+        LOGGER.info("User {} patched", id);
+        return updated;
     }
 
     @Transactional(readOnly = true)
@@ -187,7 +223,7 @@ public class UserServiceImpl implements UserService {
         }
         ExpirationToken expirationToken = expToken.get();
         User user = userDao.findById(expirationToken.getUser().getId()).orElseThrow(UserNotFoundException::new);
-        SaveUserBuilder userBuilder = new SaveUserBuilder().withEnabled(true).withPassword(expirationToken.getPassword());
+        SaveUserBuilder userBuilder = new SaveUserBuilder().withEnabled(true);
         userDao.update(user.getId(), userBuilder.build());
         tokenDao.delete(expirationToken.getToken());
         LOGGER.info("User {} validated token", user.getId());
@@ -202,9 +238,10 @@ public class UserServiceImpl implements UserService {
             LOGGER.error("User {} already enabled", user.getId());
             throw new UserAlreadyEnabled();
         }
-        ExpirationToken token = tokenDao.findLastPasswordToken(user.getId()).orElseThrow(UserNotFoundException::new);
-        ExpirationToken newToken = tokenDao.create(user.getId(), token.getPassword(), LocalDateTime.now().plusHours(EXPIRATION_TIME));
-        tokenDao.delete(token.getToken());
+        Optional<ExpirationToken> token = tokenDao.findLastPasswordToken(user.getId());
+        token.ifPresent(expirationToken -> tokenDao.delete(expirationToken.getToken()));
+
+        ExpirationToken newToken = tokenDao.create(user.getId(), LocalDateTime.now().plusHours(EXPIRATION_TIME));
         mailingService.sendValidationTokenEmail(newToken, user);
         LOGGER.info("User {} resent token", user.getId());
         return newToken;
@@ -212,10 +249,16 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
+    public boolean deleteToken(String token) {
+        return tokenDao.delete(token);
+    }
+
+    @Transactional
+    @Override
     public ExpirationToken refreshToken(String token) {
         ExpirationToken expirationToken = tokenDao.getByToken(token).orElseThrow(UserNotFoundException::new);
         User user = expirationToken.getUser();
-        ExpirationToken newToken = tokenDao.create(user.getId(), expirationToken.getPassword(), LocalDateTime.now().plusHours(EXPIRATION_TIME));
+        ExpirationToken newToken = tokenDao.create(user.getId(), LocalDateTime.now().plusHours(EXPIRATION_TIME));
         if (newToken == null) {
             LOGGER.error("User {} not found when refreshing token", user.getId());
             throw new UserNotFoundException();
@@ -227,33 +270,34 @@ public class UserServiceImpl implements UserService {
 
     @Transactional(readOnly = true)
     @Override
-    public Paginated<User> searchUsers(Page page, String search, Ordering<UserOrderCriteria> ordering) {
+    public Paginated<User> searchUsers(Page page, String search, Ordering<UserOrderCriteria> ordering, Long currentUserId) {
         UserFilterBuilder userFilterBuilder = new UserFilterBuilder();
-        if(search != null) {
+        if (search != null) {
             userFilterBuilder = userFilterBuilder.withSearch(search);
         }
-        return userDao.findAll(page, userFilterBuilder.build(), ordering);
+        return userDao.findAll(page, userFilterBuilder.build(), ordering, currentUserId);
     }
 
     @Transactional(readOnly = true)
     @Override
-    public Paginated<User> getOtherUsers(Page page, Long userId, Ordering<UserOrderCriteria> ordering) {
+    public Paginated<User> getOtherUsers(Page page, Long userId, Ordering<UserOrderCriteria> ordering, Long currentUserId) {
         UserFilterBuilder userFilterBuilder = new UserFilterBuilder();
-        if(userId!=null)
+        if (userId != null)
             userFilterBuilder = userFilterBuilder.notWithId(userId);
-        return userDao.findAll(page, userFilterBuilder.build(), ordering);
+        return userDao.findAll(page, userFilterBuilder.build(), ordering, currentUserId);
     }
 
     @Transactional(readOnly = true)
     @Override
-    public Paginated<User> getUsersWhoReviewedSameGames(Page page, long userId, Ordering<UserOrderCriteria> ordering) {
+    public Paginated<User> getUsersWhoReviewedSameGames(Page page, long userId, Ordering<UserOrderCriteria> ordering, Long currentUserId) {
         Set<Game> reviewedGames = gameService.getGamesReviewedByUser(userId);
         return userDao.findAll(page,
                 new UserFilterBuilder()
                         .withGamesPlayed(reviewedGames.stream().map(Game::getId).collect(Collectors.toList()))
                         .notWithId(userId)
                         .build(),
-                ordering);
+                ordering,
+                currentUserId);
     }
 
     @Transactional(readOnly = true)
@@ -264,21 +308,22 @@ public class UserServiceImpl implements UserService {
 
     @Transactional(readOnly = true)
     @Override
-    public Paginated<User> getUsersWithSamePreferences(Page page, long userId, Ordering<UserOrderCriteria> ordering) {
+    public Paginated<User> getUsersWithSamePreferences(Page page, long userId, Ordering<UserOrderCriteria> ordering, Long currentUserId) {
         User user = getUserById(userId).orElseThrow(UserNotFoundException::new);
         return userDao.findAll(page,
                 new UserFilterBuilder()
                         .withPreferences(user.getPreferences().stream().map(Genre::getId).collect(Collectors.toList()))
                         .notWithId(userId)
                         .build(),
-                ordering);
+                ordering,
+                currentUserId);
     }
 
     @Transactional
     @Override
     public ExpirationToken sendPasswordResetToken(String email) throws UserNotFoundException {
         User user = getUserByEmail(email).orElseThrow(() -> new UserNotFoundException("user.notfound"));
-        ExpirationToken newToken = tokenDao.create(user.getId(), "", LocalDateTime.now().plusHours(EXPIRATION_TIME));
+        ExpirationToken newToken = tokenDao.create(user.getId(), LocalDateTime.now().plusHours(EXPIRATION_TIME));
         mailingService.sendChangePasswordEmail(newToken, user);
         LOGGER.info("Sending User {} a password reset token", user.getId());
         return newToken;
@@ -286,20 +331,15 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public User resetPassword(String token, String password) throws TokenExpiredException, TokenNotFoundException {
-        ExpirationToken existentToken = tokenDao.getByToken(token).orElseThrow(() -> new TokenNotFoundException("token.notfound"));
-        if (existentToken.getExpiration().isBefore(LocalDateTime.now())) {
-            LOGGER.error("Token for User {} password reset expired", existentToken.getUser().getId());
-            throw new TokenExpiredException("token.expired");
-        }
+    public User resetPassword(int id, String password) {
         User user = userDao.update(
-                existentToken.getUser().getId(),
+                id,
                 new SaveUserBuilder()
                         .withPassword(passwordEncoder.encode(password))
                         .withEnabled(true)
                         .build()
-        ).orElse(null);
-        LOGGER.info("User {} reset password", existentToken.getUser().getId());
+        ).orElseThrow(UserNotFoundException::new);
+        LOGGER.info("User {} reset password", id);
         return user;
     }
 
@@ -385,8 +425,11 @@ public class UserServiceImpl implements UserService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<Game> getFavoriteGamesFromUser(long userId) {
-        return gameDao.getFavoriteGamesFromUser(userId).orElseThrow(UserNotFoundException::new);
+    public Paginated<Game> getFavoriteGamesFromUser(Page page,long userId) {
+        if (!getUserById(userId).isPresent())
+            throw new UserNotFoundException();
+        GameFilter filter = new GameFilterBuilder().withFavoriteGamesOf(userId).build();
+        return gameDao.findAll(page, filter, new Ordering<>(OrderDirection.DESCENDING, GameOrderCriteria.AVERAGE_RATING), userId);
     }
 
     @Transactional(readOnly = true)
@@ -407,6 +450,56 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public User setFavoriteGames(long userId, List<Long> gameIds) {
-        return userDao.replaceAllFavoriteGames(userId, gameIds==null? new ArrayList<>(): gameIds).orElseThrow(UserNotFoundException::new);
+        return userDao.replaceAllFavoriteGames(userId, gameIds==null? Collections.emptyList(): gameIds).orElseThrow(UserNotFoundException::new);
+    }
+
+    @Transactional
+    @Override
+    public boolean addFavoriteGame(long userId, long gameid) {
+        if (!getUserById(userId).isPresent()) throw new UserNotFoundException();
+        return userDao.addFavoriteGame(userId, gameid);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Paginated<User> getUsers(Page page, UserFilter filter, Ordering<UserOrderCriteria> ordering, Long currentUserId) {
+
+        if (filter.hasFollowersQuery()) {
+            if (filter.isProperFollowersQuery()) {
+                return userDao.getFollowers(filter.getFollowersQueryId(), page).orElseThrow(UserNotFoundException::new);
+            }
+            throw new ExclusiveFilterException("error.user.filter.followers");
+        }
+        if (filter.hasFollowingQuery()) {
+            if (filter.isProperFollowingQuery()) {
+                return userDao.getFollowing(filter.getFollowingQueryId(), page).orElseThrow(UserNotFoundException::new);
+            }
+            throw new ExclusiveFilterException("error.user.filter.following");
+        }
+        if (filter.hasSameGamesPlayedQuery()) {
+            if (filter.isProperSameGamesPlayedAs()) {
+                return this.getUsersWhoReviewedSameGames(page, filter.getSameGamesPlayedQueryId(), ordering, currentUserId);
+            }
+            throw new ExclusiveFilterException("error.user.filter.gamesplayed");
+        }
+        if (filter.hasSamePreferencesQuery()) {
+            if (filter.isProperSamePreferencesAs()) {
+                return this.getUsersWithSamePreferences(page, filter.getSamePreferencesQueryId(), ordering, currentUserId);
+            }
+            throw new ExclusiveFilterException("error.user.filter.preferences");
+        }
+        return userDao.findAll(page, filter, ordering, currentUserId);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Optional<ExpirationToken> getExpirationToken(String token) {
+        return tokenDao.getByToken(token);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Optional<Set<NotificationType>> getNotifications(long id) {
+        return userDao.findById(id).map(User::getDisabledNotifications);
     }
 }

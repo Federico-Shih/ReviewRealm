@@ -1,0 +1,215 @@
+.review-detail {
+  width: 80%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+@media only screen and (max-width: 992px) {
+  .review-section {
+    width: 100%;
+  }
+  .game-section {
+    margin-top: 20px;
+    width: 100%;
+  }
+}
+
+@media only screen and (min-width: 992px) {
+  .review-section {
+    width: 70%;
+    padding: 0 5%;
+  }
+  .game-section {
+    width: 30%;
+  }
+}
+
+.main-card {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-primary-variant-1);
+  border-radius: 10px;
+  width: 100%;
+  margin: 1em 0;
+}
+
+.review-card-content {
+  padding: 24px;
+}
+
+.review-header {
+  margin-bottom: 8px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 24px;
+  font-weight: 300;
+  .title {
+  }
+  .top-right {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+    .score {
+      display: flex;
+      flex-direction: row;
+      align-items: baseline;
+      .actual-score {
+        font-size: 40px;
+        font-weight: 700;
+        white-space: nowrap;
+      }
+    }
+  }
+}
+
+.review-middle {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 5px;
+}
+
+.review-body {
+  padding: 5px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.icons {
+  color: #939398;
+}
+.disabled-icons {
+  color: #464648;
+}
+.highlighted-icons {
+  color: #ffffff;
+}
+.red-icon {
+  color: var(--color-accent);
+}
+
+.review-footer {
+  .tags {
+    display: flex;
+    flex-direction: row;
+    padding: 5px;
+  }
+
+  .author {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    .name {
+      color: #039be5;
+    }
+    .author-preferences {
+      font-size: 15px;
+      color: #dbd5fd;
+      display: flex;
+      flex-direction: row;
+      align-items: baseline;
+      flex-wrap: wrap;
+    }
+  }
+}
+
+.tag-group {
+  padding-left: 2px;
+  .chip {
+    background: #ddd7ff;
+    color: var(--color-surface) !important;
+    border: 1px solid var(--color-primary-variant-1);
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 2px 6px;
+    white-space: nowrap;
+    cursor: pointer !important;
+  }
+}
+
+.popularity-section {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 14px;
+  gap: 2%;
+  padding: 1em;
+
+  .left {
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    .popularity-tag {
+      font-size: 14px;
+      font-weight: 500;
+      margin-right: 4px;
+      white-space: nowrap;
+    }
+    .popularity-value {
+      font-size: 16px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+  }
+  .right {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+  }
+}
+
+::ng-deep mat-dialog-container {
+  --mdc-dialog-container-color: var(--color-surface) !important;
+  border: 1px solid var(--color-primary-variant-1) !important;
+  border-radius: 10px !important;
+  height: fit-content !important;
+  overflow-y: clip !important;
+  .dialog {
+    padding: 1em 2em;
+  }
+  .button {
+    position: relative;
+    cursor: pointer;
+    display: inline-block;
+    overflow: hidden;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    vertical-align: middle;
+    z-index: 1;
+    transition: 0.3s ease-out;
+    text-decoration: none;
+    color: #fff;
+    text-align: center;
+    letter-spacing: 0.5px;
+    border: none;
+    border-radius: 2px;
+    height: 36px;
+    line-height: 36px;
+    padding: 0 16px;
+    text-transform: uppercase;
+  }
+  .flat-button {
+    background-color: transparent;
+  }
+  .accent-button {
+    background-color: var(--color-accent);
+  }
+  .report-radio-group {
+    display: flex;
+    flex-direction: column;
+    margin: 15px 0;
+    align-items: flex-start;
+    flex-wrap: nowrap;
+  }
+}

@@ -4,6 +4,7 @@ import ar.edu.itba.paw.models.ExpirationToken;
 import ar.edu.itba.paw.models.Game;
 import ar.edu.itba.paw.models.Review;
 import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.services.utils.EncodingUtil;
 import ar.edu.itba.paw.servicesinterfaces.MailingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +17,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring4.SpringTemplateEngine;
+
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.util.HashMap;
@@ -56,6 +58,7 @@ public class MailingServiceImpl implements MailingService {
         templateVariables.put("webBaseUrl", env.getProperty("mailing.weburl"));
         templateVariables.put("token", token.getToken());
         templateVariables.put("user", user.getUsername());
+        templateVariables.put("email", EncodingUtil.encodeURIComponent(user.getEmail()));
 
         Object[] stringArgs = {};
         String subject = messageSource.getMessage("email.validation.subject",
@@ -71,6 +74,7 @@ public class MailingServiceImpl implements MailingService {
         templateVariables.put("webBaseUrl", env.getProperty("mailing.weburl"));
         templateVariables.put("token", token.getToken());
         templateVariables.put("user", user.getUsername());
+        templateVariables.put("email", EncodingUtil.encodeURIComponent(user.getEmail()));
 
         Object[] stringArgs = {};
         String subject = messageSource.getMessage("email.changepassword.subject",
@@ -171,6 +175,7 @@ public class MailingServiceImpl implements MailingService {
             LOGGER.info("Email sent to {} with subject {}", mailTo, mailSubject);
         } catch (MessagingException | RuntimeException exception) {
             LOGGER.error("Error while sending email to {} with subject {}", mailTo, mailSubject, exception);
+//            System.out.println("Error while sending email" + exception.getMessage());
         }
     }
 }

@@ -11,7 +11,7 @@ public class DaoUtils {
         // Utility class
     }
 
-    public static <T extends OrderCriteria>String toOrderString(Ordering<T> order, boolean isNative) {
+    public static <T extends OrderCriteria>String toOrderString(Ordering<T> order, boolean isNative,String tableIdColumn) {
         if (order == null || order.getOrderCriteria() == null) {
             return "";
         }
@@ -24,6 +24,13 @@ public class DaoUtils {
             orderQuery.append(" ");
             orderQuery.append("NULLS LAST");
         }
+        if(tableIdColumn != null){
+            orderQuery.append(" , ");
+            orderQuery.append(tableIdColumn);
+            orderQuery.append(" ");
+            orderQuery.append(" DESC ");
+        }
+
         return orderQuery.toString();
     }
 

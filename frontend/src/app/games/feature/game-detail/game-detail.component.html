@@ -1,0 +1,16 @@
+<ng-container *ngIf="state$ | async as state; else loading">
+  <app-game-detail-page
+    (deleteGame)="openDeleteDialog()"
+    (showMoreReviews)="showMore($event)"
+    [game]="state.game"
+    [isModerator]="state.isModerator"
+    [loadingReviews]="state.isLoadingReviews"
+    [paginatedReviews]="state.initialReviews"
+    [userReview]="state.userReview">
+  </app-game-detail-page>
+</ng-container>
+<ng-template #loading>
+  <div class="centered-container">
+    <mat-spinner></mat-spinner>
+  </div>
+</ng-template>

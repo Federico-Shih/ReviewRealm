@@ -1,0 +1,17 @@
+.header {
+  .title {
+    padding: 0.5em 0;
+  }
+
+  .icon {
+    margin-right: 0.5em;
+  }
+}
+
+mat-expansion-panel {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-primary-variant-1);
+  border-radius: 10px;
+  width: 100%;
+  margin: 1em 0;
+}

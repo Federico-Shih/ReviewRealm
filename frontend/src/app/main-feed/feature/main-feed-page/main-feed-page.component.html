@@ -1,0 +1,73 @@
+<div (scroll)="nextPage($event)" class="main-container">
+  <div class="for-you-section">
+    <app-header-banner
+      *ngIf="hasPreferences$ | async"
+      [buttonLabel]="'mainfeed.preferences.cta' | translate | uppercase"
+      [title]="'mainfeed.preferences.title' | translate"
+      icon="videogame_asset"
+      routerLink="/for-you/discover">
+    </app-header-banner>
+    <app-header-banner
+      *ngIf="(hasPreferences$ | async) === false"
+      [bannerType]="'warning'"
+      [buttonLabel]="'mainfeed.nopreferencesset.cta' | translate | uppercase"
+      [title]="'mainfeed.nopreferencesset.title' | translate"
+      icon="warning"
+      routerLink="/settings/genres">
+    </app-header-banner>
+  </div>
+  <h1>{{ getTabLabel(selectedTab.value) | translate }}</h1>
+  <header>
+    <mat-button-toggle-group [formControl]="selectedTab" class="tab-group">
+      <mat-button-toggle class="tab" value="following">
+        <mat-icon class="tab-icon">groups</mat-icon>
+        {{ 'following' | translate | titlecase }}
+      </mat-button-toggle>
+      <mat-button-toggle class="tab" value="recommended">
+        <mat-icon class="tab-icon">local_fire_department</mat-icon>
+        {{ 'recommended' | translate | titlecase }}
+      </mat-button-toggle>
+      <mat-button-toggle class="tab" value="new">
+        <mat-icon class="tab-icon">newspaper</mat-icon>
+        {{ 'new' | translate | titlecase }}
+      </mat-button-toggle>
+    </mat-button-toggle-group>
+  </header>
+  <section
+    *ngIf="loadingReviews$ | async as loadingReviews"
+    class="main-section">
+    <div *ngIf="loadingReviews.loading" class="centered-container spinner">
+      <mat-spinner></mat-spinner>
+    </div>
+    <div *ngIf="loadingReviews.user!.following === 0 && selectedTab.value === 'following'">
+      <h2>{{ 'mainfeed.noFollowing' | translate }}</h2>
+    </div>
+    <div
+      *ngIf="!loadingReviews.loading && loadingReviews.reviews.totalPages === 0 && !(loadingReviews.user!.following === 0 && selectedTab.value === 'following')"
+      class="centered-container">
+      <h2>{{ 'mainfeed.noReviews' | translate }}</h2>
+    </div>
+    <mat-grid-list
+      [style.visibility]="loadingReviews.loading ? 'hidden' : 'visible'"
+      cols="2"
+      gutterSize="20px"
+      rowHeight="300px"
+      style="display: flex">
+      <mat-grid-tile
+        *ngFor="let review of loadingReviews.reviews.content"
+        colspan="1"
+        rowspan="1"
+        style="">
+        <app-review-card
+          [review]="review"
+          style="width: 100%"></app-review-card>
+      </mat-grid-tile>
+      <mat-grid-tile
+        *ngIf="loadingReviews.loadingInfinite"
+        colspan="2"
+        rowspan="1">
+        <mat-spinner class="centered-container"> </mat-spinner>
+      </mat-grid-tile>
+    </mat-grid-list>
+  </section>
+</div>

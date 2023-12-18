@@ -9,10 +9,7 @@ import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Table(name = "games")
@@ -43,11 +40,11 @@ public class Game implements Cloneable {
     @JoinColumn(name = "imageid", referencedColumnName = "id")
     private Image image;
 
-    @ElementCollection(targetClass = Genre.class, fetch = FetchType.LAZY)
+    @ElementCollection(targetClass = Genre.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "genreforgames", joinColumns = @JoinColumn(name = "gameid", referencedColumnName = "id"))
     @Column(name = "genreid")
     @Convert(converter = GenreAttributeConverter.class)
-    private List<Genre> genres;
+    private Set<Genre> genres;
 
     @Column(name = "publishdate", nullable = false)
     @Convert(converter = LocalDateConverter.class)
@@ -66,11 +63,17 @@ public class Game implements Cloneable {
     @JoinColumn(name = "suggestedby", referencedColumnName = "id")
     private User suggestedBy = null;
 
+    @Column(name = "deleted", nullable = false)
+    private Boolean deleted = false;
+
     @OneToMany(mappedBy = "reviewedGame", fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     private List<Review> reviews;
 
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "favoriteGames",targetEntity = User.class)
     private Set<User> favoriteUsers;
+
+    @Transient
+    private boolean isFavorite = false;
 
     @Formula(value = "case when reviewCount = 0 then 0 else ratingSum/reviewCount end")
     private Double averageRating;
@@ -88,7 +91,7 @@ public class Game implements Cloneable {
         this.developer = developer;
         this.publisher = publisher;
         this.image = image;
-        this.genres = genres;
+        this.genres = new HashSet<>(genres);
         this.publishDate = publishDate;
         this.suggestion = suggestion;
         this.suggestedBy = suggestedBy;
@@ -120,10 +123,10 @@ public class Game implements Cloneable {
         byte[] imageBytes = new byte[0];
         this.image = new Image(imageid, "jpg", imageBytes);
         this.publishDate = LocalDate.parse(releaseDate);
-        this.genres = genres;
+        this.genres = new HashSet<>(genres);
     }
 
-    public Game(long id, String name, String description, String developer, String publisher, LocalDate publishDate, int ratingsum, int reviewcount) {
+    public Game(long id, String name, String description, String developer, String publisher, LocalDate publishDate, int ratingsum, int reviewcount, boolean deleted) {
         // for testing
         this.id = id;
         this.name = name;
@@ -133,6 +136,7 @@ public class Game implements Cloneable {
         this.publishDate = publishDate;
         this.ratingSum = ratingsum;
         this.reviewCount = reviewcount;
+        this.deleted = deleted;
     }
 
     protected Game() {
@@ -163,7 +167,7 @@ public class Game implements Cloneable {
         return IMAGE_PATH + image.getId();
     }
 
-    public List<Genre> getGenres() {
+    public Set<Genre> getGenres() {
         return genres;
     }
 
@@ -200,7 +204,7 @@ public class Game implements Cloneable {
     }
 
     public void setGenres(List<Genre> genres) {
-        this.genres = genres;
+        this.genres = new HashSet<>(genres);
     }
 
     @Override
@@ -260,6 +264,14 @@ public class Game implements Cloneable {
         this.publishDate = publishDate;
     }
 
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(Boolean deleted) {
+        this.deleted = deleted;
+    }
+
     @Override
     public Game clone() {
         try {
@@ -274,6 +286,7 @@ public class Game implements Cloneable {
             clone.setReviewCount(this.reviewCount);
             clone.setSuggestion(this.suggestion);
             clone.setGenres(new ArrayList<>(this.genres));
+            clone.setDeleted(this.deleted);
             return clone;
         } catch (CloneNotSupportedException e) {
             throw new AssertionError();
@@ -282,5 +295,13 @@ public class Game implements Cloneable {
 
     public Set<User> getFavoriteUsers() {
         return favoriteUsers;
+    }
+
+    public boolean isFavorite() {
+        return isFavorite;
+    }
+
+    public void setFavorite(boolean favorite) {
+        isFavorite = favorite;
     }
 }

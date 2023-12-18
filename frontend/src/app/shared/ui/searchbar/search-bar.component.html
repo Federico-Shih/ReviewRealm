@@ -1,0 +1,18 @@
+<div class="navbar-search">
+  <i
+    tabindex="0"
+    (keyup)="onSubmit()"
+    (click)="onSubmit()"
+    class="material-icons prefix icon-prefix clickable">
+    search
+  </i>
+  <input
+    (ngModelChange)="onChange($event)"
+    [ngModel]="text"
+    type="text"
+    (keyup.enter)="onSubmit()"
+    (submit)="onSubmit()"
+    [placeholder]="label"
+    [value]="value"
+  />
+</div>
