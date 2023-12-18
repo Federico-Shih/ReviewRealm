@@ -29,7 +29,6 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Path("users")
@@ -239,7 +238,7 @@ public class UserController {
         }
         return Response.ok().entity(
                 new GenericEntity<List<NotificationStatusResponse.NotificationTypeResponse>>(
-                        NotificationStatusResponse.getAllNotifications(uriInfo, user.get().getDisabledNotifications())
+                        NotificationStatusResponse.fromEntity(uriInfo, user.get().getDisabledNotifications())
                 ){}
         ).build();
     }

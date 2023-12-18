@@ -15,6 +15,7 @@ import ar.edu.itba.paw.webapp.auth.AccessControl;
 import ar.edu.itba.paw.webapp.auth.AuthenticationHelper;
 import ar.edu.itba.paw.webapp.controller.annotations.ExistentReviewId;
 import ar.edu.itba.paw.webapp.controller.annotations.ExistentUserId;
+import ar.edu.itba.paw.webapp.controller.cache.CacheHelper;
 import ar.edu.itba.paw.webapp.controller.forms.EditReviewForm;
 import ar.edu.itba.paw.webapp.controller.forms.SubmitReviewForm;
 import ar.edu.itba.paw.webapp.controller.mediatypes.VndType;
@@ -32,6 +33,7 @@ import org.springframework.stereotype.Component;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
+import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
@@ -86,7 +88,7 @@ public class ReviewController{
             return Response.noContent().build();
         }
         List<ReviewResponse> reviewResponseList = reviews.getList().stream().map((review) -> ReviewResponse.fromEntity(uriInfo, review, user == null? null: user.getId())).collect(Collectors.toList());
-        return PaginatedResponseHelper.fromPaginated(uriInfo, reviewResponseList, reviews).build();
+        return CacheHelper.unconditionalCache(PaginatedResponseHelper.fromPaginated(uriInfo, reviewResponseList, reviews), 240).build();
     }
 
     @POST

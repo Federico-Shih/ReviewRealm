@@ -66,12 +66,6 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private JwtTokenFilter jwtTokenFilter;
 
-    private static final String ACCESS_CONTROL_CHECK_REVIEW_OWNER = "@accessControl.checkReviewAuthorOwner(#id)";
-
-    private static final String ACCESS_CONTROL_CHECK_REVIEW_FEEDBACK = "@accessControl.checkReviewAuthorforFeedback(#id)";
-
-    private static final String ACCESS_CONTROL_CHECK_GAME_REVIEWED = "@accessControl.checkGameAuthorReviewed(#id)";
-
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -103,7 +97,6 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(WebSecurity web) throws Exception {
-        web.ignoring().antMatchers( "/static/**", "/css/**", "/js/**");
     }
 
     @Override
@@ -116,7 +109,7 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                 .accessDecisionManager(accessDecisionManager())
                 .antMatchers(HttpMethod.PATCH, "/api/users/{id:\\d+}").authenticated()
                 .antMatchers(HttpMethod.POST, "/api/reports", "/api/games","/api/reviews").authenticated()
-                .antMatchers("/api/reports/**").hasRole(RoleType.MODERATOR.getRole())
+                .antMatchers("/api/reports/**", "/api/reports").hasRole(RoleType.MODERATOR.getRole())
                 .antMatchers(HttpMethod.PATCH, "/api/games/{id:\\d+}").hasRole(RoleType.MODERATOR.getRole())
                 .antMatchers(HttpMethod.DELETE, "/api/games/{id:\\d+}").hasRole(RoleType.MODERATOR.getRole())
                 .antMatchers(HttpMethod.POST,"/api/reviews/{id:\\d+}").authenticated()

@@ -44,36 +44,37 @@ public class MissionController {
     @Produces(VndType.APPLICATION_MISSION)
     public Response getMissionById(@PathParam("id") String missionName, @Context Request request) {
         return missionService.getMissionById(missionName)
-                .map(mission -> CacheHelper.buildEtagCache(
-                        request,
-                        mission,
-                        CacheHelper.buildCacheControl(86400),
-                        entity -> Response.ok(MissionResponse.fromEntity(uriInfo, mission, getLocalizedMission(mission), getLocalizedFrequency(mission.getFrequency())))
-                ))
-                .orElse(Response.status(Response.Status.NOT_FOUND)).build();
+                .map(mission ->
+                        CacheHelper.conditionalCache(
+                            Response.ok(MissionResponse.fromEntity(uriInfo, mission, getLocalizedMission(mission), getLocalizedFrequency(mission.getFrequency()))),
+                            request,
+                            mission,
+                            CacheHelper.buildCacheControl(86400 * 30)
+                        )
+                ).orElse(Response.status(Response.Status.NOT_FOUND)).build();
     }
 
     @GET
     @Produces(VndType.APPLICATION_MISSION_LIST)
     public Response getMission(@Context Request request) {
         List<Mission> missions = missionService.getMissions(AuthenticationHelper.getLoggedUser(us));
-        return CacheHelper.buildEtagCache(
-                request,
-                missions,
-                CacheHelper.buildCacheControl(86400),
-                entity -> Response.ok(
-                        new GenericEntity<List<MissionResponse>>(
-                                missions.stream()
-                                        .map((mission ->
-                                                MissionResponse
-                                                        .fromEntity(
-                                                                uriInfo,
-                                                                mission,
-                                                                getLocalizedMission(mission),
-                                                                getLocalizedFrequency(mission.getFrequency())
-                                                        )
-                                        )).collect(Collectors.toList())) {}
-                )
+        return CacheHelper.conditionalCache(
+            Response.ok(
+                new GenericEntity<List<MissionResponse>>(
+                    missions.stream()
+                        .map((mission ->
+                            MissionResponse
+                                .fromEntity(
+                                    uriInfo,
+                                    mission,
+                                    getLocalizedMission(mission),
+                                    getLocalizedFrequency(mission.getFrequency())
+                                )
+                        )).collect(Collectors.toList())) {}
+            ),
+            request,
+            missions,
+            CacheHelper.buildCacheControl(86400 * 30)
         ).build();
     }
 

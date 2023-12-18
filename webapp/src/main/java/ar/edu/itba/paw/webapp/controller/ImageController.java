@@ -7,6 +7,7 @@ import ar.edu.itba.paw.webapp.exceptions.CustomRuntimeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.CacheControl;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -47,16 +48,12 @@ public class ImageController {
                 throw new CustomRuntimeException(Response.Status.INTERNAL_SERVER_ERROR, "image.resizing.error");
             }
         }
-        HttpHeaders headers = new HttpHeaders();
         if(image == null){
             return Response.status(Response.Status.NOT_FOUND).build();
         }
-        headers.setContentType(MediaType.parseMediaType(image.getMediaType()));
-
         final Response.ResponseBuilder responseBuilder = Response.ok(image.getImage(), image.getMediaType());
-
-        CacheHelper.unconditionalCache(responseBuilder, 86400);
-
+        // Uses cache busting
+        CacheHelper.unconditionalCache(responseBuilder, 31536000);
         return responseBuilder.build();
     }
 
