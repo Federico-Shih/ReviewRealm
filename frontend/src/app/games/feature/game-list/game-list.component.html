@@ -105,7 +105,7 @@
       <div>
         <app-search-bar
           (search)="search($event)"
-          (submit)="submitSearch()"
+          (searchSubmit)="submitSearch()"
           [label]="'navbar.search' | translate"></app-search-bar>
       </div>
     </div>
@@ -133,7 +133,7 @@
     </mat-grid-list>
     <div
       *ngIf="combinedPagination$ | async as combined"
-      [style.display]="loading ? 'none' : 'block'" class="pagination-container">
+      [style.display]="loading ? 'none' : 'flex'" class="pagination-container">
       <mat-paginator
         #paginator
         (page)="handlePageEvent($event)"

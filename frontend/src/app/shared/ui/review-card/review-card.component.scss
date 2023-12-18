@@ -114,20 +114,31 @@
 
 .image-container {
   position: relative;
-  width: 100px;
+  width: 150px;
   height: 100%;
   overflow: hidden;
 
   img {
-    object-fit: cover;
+    object-fit: contain;
   }
 }
 
+.title-container {
+  flex: 2;
+  overflow: hidden;
+}
+
 .review-game {
+  width: 100%;
   font-size: 18px;
   font-weight: 600;
   white-space: nowrap;
   margin-bottom: 4px;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .pill {

@@ -4,9 +4,11 @@
     <div>
       <app-search-bar
         (search)="setSearch($event)"
-        (submit)="submitSearch()"
+        (searchSubmit)="submitSearch()"
         [label]="'games.search.title' | translate"
-        [value]="search.value!"></app-search-bar>
+        [value]="search.value!">
+
+      </app-search-bar>
     </div>
     <div
       class="games-container"

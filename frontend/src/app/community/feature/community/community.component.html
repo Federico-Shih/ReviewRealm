@@ -3,9 +3,11 @@
     <div>
       <app-search-bar
         (search)="setSearch($event)"
-        (submit)="submitSearch()"
+        (searchSubmit)="submitSearch()"
         [label]="'community.search' | translate"
-        [value]="search.value!"></app-search-bar>
+        [value]="search.value!">
+
+      </app-search-bar>
     </div>
     <div class="tabs-container">
       <mat-button-toggle-group

@@ -37,12 +37,12 @@
       </div>
     </a>
     <ng-container *ngIf="!isLoggedIn">
-      <a routerLink="/login">
+      <a routerLink="/login" routerLinkActive="active">
         <div id="login-link">
           {{ 'navbar.login' | translate }}
         </div>
       </a>
-      <a routerLink="/register">
+      <a routerLink="/register" routerLinkActive="active">
         <div id="register-link">
           {{ 'navbar.register' | translate }}
         </div>
@@ -60,15 +60,15 @@
     </button>
     <mat-menu #menu="matMenu">
       <div class="menu">
-        <button mat-menu-item routerLink="/profile/{{ user?.id }}">
+        <button mat-menu-item routerLink="/profile/{{ user?.id }}" routerLinkActive="active">
           <mat-icon>account_circle</mat-icon>
           <span>{{ 'navbar.profile' | translate }}</span>
         </button>
-        <button mat-menu-item routerLink="/settings/missions">
+        <button mat-menu-item routerLink="/settings/missions" routerLinkActive="active">
           <mat-icon>receipt</mat-icon>
           <span>{{ 'navbar.missions' | translate }}</span>
         </button>
-        <button mat-menu-item>
+        <button mat-menu-item routerLink="/reviews/submit/search" routerLinkActive="active">
           <mat-icon>create</mat-icon>
           <span>{{ 'navbar.write-review' | translate }}</span>
         </button>
@@ -77,20 +77,20 @@
           <span>{{ 'navbar.suggest-game' | translate }}</span>
         </button>
         <ng-container *ngIf="user?.role === Role.MODERATOR">
-          <button mat-menu-item routerLink="/games/submit">
+          <button mat-menu-item routerLink="/games/submit" routerLinkActive="active">
             <mat-icon>add</mat-icon>
             <span>{{ 'navbar.upload-game' | translate }}</span>
           </button>
-          <button mat-menu-item>
+          <button mat-menu-item routerLink="/games/submissions" routerLinkActive="active">
             <mat-icon>playlist_add_check</mat-icon>
             <span>{{ 'navbar.submissions' | translate }}</span>
           </button>
-          <button mat-menu-item>
+          <button mat-menu-item routerLink="/reports" routerLinkActive="active">
             <mat-icon>flag</mat-icon>
             <span>{{ 'navbar.reports' | translate }}</span>
           </button>
         </ng-container>
-        <button mat-menu-item routerLink="/settings">
+        <button mat-menu-item routerLink="/settings" routerLinkActive="active">
           <mat-icon>settings</mat-icon>
           <span>{{ 'navbar.settings' | translate }}</span>
         </button>

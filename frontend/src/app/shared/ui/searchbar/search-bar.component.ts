@@ -1,11 +1,5 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  EventEmitter,
-  Input,
-  Output,
-} from '@angular/core';
-import { subscribeOn } from 'rxjs';
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output,} from '@angular/core';
+import {subscribeOn} from 'rxjs';
 
 @Component({
   selector: 'app-search-bar',
@@ -28,10 +22,8 @@ export class SearchBarComponent {
   @Output()
   searchSubmit = new EventEmitter();
 
-  onChange(event: Event) {
-    const value = (event.target as HTMLInputElement).value;
-    this.value = value;
-    this.search.emit(value);
+  onChange(event: string) {
+    this.search.emit(event);
   }
 
   onSubmit() {

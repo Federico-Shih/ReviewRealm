@@ -58,11 +58,11 @@
           }}"
           priority="high" />
       </div>
-      <section>
+      <section class="title-container">
         <div
           class="review-game pointer"
           routerLink="/games/{{ review.game?.id }}">
-          {{ review.game?.name }}
+          <span>{{ review.game?.name }}</span>
         </div>
         <div *ngIf="review.game && review.game.genres">
           <span

@@ -66,10 +66,10 @@ export class ReviewSearchComponent implements OnInit, AfterViewInit {
     })
   );
 
-  combinedPagination$ = combineLatest([
-    this.reviewSearchDto$,
-    this.pagination$,
-  ]);
+  combinedPagination$ = combineLatest({
+    reviewSearch: this.reviewSearchDto$,
+    pagination: this.pagination$,
+  });
 
   constructor(
     private readonly reviewsService: ReviewsService,

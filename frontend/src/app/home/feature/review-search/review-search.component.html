@@ -83,7 +83,7 @@
                 <mat-icon>favorite</mat-icon>
                 {{ 'review-search.favoritegenres' | translate }}
               </button>
-              <div formArrayName="gameGenres">
+              <div *ngIf="genres.length === filter.controls?.['gameGenres']?.value.length" formArrayName="gameGenres">
                 <mat-checkbox
                   class="genre-checkbox"
                   *ngFor="let genre of genres; let i = index"
@@ -112,10 +112,11 @@
                 <mat-icon>favorite</mat-icon>
                 {{ 'review-search.favoritegenres' | translate }}
               </button>
-              <div formArrayName="userPreferences">
+              <div *ngIf="genres.length === filter.controls?.['userPreferences']?.value.length"
+                   formArrayName="userPreferences">
                 <mat-checkbox
                   class="genre-checkbox"
-                  *ngFor="let genre of genres; let i = index"
+                  *ngFor="let _ of genres; let i = index"
                   [formControlName]="i">
                   {{ genres[i].localized }}
                 </mat-checkbox>
@@ -176,7 +177,7 @@
       <div>
         <app-search-bar
           (search)="search($event)"
-          (submit)="submitSearch()"
+          (searchSubmit)="submitSearch()"
           [label]="'navbar.search' | translate"></app-search-bar>
       </div>
       <button
@@ -224,10 +225,10 @@
         <mat-paginator
           #paginator
           (page)="handlePageEvent($event)"
-          *ngIf="combined[1].totalPages !== 0"
-          [length]="combined[1].totalElements"
-          [pageIndex]="(combined[0].page || 1) - 1"
-          [pageSize]="combined[0].pageSize || 10"
+          *ngIf="combined.pagination.totalPages !== 0"
+          [length]="combined.pagination.totalElements"
+          [pageIndex]="(combined.reviewSearch.page || 1) - 1"
+          [pageSize]="combined.reviewSearch.pageSize || 10"
           class="paginator">
         </mat-paginator>
       </div>
