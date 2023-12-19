@@ -22,7 +22,7 @@ public class PatchUserForm {
 
     public Set<Integer> getGenres() {
         if(genres == null)
-            return new HashSet<>();
+            return null;
         return new HashSet<>(genres);
     }
 

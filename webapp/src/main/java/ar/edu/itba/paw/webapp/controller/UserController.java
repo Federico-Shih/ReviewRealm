@@ -131,8 +131,8 @@ public class UserController {
     @Consumes(VndType.APPLICATION_PATCH_USER_FORM)
     public Response patchUser(@Valid @NotNull(message = "error.body.empty") PatchUserForm patchUserForm, @PathParam("id") long id) throws InvalidAvatarException {
         us.patchUser(id, patchUserForm.getPassword());
-        if (!patchUserForm.getGenres().isEmpty()) {
-            us.setPreferences(patchUserForm.getGenres(), id);
+        if (patchUserForm.getGenres() != null) {
+           us.setPreferences(patchUserForm.getGenres(), id);
         }
         if (patchUserForm.getAvatarId() != null) {
             us.changeUserAvatar(id, patchUserForm.getAvatarId());

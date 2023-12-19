@@ -86,10 +86,7 @@ public class GenreController {
         } else {
             genres = genreService.getGenres();
         }
-        if (genres.isEmpty()) {
-            return CacheHelper.unconditionalCache(Response.noContent(), 60).build();
-        }
-        CacheControl cacheControl = CacheHelper.buildCacheControl(gameId != null || userId != null ? 60 : cacheMaxAge);
+        CacheControl cacheControl = CacheHelper.buildCacheControl(gameId != null || userId != null ? 0 : cacheMaxAge);
         Response.ResponseBuilder response = Response.ok().entity(
             new GenericEntity<List<GenreResponse>>(
                 genres.stream()
