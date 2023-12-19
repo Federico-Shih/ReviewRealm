@@ -21,7 +21,7 @@
         <mat-icon class="heart-icon">favorite</mat-icon>
         <span>{{ 'profile-card.whoprefers' | translate }}</span>
       </div>
-      <div style="margin-top: 5px">
+      <div class="preference-chips">
         <span
           *ngFor="let genre of user.preferences | slice: 0 : 2"
           class="chip-small-inverted pointer"
