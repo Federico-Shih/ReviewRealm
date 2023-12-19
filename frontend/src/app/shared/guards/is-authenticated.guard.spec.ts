@@ -11,6 +11,7 @@ import {
 } from '../../../tests/mocks/authentication-service.mock';
 import { AuthenticationService } from '../data-access/authentication/authentication.service';
 import { Observable, of } from 'rxjs';
+import {RouterTestingModule} from "@angular/router/testing";
 
 describe('IsAuthenticatedGuard', () => {
   const guard: CanActivateFn = (...guardParameters) =>
@@ -32,6 +33,22 @@ describe('IsAuthenticatedGuard', () => {
           useValue: {},
         },
       ],
+      imports: [
+        RouterTestingModule.withRoutes([
+          {
+            path: 'login',
+            component: class {},
+          },
+          {
+            path: '404',
+            component: class {},
+          },
+          {
+            path: '403',
+            component: class {},
+          },
+        ]),
+      ]
     });
   });
 

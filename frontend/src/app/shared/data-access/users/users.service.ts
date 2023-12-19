@@ -57,8 +57,6 @@ export class UsersService {
       );
   }
 
-  // map(responseMapper(User.fromResponse))
-
   getUsers(
     url: string,
     searchQuery?: UserSearchDto
