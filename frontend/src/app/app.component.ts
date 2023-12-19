@@ -4,6 +4,7 @@ import {BehaviorSubject, map} from 'rxjs';
 import {User} from './shared/data-access/users/users.class';
 import {Router} from '@angular/router';
 import {TranslateService} from "@ngx-translate/core";
+import {NavigationHistoryService} from "./shared/data-access/navigation-history/navigation-history.service";
 
 @Component({
   selector: 'app-root',
@@ -19,8 +20,10 @@ export class AppComponent implements OnInit {
   constructor(
     readonly authService: AuthenticationService,
     private readonly router: Router,
-    private readonly translateService: TranslateService
-  ) {}
+    private readonly translateService: TranslateService,
+    private readonly navigationHistoryService: NavigationHistoryService
+  ) {
+  }
 
   search(searchValue: string) {
     this.searchValue.next(searchValue);

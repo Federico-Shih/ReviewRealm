@@ -5,6 +5,7 @@ import {BehaviorSubject, Subscription} from 'rxjs';
 import { RequestError } from '../../../shared/data-access/shared.models';
 import {NavigationSkipped, Router} from '@angular/router';
 import { Location } from '@angular/common';
+import {NavigationHistoryService} from "../../../shared/data-access/navigation-history/navigation-history.service";
 
 @Component({
   selector: 'app-login',
@@ -19,15 +20,19 @@ export class LoginComponent implements OnInit, OnDestroy {
   constructor(
     private readonly authService: AuthenticationService,
     private readonly router: Router,
-    private readonly location: Location
-  ) {}
+    private readonly location: Location,
+    private readonly navigationHistoryService: NavigationHistoryService
+  ) {
+  }
 
   onLoginSubmit(authenticationDto: AuthenticationDto) {
     this.errorMessage$.next(null);
     this.loading$.next(true);
     this.authService.login(authenticationDto).subscribe({
       next: () => {
-        this.location.back();
+        this.eventSuscription = this.navigationHistoryService.previousUrl.subscribe((previousUrl) => {
+          this.router.navigate([previousUrl ?? '/'], { replaceUrl: true });
+        });
         this.loading$.next(false);
       },
       error: err => {
@@ -44,10 +49,5 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.eventSuscription = this.router.events.subscribe((event) => {
-      if (event instanceof NavigationSkipped) {
-        this.router.navigate(['/'], { replaceUrl: true });
-      }
-    })
   }
 }

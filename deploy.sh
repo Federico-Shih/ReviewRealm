@@ -15,7 +15,7 @@ else
 	u=${USER}
 fi
 
-mv webapp/target/webapp.war webapp/target/app.war
+cp webapp/target/webapp.war webapp/target/app.war
 
 scp webapp/target/app.war "${u}"@pampero.it.itba.edu.ar:/home/"${u}"/.
 

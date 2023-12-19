@@ -15,6 +15,7 @@ import { customExceptionMapper } from '../../helpers/mapper';
 import { jwtDecode } from 'jwt-decode';
 import { UserJwtPayload } from '../shared.models';
 import { UsersService } from '../users/users.service';
+import {NavigationHistoryService} from "../navigation-history/navigation-history.service";
 
 export const AUTHORIZATION_TOKEN_LABEL = 'X-RR-AUTHORIZATION';
 export const REFRESH_TOKEN_LABEL = 'X-RR-REFRESH';
@@ -26,7 +27,8 @@ export class AuthenticationService {
 
   constructor(
     private readonly http: HttpClient,
-    private readonly userService: UsersService
+    private readonly userService: UsersService,
+    private readonly navigationHistoryService: NavigationHistoryService
   ) {
     const token = localStorage.getItem(AUTHORIZATION_TOKEN_LABEL);
     if (token) {
@@ -94,6 +96,7 @@ export class AuthenticationService {
     localStorage.removeItem(AUTHORIZATION_TOKEN_LABEL);
     localStorage.removeItem(REFRESH_TOKEN_LABEL);
     this.loggedUser$.next(null);
+    this.navigationHistoryService.clear();
   }
 
   getLoggedUser(): Observable<User | null> {
