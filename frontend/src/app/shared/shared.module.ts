@@ -35,6 +35,11 @@ import {MatExpansionModule} from '@angular/material/expansion';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {HeaderBannerComponent} from './ui/header-banner/header-banner.component';
 import {LoadingSpinnerComponent} from './ui/loading-spinner/loading-spinner.component';
+import {
+  GameInfiniteLoadService,
+  ReviewInfiniteLoadService,
+  UserInfiniteLoadService
+} from "./stores/infinite-load.service";
 
 @NgModule({
   declarations: [
@@ -58,6 +63,9 @@ import {LoadingSpinnerComponent} from './ui/loading-spinner/loading-spinner.comp
     GamesService,
     EnumsService,
     ReportsService,
+    GameInfiniteLoadService,
+    ReviewInfiniteLoadService,
+    UserInfiniteLoadService
   ],
   imports: [
     CommonModule,

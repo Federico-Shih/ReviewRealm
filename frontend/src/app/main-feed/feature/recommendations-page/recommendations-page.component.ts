@@ -55,6 +55,7 @@ export class RecommendationsPageComponent implements OnInit {
       return of(null);
     })
   );
+
   state$: Observable<{
     gameState: { game: Game | null; links: PaginatedLinks };
     userReview: Review | null;

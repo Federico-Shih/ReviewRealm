@@ -35,12 +35,15 @@
   <div class="divider-h no-margin-top"></div>
   <div
     class="second-part"
-    *ngIf="userReviews$ | async as reviews; else loading3">
+    *ngIf="reviewState$ | async as reviews; else loading">
     <span class="titletext" i18n>{{ 'profile.reviews' | translate }}</span>
-    <ng-container *ngIf="reviews.content.length===0">
+    <ng-container *ngIf="reviews.paginatedItems?.content?.length === 0">
       <div class="nofavgames-container">
         <span i18n>{{ 'profile.noreviews' | translate }}</span>
       </div>
+    </ng-container>
+    <ng-container *ngIf="reviews.loading && reviews.paginatedItems === null">
+      <app-loading-spinner></app-loading-spinner>
     </ng-container>
     <mat-grid-list
       [cols]="breakpoint"
@@ -49,7 +52,7 @@
       style="display: flex"
       (window:resize)="onResize($event)">
       <mat-grid-tile
-        *ngFor="let review of reviews.content"
+        *ngFor="let review of reviews.paginatedItems?.content || []"
         colspan="1"
         rowspan="1"
         style="">
@@ -58,13 +61,18 @@
           style="width: 100%"></app-review-card>
       </mat-grid-tile>
     </mat-grid-list>
-    <div *ngIf="reviews.links.next" class="centered-container view-more-button">
+    <div *ngIf="reviews.hasMore && reviews.paginatedItems?.links" class="centered-container view-more-button">
       <button
+        [disabled]="reviews.loading"
         mat-raised-button
         color="accent"
-        (click)="showMore(reviews.links.next)"
-        i18n>
-        {{ 'profile.view-more-button' | translate }}
+        (click)="showMore(reviews.paginatedItems?.links?.next ?? '')">
+        <ng-container *ngIf="!reviews.loading; else loadingSmall">
+          {{ 'profile.view-more-button' | translate }}
+        </ng-container>
+        <ng-template #loadingSmall>
+          <app-loading-spinner [diameter]="20"></app-loading-spinner>
+        </ng-template>
       </button>
     </div>
   </div>
@@ -74,11 +82,6 @@
     </div>
   </ng-template>
   <ng-template #loading2>
-    <div class="centered-container">
-      <mat-spinner mode="indeterminate"></mat-spinner>
-    </div>
-  </ng-template>
-  <ng-template #loading3>
     <div class="centered-container">
       <mat-spinner mode="indeterminate"></mat-spinner>
     </div>

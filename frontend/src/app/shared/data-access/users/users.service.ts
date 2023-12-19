@@ -61,10 +61,10 @@ export class UsersService {
 
   getUsers(
     url: string,
-    searchQuery: UserSearchDto
+    searchQuery?: UserSearchDto
   ): Observable<Paginated<User>> {
     return this.http
-      .get<UserResponse[]>(url + queryMapper(searchQuery, url), {
+      .get<UserResponse[]>(url + queryMapper(searchQuery ?? {}, url), {
         observe: 'response',
         responseType: 'json',
       })

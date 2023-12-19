@@ -2,7 +2,7 @@
   <ng-container *ngIf="state$ | async as state; else loading">
     <app-game-detail-page
       (showMoreReviews)="showMore($event)"
-      *ngIf="state?.gameState?.game !== null"
+      *ngIf="state?.gameState?.game !== null; else noUsers"
       [game]="state.gameState.game"
       [isModerator]="false"
       [loadingReviews]="state.isLoadingReviews"
@@ -37,7 +37,7 @@
       <mat-icon>chevron_right</mat-icon>
     </button>
     <button
-      *ngIf="!state.gameState.links.next"
+      *ngIf="!state.gameState.links.next && state?.gameState?.game !== null"
       class="right-button"
       color="accent"
       mat-flat-button
@@ -50,6 +50,12 @@
   <ng-template #loading>
     <div class="centered-container">
       <mat-spinner></mat-spinner>
+    </div>
+  </ng-template>
+  <ng-template #noUsers>
+    <div class="centered-container">
+      <h2>{{ 'recommendations.norecommendations' | translate }}</h2>
+
     </div>
   </ng-template>
 </div>
