@@ -37,8 +37,8 @@ export const splitLinks = (links: string): Map<string, string> => {
 export const arrayResponseMapper =
   <T, K>(fromResponse: (param: T) => K) =>
   (httpResponse: HttpResponse<T[]>): K[] => {
-    const reviewResponse = httpResponse.body as T[];
-    return reviewResponse.map(fromResponse);
+    const arrayResponse = httpResponse.body as T[] ?? [];
+    return arrayResponse.map(fromResponse);
   };
 
 export const paginatedResponseMapper =

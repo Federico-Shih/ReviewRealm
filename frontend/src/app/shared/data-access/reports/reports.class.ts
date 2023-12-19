@@ -56,7 +56,7 @@ export enum ReportState {
   REJECTED = 'REJECTED',
   DELETED_REVIEW = 'DELETED_REVIEW',
 }
-export function getMessageFromReason(reason: ReportReason): string {
+export function getMessageFromReason(reason: string): string {
   switch (reason) {
     case ReportReason.DISRESPECTFUL:
       return 'report.reason.disrespect';
@@ -71,6 +71,7 @@ export function getMessageFromReason(reason: ReportReason): string {
     case ReportReason.PRIVACY:
       return 'report.reason.privacy';
   }
+  return '';
 }
 export class Report {
   id: number;

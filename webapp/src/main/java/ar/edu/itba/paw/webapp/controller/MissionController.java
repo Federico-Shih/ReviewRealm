@@ -49,7 +49,7 @@ public class MissionController {
                             Response.ok(MissionResponse.fromEntity(uriInfo, mission, getLocalizedMission(mission), getLocalizedFrequency(mission.getFrequency()))),
                             request,
                             mission,
-                            CacheHelper.buildCacheControl(86400 * 30)
+                            CacheHelper.buildCacheControl(86400)
                         )
                 ).orElse(Response.status(Response.Status.NOT_FOUND)).build();
     }

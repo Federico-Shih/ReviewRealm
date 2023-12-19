@@ -72,7 +72,7 @@
           <mat-icon>create</mat-icon>
           <span>{{ 'navbar.write-review' | translate }}</span>
         </button>
-        <button *ngIf="user?.role === Role.USER" mat-menu-item>
+        <button *ngIf="user?.role === Role.USER" mat-menu-item routerLink="/games/submit">
           <mat-icon>add</mat-icon>
           <span>{{ 'navbar.suggest-game' | translate }}</span>
         </button>

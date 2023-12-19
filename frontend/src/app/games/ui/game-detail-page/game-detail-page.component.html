@@ -120,7 +120,7 @@
         <span class="header">
           {{ 'game-details.personal-review' | translate }}</span
         >
-        <button [routerLink]="['reviews', userReview.id, 'edit']" color="primary" mat-raised-button>
+        <button [routerLink]="'/reviews/'+ userReview.id + '/edit'" color="primary" mat-raised-button>
           <mat-icon>edit</mat-icon>
           {{ 'edit-own-review' | translate }}
         </button>

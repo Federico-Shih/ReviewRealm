@@ -144,11 +144,13 @@ export class UsersService {
   }
 
   editUserGenres(url: string, genres: GenresDto) {
-    //TODO:Error y Devolver algo?
     return this.http
       .patch<Genre[]>(url, genres, {
         responseType: 'json',
         observe: 'response',
+        headers: {
+          'Content-Type': UserMediaTypes.EDIT_USER,
+        }
       })
       .pipe(catchError(exceptionMapper))
       .pipe(map(() => true));
@@ -178,17 +180,18 @@ export class UsersService {
       .pipe(catchError(exceptionMapper));
   }
   editUserAvatar(url: string, avatar: AvatarDto) {
-    //TODO:Error y Devolver algo?
     return this.http
       .patch<AvatarDto>(url, avatar, {
         responseType: 'json',
         observe: 'response',
+        headers: {
+          'Content-Type': UserMediaTypes.EDIT_USER,
+        }
       })
       .pipe(catchError(exceptionMapper));
   }
 
   editUserNotifications(url: string, notifs: NotificationsDto) {
-    //TODO:Error y Devolver algo?
     return this.http
       .put<boolean>(url, notifs, {
         responseType: 'json',
@@ -209,24 +212,24 @@ export class UsersService {
         }).pipe(map(()=> true)).pipe(catchError(map(() => false)))
   }
 
-    follow(url: string, followDto: FollowDto) {
-        return this.http
-            .post<boolean>(url, followDto,{
-                responseType: 'json',
-                observe: 'response',
-                headers: {
-                    'Content-Type': 'application/vnd.following-form.v1+json',
-                },
-            }).pipe(catchError(map(() => false))).pipe(map(()=> true))
-    }
+  follow(url: string, followDto: FollowDto) {
+      return this.http
+          .post<boolean>(url, followDto,{
+              responseType: 'json',
+              observe: 'response',
+              headers: {
+                  'Content-Type': 'application/vnd.following-form.v1+json',
+              },
+          }).pipe(catchError(map(() => false))).pipe(map(()=> true))
+  }
 
-    unfollow(url: string) {
-        return this.http
-            .delete<boolean>(url,{
-                responseType: 'json',
-                observe: 'response',
-            }).pipe(catchError(map(() => false))).pipe(map(()=> true))
-    }
+  unfollow(url: string) {
+      return this.http
+          .delete<boolean>(url,{
+              responseType: 'json',
+              observe: 'response',
+          }).pipe(catchError(map(() => false))).pipe(map(()=> true))
+  }
 
   patchUser(
     url: string,

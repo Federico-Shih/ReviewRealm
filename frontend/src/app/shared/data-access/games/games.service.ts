@@ -80,7 +80,7 @@ export class GamesService {
       .pipe(
         catchError(exceptionMapper),
         map(response => {
-          return response.status === 201;
+          return response.status === 201 || response.status === 202;
         })
       );
   }

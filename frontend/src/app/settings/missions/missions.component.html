@@ -63,7 +63,7 @@
                             100
                         }}"></mat-progress-bar>
                       <span
-                        >{{ mission.progress.progress }}/{{
+                        >{{ mission.progress.progress >= 0 ? mission.progress.progress : 0 }}/{{
                           mission.missionInfo.target
                         }}</span
                       >

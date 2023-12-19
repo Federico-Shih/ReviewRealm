@@ -219,9 +219,9 @@
     "completedtimes": "Veces Completada: {{value}}",
     "exp": "Experiencia Total: {{value}}",
     "lvl": "NIVEL {{value}}",
+    "nomissions": "¡Aún no has descubierto ninguna Misión! Sigue buscando...",
     "yourmissions": "Tus Misiones",
-    "yourprogress": "Tu Progreso",
-    "nomissions": "¡Aún no has descubierto ninguna Misión! Sigue buscando..."
+    "yourprogress": "Tu Progreso"
   },
   "navbar": {
     "community-link": "Comunidad",
@@ -329,7 +329,13 @@
   "reset-filters": "Restablecer Filtros",
   "review": {
     "confirm": {
-      "title": "Confirmar la creación de la reseña?"
+      "title": {
+        "create": "Confirmar creación de reseña",
+        "update": "Confirmar actualización de reseña"
+      },
+      "update": {
+        "title": "Confirmar reseña actualizada"
+      }
     },
     "created": "La reseña ha sido creada",
     "delete": "Borrar Reseña",
@@ -351,8 +357,8 @@
     "search": "Buscar Reseñas",
     "submit": {
       "button": {
-        "create": "Crear Reseña",
-        "edit": "Editar Reseña"
+        "create": "Crear reseña",
+        "edit": "Actualizar reseña"
       },
       "completed": {
         "label": "Completado"

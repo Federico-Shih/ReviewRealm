@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output,} from '@angular/core';
+import {ChangeDetectionStrategy, Component, EventEmitter, Inject, Input, OnInit, Output,} from '@angular/core';
 import {FormBuilder, FormControl, Validators} from '@angular/forms';
 import {TranslateService} from '@ngx-translate/core';
 import {Platform, ReviewFormType,} from '../../../shared/data-access/shared.enums';
@@ -7,7 +7,7 @@ import {Game} from '../../../shared/data-access/games/games.class';
 import {ReviewSubmitDto} from '../../../shared/data-access/reviews/reviews.dtos';
 import {AsyncPipe, CommonModule} from "@angular/common";
 import {SharedModule} from "../../../shared/shared.module";
-import {MatDialog, MatDialogModule, MatDialogRef} from "@angular/material/dialog";
+import {MAT_DIALOG_DATA, MatDialog, MatDialogModule, MatDialogRef} from "@angular/material/dialog";
 import {MatButtonModule} from "@angular/material/button";
 
 @Component({
@@ -118,7 +118,11 @@ export class ReviewFormComponent implements OnInit {
     ) {
       return;
     }
-    const dialogRef: MatDialogRef<ReviewConfirmDialog, boolean> = this.dialog.open(ReviewConfirmDialog);
+    const dialogRef: MatDialogRef<ReviewConfirmDialog, boolean> = this.dialog.open(ReviewConfirmDialog, {
+      data: {
+        isCreation: this.editReview === null
+      }
+    });
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         const dto: ReviewSubmitDto = {
@@ -151,6 +155,10 @@ export class ReviewFormComponent implements OnInit {
   protected readonly Platform = Platform;
 }
 
+type Props = {
+  isCreation: boolean;
+}
+
 @Component({
   selector: 'app-review-form-dialog',
   templateUrl: './review-form-confirm-dialog.html',
@@ -158,4 +166,8 @@ export class ReviewFormComponent implements OnInit {
   standalone: true,
 })
 export class ReviewConfirmDialog {
+  constructor(@Inject(MAT_DIALOG_DATA) public props: Props) {
+    this.isCreation = props.isCreation;
+  }
+  isCreation: boolean = true;
 }

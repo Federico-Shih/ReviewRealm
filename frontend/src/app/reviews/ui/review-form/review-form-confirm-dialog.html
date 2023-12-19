@@ -1,18 +1,31 @@
 <div class="dialog">
-  <h3 class="title">{{'review.confirm.title' | translate}}</h3>
+  <h3 class="title">
+    <ng-container *ngIf="isCreation; else isUpdate">
+      {{'review.confirm.title.create' | translate}}
+    </ng-container>
+    <ng-template #isUpdate>
+      {{ 'review.confirm.title.update' | translate }}
+    </ng-template>
+  </h3>
   <mat-dialog-actions align="end">
     <button
       [mat-dialog-close]="false"
       class="button flat-button"
-      mat-raised-button>
+      mat-flat-button>
       {{'cancel' | translate}}
     </button>
     <button
+      color="accent"
       [mat-dialog-close]="true"
       cdkFocusInitial
       class="button accent-button"
       mat-raised-button>
-      {{'review.submit' | translate}}
+      <ng-container *ngIf="isCreation; else isUpdate">
+        {{'review.submit.button.create' | translate}}
+      </ng-container>
+      <ng-template #isUpdate>
+        {{'review.submit.button.update' | translate}}
+      </ng-template>
     </button>
   </mat-dialog-actions>
 </div>

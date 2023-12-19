@@ -47,7 +47,6 @@ export class GameSubmitComponent {
     const dialogRef = this.dialog.open(GameSubmitDialogComponent);
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        console.log(formData);
         this.loading$.next(true);
         this.gameService
           .createGame(`${environment.API_ENDPOINT}/games`, formData)

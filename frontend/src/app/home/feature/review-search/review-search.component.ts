@@ -101,11 +101,11 @@ export class ReviewSearchComponent implements OnInit, AfterViewInit {
     ReviewSortType
   ).map(str => ({
     translateKey: `review-filter.${str}`,
-    selectKey: str,
+    selectKey: str as ReviewSortType,
   }));
 
-  platforms: Platform[] = Object.values(Platform);
-  difficulties: Difficulty[] = Object.values(Difficulty);
+  platforms: Platform[] = Object.values(Platform) as Platform[];
+  difficulties: Difficulty[] = Object.values(Difficulty) as Difficulty[];
   protected readonly SortDirection = SortDirection;
   protected readonly ReviewSortType = ReviewSortType;
   protected readonly Object = Object;
@@ -218,7 +218,7 @@ export class ReviewSearchComponent implements OnInit, AfterViewInit {
     if (genres.length > 0) {
       this.filter.value._gameGenresMeta.forEach((genre: Genre, index: number) => {
         if (genres.find((g) => g.id === genre.id) !== undefined) {
-          this.filter.get('gameGenres')?.get(`${index}`)?.setValue(true);
+          ((this.filter.get('gameGenres') as FormArray).at(index))?.setValue(true);
         }
       });
     }

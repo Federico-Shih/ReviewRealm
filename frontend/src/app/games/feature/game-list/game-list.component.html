@@ -5,15 +5,25 @@
     class="drawer-container"
     mode="side"
     opened="true">
-    <div class="drawer">
+    <div class="drawer" >
       <div class="filter-buttons">
         <button
-          (click)="applyFilters()"
+          *ngIf="genres$ | async as genres; else placeholder"
+          (click)="applyFilters(genres)"
           color="accent"
           mat-raised-button
           style="flex: 1">
           {{ 'apply-filters' | translate }}
         </button>
+        <ng-template #placeholder>
+          <button
+            color="accent"
+            disabled="true"
+            mat-raised-button
+            style="flex: 1">
+            <mat-spinner diameter="20"></mat-spinner>
+          </button>
+        </ng-template>
         <button
           (click)="resetFilters()"
           mat-flat-button
@@ -31,7 +41,7 @@
           (gameSearchDto$ | async)?.sort || GameSortType.PUBLISH_DATE
         "
         [sortTypes]="orderDirections">
-        <div class="filter-section">
+        <div class="filter-section" >
           <span class="filter-title">{{
             'filter-title' | translate
             }}</span>
@@ -61,8 +71,8 @@
               {{ 'game-search.exclude-no-rating' | translate }}
             </mat-checkbox>
             <mat-expansion-panel
-              class="remove-mat-expansion-panel-padding"
-              *ngIf="genres$ | async as genres; else genreLoading">
+              *ngIf="genres$ | async as genres; else genreLoading"
+              class="remove-mat-expansion-panel-padding">
               <mat-expansion-panel-header class="full-width">
                 <mat-panel-title>
                   <mat-icon>sports_esports</mat-icon>
@@ -70,7 +80,7 @@
                 </mat-panel-title>
               </mat-expansion-panel-header>
               <button
-                (click)="selectGameGenres(favorite)"
+                (click)="selectGameGenres(genres, favorite)"
                 *ngIf="favoritedGenres$ | async as favorite"
                 class="favorite-button"
                 color="accent" mat-flat-button
@@ -78,7 +88,7 @@
                 <mat-icon>favorite</mat-icon>
                 {{ 'review-search.favoritegenres' | translate }}
               </button>
-              <div formArrayName="genres">
+              <div formArrayName="genres" *ngIf="genres.length === filter.controls.genres.length">
                 <mat-checkbox
                   class="genre-checkbox"
                   *ngFor="let genre of genres; let i = index"
@@ -88,14 +98,15 @@
               </div>
             </mat-expansion-panel>
           </form>
-          <ng-template #genreLoading>
-            <div class="centered-container">
-              <mat-spinner mode="indeterminate"></mat-spinner>
-            </div>
-          </ng-template>
+
         </div>
       </app-filter-drawer>
     </div>
+    <ng-template #genreLoading>
+      <div class="centered-container">
+        <mat-spinner mode="indeterminate"></mat-spinner>
+      </div>
+    </ng-template>
   </mat-drawer>
   <mat-drawer-content class="drawer-content">
     <div class="searchbar">

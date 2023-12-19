@@ -219,9 +219,9 @@
     "completedtimes": "Times Completed: {{value}}",
     "exp": "Total Experience: {{value}}",
     "lvl": "LVL. {{value}}",
+    "nomissions": "You haven't discovered any Missions! Keep looking...",
     "yourmissions": "Your Missions",
-    "yourprogress": "Your Progress",
-    "nomissions": "You haven't discovered any Missions! Keep looking..."
+    "yourprogress": "Your Progress"
   },
   "navbar": {
     "community-link": "Community",
@@ -328,7 +328,10 @@
   "reset-filters": "Reset Filters",
   "review": {
     "confirm": {
-      "title": "Confirm review creation?"
+      "title": {
+        "create": "Confirm review creation",
+        "update": "Confirm review update"
+      }
     },
     "created": "The review has been created",
     "delete": "Delete Review",
@@ -350,8 +353,8 @@
     "search": "Search Reviews",
     "submit": {
       "button": {
-        "create": "Create Review",
-        "edit": "Edit Review"
+        "create": "Create review",
+        "edit": "Update review"
       },
       "completed": {
         "label": "Completed"

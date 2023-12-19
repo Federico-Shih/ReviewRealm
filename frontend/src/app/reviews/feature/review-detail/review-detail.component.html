@@ -145,7 +145,7 @@
               <button
                 mat-icon-button
                 [disabled]="(currentUser$ | async) === null || (loadingLike$ | async) === true"
-                (click)="giveReviewFeedback(feedback.isLike()? null : FeedbackType.LIKE)">
+                (click)="giveReviewFeedback(review,feedback.isLike()? null : FeedbackType.LIKE)">
                 <mat-icon
                   fontIcon="thumb_up"
                   [class]="
@@ -159,7 +159,7 @@
               <button
                 mat-icon-button
                 [disabled]="(currentUser$ | async) === null || (loadingLike$ | async) === true"
-                (click)="giveReviewFeedback(feedback.isDislike()? null :FeedbackType.DISLIKE)">
+                (click)="giveReviewFeedback(review, feedback.isDislike() ? null : FeedbackType.DISLIKE)">
                 <mat-icon
                   fontIcon="thumb_down"
                   [class]="

@@ -29,9 +29,31 @@ import {AuthenticationService} from "../../../shared/data-access/authentication/
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GameListComponent implements OnInit, AfterViewInit {
+  constructor(
+    private readonly gameService: GamesService,
+    private readonly router: Router,
+    private readonly genreService: EnumsService,
+    private readonly formBuilder: FormBuilder,
+    private route: ActivatedRoute,
+    private readonly rendererFactory: RendererFactory2,
+    private readonly authService: AuthenticationService,
+  ) {
+    this.renderer = rendererFactory.createRenderer(null, null);
+  }
+
   gameSearchDto$ = this.route.queryParamMap.pipe(map(paramsMapToGameSearchDto));
   genres$ = this.genreService.getGenres(`${environment.API_ENDPOINT}/genres`);
-  filter: FormGroup;
+  filter = new FormGroup(
+    {
+      search: new FormControl(''),
+      excludeNoRating: new FormControl(false),
+      genres: new FormArray([]),
+      lowRating: new FormControl(0),
+      highRating: new FormControl(10),
+      sort: new FormControl(''),
+      direction: new FormControl(''),
+    }
+  );
   loading = true;
 
   private renderer: Renderer2;
@@ -68,7 +90,7 @@ export class GameListComponent implements OnInit, AfterViewInit {
   orderDirections: EnumType<GameSortType>[] = Object.values(GameSortType).map(
     str => ({
       translateKey: `game-filter.${str}`,
-      selectKey: str,
+      selectKey: str as GameSortType,
     })
   );
 
@@ -91,7 +113,6 @@ export class GameListComponent implements OnInit, AfterViewInit {
             genreControl.at(index).setValue(isSelected);
           }
         });
-        this.filter.get('_gameGenresMeta')?.setValue(genres);
       }
     );
 
@@ -131,7 +152,7 @@ export class GameListComponent implements OnInit, AfterViewInit {
       });
     }
   }
-  applyFilters() {
+  applyFilters(completeGenres: Genre[]) {
     const {
       genres,
       lowRating,
@@ -140,13 +161,12 @@ export class GameListComponent implements OnInit, AfterViewInit {
       search,
       sort,
       direction,
-      _gameGenresMeta,
     } = this.filter.value;
     const rating = `${lowRating}t${highRating}`;
     const queryParams: Record<string, unknown> = {
       genres: mapCheckedToType(
         genres as boolean[],
-        _gameGenresMeta as Genre[],
+        completeGenres,
         genre => genre.id
       ),
       rating,
@@ -160,33 +180,13 @@ export class GameListComponent implements OnInit, AfterViewInit {
     });
   }
 
-  constructor(
-    private readonly gameService: GamesService,
-    private readonly router: Router,
-    private readonly genreService: EnumsService,
-    private readonly formBuilder: FormBuilder,
-    private route: ActivatedRoute,
-    private readonly rendererFactory: RendererFactory2,
-    private readonly authService: AuthenticationService,
-  ) {
-    this.filter = this.formBuilder.group({
-      search: new FormControl(''),
-      excludeNoRating: new FormControl(false),
-      genres: new FormArray([]),
-      lowRating: new FormControl(0),
-      highRating: new FormControl(10),
-      _gameGenresMeta: [],
-      sort: new FormControl(''),
-      direction: new FormControl(''),
-    });
-    this.renderer = rendererFactory.createRenderer(null, null);
-  }
 
-  selectGameGenres(genres: Genre[]) {
+
+  selectGameGenres(completeGenres: Genre[], genres: Genre[]) {
     if (genres.length > 0) {
-      this.filter.value._gameGenresMeta.forEach((genre: Genre, index: number) => {
+      completeGenres.forEach((genre: Genre, index: number) => {
         if (genres.find((g) => g.id === genre.id) !== undefined) {
-          this.filter.get('genres')?.get(`${index}`)?.setValue(true);
+          (this.filter.controls.genres.at(index) as FormControl).setValue(true);
         }
       });
     }
