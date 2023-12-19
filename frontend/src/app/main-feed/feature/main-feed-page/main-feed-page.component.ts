@@ -50,6 +50,8 @@ export class MainFeedPageComponent implements OnInit {
     user: this.loggedInUser$
   });
 
+  protected breakpoint = 2;
+
   constructor(
     private readonly router: Router,
     private readonly route: ActivatedRoute,
@@ -119,6 +121,8 @@ export class MainFeedPageComponent implements OnInit {
         });
       }
     });
+    this.breakpoint =
+        window.innerWidth <= 720 ? 1 : 2;
   }
 
   nextPage(event: Event) {
@@ -149,5 +153,12 @@ export class MainFeedPageComponent implements OnInit {
           },
         });
     }
+  }
+
+  onResize(event: Event) {
+    const target = event.target as Window;
+    if (target === null || target.innerWidth === null) return;
+    this.breakpoint =
+      target.innerWidth <= 720 ? 1 : 2;
   }
 }

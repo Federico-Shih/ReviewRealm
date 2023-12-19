@@ -49,10 +49,11 @@
     </div>
     <mat-grid-list
       [style.visibility]="loadingReviews.loading ? 'hidden' : 'visible'"
-      cols="2"
+      [cols]="breakpoint"
       gutterSize="20px"
       rowHeight="300px"
-      style="display: flex">
+      style="display: flex"
+      (window:resize)="onResize($event)">
       <mat-grid-tile
         *ngFor="let review of loadingReviews.reviews.content"
         colspan="1"
