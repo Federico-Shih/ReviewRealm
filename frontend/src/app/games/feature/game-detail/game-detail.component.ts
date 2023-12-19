@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/core';
 import {GamesService} from '../../../shared/data-access/games/games.service';
 import {ReviewsService} from '../../../shared/data-access/reviews/reviews.service';
 import {AuthenticationService} from '../../../shared/data-access/authentication/authentication.service';
@@ -13,6 +13,7 @@ import {MatSnackBar} from '@angular/material/snack-bar';
 import {MatDialog} from '@angular/material/dialog';
 import {TranslateService} from '@ngx-translate/core';
 import {GameDeleteDialogComponent} from '../../ui/game-delete-dialog/game-delete-dialog.component';
+import {ReviewInfiniteLoadService} from "../../../shared/stores/infinite-load.service";
 
 @Component({
   selector: 'app-game-detail',
@@ -20,7 +21,7 @@ import {GameDeleteDialogComponent} from '../../ui/game-delete-dialog/game-delete
   styleUrls: ['./game-detail.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class GameDetailComponent implements OnInit {
+export class GameDetailComponent implements OnInit, OnDestroy {
   loggedUser$ = this.authService.getLoggedUser();
 
   isModerator$ = this.loggedUser$.pipe(
@@ -37,23 +38,6 @@ export class GameDetailComponent implements OnInit {
     })
   );
 
-  initialReviews$: Observable<Paginated<Review>> = this.game$.pipe(
-    switchMap(game => {
-      if (game.links.reviewsExcludingUser) {
-        return this.reviewService.getReviews(
-          game.links.reviewsExcludingUser,
-          {}
-        );
-      }
-      return this.reviewService.getReviews(game.links.reviews, {});
-    })
-  );
-
-  isLoadingReviews$ = new BehaviorSubject<boolean>(false);
-
-  paginatedReviews$: BehaviorSubject<Paginated<Review> | null> =
-    new BehaviorSubject<Paginated<Review> | null>(null);
-
   userReview$: Observable<Review | null> = this.game$.pipe(
     switchMap(game => {
       if (game.links.userReview) {
@@ -69,8 +53,9 @@ export class GameDetailComponent implements OnInit {
     isModerator: this.isModerator$,
     game: this.game$,
     userReview: this.userReview$,
-    initialReviews: this.initialReviews$,
-    isLoadingReviews: this.isLoadingReviews$,
+    initialReviews: this.infiniteLoadService.getLoadedItems$(),
+    isLoadingReviews: this.infiniteLoadService.getLoading$(),
+    hasMore: this.infiniteLoadService.getHasMore$()
   });
 
   constructor(
@@ -81,24 +66,15 @@ export class GameDetailComponent implements OnInit {
     private readonly router: Router,
     public dialog: MatDialog,
     public snackBar: MatSnackBar,
-    private readonly translate: TranslateService
-  ) {}
+    private readonly translate: TranslateService,
+    private readonly infiniteLoadService: ReviewInfiniteLoadService
+  ) {
+    this.infiniteLoadService.registerPagination(this.reviewService.getReviews.bind(this.reviewService));
+    this.infiniteLoadService.reset();
+  }
 
   showMore(next: string): void {
-    this.isLoadingReviews$.next(true);
-    this.reviewService.getReviews(next, {}).subscribe(pageInfo => {
-      const currentReviews = this.paginatedReviews$.getValue();
-      if (currentReviews !== null) {
-        const newReviews = currentReviews.content.concat(pageInfo.content);
-        this.paginatedReviews$.next({
-          content: newReviews,
-          links: pageInfo.links,
-          totalPages: pageInfo.totalPages,
-          totalElements: pageInfo.totalElements,
-        });
-        this.isLoadingReviews$.next(false);
-      }
-    });
+    this.infiniteLoadService.loadMore(next, {});
   }
 
   ngOnInit(): void {
@@ -108,23 +84,27 @@ export class GameDetailComponent implements OnInit {
         this.router.navigate(['errors/not-found']);
       }
     });
-    this.initialReviews$.subscribe(pageInfo =>
-      this.paginatedReviews$.next(pageInfo)
-    );
+
     this.game$.subscribe({
+      next: game => {
+        if (game.links.reviewsExcludingUser) {
+          this.infiniteLoadService.loadMore(game.links.reviewsExcludingUser, {pageSize: 1});
+        } else {
+          this.infiniteLoadService.loadMore(game.links.reviews, { pageSize: 1 });
+        }
+      },
       error: () => {
         this.router.navigate(['errors/not-found']);
-      },
-    });
+      }});
   }
+
+
   openDeleteDialog() {
     const dialogRef = this.dialog.open(GameDeleteDialogComponent, {
       width: '60%',
     });
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        //confirmed
-        console.log('deleting');
         this.game$.subscribe(game => {
           this.gameService.deleteGame(game.links.self).subscribe({
             error: () => {
@@ -152,5 +132,9 @@ export class GameDetailComponent implements OnInit {
         });
       }
     });
+  }
+
+  ngOnDestroy(): void {
+    this.infiniteLoadService.deregisterPagination();
   }
 }

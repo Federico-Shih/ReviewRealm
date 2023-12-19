@@ -6,12 +6,11 @@
       ]" />
 </div>
 <div class="container row">
-
   <span class="header" i18n>{{ 'profile.followerstitle' | translate }}</span>
   <div class="divider-h"></div>
-  <ng-container *ngIf="followers$ | async as followers ; else loading" >
+  <ng-container *ngIf="state$ | async as state ; else loading" >
     <div class="user-container">
-      <ng-container *ngFor="let user of followers.content">
+      <ng-container *ngFor="let user of state.paginatedItems?.content">
         <div class="margin-bottom-2">
           <div class="profile-card-container">
             <app-profile-card [user]="user" />
@@ -19,18 +18,18 @@
         </div>
       </ng-container>
     </div>
-    <ng-container *ngIf="followers.totalPages===0">
+    <ng-container *ngIf="state.paginatedItems?.totalPages===0">
       <span class="header" i18n>
         {{ 'profile.followingtitle' | translate }}
       </span>
     </ng-container>
-    <div *ngIf="followers.links.next" class="centered-container view-more-button">
+    <div *ngIf="state.hasMore" class="centered-container view-more-button">
       <button
               mat-raised-button
               color="accent"
-              (click)="showMore(followers.links.next)"
+              (click)="showMore(state.paginatedItems?.links?.next || '')"
               i18n>
-        {{ 'profile.view-more-button' | translate }}
+        <span *ngIf="!state.loading; else small">{{ 'profile.view-more-button' | translate }}</span>
       </button>
     </div>
   </ng-container>
@@ -38,5 +37,8 @@
     <div class="centered-container">
       <mat-spinner mode="indeterminate"></mat-spinner>
     </div>
+  </ng-template>
+  <ng-template #small>
+    <mat-spinner diameter="20" mode="indeterminate"></mat-spinner>
   </ng-template>
 </div>

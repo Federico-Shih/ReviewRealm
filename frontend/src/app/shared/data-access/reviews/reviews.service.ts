@@ -69,10 +69,10 @@ export class ReviewsService {
 
   getReviews(
     url: string,
-    queryDto: ReviewSearchDto
+    queryDto?: ReviewSearchDto
   ): Observable<Paginated<Review>> {
     return this.http
-      .get<ReviewResponse[]>(url + queryMapper(queryDto, url), {
+      .get<ReviewResponse[]>(url + queryMapper(queryDto || {}, url), {
         observe: 'response',
         responseType: 'json',
       })

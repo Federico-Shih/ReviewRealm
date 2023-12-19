@@ -268,21 +268,21 @@
     "xbox": "XBox"
   },
   "profile": {
+    "fan": "Fan of:",
     "favgames": "Favorite Games",
     "follow": "Follow",
     "followers": "Followers: {{value}}",
-    "followerstitle": "Followers",
+    "followerstitle": "Following",
     "following": "Following: {{value}}",
     "followingtitle": "Following",
+    "level": "Level",
+    "moderator": "Moderator",
     "nofavgames": "This User Does Not Have Any Favorite Games!",
+    "noreviews": "This User Has Not Made Any Reviews!",
     "reputation": "Reputation: {{value}}",
     "reviews": "Reviews",
     "unfollow": "Unfollow",
-    "view-more-button": "View More",
-    "fan": "Fan of:",
-    "level": "Level",
-    "moderator": "Moderator",
-    "noreviews": "This User Has Not Made Any Reviews!"
+    "view-more-button": "View More"
   },
   "profile-card": {
     "whoprefers": "who prefers"
@@ -297,6 +297,7 @@
     "backtofeed": "Back to for you",
     "next": "Next game",
     "nomore": "Return to Feed",
+    "norecommendations": "No recommendations currently",
     "prev": "Previous game"
   },
   "recommended": "Recommended",
