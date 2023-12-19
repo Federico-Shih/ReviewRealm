@@ -21,6 +21,8 @@ import {NgForOf} from '@angular/common';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {TranslateService} from '@ngx-translate/core';
 import {getMessageFromReason, ReportReason,} from '../../../shared/data-access/reports/reports.class';
+import {User} from "../../../shared/data-access/users/users.class";
+import {RequestError} from "../../../shared/data-access/shared.models";
 
 @Component({
   selector: 'app-review-detail',
@@ -57,24 +59,32 @@ export class ReviewDetailComponent implements OnInit {
 
   loadedReview$ = new BehaviorSubject<Review | null>(null);
   currentUser$ = this.authService.getLoggedUser();
-  userAndReview$ = combineLatest([this.currentUser$, this.loadedReview$]);
+  userAndReview$: Observable<[User | null, Review | null]> = combineLatest([this.currentUser$, this.loadedReview$]);
   reviewFeedback$ = new BehaviorSubject<Feedback | null>(null);
   canEdit$ = this.userAndReview$.pipe(
     map(([user, review]) => {
       return user != null && user.id === review?.authorId;
     })
   );
+
   canReport$ = this.userAndReview$.pipe(
     map(([user, review]) => {
       return user != null && user.id !== review?.authorId;
     })
   );
+
   canDelete$ = this.userAndReview$.pipe(
     map(([user, review]) => {
       return (
         user != null &&
         (user.id === review?.authorId || user.role === Role.MODERATOR)
       );
+    })
+  );
+
+  isOwner$ = this.userAndReview$.pipe(
+    map(([user, review]) => {
+      return review !== null && user !== null && review.author?.id === user.id;
     })
   );
 
@@ -110,7 +120,7 @@ export class ReviewDetailComponent implements OnInit {
     this.reviewsService
       .giveFeedback(review.links.feedback, feedback)
       .subscribe({
-        error: () => {
+        error: (err) => {
           this.snackBar.open(
             this.translate.instant('errors.unknown'),
             this.translate.instant('errors.dismiss'),
@@ -141,7 +151,6 @@ export class ReviewDetailComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         //confirmed
-        console.log('deleting');
         this.review$.subscribe(review => {
           if (!review) return;
           this.reviewsService.deleteReview(review.links.self).subscribe({
@@ -182,7 +191,15 @@ export class ReviewDetailComponent implements OnInit {
             .reportReview(review.links.report, review.id, result)
             .subscribe({
               error: err => {
-                if (err.status !== 400 || err.exceptions === null) {
+                if (err instanceof RequestError && err.status === 409) {
+                  this.snackBar.open(
+                    this.translate.instant('errors.reporting'),
+                    err.exceptions?.message,
+                    {
+                      panelClass: ['red-snackbar'],
+                    }
+                  );
+                } else if (err.status !== 400 || err.exceptions === null) {
                   this.snackBar.open(
                     this.translate.instant('errors.unknown'),
                     this.translate.instant('errors.dismiss'),

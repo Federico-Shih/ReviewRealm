@@ -113,19 +113,21 @@
                 'review-card.by'
                   | translate: {author: review.author?.username}
                 }}</a>
-              <div class="author-preferences">
-                <span>{{ 'profile-card.whoprefers' | translate }}:</span>
-                <div class="tag-group">
-                  <ng-container
-                    *ngFor="let genre of review.author?.preferences">
+              <div class="author-preferences" *ngIf="review.author?.preferences as preferences">
+                <ng-container *ngIf="preferences.length > 0">
+                  <span>{{ 'profile-card.whoprefers' | translate }}:</span>
+                  <div class="tag-group">
+                    <ng-container
+                      *ngFor="let genre of review.author?.preferences">
                     <span
                       routerLink="/"
                       [queryParams]="{ gameGenres: genre.id }"
                       class="chip">
                       {{ genre.localized }}
                     </span>
-                  </ng-container>
-                </div>
+                    </ng-container>
+                  </div>
+                </ng-container>
               </div>
             </div>
           </div>
@@ -139,7 +141,7 @@
             >
             <span class="popularity-value">{{ review.getPopularity() }}</span>
           </div>
-          <div class="right">
+          <div class="right" *ngIf="(isOwner$ | async) !== true">
             <ng-container *ngIf="reviewFeedback$ | async as feedback">
               <span>{{ 'review.found_useful?' | translate }}</span>
               <button

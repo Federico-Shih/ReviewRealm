@@ -121,6 +121,8 @@
 
 .tag-group {
   padding-left: 2px;
+  display: flex;
+  flex-wrap: wrap;
   .chip {
     background: #ddd7ff;
     color: var(--color-surface) !important;

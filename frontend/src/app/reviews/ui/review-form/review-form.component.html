@@ -183,7 +183,7 @@
         i18n
         mat-raised-button
         type="submit"
-        [disabled]="reviewForm.status !== 'VALID'">
+        [disabled]="reviewForm.status !== 'VALID' && !loading">
         <span *ngIf="!loading; else loadingSpinner">
           {{
             (reviewFormType === ReviewFormType.Edit

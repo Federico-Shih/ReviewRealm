@@ -36,6 +36,16 @@
       {{ 'recommendations.next' | translate | uppercase }}
       <mat-icon>chevron_right</mat-icon>
     </button>
+    <button
+      *ngIf="!state.gameState.links.next"
+      class="right-button"
+      color="accent"
+      mat-flat-button
+      routerLink="/for-you"
+    >
+      {{ 'recommendations.backtofeed' | translate | uppercase }}
+      <mat-icon>done</mat-icon>
+    </button>
   </ng-container>
   <ng-template #loading>
     <div class="centered-container">

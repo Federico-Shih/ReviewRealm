@@ -41,6 +41,8 @@
   "edit-own-review": "Editar tu Reseña",
   "errors": {
     "dismiss": "Descartar",
+    "reporting": "Error reportando reseña",
+    "review-creating": "Error creando reseña",
     "unknown": "Error desconocido, intente más tarde."
   },
   "fav-games": {
@@ -285,6 +287,7 @@
   "recommendations": {
     "backtofeed": "Volver a para ti",
     "next": "Siguiente juego",
+    "nomore": "Volver tu Feed",
     "prev": "Anterior juego"
   },
   "recommended": "Recommendado",

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import { UsersService } from '../../../shared/data-access/users/users.service';
 import { ReviewsService } from '../../../shared/data-access/reviews/reviews.service';
 import { GamesService } from '../../../shared/data-access/games/games.service';
@@ -19,7 +19,18 @@ import { User } from '../../../shared/data-access/users/users.class';
   styleUrls: ['./search.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SearchComponent {
+export class SearchComponent implements OnInit {
+  breakpoint: number = 3;
+  reviewBreakpoint: number = 2;
+
+  onResize(event: Event) {
+    const target = event.target as Window;
+    if (target === null || target.innerWidth === null) return;
+    this.breakpoint =
+      target.innerWidth <= 1100 ? 1 : target.innerWidth <= 2100 ? 2 : 3;
+    this.reviewBreakpoint = target.innerWidth <= 1100 ? 1 : 2;
+  }
+
   games$ = this.route.queryParamMap.pipe(
     switchMap(param =>
       this.gameService.getGames(`${environment.API_ENDPOINT}/games`, {
@@ -68,4 +79,10 @@ export class SearchComponent {
     private readonly gameService: GamesService,
     private readonly route: ActivatedRoute
   ) {}
+
+  ngOnInit(): void {
+    this.breakpoint =
+      window.innerWidth <= 1100 ? 1 : window.innerWidth <= 2100 ? 2 : 3;
+    this.reviewBreakpoint = window.innerWidth <= 1100 ? 1 : 2;
+  }
 }

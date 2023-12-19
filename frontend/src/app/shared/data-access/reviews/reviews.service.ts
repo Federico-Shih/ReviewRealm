@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
+import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 import {
   catchError,
   filter,
@@ -198,12 +198,12 @@ export class ReviewsService {
         },
       })
       .pipe(
-        catchError(exceptionMapper),
         map(({body}) => {
           if (body === null)
             throw new RequestError(500, {message: 'Empty body response'});
           return body.id;
-        })
+        }),
+        catchError(exceptionMapper),
       );
   }
 

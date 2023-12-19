@@ -12,6 +12,7 @@ import ar.edu.itba.paw.webapp.controller.helpers.LocaleHelper;
 import ar.edu.itba.paw.webapp.controller.mediatypes.VndType;
 import ar.edu.itba.paw.webapp.controller.responses.GenreResponse;
 import ar.edu.itba.paw.webapp.exceptions.CustomRuntimeException;
+import org.hibernate.Cache;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
@@ -86,9 +87,9 @@ public class GenreController {
             genres = genreService.getGenres();
         }
         if (genres.isEmpty()) {
-            return Response.noContent().build();
+            return CacheHelper.unconditionalCache(Response.noContent(), 60).build();
         }
-        CacheControl cacheControl = CacheHelper.buildCacheControl(gameId != null || userId != null ? 0 : cacheMaxAge);
+        CacheControl cacheControl = CacheHelper.buildCacheControl(gameId != null || userId != null ? 60 : cacheMaxAge);
         Response.ResponseBuilder response = Response.ok().entity(
             new GenericEntity<List<GenreResponse>>(
                 genres.stream()

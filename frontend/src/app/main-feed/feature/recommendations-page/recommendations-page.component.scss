@@ -18,6 +18,13 @@
   left: 10px;
   transform: translateY(-50%);
   z-index: 1;
+  font-size: 1.2rem;
+  width: 150px;
+  height: 70px;
+
+  mat-icon {
+    transform: scale(1.4);
+  }
 }
 
 .right-button {
@@ -26,4 +33,11 @@
   right: 20px;
   transform: translateY(-50%);
   z-index: 1;
+  font-size: 1.2rem;
+  width: 150px;
+  height: 70px;
+
+  mat-icon {
+    transform: scale(1.4);
+  }
 }
