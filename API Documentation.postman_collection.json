@@ -1,17 +1,17 @@
 {
 	"info": {
-      "_postman_id": "6d98a2ab-df65-4d50-b9e2-5e9c973067e0",
-      "name": "API Documentation",
-      "description": "This template contains a boilerplate for documentation that you can quickly customize and reuse.\n\n### How to use this template:\n\n- Replace the content given brackets (()) with your API's details.\n- Tips are formatted in `codespan` - feel free to read and remove them.\n    \n\n---\n\n`Start with a brief overview of what your API offers.`\n\nThe ((product name)) provides many API products, tools, and resources that enable you to ((add product value here)).\n\n`You can also list the APIs you offer, link to the relevant pages, or do both in this section.`\n\n## **Getting started guide**\n\n`List the steps or points required to start using your APIs. Make sure to cover everything required to reach success with your API as quickly as possible.`\n\nTo start using the ((add APIs here)), you need to -\n\n`The points given below are from The Postman API's documentation. You can reference it to write your own getting started guide.`\n\n- You must use a valid API Key to send requests to the API endpoints. You can get your API key from Postman's [integrations dashboard](https://go.postman.co/settings/me/api-keys).\n- The API has [rate and usage limits](https://postman.postman.co/workspace/Collection-Templates~6311738d-2e70-441f-ae12-78caf078c5b7/collection/22517504-e9c28f47-1253-44af-a2f3-20dce4da1f18?ctx=documentation#rate-and-usage-limits).\n- The API only responds to HTTPS-secured communications. Any requests sent via HTTP return an HTTP 301 redirect to the corresponding HTTPS resources.\n- The API returns request responses in JSON format. When an API request returns an error, it is sent in the JSON response as an error key.\n    \n\n## Authentication\n\n`Add details on the authorization keys/tokens required, steps that cover how to get them, and the relevant error codes.`\n\nThe ((product name)) API uses ((add your API's authorization type)) for authentication.\n\n`The details given below are from the Postman API's documentation. You can reference it to write your own authentication section.`\n\nPostman uses API keys for authentication. You can generate a Postman API key in the [API keys](https://postman.postman.co/settings/me/api-keys) section of your Postman account settings.\n\nYou must include an API key in each request to the Postman API with the X-Api-Key request header.\n\n### Authentication error response\n\nIf an API key is missing, malformed, or invalid, you will receive an HTTP 401 Unauthorized response code.\n\n## Rate and usage limits\n\n`Use this section to cover your APIs' terms of use. Include API limits, constraints, and relevant error codes, so consumers understand the permitted API usage and practices.`\n\n`The example given below is from The Postman API's documentation. Use it as a reference to write your APIs' terms of use.`\n\nAPI access rate limits apply at a per-API key basis in unit time. The limit is 300 requests per minute. Also, depending on your plan, you may have usage limits. If you exceed either limit, your request will return an HTTP 429 Too Many Requests status code.\n\nEach API response returns the following set of headers to help you identify your use status:\n\n| Header | Description |\n| --- | --- |\n| `X-RateLimit-Limit` | The maximum number of requests that the consumer is permitted to make per minute. |\n| `X-RateLimit-Remaining` | The number of requests remaining in the current rate limit window. |\n| `X-RateLimit-Reset` | The time at which the current rate limit window resets in UTC epoch seconds. |\n\n### 503 response\n\nAn HTTP `503` response from our servers indicates there is an unexpected spike in API access traffic. The server is usually operational within the next five minutes. If the outage persists or you receive any other form of an HTTP `5XX` error, [contact support](https://support.postman.com/hc/en-us/requests/new/).\n\n### **Need some help?**\n\n`Add links that customers can refer to whenever they need help.`\n\nIn case you have questions, go through our tutorials ((link to your video or help documentation here)). Or visit our FAQ page ((link to the relevant page)).\n\nOr you can check out our community forum, there’s a good chance our community has an answer for you. Visit our developer forum ((link to developer forum)) to review topics, ask questions, and learn from others.\n\n`You can also document or add links to libraries, code examples, and other resources needed to make a request.`",
-      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-      "_exporter_id": "4463178"
-    },
+		"_postman_id": "f1347f13-d82f-479e-ab38-7c0eef885cf6",
+		"name": "Review Realm API Docs",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "30410521",
+		"_collection_link": "https://veggieclub-backend.postman.co/workspace/6b2fab02-da47-47a5-a397-48dcf352b79b/collection/4463178-f1347f13-d82f-479e-ab38-7c0eef885cf6?action=share&source=collection_link&creator=30410521"
+	},
 	"item": [
 		{
 			"name": "User",
 			"item": [
 				{
-					"name": "Get users",
+					"name": "Get Users",
 					"event": [
 						{
 							"listen": "test",
@@ -35,16 +35,9 @@
 							]
 						},
 						"method": "GET",
-						"header": [
-							{
-								"key": "X-Refresh",
-								"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJmZWRlc2hpaCUyQjclNDBnbWFpbC5jb20iLCJleHAiOjE3MDA4NTc5NzAsInJlZnJlc2giOnRydWUsImlhdCI6MTcwMDI1MzE3MH0.LLs7hcAuUb9VJtbTOiFqnHfYF_ldfJHhe9ifril7NOY",
-								"type": "text",
-								"disabled": true
-							}
-						],
+						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/users?email=fedeshih%2B6%40gmail.com",
+							"raw": "{{baseUrl}}/users?sort=level&direction=asc&followers=8",
 							"host": [
 								"{{baseUrl}}"
 							],
@@ -53,39 +46,27 @@
 							],
 							"query": [
 								{
-									"key": "following",
-									"value": "1",
-									"disabled": true
-								},
-								{
 									"key": "search",
-									"value": "",
+									"value": "faker",
 									"disabled": true
 								},
 								{
 									"key": "sort",
-									"value": "",
-									"description": "level, followers, reputation",
-									"disabled": true
+									"value": "level",
+									"description": "level, followers, reputation"
 								},
 								{
 									"key": "direction",
-									"value": "",
-									"description": "asc, desc",
-									"disabled": true
+									"value": "asc",
+									"description": "asc, desc"
 								},
 								{
 									"key": "username",
-									"value": "",
+									"value": "faker_2",
 									"disabled": true
 								},
 								{
 									"key": "id",
-									"value": "1",
-									"disabled": true
-								},
-								{
-									"key": "followers",
 									"value": "1",
 									"disabled": true
 								},
@@ -101,125 +82,261 @@
 								},
 								{
 									"key": "email",
-									"value": "fedeshih%2B6%40gmail.com"
+									"value": "fedeshih%2B6%40gmail.com",
+									"disabled": true
+								},
+								{
+									"key": "preferences",
+									"value": "7",
+									"disabled": true
+								},
+								{
+									"key": "gamesPlayed",
+									"value": "9",
+									"disabled": true
+								},
+								{
+									"key": "following",
+									"value": "8",
+									"disabled": true
+								},
+								{
+									"key": "followers",
+									"value": "8"
+								},
+								{
+									"key": "samePreferencesAs",
+									"value": "8",
+									"disabled": true
+								},
+								{
+									"key": "sameGamesPlayedAs",
+									"value": "8",
+									"disabled": true
 								}
 							]
 						},
-						"description": "Gets information about the authenticated user."
+						"description": "200: OK\n\n204: No Content\n\n400: Error en los QueryParams"
 					},
 					"response": [
 						{
-							"name": "Successful Response",
+							"name": "Get Followers",
 							"originalRequest": {
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "https://api.getpostman.com/me",
-									"protocol": "https",
+									"raw": "{{baseUrl}}/users?followers=8",
 									"host": [
-										"api",
-										"getpostman",
-										"com"
+										"{{baseUrl}}"
 									],
 									"path": [
-										"me"
+										"users"
+									],
+									"query": [
+										{
+											"key": "search",
+											"value": "faker",
+											"disabled": true
+										},
+										{
+											"key": "sort",
+											"value": "level",
+											"description": "level, followers, reputation",
+											"disabled": true
+										},
+										{
+											"key": "direction",
+											"value": "asc",
+											"description": "asc, desc",
+											"disabled": true
+										},
+										{
+											"key": "username",
+											"value": "faker_2",
+											"disabled": true
+										},
+										{
+											"key": "id",
+											"value": "1",
+											"disabled": true
+										},
+										{
+											"key": "pageSize",
+											"value": "2",
+											"disabled": true
+										},
+										{
+											"key": "page",
+											"value": "2",
+											"disabled": true
+										},
+										{
+											"key": "email",
+											"value": "fedeshih%2B6%40gmail.com",
+											"disabled": true
+										},
+										{
+											"key": "preferences",
+											"value": "7",
+											"disabled": true
+										},
+										{
+											"key": "gamesPlayed",
+											"value": "9",
+											"disabled": true
+										},
+										{
+											"key": "following",
+											"value": "8",
+											"disabled": true
+										},
+										{
+											"key": "followers",
+											"value": "8"
+										},
+										{
+											"key": "samePreferencesAs",
+											"value": "8",
+											"disabled": true
+										},
+										{
+											"key": "sameGamesPlayedAs",
+											"value": "8",
+											"disabled": true
+										}
 									]
 								}
 							},
-							"status": "OK",
-							"code": 200,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Content-Type",
-									"value": "application/json",
-									"name": "Content-Type",
-									"description": {
-										"content": "",
-										"type": "text/plain"
-									}
-								}
-							],
+							"_postman_previewlanguage": null,
+							"header": null,
 							"cookie": [],
-							"body": "{\n    \"user\": {\n        \"id\": 12345678,\n        \"username\": \"taylor-lee\",\n        \"email\": \"taylor.lee@example.com\",\n        \"fullName\": \"Taylor Lee\",\n        \"avatar\": \"https://example.com/user/r5u9qpvmujfjf6lbqmga.jpg\",\n        \"isPublic\": true\n    },\n    \"operations\": [\n        {\n            \"name\": \"mock_usage\",\n            \"limit\": 1000000,\n            \"usage\": 110276,\n            \"overage\": 0\n        },\n        {\n            \"name\": \"monitor_request_runs\",\n            \"limit\": 10000000,\n            \"usage\": 1141750,\n            \"overage\": 0\n        },\n        {\n            \"name\": \"api_usage\",\n            \"limit\": 1000000,\n            \"usage\": 16240,\n            \"overage\": 0\n        },\n        {\n            \"name\": \"custom_domains\",\n            \"limit\": 25,\n            \"usage\": 25,\n            \"overage\": 0\n        },\n        {\n            \"name\": \"serverless_requests\",\n            \"limit\": 10000,\n            \"usage\": 0,\n            \"overage\": 0\n        },\n        {\n            \"name\": \"integrations\",\n            \"limit\": 5000,\n            \"usage\": 1018,\n            \"overage\": 0\n        },\n        {\n            \"name\": \"cloud_agent_requests\",\n            \"limit\": 1000000,\n            \"usage\": 1615,\n            \"overage\": 0\n        }\n    ]\n}"
+							"body": null
 						},
 						{
-							"name": "Rate Limit Exceeded",
+							"name": "Get Following",
 							"originalRequest": {
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "https://api.getpostman.com/me",
-									"protocol": "https",
+									"raw": "{{baseUrl}}/users?following=8",
 									"host": [
-										"api",
-										"getpostman",
-										"com"
+										"{{baseUrl}}"
 									],
 									"path": [
-										"me"
+										"users"
+									],
+									"query": [
+										{
+											"key": "search",
+											"value": "faker",
+											"disabled": true
+										},
+										{
+											"key": "sort",
+											"value": "level",
+											"description": "level, followers, reputation",
+											"disabled": true
+										},
+										{
+											"key": "direction",
+											"value": "asc",
+											"description": "asc, desc",
+											"disabled": true
+										},
+										{
+											"key": "username",
+											"value": "faker_2",
+											"disabled": true
+										},
+										{
+											"key": "id",
+											"value": "1",
+											"disabled": true
+										},
+										{
+											"key": "pageSize",
+											"value": "2",
+											"disabled": true
+										},
+										{
+											"key": "page",
+											"value": "2",
+											"disabled": true
+										},
+										{
+											"key": "email",
+											"value": "fedeshih%2B6%40gmail.com",
+											"disabled": true
+										},
+										{
+											"key": "preferences",
+											"value": "7",
+											"disabled": true
+										},
+										{
+											"key": "gamesPlayed",
+											"value": "9",
+											"disabled": true
+										},
+										{
+											"key": "following",
+											"value": "8"
+										},
+										{
+											"key": "followers",
+											"value": "8",
+											"disabled": true
+										},
+										{
+											"key": "samePreferencesAs",
+											"value": "8",
+											"disabled": true
+										},
+										{
+											"key": "sameGamesPlayedAs",
+											"value": "8",
+											"disabled": true
+										}
 									]
 								}
 							},
-							"status": "Too Many Requests",
-							"code": 429,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Content-Type",
-									"value": "application/json",
-									"description": {
-										"content": "",
-										"type": "text/plain"
-									}
-								}
-							],
+							"_postman_previewlanguage": null,
+							"header": null,
 							"cookie": [],
-							"body": "{\n    \"error\": \"rateLimited\",\n    \"message\": \"Rate limit exceeded. Please retry after 1669048687\"\n}"
+							"body": null
 						}
 					]
 				},
 				{
-					"name": "Get user by id",
+					"name": "Get User By Id",
 					"request": {
-                      "auth": {
-                        "type": "basic",
-                        "basic": [
-                          {
-                            "key": "password",
-                            "value": "holahola",
-                            "type": "string"
-                          },
-                          {
-                            "key": "username",
-                            "value": "fedeshih@gmail.com",
-                            "type": "string"
-                          }
-                        ]
-                      },
-                      "method": "GET",
-                      "header": [],
-                      "url": {
-                        "raw": "{{baseUrl}}/users/1",
-                        "host": [
-                          "{{baseUrl}}"
-                        ],
-                        "path": [
-                          "users",
-                          "1"
-                        ]
-                      }
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/users/3",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"3"
+							]
+						},
+						"description": "200: OK\n\n404: No existe el usuario"
 					},
 					"response": []
 				},
 				{
-					"name": "Create user",
+					"name": "Create User",
 					"protocolProfileBehavior": {
 						"disabledSystemHeaders": {
 							"content-type": true
 						}
 					},
 					"request": {
+						"auth": {
+							"type": "noauth"
+						},
 						"method": "POST",
 						"header": [
 							{
@@ -250,13 +367,17 @@
 							"path": [
 								"users"
 							]
-						}
+						},
+						"description": "201: OK\n\n400: mal el body\n\n409: username o email ya existen"
 					},
 					"response": []
 				},
 				{
-					"name": "Change password req",
+					"name": "Change Password Request",
 					"request": {
+						"auth": {
+							"type": "noauth"
+						},
 						"method": "POST",
 						"header": [
 							{
@@ -272,7 +393,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"email\": \"fedeshih+10@gmail.com\"\n}"
+							"raw": "{\n    \"email\": \"fedeshih@gmail.com\"\n}"
 						},
 						"url": {
 							"raw": "{{baseUrl}}/users",
@@ -282,12 +403,13 @@
 							"path": [
 								"users"
 							]
-						}
+						},
+						"description": "202: OK\n\n400: Error en el body"
 					},
 					"response": []
 				},
 				{
-					"name": "Enable user req",
+					"name": "Validate User Request",
 					"request": {
 						"auth": {
 							"type": "noauth"
@@ -307,7 +429,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"email\": \"fedeshih+5@gmail.com\"\r\n}"
+							"raw": "{\r\n    \"email\": \"mmanzur+2@itba.edu.ar\"\r\n}"
 						},
 						"url": {
 							"raw": "{{baseUrl}}/users",
@@ -317,19 +439,20 @@
 							"path": [
 								"users"
 							]
-						}
+						},
+						"description": "202: OK\n\n400: Error en el body"
 					},
 					"response": []
 				},
 				{
-					"name": "Change user",
+					"name": "Follow User",
 					"request": {
 						"auth": {
 							"type": "basic",
 							"basic": [
 								{
 									"key": "username",
-									"value": "fedeshih@gmail.com",
+									"value": "fshih@itba.edu.ar",
 									"type": "string"
 								},
 								{
@@ -339,11 +462,17 @@
 								}
 							]
 						},
-						"method": "PATCH",
-						"header": [],
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/vnd.following-form.v1+json",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"genres\": [1, 2],\r\n    \"enabled\": false,\r\n    \"password\": \"holahola\"\r\n}",
+							"raw": "{\n    \"userId\": 16\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -351,23 +480,131 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseUrl}}/users/3",
+							"raw": "{{baseUrl}}/users/2/following",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"users",
-								"3"
+								"2",
+								"following"
 							]
-						}
+						},
+						"description": "204: OK\n\n400: error en el body\n\n409: si ya estás siguiendo al usuario\n\n404: si no existe el usuario del path\n\n401/403"
 					},
 					"response": []
 				},
 				{
-					"name": "New favorite games",
+					"name": "Unfollow User",
 					"request": {
-						"method": "POST",
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "fshih@itba.edu.ar",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "holahola",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
 						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/users/2/following/100",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"2",
+								"following",
+								"100"
+							]
+						},
+						"description": "204: OK\n\n404: ya se había borrado o no existe el usuario\n\n401/403"
+					},
+					"response": []
+				},
+				{
+					"name": "Edit User",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "holahola",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "mmanzur+2@itba.edu.ar",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/vnd.patch-user-form.v1+json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"genres\": [1, 2],\r\n    \"password\": \"holahola\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/19",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"19"
+							]
+						},
+						"description": "204: OK\n\n400: error en el body\n\n401/403"
+					},
+					"response": []
+				},
+				{
+					"name": "Add Favorite Game",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "fshih@itba.edu.ar",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "holahola",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/vnd.favorite-game-form.v1+json",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    \"gameId\": 2\n}",
@@ -378,57 +615,120 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseUrl}}/users/1/favoritegames",
+							"raw": "{{baseUrl}}/users/2/favoritegames",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"users",
-								"1",
+								"2",
 								"favoritegames"
 							]
-						}
+						},
+						"description": "204: OK\n\n409: el juego ya es favorito\n\n400: si está mal el body\n\n401/403"
 					},
 					"response": []
 				},
 				{
-					"name": "Delete favorite game",
+					"name": "Delete Favorite Game",
 					"request": {
-                      "method": "GET",
-                      "header": [],
-                      "url": {
-                        "raw": ""
-                      }
-                    },
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "fshih@itba.edu.ar",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "holahola",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/users/2/favoritegames/9",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"2",
+								"favoritegames",
+								"9"
+							]
+						},
+						"description": "204: OK\n\n404: no existe el game o ya se habia borrado\n\n401/403"
+					},
 					"response": []
 				},
 				{
-					"name": "Get user notifications",
+					"name": "Get User Notifications",
 					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "fshih@itba.edu.ar",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "holahola",
+									"type": "string"
+								}
+							]
+						},
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/users/3/notifications",
+							"raw": "{{baseUrl}}/users/2/notifications",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"users",
-								"3",
+								"2",
 								"notifications"
 							]
-						}
+						},
+						"description": "200: OK\n\n401/403"
 					},
 					"response": []
 				},
 				{
-					"name": "Modify notifications",
+					"name": "Update Notifications",
 					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "fshih@itba.edu.ar",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "holahola",
+									"type": "string"
+								}
+							]
+						},
 						"method": "PUT",
-						"header": [],
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/vnd.notifications-form.v1+json",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"userIFollowWritesReview\": false,\r\n    \"myReviewIsDeleted\": true\r\n}",
+							"raw": "{\r\n    \"userIFollowWritesReview\": false,\r\n    \"myReviewIsDeleted\": false\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -436,32 +736,56 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseUrl}}/users/1/notifications",
+							"raw": "{{baseUrl}}/users/2/notifications",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"users",
-								"1",
+								"2",
 								"notifications"
 							]
-						}
+						},
+						"description": "200: OK\n\n400: error en el body\n\n401/403"
 					},
 					"response": []
 				},
 				{
-					"name": "Get user mission progresses",
+					"name": "Get User Mission Progresses",
 					"request": {
-                      "method": "GET",
-                      "header": [],
-                      "url": {
-                        "raw": ""
-                      }
-                    },
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "7Qz3byvmfk0IVANu",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "mmanzur+3@itba.edu.ar",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/users/20/mission-progresses",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"20",
+								"mission-progresses"
+							]
+						},
+						"description": "200: OK\n\n204: si no tiene progresses\n\n401/403"
+					},
 					"response": []
 				}
 			],
-			"description": "The `/me` endpoints let you manage information about the authenticated user.",
 			"auth": {
 				"type": "basic",
 				"basic": [
@@ -499,1270 +823,46 @@
 			]
 		},
 		{
-			"name": "Collections",
-			"item": [
-				{
-					"name": "Create a collection",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"collection\": {\n        \"info\": {\n            \"name\": \"{{collectionName}}\",\n            \"schema\": \"{{collectionSchemaUrl}}\"\n        },\n        \"item\": [\n            {\n                \"request\": {}\n            }\n        ]\n    }\n}"
-						},
-						"url": {
-							"raw": "https://api.getpostman.com/collections",
-							"protocol": "https",
-							"host": [
-								"api",
-								"getpostman",
-								"com"
-							],
-							"path": [
-								"collections"
-							],
-							"query": [
-								{
-									"key": "workspace",
-									"value": "{{workspaceId}}",
-									"description": "Optional. A workspace ID in which to create the collection.\n\nIf you do not include this query parameter, the system creates the collection in your \"My Workspace\" workspace.",
-									"disabled": true
-								}
-							]
-						},
-						"description": "Creates a collection using the [Postman Collection v2 schema format](https://schema.postman.com/json/collection/v2.1.0/docs/index.html). Include a `collection` object in the request body that contains the following required properties:\n\n*   `info` — An **object** that contains the following properties:\n    *   `name` — A **string** value that contains the collection's name.\n    *   `schema` — A **string** that contains a URL to the collection's schema. For example, the `https://schema.getpostman.com/collection/v1` URL.\n*   `item` — An **object** that contains the HTTP request and response information.\n    *   `request` — An **object** that contains the collection's request information. For a complete list of values, refer to the `definitions.request` entry in the [collection.json schema file](https://schema.postman.com/json/collection/v2.1.0/collection.json). If you pass an empty object for this value, the system defaults to an untitled GET request.\n\n**Note:**\n\n*   For a complete list of available property values for this endpoint, use the following references available in the [collection.json schema file](https://schema.postman.com/json/collection/v2.1.0/collection.json):\n    *   `info` object — Use the `definitions.info` entry.\n    *   `item` object — Use the `definitions.items` entry.\n*   For all other possible values, refer to the [collection.json schema file](https://schema.postman.com/json/collection/v2.1.0/collection.json)."
-					},
-					"response": [
-						{
-							"name": "Successful Response",
-							"originalRequest": {
-								"method": "POST",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/json"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"collection\": {\n        \"info\": {\n            \"name\": \"Test Collection\",\n            \"description\": \"This collection makes a request to the Postman Echo service to get a list of request headers sent by an HTTP client.\",\n            \"schema\": \"https://schema.getpostman.com/json/collection/v2.1.0/collection.json\"\n        },\n        \"item\": [\n            {\n                \"name\": \"Test GET Response\",\n                \"event\": [\n                    {\n                        \"listen\": \"test\",\n                        \"script\": {\n                            \"id\": \"7d2334fc-a84a-4c3d-b26c-7529afa4c0ae\",\n                            \"exec\": [\n                                \"pm.test(\\\"Status code is 200\\\", function () {\",\n                                \"    pm.response.to.have.status(200);\",\n                                \"});\"\n                                ],\n                            \"type\": \"text/javascript\"\n                            }\n                        }\n                    ],\n                \"request\": {\n                    \"url\": \"https://echo.getpostman.com/headers\",\n                    \"method\": \"GET\",\n                    \"header\": [\n                        {\n                            \"key\": \"Content-Type\",\n                            \"value\": \"application/json\"\n                        }\n                    ]\n                }\n            }\n        ]\n    }\n}",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "https://api.getpostman.com/collections",
-									"protocol": "https",
-									"host": [
-										"api",
-										"getpostman",
-										"com"
-									],
-									"path": [
-										"collections"
-									],
-									"query": [
-										{
-											"key": "workspace",
-											"value": "1f0df51a-8658-4ee8-a2a1-d2567dfa09a9",
-											"description": "Optional. A workspace ID in which to create the collection.\n\nIf you do not include this query parameter, the system creates the collection in your \"My Workspace\" workspace.",
-											"disabled": true
-										}
-									]
-								}
-							},
-							"status": "OK",
-							"code": 200,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Content-Type",
-									"value": "application/json",
-									"name": "Content-Type",
-									"description": {
-										"content": "",
-										"type": "text/plain"
-									}
-								}
-							],
-							"cookie": [],
-							"body": "{\n    \"collection\": {\n        \"id\": \"12ece9e1-2abf-4edc-8e34-de66e74114d2\",\n        \"name\": \"Test Collection\",\n        \"uid\": \"12345678-12ece9e1-2abf-4edc-8e34-de66e74114d2\"\n    }\n}"
-						},
-						{
-							"name": "Bad Request",
-							"originalRequest": {
-								"method": "POST",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/json"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"collection\": {\n        \"info\": {\n            \"name\": \"Test Collection\",\n            \"description\": \"This collection makes a request to the Postman Echo service to get a list of request headers sent by an HTTP client.\",\n            \"schema\": \"https://schema.getpostman.com/json/collection/v2.1.0/collection.json\"\n        },\n        \"item\": [\n            {\n                \"name\": \"Test GET Response\",\n                \"event\": [\n                    {\n                        \"listen\": \"test\",\n                        \"script\": {\n                            \"id\": \"7d2334fc-a84a-4c3d-b26c-7529afa4c0ae\",\n                            \"exec\": [\n                                \"pm.test(\\\"Status code is 200\\\", function () {\",\n                                \"    pm.response.to.have.status(200);\",\n                                \"});\"\n                                ],\n                            \"type\": \"text/javascript\"\n                            }\n                        }\n                    ],\n                \"request\": {\n                    \"url\": \"https://echo.getpostman.com/headers\",\n                    \"method\": \"GET\",\n                    \"header\": [\n                        {\n                            \"key\": \"Content-Type\",\n                            \"value\": \"application/json\"\n                        }\n                    ]\n                }\n            }\n        ]\n    }\n}",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "https://api.getpostman.com/collections",
-									"protocol": "https",
-									"host": [
-										"api",
-										"getpostman",
-										"com"
-									],
-									"path": [
-										"collections"
-									],
-									"query": [
-										{
-											"key": "workspace",
-											"value": "1f0df51a-8658-4ee8-a2a1-d2567dfa09a9",
-											"description": "Optional. A workspace ID in which to create the collection.\n\nIf you do not include this query parameter, the system creates the collection in your \"My Workspace\" workspace.",
-											"disabled": true
-										}
-									]
-								}
-							},
-							"status": "Bad Request",
-							"code": 400,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Content-Type",
-									"value": "application/json",
-									"name": "Content-Type",
-									"description": {
-										"content": "",
-										"type": "text/plain"
-									}
-								}
-							],
-							"cookie": [],
-							"body": "{\n    \"error\": {\n        \"name\": \"instanceFoundError\",\n        \"message\": \"The specified item already exists.\",\n        \"details\": {\n            \"item\": \"collection\",\n            \"id\": \"12ece9e1-2abf-4edc-8e34-de66e74114d2\"\n        }\n    }\n}"
-						},
-						{
-							"name": "Malformed Request",
-							"originalRequest": {
-								"method": "POST",
-								"header": [
-									{
-										"key": "Content-Type",
-										"name": "Content-Type",
-										"value": "application/json",
-										"type": "text"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"collection\": {\n        \"item\": [\n            {\n                \"name\": \"Test GET Response\",\n                \"event\": [\n                    {\n                        \"listen\": \"test\",\n                        \"script\": {\n                            \"id\": \"7d2334fc-a84a-4c3d-b26c-7529afa4c0ae\",\n                            \"exec\": [\n                                \"pm.test(\\\"Status code is 200\\\", function () {\",\n                                \"    pm.response.to.have.status(200);\",\n                                \"});\"\n                                ],\n                            \"type\": \"text/javascript\"\n                            }\n                        }\n                    ],\n                \"request\": {\n                    \"url\": \"https://echo.getpostman.com/headers\",\n                    \"method\": \"GET\",\n                    \"header\": [\n                        {\n                            \"key\": \"Content-Type\",\n                            \"value\": \"application/json\"\n                        }\n                    ]\n                }\n            }\n        ]\n    }\n}",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "https://api.getpostman.com/collections",
-									"protocol": "https",
-									"host": [
-										"api",
-										"getpostman",
-										"com"
-									],
-									"path": [
-										"collections"
-									],
-									"query": [
-										{
-											"key": "workspace",
-											"value": "1f0df51a-8658-4ee8-a2a1-d2567dfa09a9",
-											"description": "Optional. A workspace ID in which to create the collection.\n\nIf you do not include this query parameter, the system creates the collection in your \"My Workspace\" workspace.",
-											"disabled": true
-										}
-									]
-								}
-							},
-							"status": "Bad Request",
-							"code": 400,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Content-Type",
-									"value": "application/json; charset=utf-8"
-								}
-							],
-							"cookie": [],
-							"body": "{\n    \"error\": {\n        \"name\": \"malformedRequestError\",\n        \"message\": \"Found 1 errors with the supplied collection.\",\n        \"details\": [\n            \": must have required property 'info'\"\n        ]\n    }\n}"
-						},
-						{
-							"name": "Rate Limit Exceeded",
-							"originalRequest": {
-								"method": "POST",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/json"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"collection\": {\n        \"item\": [\n            {\n                \"name\": \"Test GET Response\",\n                \"event\": [\n                    {\n                        \"listen\": \"test\",\n                        \"script\": {\n                            \"id\": \"7d2334fc-a84a-4c3d-b26c-7529afa4c0ae\",\n                            \"exec\": [\n                                \"pm.test(\\\"Status code is 200\\\", function () {\",\n                                \"    pm.response.to.have.status(200);\",\n                                \"});\"\n                                ],\n                            \"type\": \"text/javascript\"\n                            }\n                        }\n                    ],\n                \"request\": {\n                    \"url\": \"https://echo.getpostman.com/headers\",\n                    \"method\": \"GET\",\n                    \"header\": [\n                        {\n                            \"key\": \"Content-Type\",\n                            \"value\": \"application/json\"\n                        }\n                    ]\n                }\n            }\n        ]\n    }\n}",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "https://api.getpostman.com/collections",
-									"protocol": "https",
-									"host": [
-										"api",
-										"getpostman",
-										"com"
-									],
-									"path": [
-										"collections"
-									],
-									"query": [
-										{
-											"key": "workspace",
-											"value": "1f0df51a-8658-4ee8-a2a1-d2567dfa09a9",
-											"description": "Optional. A workspace ID in which to create the collection.\n\nIf you do not include this query parameter, the system creates the collection in your \"My Workspace\" workspace.",
-											"disabled": true
-										}
-									]
-								}
-							},
-							"status": "Too Many Requests",
-							"code": 429,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Content-Type",
-									"value": "application/json",
-									"description": ""
-								}
-							],
-							"cookie": [],
-							"body": "{\n    \"error\": \"rateLimited\",\n    \"message\": \"Rate limit exceeded. Please retry after 1669048687\"\n}"
-						}
-					]
-				},
-				{
-					"name": "Get a collection",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "https://api.getpostman.com/collections/{{collectionId}}",
-							"protocol": "https",
-							"host": [
-								"api",
-								"getpostman",
-								"com"
-							],
-							"path": [
-								"collections",
-								"{{collectionId}}"
-							],
-							"query": [
-								{
-									"key": "access_key",
-									"value": "{{accessKey}}",
-									"description": "Optional. A collection's read-only access key. Using this query parameter does not require an API key to call the endpoint.",
-									"disabled": true
-								}
-							]
-						},
-						"description": "Gets information about a collection. For a complete list of this endpoint's possible values, use the [collection.json schema file](https://schema.postman.com/json/collection/v2.1.0/collection.json)."
-					},
-					"response": [
-						{
-							"name": "Successful Response",
-							"originalRequest": {
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "https://api.getpostman.com/collections/12ece9e1-2abf-4edc-8e34-de66e74114d2",
-									"protocol": "https",
-									"host": [
-										"api",
-										"getpostman",
-										"com"
-									],
-									"path": [
-										"collections",
-										"12ece9e1-2abf-4edc-8e34-de66e74114d2"
-									]
-								}
-							},
-							"status": "OK",
-							"code": 200,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Content-Type",
-									"value": "application/json",
-									"name": "Content-Type",
-									"description": {
-										"content": "",
-										"type": "text/plain"
-									}
-								}
-							],
-							"cookie": [],
-							"body": "{\n    \"collection\": {\n        \"info\": {\n            \"name\": \"Test Collection\",\n            \"description\": \"This is a test collection that makes a tiny request to Postman Echo service to get the list of request headers sent by a HTTP client.\",\n            \"_postman_id\": \"12ece9e1-2abf-4edc-8e34-de66e74114d2\",\n            \"schema\": \"https://schema.getpostman.com/json/collection/v2.0.0/collection.json\",\n            \"updatedAt\": \"2022-06-16T20:21:13.000Z\",\n            \"fork\": {\n                \"label\": \"Test Fork\",\n                \"createdAt\": \"2022-06-16T19:51:44.069Z\",\n                \"from\": \"12345678-12ece9e1-2abf-4edc-8e34-de66e74114d2\"\n            }\n        },\n        \"item\": [\n            {\n                \"name\": \"Test GET Response\",\n                \"id\": \"82ee981b-e19f-962a-401e-ea34ebfb4848\",\n                \"event\": [\n                    {\n                        \"listen\": \"test\",\n                        \"script\": {\n                            \"id\": \"7d2334fc-a84a-4c3d-b26c-7529afa4c0ae\",\n                            \"exec\": [\n                                \"pm.test(\\\"Status code is 200\\\", function () {\",\n                                \"    pm.response.to.have.status(200);\",\n                                \"});\"\n                            ],\n                            \"type\": \"text/javascript\"\n                        }\n                    }\n                ],\n                \"request\": {\n                    \"url\": \"https://echo.getpostman.com/headers\",\n                    \"method\": \"GET\",\n                    \"header\": [\n                        {\n                            \"key\": \"Content-Type\",\n                            \"value\": \"application/json\"\n                        }\n                    ]\n                },\n                \"response\": []\n            }\n        ]\n    }\n}"
-						},
-						{
-							"name": "Get Collection with Access Token",
-							"originalRequest": {
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "https://api.getpostman.com/collections/12ece9e1-2abf-4edc-8e34-de66e74114d2?access_key={{accessKey}}",
-									"protocol": "https",
-									"host": [
-										"api",
-										"getpostman",
-										"com"
-									],
-									"path": [
-										"collections",
-										"12ece9e1-2abf-4edc-8e34-de66e74114d2"
-									],
-									"query": [
-										{
-											"key": "access_key",
-											"value": "{{accessKey}}"
-										}
-									]
-								}
-							},
-							"status": "OK",
-							"code": 200,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Content-Type",
-									"value": "application/json",
-									"description": {
-										"content": "",
-										"type": "text/plain"
-									}
-								}
-							],
-							"cookie": [],
-							"body": "{\n    \"collection\": {\n        \"info\": {\n            \"name\": \"Test Collection\",\n            \"description\": \"This is a test collection that makes a tiny request to Postman Echo service to get the list of request headers sent by a HTTP client.\",\n            \"_postman_id\": \"12ece9e1-2abf-4edc-8e34-de66e74114d2\",\n            \"schema\": \"https://schema.getpostman.com/json/collection/v2.0.0/collection.json\",\n            \"updatedAt\": \"2022-06-16T20:21:13.000Z\",\n            \"fork\": {\n                \"label\": \"Test Fork\",\n                \"createdAt\": \"2022-06-16T19:51:44.069Z\",\n                \"from\": \"12345678-12ece9e1-2abf-4edc-8e34-de66e74114d2\"\n            }\n        },\n        \"item\": [\n            {\n                \"name\": \"Test GET Response\",\n                \"id\": \"82ee981b-e19f-962a-401e-ea34ebfb4848\",\n                \"event\": [\n                    {\n                        \"listen\": \"test\",\n                        \"script\": {\n                            \"id\": \"7d2334fc-a84a-4c3d-b26c-7529afa4c0ae\",\n                            \"exec\": [\n                                \"pm.test(\\\"Status code is 200\\\", function () {\",\n                                \"    pm.response.to.have.status(200);\",\n                                \"});\"\n                            ],\n                            \"type\": \"text/javascript\"\n                        }\n                    }\n                ],\n                \"request\": {\n                    \"url\": \"https://echo.getpostman.com/headers\",\n                    \"method\": \"GET\",\n                    \"header\": [\n                        {\n                            \"key\": \"Content-Type\",\n                            \"value\": \"application/json\"\n                        }\n                    ]\n                },\n                \"response\": []\n            }\n        ]\n    }\n}"
-						},
-						{
-							"name": "Not Found",
-							"originalRequest": {
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "https://api.getpostman.com/collections/12ece9e1-2abf-4edc-8e34-de66e74114d2",
-									"protocol": "https",
-									"host": [
-										"api",
-										"getpostman",
-										"com"
-									],
-									"path": [
-										"collections",
-										"12ece9e1-2abf-4edc-8e34-de66e74114d2"
-									]
-								}
-							},
-							"status": "Not Found",
-							"code": 404,
-							"_postman_previewlanguage": "json",
-							"header": [],
-							"cookie": [],
-							"body": "{\n    \"error\": {\n        \"name\": \"instanceNotFoundError\",\n        \"message\": \"We could not find the collection you are looking for\"\n    }\n}"
-						},
-						{
-							"name": "Rate Limit Exceeded",
-							"originalRequest": {
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "https://api.getpostman.com/collections/12ece9e1-2abf-4edc-8e34-de66e74114d2",
-									"protocol": "https",
-									"host": [
-										"api",
-										"getpostman",
-										"com"
-									],
-									"path": [
-										"collections",
-										"12ece9e1-2abf-4edc-8e34-de66e74114d2"
-									]
-								}
-							},
-							"status": "Too Many Requests",
-							"code": 429,
-							"_postman_previewlanguage": "json",
-							"header": [],
-							"cookie": [],
-							"body": "{\n    \"error\": \"rateLimited\",\n    \"message\": \"Rate limit exceeded. Please retry after 1669048687\"\n}"
-						}
-					]
-				},
-				{
-					"name": "Delete a collection",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "https://api.getpostman.com/collections/{{collectionId}}",
-							"protocol": "https",
-							"host": [
-								"api",
-								"getpostman",
-								"com"
-							],
-							"path": [
-								"collections",
-								"{{collectionId}}"
-							]
-						},
-						"description": "Deletes a collection."
-					},
-					"response": [
-						{
-							"name": "Successful Response",
-							"originalRequest": {
-								"method": "DELETE",
-								"header": [],
-								"url": {
-									"raw": "https://api.getpostman.com/collections/12ece9e1-2abf-4edc-8e34-de66e74114d2",
-									"protocol": "https",
-									"host": [
-										"api",
-										"getpostman",
-										"com"
-									],
-									"path": [
-										"collections",
-										"12ece9e1-2abf-4edc-8e34-de66e74114d2"
-									]
-								}
-							},
-							"status": "OK",
-							"code": 200,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Content-Type",
-									"value": "application/json",
-									"description": {
-										"content": "",
-										"type": "text/plain"
-									}
-								}
-							],
-							"cookie": [],
-							"body": "{\n    \"collection\": {\n        \"id\": \"12ece9e1-2abf-4edc-8e34-de66e74114d2\",\n        \"uid\": \"12345678-12ece9e1-2abf-4edc-8e34-de66e74114d2\"\n    }\n}"
-						},
-						{
-							"name": "Not Found",
-							"originalRequest": {
-								"method": "DELETE",
-								"header": [],
-								"url": {
-									"raw": "https://api.getpostman.com/collections/12ece9e1-2abf-4edc-8e34-de66e74114d2",
-									"protocol": "https",
-									"host": [
-										"api",
-										"getpostman",
-										"com"
-									],
-									"path": [
-										"collections",
-										"12ece9e1-2abf-4edc-8e34-de66e74114d2"
-									]
-								}
-							},
-							"status": "Not Found",
-							"code": 404,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Content-Type",
-									"value": "application/json",
-									"name": "Content-Type",
-									"description": {
-										"content": "",
-										"type": "text/plain"
-									}
-								}
-							],
-							"cookie": [],
-							"body": "{\n    \"error\": {\n        \"name\": \"instanceNotFoundError\",\n        \"message\": \"The specified item does not exist.\",\n        \"details\": {\n            \"item\": \"collection\",\n            \"id\": \"12ece9e1-2abf-4edc-8e34-de66e74114d2\"\n        }\n    }\n}"
-						},
-						{
-							"name": "Rate Limit Exceeded",
-							"originalRequest": {
-								"method": "DELETE",
-								"header": [],
-								"url": {
-									"raw": "https://api.getpostman.com/collections/12ece9e1-2abf-4edc-8e34-de66e74114d2",
-									"protocol": "https",
-									"host": [
-										"api",
-										"getpostman",
-										"com"
-									],
-									"path": [
-										"collections",
-										"12ece9e1-2abf-4edc-8e34-de66e74114d2"
-									]
-								}
-							},
-							"status": "Too Many Requests",
-							"code": 429,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Content-Type",
-									"value": "application/json",
-									"description": {
-										"content": "",
-										"type": "text/plain"
-									}
-								}
-							],
-							"cookie": [],
-							"body": "{\n    \"error\": \"rateLimited\",\n    \"message\": \"Rate limit exceeded. Please retry after 1669048687\"\n}"
-						}
-					]
-				},
-				{
-					"name": "Update a collection",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"collection\": {\n        \"info\": {\n            \"name\": \"{{collectionName}}\",\n            \"schema\": \"{{collectionSchemaUrl}}\"\n        },\n        \"item\": [\n            {\n                \"request\": {}\n            }\n        ]\n    }\n}"
-						},
-						"url": {
-							"raw": "https://api.getpostman.com/collections/{{collectionId}}",
-							"protocol": "https",
-							"host": [
-								"api",
-								"getpostman",
-								"com"
-							],
-							"path": [
-								"collections",
-								"{{collectionId}}"
-							]
-						},
-						"description": "Updates a collection using the [Postman Collection v2 schema format](https://schema.postman.com/json/collection/v2.1.0/docs/index.html). Include a `collection` object in the request body that contains the following required properties:\n\n- `info` — An **object** that contains the following properties:\n    - `name` — A **string** value that contains the collection's name.\n    - `schema` — A **string** that contains a URL to the collection's schema. For example, the `https://schema.getpostman.com/collection/v1` URL.\n- `item` — An **object** that contains the HTTP request and response information.\n    - `request` — An **object** that contains the collection's request information. For a complete list of values, refer to the `definitions.request` entry in the [collection.json schema file](https://schema.postman.com/json/collection/v2.1.0/collection.json). If you pass an empty object for this value, the system defaults to an untitled GET request.\n\n**Note:**\n\n- For a complete list of available property values for this endpoint, use the following references available in the [collection.json schema file](https://schema.postman.com/json/collection/v2.1.0/collection.json):\n    - `info` object — Use the `definitions.info` entry.\n    - `item` object — Use the `definitions.items` entry.\n- For all other possible values, refer to the [collection.json schema file](https://schema.postman.com/json/collection/v2.1.0/collection.json).\n    \n\n### Important\n\nUse caution when using this endpoint. The system will replace the existing collection with the values passed in the request body."
-					},
-					"response": [
-						{
-							"name": "Successful Response",
-							"originalRequest": {
-								"method": "PUT",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/json"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"collection\": {\n        \"info\": {\n            \"name\": \"Test Collection\",\n            \"description\": \"This collection makes a request to the Postman Echo service to get a list of request headers sent by an HTTP client.\",\n            \"schema\": \"https://schema.getpostman.com/json/collection/v2.1.0/collection.json\"\n        },\n        \"item\": [\n            {\n                \"name\": \"Test POST Response\",\n                \"event\": [\n                    {\n                        \"listen\": \"test\",\n                        \"script\": {\n                            \"id\": \"7d2334fc-a84a-4c3d-b26c-7529afa4c0ae\",\n                            \"exec\": [\n                                \"pm.test(\\\"Status code is 200\\\", function () {\",\n                                \"    pm.response.to.have.status(200);\",\n                                \"});\"\n                                ],\n                            \"type\": \"text/javascript\"\n                            }\n                        }\n                    ],\n                \"request\": {\n                    \"url\": \"https://echo.getpostman.com/headers\",\n                    \"method\": \"POST\",\n                    \"header\": [\n                        {\n                            \"key\": \"Content-Type\",\n                            \"value\": \"application/json\"\n                        }\n                    ]\n                }\n            }\n        ]\n    }\n}",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "https://api.getpostman.com/collections/12ece9e1-2abf-4edc-8e34-de66e74114d2",
-									"protocol": "https",
-									"host": [
-										"api",
-										"getpostman",
-										"com"
-									],
-									"path": [
-										"collections",
-										"12ece9e1-2abf-4edc-8e34-de66e74114d2"
-									]
-								}
-							},
-							"status": "OK",
-							"code": 200,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Content-Type",
-									"value": "application/json",
-									"name": "Content-Type",
-									"description": {
-										"content": "",
-										"type": "text/plain"
-									}
-								}
-							],
-							"cookie": [],
-							"body": "{\n    \"collection\": {\n        \"id\": \"12ece9e1-2abf-4edc-8e34-de66e74114d2\",\n        \"name\": \"Test Collection\",\n        \"uid\": \"12345678-12ece9e1-2abf-4edc-8e34-de66e74114d2\"\n    }\n}"
-						},
-						{
-							"name": "Forbidden",
-							"originalRequest": {
-								"method": "PUT",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/json"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"collection\": {\n        \"info\": {\n            \"name\": \"Test Collection\",\n            \"description\": \"This collection makes a request to the Postman Echo service to get a list of request headers sent by an HTTP client.\",\n            \"schema\": \"https://schema.getpostman.com/json/collection/v2.1.0/collection.json\"\n        },\n        \"item\": [\n            {\n                \"name\": \"Test POST Response\",\n                \"event\": [\n                    {\n                        \"listen\": \"test\",\n                        \"script\": {\n                            \"id\": \"7d2334fc-a84a-4c3d-b26c-7529afa4c0ae\",\n                            \"exec\": [\n                                \"pm.test(\\\"Status code is 200\\\", function () {\",\n                                \"    pm.response.to.have.status(200);\",\n                                \"});\"\n                                ],\n                            \"type\": \"text/javascript\"\n                            }\n                        }\n                    ],\n                \"request\": {\n                    \"url\": \"https://echo.getpostman.com/headers\",\n                    \"method\": \"POST\",\n                    \"header\": [\n                        {\n                            \"key\": \"Content-Type\",\n                            \"value\": \"application/json\"\n                        }\n                    ]\n                }\n            }\n        ]\n    }\n}",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "https://api.getpostman.com/collections/12ece9e1-2abf-4edc-8e34-de66e74114d2",
-									"protocol": "https",
-									"host": [
-										"api",
-										"getpostman",
-										"com"
-									],
-									"path": [
-										"collections",
-										"12ece9e1-2abf-4edc-8e34-de66e74114d2"
-									]
-								}
-							},
-							"status": "Forbidden",
-							"code": 403,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Content-Type",
-									"value": "application/json",
-									"description": {
-										"content": "",
-										"type": "text/plain"
-									}
-								}
-							],
-							"cookie": [],
-							"body": "{\n    \"error\": {\n        \"name\": \"forbiddenError\",\n        \"message\": \"You do not have enough permissions to perform this action.\"\n    }\n}"
-						},
-						{
-							"name": "Not Found",
-							"originalRequest": {
-								"method": "PUT",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/json"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"collection\": {\n        \"info\": {\n            \"name\": \"Test Collection\",\n            \"description\": \"This collection makes a request to the Postman Echo service to get a list of request headers sent by an HTTP client.\",\n            \"schema\": \"https://schema.getpostman.com/json/collection/v2.1.0/collection.json\"\n        },\n        \"item\": [\n            {\n                \"name\": \"Test POST Response\",\n                \"event\": [\n                    {\n                        \"listen\": \"test\",\n                        \"script\": {\n                            \"id\": \"7d2334fc-a84a-4c3d-b26c-7529afa4c0ae\",\n                            \"exec\": [\n                                \"pm.test(\\\"Status code is 200\\\", function () {\",\n                                \"    pm.response.to.have.status(200);\",\n                                \"});\"\n                                ],\n                            \"type\": \"text/javascript\"\n                            }\n                        }\n                    ],\n                \"request\": {\n                    \"url\": \"https://echo.getpostman.com/headers\",\n                    \"method\": \"POST\",\n                    \"header\": [\n                        {\n                            \"key\": \"Content-Type\",\n                            \"value\": \"application/json\"\n                        }\n                    ]\n                }\n            }\n        ]\n    }\n}",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "https://api.getpostman.com/collections/12ece9e1-2abf-4edc-8e34-de66e74114d2",
-									"protocol": "https",
-									"host": [
-										"api",
-										"getpostman",
-										"com"
-									],
-									"path": [
-										"collections",
-										"12ece9e1-2abf-4edc-8e34-de66e74114d2"
-									]
-								}
-							},
-							"status": "Not Found",
-							"code": 404,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Content-Type",
-									"value": "application/json",
-									"name": "Content-Type",
-									"description": {
-										"content": "",
-										"type": "text/plain"
-									}
-								}
-							],
-							"cookie": [],
-							"body": "{\n    \"error\": {\n        \"name\": \"instanceNotFoundError\",\n        \"message\": \"The specified item does not exist.\",\n        \"details\": {\n            \"item\": \"collection\",\n            \"id\": \"12ece9e1-2abf-4edc-8e34-de66e74114d2\"\n        }\n    }\n}"
-						},
-						{
-							"name": "Malformed Request",
-							"originalRequest": {
-								"method": "PUT",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/json"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"collection\": {\n        \"info\": {\n            \"name\": \"Test Collection\"\n        }\n    }\n}",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "https://api.getpostman.com/collections/12ece9e1-2abf-4edc-8e34-de66e74114d2",
-									"protocol": "https",
-									"host": [
-										"api",
-										"getpostman",
-										"com"
-									],
-									"path": [
-										"collections",
-										"12ece9e1-2abf-4edc-8e34-de66e74114d2"
-									]
-								}
-							},
-							"status": "Bad Request",
-							"code": 400,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Content-Type",
-									"value": "application/json",
-									"name": "Content-Type",
-									"description": {
-										"content": "",
-										"type": "text/plain"
-									}
-								}
-							],
-							"cookie": [],
-							"body": "{\n    \"error\": {\n        \"name\": \"malformedRequestError\",\n        \"message\": \"Found 2 errors with the supplied collection.\",\n        \"details\": [\n            \": must have required property 'item'\",\n            \"info: must have required property 'schema'\"\n        ]\n    }\n}"
-						},
-						{
-							"name": "Collection ID Mismatch",
-							"originalRequest": {
-								"method": "PUT",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/json"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"collection\": {\n        \"info\": {\n            \"name\": \"Test Collection\",\n            \"description\": \"This collection makes a request to the Postman Echo service to get a list of request headers sent by an HTTP client.\",\n            \"schema\": \"https://schema.getpostman.com/json/collection/v2.1.0/collection.json\"\n        },\n        \"item\": [\n            {\n                \"name\": \"Test POST Response\",\n                \"event\": [\n                    {\n                        \"listen\": \"test\",\n                        \"script\": {\n                            \"id\": \"7d2334fc-a84a-4c3d-b26c-7529afa4c0ae\",\n                            \"exec\": [\n                                \"pm.test(\\\"Status code is 200\\\", function () {\",\n                                \"    pm.response.to.have.status(200);\",\n                                \"});\"\n                                ],\n                            \"type\": \"text/javascript\"\n                            }\n                        }\n                    ],\n                \"request\": {\n                    \"url\": \"https://echo.getpostman.com/headers\",\n                    \"method\": \"POST\",\n                    \"header\": [\n                        {\n                            \"key\": \"Content-Type\",\n                            \"value\": \"application/json\"\n                        }\n                    ]\n                }\n            }\n        ]\n    }\n}",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "https://api.getpostman.com/collections/12ece9e1-2abf-4edc-8e34-de66e74114d2",
-									"protocol": "https",
-									"host": [
-										"api",
-										"getpostman",
-										"com"
-									],
-									"path": [
-										"collections",
-										"12ece9e1-2abf-4edc-8e34-de66e74114d2"
-									]
-								}
-							},
-							"status": "Bad Request",
-							"code": 400,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Content-Type",
-									"value": "application/json",
-									"name": "Content-Type",
-									"description": {
-										"content": "",
-										"type": "text/plain"
-									}
-								}
-							],
-							"cookie": [],
-							"body": "{\n    \"error\": {\n        \"name\": \"collectionMismatchError\",\n        \"message\": \"The collection ID in the path does not match the collection ID in the request body.\"\n    }\n}"
-						},
-						{
-							"name": "Rate Limit Exceeded",
-							"originalRequest": {
-								"method": "PUT",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/json"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"collection\": {\n        \"info\": {\n            \"name\": \"Test Collection\",\n            \"description\": \"This collection makes a request to the Postman Echo service to get a list of request headers sent by an HTTP client.\",\n            \"schema\": \"https://schema.getpostman.com/json/collection/v2.1.0/collection.json\"\n        },\n        \"item\": [\n            {\n                \"name\": \"Test POST Response\",\n                \"event\": [\n                    {\n                        \"listen\": \"test\",\n                        \"script\": {\n                            \"id\": \"7d2334fc-a84a-4c3d-b26c-7529afa4c0ae\",\n                            \"exec\": [\n                                \"pm.test(\\\"Status code is 200\\\", function () {\",\n                                \"    pm.response.to.have.status(200);\",\n                                \"});\"\n                                ],\n                            \"type\": \"text/javascript\"\n                            }\n                        }\n                    ],\n                \"request\": {\n                    \"url\": \"https://echo.getpostman.com/headers\",\n                    \"method\": \"POST\",\n                    \"header\": [\n                        {\n                            \"key\": \"Content-Type\",\n                            \"value\": \"application/json\"\n                        }\n                    ]\n                }\n            }\n        ]\n    }\n}",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "https://api.getpostman.com/collections/12ece9e1-2abf-4edc-8e34-de66e74114d2",
-									"protocol": "https",
-									"host": [
-										"api",
-										"getpostman",
-										"com"
-									],
-									"path": [
-										"collections",
-										"12ece9e1-2abf-4edc-8e34-de66e74114d2"
-									]
-								}
-							},
-							"status": "Too Many Requests",
-							"code": 429,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Content-Type",
-									"value": "application/json",
-									"description": {
-										"content": "",
-										"type": "text/plain"
-									}
-								}
-							],
-							"cookie": [],
-							"body": "{\n    \"error\": \"rateLimited\",\n    \"message\": \"Rate limit exceeded. Please retry after 1669048687\"\n}"
-						}
-					]
-				},
-				{
-					"name": "Get all collections",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "https://api.getpostman.com/collections",
-							"protocol": "https",
-							"host": [
-								"api",
-								"getpostman",
-								"com"
-							],
-							"path": [
-								"collections"
-							],
-							"query": [
-								{
-									"key": "workspace",
-									"value": "{{workspaceId}}",
-									"description": "Optional. A workspace ID.",
-									"disabled": true
-								}
-							]
-						},
-						"description": "Gets all of your [collections](https://www.getpostman.com/docs/collections). The response includes all of your subscribed collections."
-					},
-					"response": [
-						{
-							"name": "Successful Response",
-							"originalRequest": {
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "https://api.getpostman.com/collections",
-									"protocol": "https",
-									"host": [
-										"api",
-										"getpostman",
-										"com"
-									],
-									"path": [
-										"collections"
-									],
-									"query": [
-										{
-											"key": "workspace",
-											"value": "1f0df51a-8658-4ee8-a2a1-d2567dfa09a9",
-											"description": "Optional. A workspace ID.",
-											"disabled": true
-										}
-									]
-								}
-							},
-							"status": "OK",
-							"code": 200,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Content-Type",
-									"value": "application/json",
-									"description": {
-										"content": "",
-										"type": "text/plain"
-									}
-								}
-							],
-							"cookie": [],
-							"body": "{\n    \"collections\": [\n        {\n            \"id\": \"dac5eac9-148d-a32e-b76b-3edee9da28f7\",\n            \"name\": \"Cloud API\",\n            \"owner\": \"12345678\",\n            \"createdAt\": \"2022-04-12T10:29:46.000Z\",\n            \"updatedAt\": \"2022-04-12T10:29:56.000Z\",\n            \"uid\": \"12345678-dac5eac9-148d-a32e-b76b-3edee9da28f7\",\n            \"isPublic\": true\n        },\n        {\n            \"id\": \"12ece9e1-2abf-4edc-8e34-de66e74114d2\",\n            \"name\": \"Test Collection\",\n            \"owner\": \"12345678\",\n            \"createdAt\": \"2022-01-13T10:21:46.000Z\",\n            \"updatedAt\": \"2022-02-12T11:29:56.000Z\",\n            \"uid\": \"12345678-12ece9e1-2abf-4edc-8e34-de66e74114d2\",\n            \"isPublic\": false,\n            \"fork\": {\n                \"label\": \"Test Fork\",\n                \"createdAt\": \"2022-06-16T19:51:44.069Z\",\n                \"from\": \"12345678-12ece9e1-2abf-4edc-8e34-de66e74114d2\"\n            }\n        },\n        {\n            \"id\": \"f695cab7-6878-eb55-7943-ad88e1ccfd65\",\n            \"name\": \"Postman Echo\",\n            \"owner\": \"12345678\",\n            \"createdAt\": \"2021-04-11T09:18:26.000Z\",\n            \"updatedAt\": \"2022-05-01T15:29:32.000Z\",\n            \"uid\": \"12345678-f695cab7-6878-eb55-7943-ad88e1ccfd65\",\n            \"isPublic\": true\n        }\n    ]\n}"
-						},
-						{
-							"name": "Filter by Workspace",
-							"originalRequest": {
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "https://api.getpostman.com/collections?workspace=1f0df51a-8658-4ee8-a2a1-d2567dfa09a9",
-									"protocol": "https",
-									"host": [
-										"api",
-										"getpostman",
-										"com"
-									],
-									"path": [
-										"collections"
-									],
-									"query": [
-										{
-											"key": "workspace",
-											"value": "1f0df51a-8658-4ee8-a2a1-d2567dfa09a9",
-											"description": "Optional. A workspace ID."
-										}
-									]
-								}
-							},
-							"status": "OK",
-							"code": 200,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Content-Type",
-									"value": "application/json",
-									"description": {
-										"content": "",
-										"type": "text/plain"
-									}
-								}
-							],
-							"cookie": [],
-							"body": "{\n    \"collections\": [\n        {\n            \"id\": \"dac5eac9-148d-a32e-b76b-3edee9da28f7\",\n            \"name\": \"Cloud API\",\n            \"owner\": \"12345678\",\n            \"createdAt\": \"2022-04-12T10:29:46.000Z\",\n            \"updatedAt\": \"2022-04-12T10:29:56.000Z\",\n            \"uid\": \"12345678-dac5eac9-148d-a32e-b76b-3edee9da28f7\",\n            \"isPublic\": true\n        }\n    ]\n}"
-						},
-						{
-							"name": "Rate Limit Exceeded",
-							"originalRequest": {
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "https://api.getpostman.com/collections",
-									"protocol": "https",
-									"host": [
-										"api",
-										"getpostman",
-										"com"
-									],
-									"path": [
-										"collections"
-									],
-									"query": [
-										{
-											"key": "workspace",
-											"value": "1f0df51a-8658-4ee8-a2a1-d2567dfa09a9",
-											"description": "Optional. A workspace ID.",
-											"disabled": true
-										}
-									]
-								}
-							},
-							"status": "Too Many Requests",
-							"code": 429,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Content-Type",
-									"value": "application/json",
-									"description": {
-										"content": "",
-										"type": "text/plain"
-									}
-								}
-							],
-							"cookie": [],
-							"body": "{\n    \"error\": \"rateLimited\",\n    \"message\": \"Rate limit exceeded. Please retry after 1669048687\"\n}"
-						}
-					]
-				}
-			],
-			"description": "The `/collections` endpoints let you manage your [collections](https://learning.postman.com/docs/sending-requests/intro-to-collections/)."
-		},
-		{
-			"name": "Sessions",
-			"item": [
-				{
-					"name": "Create session",
-					"request": {
-                      "method": "GET",
-                      "header": [],
-                      "url": {
-                        "raw": ""
-                      }
-                    },
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "Social",
-			"item": [
-				{
-					"name": "Get followers",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/users/1/following",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"users",
-								"1",
-								"following"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get following",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/users/1/following?page=1&pageSize=1",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"users",
-								"1",
-								"following"
-							],
-							"query": [
-								{
-									"key": "page",
-									"value": "1"
-								},
-								{
-									"key": "pageSize",
-									"value": "1"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Follow user",
-					"request": {
-						"auth": {
-							"type": "basic",
-							"basic": [
-								{
-									"key": "password",
-									"value": "holahola",
-									"type": "string"
-								},
-								{
-									"key": "username",
-									"value": "fedeshih@gmail.com",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"userId\": 1\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{baseUrl}}/users/1/following",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"users",
-								"1",
-								"following"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Unfollow user",
-					"request": {
-						"auth": {
-							"type": "basic",
-							"basic": [
-								{
-									"key": "username",
-									"value": "fedeshih@gmail.com",
-									"type": "string"
-								},
-								{
-									"key": "password",
-									"value": "holahola",
-									"type": "string"
-								}
-							]
-						},
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/users/2/following/1",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"users",
-								"2",
-								"following",
-								"1"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
 			"name": "Enums",
 			"item": [
 				{
-					"name": "Get all genres",
+					"name": "Get Genres",
 					"request": {
+						"auth": {
+							"type": "noauth"
+						},
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/genres",
+							"raw": "{{baseUrl}}/genres?forGame=7",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"genres"
+							],
+							"query": [
+								{
+									"key": "forUser",
+									"value": "5",
+									"disabled": true
+								},
+								{
+									"key": "forGame",
+									"value": "7"
+								}
 							]
-						}
+						},
+						"description": "200: OK\n\n204: No Content\n\n400: exclusive Filters"
 					},
 					"response": []
 				},
 				{
-					"name": "Get genre by id",
+					"name": "Get Genre By Id",
 					"request": {
+						"auth": {
+							"type": "noauth"
+						},
 						"method": "GET",
 						"header": [
 							{
@@ -1772,38 +872,81 @@
 							}
 						],
 						"url": {
-							"raw": "{{baseUrl}}/genres/1",
+							"raw": "{{baseUrl}}/genres/6",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"genres",
-								"1"
+								"6"
 							]
-						}
+						},
+						"description": "200: OK\n\n404: no existe el genre"
 					},
 					"response": []
 				},
 				{
-					"name": "Get missions",
+					"name": "Get Missions",
 					"request": {
-                      "method": "GET",
-                      "header": [],
-                      "url": {
-                        "raw": ""
-                      }
-                    },
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/missions",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"missions"
+							]
+						},
+						"description": "200: OK"
+					},
 					"response": []
 				},
 				{
-					"name": "Get notifications",
+					"name": "Get Mission By Id",
 					"request": {
-                      "method": "GET",
-                      "header": [],
-                      "url": {
-                        "raw": ""
-                      }
-                    },
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/missions/REPUTATION_GOAL",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"missions",
+								"REPUTATION_GOAL"
+							]
+						},
+						"description": "200: OK\n\n404: no existe la mission"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Notifications",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/notifications",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"notifications"
+							]
+						},
+						"description": "200: OK"
+					},
 					"response": []
 				},
 				{
@@ -1820,55 +963,8 @@
 								"notifications",
 								"userIFollowWritesReview"
 							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get mission by id",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/missions/REPUTATION_GOAL",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"missions",
-								"REPUTATION_GOAL"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get preferences or game genres",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/genres/?forGame=2",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"genres",
-								""
-							],
-							"query": [
-								{
-									"key": "forUser",
-									"value": "1",
-									"description": "Mutuamente excluyentes",
-									"disabled": true
-								},
-								{
-									"key": "forGame",
-									"value": "2"
-								}
-							]
-						}
+						},
+						"description": "200: OK\n\n404: no existe la notif"
 					},
 					"response": []
 				}
@@ -1878,52 +974,19 @@
 			"name": "Games",
 			"item": [
 				{
-					"name": "Get Games Base",
-					"request": {
-						"auth": {
-							"type": "basic",
-							"basic": [
-								{
-									"key": "username",
-									"value": "frupnik@itba.edu.ar",
-									"type": "string"
-								},
-								{
-									"key": "password",
-									"value": "12345678",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/games/31",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"games",
-								"31"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get Games Filter",
+					"name": "Get Games",
 					"request": {
 						"auth": {
 							"type": "basic",
 							"basic": [
 								{
 									"key": "password",
-									"value": "12345678",
+									"value": "holahola",
 									"type": "string"
 								},
 								{
 									"key": "username",
-									"value": "hola@tuvieja.com",
+									"value": "mmanzur@itba.edu.ar",
 									"type": "string"
 								}
 							]
@@ -1937,7 +1000,7 @@
 							}
 						],
 						"url": {
-							"raw": "{{baseUrl}}/games?sort=publishDate",
+							"raw": "{{baseUrl}}/games?search=a&direction=asc&page=1",
 							"host": [
 								"{{baseUrl}}"
 							],
@@ -1947,15 +1010,13 @@
 							"query": [
 								{
 									"key": "search",
-									"value": "hola",
-									"description": "full text search sobre el juego",
-									"disabled": true
+									"value": "a",
+									"description": "full text search sobre el juego"
 								},
 								{
 									"key": "direction",
 									"value": "asc",
-									"description": "asc | desc direccion de sort",
-									"disabled": true
+									"description": "asc | desc direccion de sort"
 								},
 								{
 									"key": "excludeNoRating",
@@ -1977,8 +1038,7 @@
 								},
 								{
 									"key": "page",
-									"value": "2",
-									"disabled": true
+									"value": "1"
 								},
 								{
 									"key": "pageSize",
@@ -2002,20 +1062,23 @@
 								},
 								{
 									"key": "sort",
-									"value": "publishDate"
+									"value": "publishDate",
+									"description": "name|averageRating|publishDate",
+									"disabled": true
 								},
 								{
-									"key": "cualquiera",
-									"value": "aaaaaa",
+									"key": "notReviewedBy",
+									"value": "2",
 									"disabled": true
 								}
 							]
-						}
+						},
+						"description": "200: OK\n\n204: No Content\n\n401: usar el ?suggested= sin iniciar sesion\n\n403: usar el ?suggested= no siendo moderator\n\n400: exclusive filters\n\n400: filtros mal puestos"
 					},
 					"response": []
 				},
 				{
-					"name": "Get Game",
+					"name": "Get Game By Id",
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -2028,44 +1091,42 @@
 								"games",
 								"2"
 							]
-						}
+						},
+						"description": "200: OK\n\n404: si no existe game"
 					},
 					"response": []
 				},
 				{
 					"name": "Delete Game",
 					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "fshih@itba.edu.ar",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "holahola",
+									"type": "string"
+								}
+							]
+						},
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/games/30",
+							"raw": "{{baseUrl}}/games/38",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"games",
-								"30"
+								"38"
 							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get Game Genres",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/games/3/genres",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"games",
-								"3",
-								"genres"
-							]
-						}
+						},
+						"description": "204: OK\n\n404: Not Found\n\n401/403"
 					},
 					"response": []
 				},
@@ -2076,19 +1137,25 @@
 							"type": "basic",
 							"basic": [
 								{
-									"key": "password",
-									"value": "holahola",
+									"key": "username",
+									"value": "fshih@itba.edu.ar",
 									"type": "string"
 								},
 								{
-									"key": "username",
-									"value": "fedeshih@gmail.com",
+									"key": "password",
+									"value": "holahola",
 									"type": "string"
 								}
 							]
 						},
 						"method": "PATCH",
-						"header": [],
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/vnd.game-suggestion-form.v1+json",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\r\n    \"accept\": true\r\n}\r\n",
@@ -2099,15 +1166,16 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseUrl}}/games/1",
+							"raw": "{{baseUrl}}/games/41",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"games",
-								"1"
+								"41"
 							]
-						}
+						},
+						"description": "204: OK\n\n401/403\n\n400: si esta mal el body\n\n409: si ya se resolvió"
 					},
 					"response": []
 				},
@@ -2121,13 +1189,13 @@
 							"type": "basic",
 							"basic": [
 								{
-									"key": "password",
-									"value": "12345678",
+									"key": "username",
+									"value": "frupnik@itba.edu.ar",
 									"type": "string"
 								},
 								{
-									"key": "username",
-									"value": "hola@tuvieja.com",
+									"key": "password",
+									"value": "12345678",
 									"type": "string"
 								}
 							]
@@ -2137,7 +1205,7 @@
 							{
 								"warning": "This is a duplicate header and will be overridden by the Content-Type header generated by Postman.",
 								"key": "Content-Type",
-								"value": "application/vnd.game-suggestion-form.v1+json",
+								"value": "multipart/form-data",
 								"type": "text"
 							}
 						],
@@ -2147,21 +1215,21 @@
 								{
 									"key": "image",
 									"type": "file",
-									"src": []
+									"src": "/C:/Users/matym/OneDrive/Escritorio/foto perfil.jpg"
 								},
 								{
 									"key": "name",
-									"value": "aaaaa",
+									"value": "Nombre",
 									"type": "text"
 								},
 								{
 									"key": "description",
-									"value": "holiwis",
+									"value": "Descripción",
 									"type": "text"
 								},
 								{
 									"key": "publisher",
-									"value": "faaaf",
+									"value": "Publisher",
 									"type": "text"
 								},
 								{
@@ -2181,14 +1249,13 @@
 								},
 								{
 									"key": "developer",
-									"value": "holiwa",
+									"value": "Desarrollador",
 									"type": "text"
 								},
 								{
 									"key": "cualquiera",
 									"value": "aaaaaaa",
-									"type": "text",
-									"disabled": true
+									"type": "text"
 								}
 							]
 						},
@@ -2200,7 +1267,8 @@
 							"path": [
 								"games"
 							]
-						}
+						},
+						"description": "pide un form-data como content-type\n\n401: si no estas logueado\n\n201: OK si sos mod\n\n202: OK si no sos mod\n\n400: si hay un argumento mal"
 					},
 					"response": []
 				},
@@ -2214,13 +1282,13 @@
 							"type": "basic",
 							"basic": [
 								{
-									"key": "username",
-									"value": "hola@tuvieja.com",
+									"key": "password",
+									"value": "holahola",
 									"type": "string"
 								},
 								{
-									"key": "password",
-									"value": "12345678",
+									"key": "username",
+									"value": "fshih@itba.edu.ar",
 									"type": "string"
 								}
 							]
@@ -2229,9 +1297,8 @@
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/vnd.game.v1+json",
-								"type": "text",
-								"disabled": true
+								"value": "multipart/form-data",
+								"type": "text"
 							}
 						],
 						"body": {
@@ -2245,18 +1312,21 @@
 								},
 								{
 									"key": "name",
-									"value": "aaaa",
-									"type": "text"
+									"value": "Nombre",
+									"type": "text",
+									"disabled": true
 								},
 								{
 									"key": "description",
-									"value": "holiwis",
-									"type": "text"
+									"value": "Descripcion",
+									"type": "text",
+									"disabled": true
 								},
 								{
 									"key": "publisher",
-									"value": "Vemos si funciona",
-									"type": "text"
+									"value": "Publisher",
+									"type": "text",
+									"disabled": true
 								},
 								{
 									"key": "genres",
@@ -2273,12 +1343,20 @@
 								{
 									"key": "releaseDate",
 									"value": "2015-10-15",
-									"type": "text"
+									"type": "text",
+									"disabled": true
 								},
 								{
 									"key": "developer",
-									"value": "holiwaaaaaa",
-									"type": "text"
+									"value": "Developer",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "accepted",
+									"value": "false",
+									"type": "text",
+									"disabled": true
 								}
 							]
 						},
@@ -2291,7 +1369,8 @@
 								"games",
 								"29"
 							]
-						}
+						},
+						"description": "200: OK\n\n400: mal argumentos form\n\n404: si no existe el game\n\n401/403"
 					},
 					"response": []
 				}
@@ -2310,13 +1389,13 @@
 							"type": "basic",
 							"basic": [
 								{
-									"key": "password",
-									"value": "holahola",
+									"key": "username",
+									"value": "fshih@itba.edu.ar",
 									"type": "string"
 								},
 								{
-									"key": "username",
-									"value": "fshih@itba.edu.ar",
+									"key": "password",
+									"value": "holahola",
 									"type": "string"
 								}
 							]
@@ -2333,20 +1412,71 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseUrl}}/reports",
+							"raw": "{{baseUrl}}/reports?reporterId=2&reason=spam",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"reports"
+							],
+							"query": [
+								{
+									"key": "reviewId",
+									"value": "36",
+									"disabled": true
+								},
+								{
+									"key": "reporterId",
+									"value": "2"
+								},
+								{
+									"key": "moderatorId",
+									"value": "2",
+									"disabled": true
+								},
+								{
+									"key": "reportedUserId",
+									"value": "8",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "pageSize",
+									"value": "10",
+									"disabled": true
+								},
+								{
+									"key": "reason",
+									"value": "spam"
+								}
 							]
-						}
+						},
+						"description": "200: OK\n\n204: No Content\n\n400: si esta mal los queryParams\n\n401/403"
 					},
 					"response": []
 				},
 				{
 					"name": "Get Report by Id",
 					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "holahola",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "fshih@itba.edu.ar",
+									"type": "string"
+								}
+							]
+						},
 						"method": "GET",
 						"header": [],
 						"url": {
@@ -2358,18 +1488,40 @@
 								"reports",
 								"1"
 							]
-						}
+						},
+						"description": "200: OK\n\n404: no existe el report\n\n401/403"
 					},
 					"response": []
 				},
 				{
 					"name": "Create Report",
 					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "mmanzur@itba.edu.ar",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "holahola",
+									"type": "string"
+								}
+							]
+						},
 						"method": "POST",
-						"header": [],
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/vnd.report-form.v1+json",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"reviewId\": 6,\r\n    \"reason\": \"spam\"\r\n}",
+							"raw": "{\r\n    \"reviewId\": 10,\r\n    \"reason\": \"spam\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -2384,12 +1536,13 @@
 							"path": [
 								"reports"
 							]
-						}
+						},
+						"description": "201: OK\n\n404: si no existe el reviewId\n\n400: si esta mal la reason\n\n401"
 					},
 					"response": []
 				},
 				{
-					"name": "Accept Report",
+					"name": "Accept/Reject Report",
 					"request": {
 						"auth": {
 							"type": "basic",
@@ -2407,49 +1560,13 @@
 							]
 						},
 						"method": "PATCH",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"state\": \"accepted\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/vnd.report-handle-form.v1+json",
+								"type": "text"
 							}
-						},
-						"url": {
-							"raw": "{{baseUrl}}/reports/15",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"reports",
-								"15"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Reject Report",
-					"request": {
-						"auth": {
-							"type": "basic",
-							"basic": [
-								{
-									"key": "username",
-									"value": "fshih@itba.edu.ar",
-									"type": "string"
-								},
-								{
-									"key": "password",
-									"value": "holahola",
-									"type": "string"
-								}
-							]
-						},
-						"method": "PATCH",
-						"header": [],
+						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\r\n    \"state\": \"rejected\"\r\n}",
@@ -2460,17 +1577,91 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseUrl}}/reports/15",
+							"raw": "{{baseUrl}}/reports/27",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"reports",
-								"15"
+								"27"
 							]
-						}
+						},
+						"description": "200: OK\n\n400: si está mal el body\n\n404: no existe el report\n\n401/403\n\n409: si ya se resolvió"
 					},
-					"response": []
+					"response": [
+						{
+							"name": "Accept",
+							"originalRequest": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/vnd.report-handle-form.v1+json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"state\": \"accepted\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/reports/27",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"reports",
+										"27"
+									]
+								}
+							},
+							"_postman_previewlanguage": null,
+							"header": null,
+							"cookie": [],
+							"body": null
+						},
+						{
+							"name": "Reject",
+							"originalRequest": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/vnd.report-handle-form.v1+json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"state\": \"rejected\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/reports/27",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"reports",
+										"27"
+									]
+								}
+							},
+							"_postman_previewlanguage": null,
+							"header": null,
+							"cookie": [],
+							"body": null
+						}
+					]
 				}
 			]
 		},
@@ -2478,152 +1669,171 @@
 			"name": "Reviews",
 			"item": [
 				{
-					"name": "Get reviews",
+					"name": "Get Reviews",
 					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "fshih@itba.edu.ar",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "holahola",
+									"type": "string"
+								}
+							]
+						},
 						"method": "GET",
 						"header": [],
 						"url": {
-                          "raw": "{{baseUrl}}/reviews?page=1&pageSize=10&newForUser=1",
-                          "host": [
-                            "{{baseUrl}}"
-                          ],
-                          "path": [
-                            "reviews"
-                          ],
-                          "query": [
-                            {
-                              "key": "recommendedFor",
-                              "value": "2",
-                              "disabled": true
-                            },
-                            {
-                              "key": "gameId",
-                              "value": "2",
-                              "disabled": true
-                            },
-                            {
-                              "key": "sort",
-                              "value": "created",
-                              "description": "(created|rating|popularity|controversial)",
-                              "disabled": true
-                            },
-                            {
-                              "key": "orderDirection",
-                              "value": "",
-                              "description": "asc|desc",
-                              "disabled": true
-                            },
-                            {
-                              "key": "gameGenres",
-                              "value": "1",
-                              "description": "List",
-                              "disabled": true
-                            },
-                            {
-                              "key": "authorsToExclude",
-                              "value": "1",
-                              "description": "List",
-                              "disabled": true
-                            },
-                            {
-                              "key": "authors",
-                              "value": "1",
-                              "description": "List",
-                              "disabled": true
-                            },
-                            {
-                              "key": "timePlayedFilter",
-                              "value": "100",
-                              "disabled": true
-                            },
-                            {
-                              "key": "authorPreferences",
-                              "value": "1",
-                              "description": "List genres",
-                              "disabled": true
-                            },
-                            {
-                              "key": "platforms",
-                              "value": "",
-                              "description": "PC|XBOX|PS|NINTENDO",
-                              "disabled": true
-                            },
-                            {
-                              "key": "difficulty",
-                              "value": "",
-                              "description": "EASY|MEDIUM|HARD",
-                              "disabled": true
-                            },
-                            {
-                              "key": "completed",
-                              "value": "true",
-                              "disabled": true
-                            },
-                            {
-                              "key": "replayable",
-                              "value": "true",
-                              "disabled": true
-                            },
-                            {
-                              "key": "search",
-                              "value": "",
-                              "disabled": true
-                            },
-                            {
-                              "key": "gameId",
-                              "value": "",
-                              "disabled": true
-                            },
-                            {
-                              "key": "recommendedFor",
-                              "value": "1",
-                              "disabled": true
-                            },
-                            {
-                              "key": "page",
-                              "value": "1"
-                            },
-                            {
-                              "key": "pageSize",
-                              "value": "10"
-                            },
-                            {
-                              "key": "fromFollowing",
-                              "value": "2",
-                              "disabled": true
-                            },
-                            {
-                              "key": "newForUser",
-                              "value": "1"
-                            }
-                          ]
-						}
+							"raw": "{{baseUrl}}/reviews",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"reviews"
+							],
+							"query": [
+								{
+									"key": "recommendedFor",
+									"value": "2",
+									"disabled": true
+								},
+								{
+									"key": "gameId",
+									"value": "2",
+									"disabled": true
+								},
+								{
+									"key": "sort",
+									"value": "rating",
+									"description": "created|rating|popularity|controversial",
+									"disabled": true
+								},
+								{
+									"key": "direction",
+									"value": "asc",
+									"description": "asc|desc",
+									"disabled": true
+								},
+								{
+									"key": "gameGenres",
+									"value": "3",
+									"description": "puede pasar más de uno",
+									"disabled": true
+								},
+								{
+									"key": "excludeAuthors",
+									"value": "2",
+									"description": "puede pasar más de uno",
+									"disabled": true
+								},
+								{
+									"key": "authors",
+									"value": "2",
+									"description": "puede pasar más de uno",
+									"disabled": true
+								},
+								{
+									"key": "timeplayed",
+									"value": "5",
+									"disabled": true
+								},
+								{
+									"key": "authorPreferences",
+									"value": "5",
+									"description": "puede pasar más de uno",
+									"disabled": true
+								},
+								{
+									"key": "platforms",
+									"value": "PC",
+									"description": "puede pasar más de uno",
+									"disabled": true
+								},
+								{
+									"key": "difficulty",
+									"value": "EASY",
+									"description": "puede pasar más de uno",
+									"disabled": true
+								},
+								{
+									"key": "completed",
+									"value": "true",
+									"disabled": true
+								},
+								{
+									"key": "replayable",
+									"value": "false",
+									"disabled": true
+								},
+								{
+									"key": "search",
+									"value": "jueg",
+									"disabled": true
+								},
+								{
+									"key": "newForUser",
+									"value": "7",
+									"disabled": true
+								}
+							]
+						},
+						"description": "200: OK\n\n400: Exclusive Filters\n\n400: error en los queryparams\n\n204: No Content"
 					},
 					"response": []
 				},
 				{
-					"name": "Post reviews",
+					"name": "Get Review By Id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/reviews/25",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"reviews",
+								"25"
+							]
+						},
+						"description": "200: OK\n\n404: no existe"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Review",
 					"request": {
 						"auth": {
 							"type": "basic",
 							"basic": [
 								{
 									"key": "password",
-									"value": "12345678",
+									"value": "holahola",
 									"type": "string"
 								},
 								{
 									"key": "username",
-									"value": "frupnik@itba.edu.ar",
+									"value": "fshih@itba.edu.ar",
 									"type": "string"
 								}
 							]
 						},
 						"method": "POST",
-						"header": [],
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/vnd.review-form.v1+json",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"reviewTitle\": \"Federicso\",\r\n    \"reviewContent\": \"fasdfasdfasdfafdsasfdafsfassadf\",\r\n    \"reviewRating\": 8,\r\n    \"replayability\": \"True\",\r\n    \"gameId\": 15,\r\n    \"platform\":\"pc\",\r\n    \"difficulty\":\"hard\",\r\n    \"completed\":\"True\",\r\n    \"gameLength\": 1000,\r\n    \"unit\": \"minutes\"\r\n}",
+							"raw": "{\r\n    \"reviewTitle\": \"titulo de la reseña\",\r\n    \"reviewContent\": \"contenido\",\r\n    \"reviewRating\": 8,\r\n    \"replayability\": \"True\",\r\n    \"gameId\": 15,\r\n    \"platform\": \"pc\",\r\n    \"difficulty\": \"hard\",\r\n    \"completed\": \"True\",\r\n    \"gameLength\": 1000,\r\n    \"unit\": \"minutes\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -2638,7 +1848,8 @@
 							"path": [
 								"reviews"
 							]
-						}
+						},
+						"description": "201: OK\n\n400: mal el form\n\n409: review repetida\n\n401"
 					},
 					"response": []
 				},
@@ -2650,12 +1861,12 @@
 							"basic": [
 								{
 									"key": "password",
-									"value": "12345678",
+									"value": "holahola",
 									"type": "string"
 								},
 								{
 									"key": "username",
-									"value": "frupnik@itba.edu.ar",
+									"value": "fshih@itba.edu.ar",
 									"type": "string"
 								}
 							]
@@ -2663,59 +1874,48 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/reviews/9",
+							"raw": "{{baseUrl}}/reviews/38",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"reviews",
-								"9"
+								"38"
 							]
-						}
+						},
+						"description": "204: OK\n\n404: no existe\n\n401/403"
 					},
 					"response": []
 				},
 				{
-					"name": "Get review by id",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/reviews/25",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"reviews",
-								"25"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Patch review by id",
+					"name": "Edit Review",
 					"request": {
 						"auth": {
 							"type": "basic",
 							"basic": [
 								{
-									"key": "password",
-									"value": "12345678",
+									"key": "username",
+									"value": "mmanzur@itba.edu.ar",
 									"type": "string"
 								},
 								{
-									"key": "username",
-									"value": "frupnik@itba.edu.ar",
+									"key": "password",
+									"value": "holahola",
 									"type": "string"
 								}
 							]
 						},
-						"method": "PATCH",
-						"header": [],
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/vnd.review-update.v1+json",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"reviewTitle\": \"asdasdsadsadsadsad\",\r\n    \"reviewContent\": \"fasdfasdfaadf\",\r\n    \"reviewRating\": 9,\r\n    \"replayability\": \"True\",\r\n    \"platform\":\"pc\",\r\n    \"difficulty\":\"hard\",\r\n    \"completed\":\"True\",\r\n    \"gameLength\": 1000,\r\n    \"unit\": \"minutes\"\r\n}",
+							"raw": "{\r\n    \"reviewTitle\": \"título de la reseña\",\r\n    \"reviewContent\": \"contenido\",\r\n    \"reviewRating\": 8,\r\n    \"replayability\": true,\r\n    \"platform\": \"xbox\",\r\n    \"difficulty\": \"hard\",\r\n    \"completed\": true,\r\n    \"gameLength\": 78,\r\n    \"unit\": \"hours\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -2723,117 +1923,21 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseUrl}}/reviews/22",
+							"raw": "{{baseUrl}}/reviews/39",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"reviews",
-								"22"
+								"39"
 							]
-						}
+						},
+						"description": "204: OK\n\n404: no existe la reseña\n\n400: error en el body\n\n401/403"
 					},
 					"response": []
 				},
 				{
-					"name": "Post review Feedback",
-					"request": {
-						"auth": {
-							"type": "basic",
-							"basic": [
-								{
-									"key": "password",
-									"value": "12345678",
-									"type": "string"
-								},
-								{
-									"key": "username",
-									"value": "frupnik@itba.edu.ar",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/reviews/29/feedback?feedbackType=DISLIKE",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"reviews",
-								"29",
-								"feedback"
-							],
-							"query": [
-								{
-									"key": "feedbackType",
-									"value": "DISLIKE"
-								}
-							]
-						}
-					},
-					"response": [
-						{
-							"name": "Post positive Feedback",
-							"originalRequest": {
-								"method": "POST",
-								"header": [],
-								"url": {
-									"raw": "{{baseUrl}}/reviews/25/feedback?feedbackType=LIKE",
-									"host": [
-										"{{baseUrl}}"
-									],
-									"path": [
-										"reviews",
-										"25",
-                                      "feedback"
-                                    ],
-                                  "query": [
-                                    {
-                                      "key": "feedbackType",
-                                      "value": "LIKE"
-                                    }
-                                  ]
-                                }
-                            },
-                          "_postman_previewlanguage": "Text",
-                          "header": [],
-                          "cookie": [],
-                          "body": ""
-                        },
-						{
-							"name": "Post negative Feedback",
-							"originalRequest": {
-								"method": "POST",
-								"header": [],
-								"url": {
-									"raw": "{{baseUrl}}/reviews/25/feedback?feedbackType=DISLIKE",
-									"host": [
-										"{{baseUrl}}"
-									],
-									"path": [
-										"reviews",
-										"25",
-                                      "feedback"
-                                    ],
-                                  "query": [
-                                    {
-                                      "key": "feedbackType",
-                                      "value": "DISLIKE"
-                                    }
-                                  ]
-                                }
-                            },
-                          "_postman_previewlanguage": "Text",
-                          "header": [],
-                          "cookie": [],
-                          "body": ""
-                        }
-					]
-				},
-				{
-					"name": "Get review feedback from user",
+					"name": "Get Review Feedback From User",
 					"request": {
 						"auth": {
 							"type": "basic",
@@ -2853,6 +1957,57 @@
 						"method": "GET",
 						"header": [],
 						"url": {
+							"raw": "{{baseUrl}}/reviews/36/feedback/70",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"reviews",
+								"36",
+								"feedback",
+								"70"
+							]
+						},
+						"description": "200: OK\n\n404: no existe la review o el feedback de ese usuario (o el usuario)"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Review Feedback",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "12345678",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "frupnik@itba.edu.ar",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/vnd.review-feedback-form.v1+json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"feedbackType\": \"LIKE\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
 							"raw": "{{baseUrl}}/reviews/29/feedback/8",
 							"host": [
 								"{{baseUrl}}"
@@ -2863,12 +2018,90 @@
 								"feedback",
 								"8"
 							]
-						}
+						},
+						"description": "201: si no había feedback\n\n200: OK\n\n404: no existe la reseña o el usuario\n\n400: error en el body\n\n401/403"
 					},
-					"response": []
+					"response": [
+						{
+							"name": "Like Review",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/vnd.review-feedback-form.v1+json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"feedbackType\": \"LIKE\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/reviews/29/feedback/8",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"reviews",
+										"29",
+										"feedback",
+										"8"
+									]
+								}
+							},
+							"_postman_previewlanguage": null,
+							"header": null,
+							"cookie": [],
+							"body": null
+						},
+						{
+							"name": "Dislike Review",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/vnd.review-feedback-form.v1+json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"feedbackType\": \"DISLIKE\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/reviews/29/feedback/8",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"reviews",
+										"29",
+										"feedback",
+										"8"
+									]
+								}
+							},
+							"_postman_previewlanguage": null,
+							"header": null,
+							"cookie": [],
+							"body": null
+						}
+					]
 				},
 				{
-					"name": "Delete review feedback",
+					"name": "Delete Review Feedback",
 					"request": {
 						"auth": {
 							"type": "basic",
@@ -2898,7 +2131,42 @@
 								"feedback",
 								"8"
 							]
-						}
+						},
+						"description": "200: OK\n\n404: No existe el feedback\n\n401/403"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Images",
+			"item": [
+				{
+					"name": "Get Image",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/images/WOTBNztTdhyY7gc7?width=150&height=100",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"images",
+								"WOTBNztTdhyY7gc7"
+							],
+							"query": [
+								{
+									"key": "width",
+									"value": "150"
+								},
+								{
+									"key": "height",
+									"value": "100"
+								}
+							]
+						},
+						"description": "200: OK\n\n404: si no existe"
 					},
 					"response": []
 				}
