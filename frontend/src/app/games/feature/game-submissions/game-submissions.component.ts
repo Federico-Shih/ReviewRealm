@@ -149,11 +149,14 @@ export class GameSubmissionSearchDialogComponent {
     totalElements: 0,
   });
 
+  searchDone: boolean = false;
+
   setSearch(value: string) {
     this.search.setValue(value);
   }
   submitSearch() {
     if (this.search.value) {
+      this.searchDone = true;
       this.loading$.next(true);
       this.gameService
         .getGames(`${environment.API_ENDPOINT}/games`, {

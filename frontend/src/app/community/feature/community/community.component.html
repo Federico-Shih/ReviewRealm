@@ -166,7 +166,7 @@
         <mat-paginator
           #paginator
           (page)="handlePageEvent($event)"
-          *ngIf="combined[1].totalPages !== 0"
+          *ngIf="combined[1].totalPages > 1"
           [length]="combined[1].totalElements"
           [pageIndex]="(combined[0].page || 1) - 1"
           [pageSize]="combined[0].pageSize || 6"

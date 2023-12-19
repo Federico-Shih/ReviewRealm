@@ -15,6 +15,9 @@
       <div class="games-container">
         <ng-container *ngIf="(loading$ | async) === false ; else loading">
           <ng-container *ngIf="(games$ | async) as games">
+            <ng-container *ngIf="games.content.length ===0 && searchDone ">
+              <span class="no-results-container">{{ 'game-search.no-results' | translate }}</span>
+            </ng-container>
             <div *ngFor="let game of games.content" class="game-container">
               <app-game-card
                 [game]="game"

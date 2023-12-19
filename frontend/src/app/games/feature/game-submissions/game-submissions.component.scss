@@ -20,6 +20,16 @@
     margin-right: 2%;
   }
 }
+.centered-container-row{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.no-results-container {
+  font-size: 1.2rem;
+}
 .main-container {
   padding: 2%;
   height: 100%;
