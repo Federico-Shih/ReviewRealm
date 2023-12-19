@@ -88,6 +88,7 @@ public class GameController {
     }
 
     @POST
+    @Produces(VndType.APPLICATION_GAME)
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     public Response postGame(@Valid @NotNull(message = "error.body.empty") @BeanParam SubmitGameForm submitGameForm){
         User loggedUser = AuthenticationHelper.getLoggedUser(us);
@@ -120,7 +121,7 @@ public class GameController {
     public Response deleteGame(@PathParam("id") final long id) {
         boolean deleted = gs.deleteGame(id);
         if(deleted) {
-            return Response.ok().build();
+            return Response.noContent().build();
         }else{
             return Response.status(Response.Status.NOT_FOUND).build();
         }

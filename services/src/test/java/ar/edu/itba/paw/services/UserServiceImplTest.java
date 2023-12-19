@@ -227,19 +227,12 @@ public class UserServiceImplTest {
         User user = getUser1();
         Mockito.when(userDao.findById(eq(ID))).thenReturn(Optional.of(user));
         Mockito.when(userDao.update(eq(ID), any())).thenReturn(Optional.of(user));
-        Assert.assertEquals(user, us.patchUser(user.getId(), OTHER_PASSWORD, true));
+        Assert.assertEquals(user, us.patchUser(user.getId(), OTHER_PASSWORD));
     }
 
     @Test(expected = UserNotFoundException.class)
     public void patchUserNotFound() {
         Mockito.when(userDao.findById(eq(ID))).thenReturn(Optional.empty());
-        us.patchUser(USER.getId(), OTHER_PASSWORD, true);
-    }
-
-    @Test(expected = UserAlreadyEnabled.class)
-    public void patchUserIsAlreadyEnabled() {
-        User user = getUser5();
-        Mockito.when(userDao.findById(eq(user.getId()))).thenReturn(Optional.of(user));
-        us.patchUser(user.getId(), OTHER_PASSWORD, true);
+        us.patchUser(USER.getId(), OTHER_PASSWORD);
     }
 }

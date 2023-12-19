@@ -1,10 +1,6 @@
 package ar.edu.itba.paw.webapp.controller;
 
-import ar.edu.itba.paw.dtos.Page;
-import ar.edu.itba.paw.exceptions.EmailAlreadyExistsException;
-import ar.edu.itba.paw.exceptions.InvalidAvatarException;
-import ar.edu.itba.paw.exceptions.UserAlreadyEnabled;
-import ar.edu.itba.paw.exceptions.UsernameAlreadyExistsException;
+import ar.edu.itba.paw.exceptions.*;
 import ar.edu.itba.paw.models.MissionProgress;
 import ar.edu.itba.paw.models.Paginated;
 import ar.edu.itba.paw.models.User;
@@ -48,7 +44,12 @@ public class UserController {
     @Produces(VndType.APPLICATION_USER_LIST)
     public Response getUsers(@Valid @BeanParam UserSearchQuery userSearchQuery) {
         User loggedIn = AuthenticationHelper.getLoggedUser(us);
-        final Paginated<User> users = us.getUsers(userSearchQuery.getPage(), userSearchQuery.getFilter(), userSearchQuery.getOrdering(), (loggedIn != null) ? loggedIn.getId() : null);
+        Paginated<User> users;
+        try {
+            users = us.getUsers(userSearchQuery.getPage(), userSearchQuery.getFilter(), userSearchQuery.getOrdering(), (loggedIn != null) ? loggedIn.getId() : null);
+        }catch(UserNotFoundException e){
+            return Response.noContent().build();
+        }
         if (users.getTotalPages() == 0 || users.getList().isEmpty()) {
             return Response.noContent().build();
         }
@@ -101,55 +102,7 @@ public class UserController {
     @Consumes(VndType.APPLICATION_ENABLE_USER)
     public Response validateUser(@Valid @NotNull(message = "error.body.empty") ResendEmailForm emailForm) throws UserAlreadyEnabled {
         us.resendToken(emailForm.getEmail());
-        return Response.ok().build();
-    }
-
-    @GET
-    @Produces(VndType.APPLICATION_ENTITY_LINK_LIST)
-    @Path("{id:\\d+}/followers")
-    public Response getFollowers(@PathParam("id") final long id,
-                                 @QueryParam("page") @DefaultValue("1") final int page,
-                                 @QueryParam("pageSize") @DefaultValue("10") final int pageSize) {
-        Paginated<User> followers = us.getFollowers(id, Page.with(page,pageSize));
-        if (followers.getList().isEmpty())
-            return Response.noContent().build();
-        return PaginatedResponseHelper.fromPaginated(uriInfo,
-                followers.getList().stream()
-                        .map((user) -> UserResponse.getLinkFromEntity(uriInfo, user).toString())
-                        .collect(Collectors.toList()),
-                followers).build();
-    }
-
-    @GET
-    @Produces(VndType.APPLICATION_ENTITY_LINK_LIST)
-    @Path("{id:\\d+}/following")
-    public Response getFollowing(
-            @PathParam("id") final long id,
-            @QueryParam("page") @DefaultValue("1") final int page,
-            @QueryParam("pageSize") @DefaultValue("10") final int pageSize
-    ) {
-        Paginated<User> following = us.getFollowing(id, Page.with(page,pageSize));
-        if (following.getList().isEmpty()) {
-            return Response.noContent().build();
-        }
-        return PaginatedResponseHelper
-                .fromPaginated(uriInfo,
-                        following.getList().stream()
-                                .map((user) -> UserResponse.getLinkFromEntity(uriInfo, user).toString())
-                                .collect(Collectors.toList()),
-                        following).build();
-    }
-
-    @GET
-    @Produces(VndType.APPLICATION_ENTITY_LINK_LIST)
-    @Path("{id:\\d+}/following/{followingId:\\d+}")
-    public Response getFollowingById(
-            @PathParam("id") final long id,
-            @PathParam("followingId") final long followingId
-    ) {
-        boolean follows = us.userFollowsId(id, followingId);
-        Optional<User> user;
-        return (!follows || !(user = us.getUserById(followingId)).isPresent())? Response.status(Response.Status.NOT_FOUND).build(): Response.ok().entity(UserResponse.getLinkFromEntity(uriInfo, user.get())).build();
+        return Response.accepted().build();
     }
 
     @POST
@@ -158,9 +111,7 @@ public class UserController {
     @PreAuthorize("@accessControl.checkAccessedUserIdIsUser(#id)")
     public Response createFollowing(@PathParam("id") long id, @Valid @NotNull(message = "error.body.empty") FollowingForm following) {
         final User user = us.followUserById(id, following.getUserId());
-        return Response
-                .created(uriInfo.getBaseUriBuilder().path("/users").path(user.getId().toString()).path("/following").path(following.getUserId().toString()).build())
-                .build();
+        return Response.noContent().build();
     }
 
     @DELETE
@@ -177,9 +128,9 @@ public class UserController {
     @PATCH
     @Path("{id:\\d+}")
     @PreAuthorize("@accessControl.checkAccessedUserIdIsUser(#id)")
-    @Produces(VndType.APPLICATION_PATCH_USER_FORM)
+    @Consumes(VndType.APPLICATION_PATCH_USER_FORM)
     public Response patchUser(@Valid @NotNull(message = "error.body.empty") PatchUserForm patchUserForm, @PathParam("id") long id) throws InvalidAvatarException {
-        us.patchUser(id, patchUserForm.getPassword(), patchUserForm.getEnabled());
+        us.patchUser(id, patchUserForm.getPassword());
         if (!patchUserForm.getGenres().isEmpty()) {
             us.setPreferences(patchUserForm.getGenres(), id);
         }
@@ -196,15 +147,8 @@ public class UserController {
     @Produces(MediaType.APPLICATION_JSON)
     public Response createNewFavoriteGame(@PathParam("id") final long id, @Valid @NotNull(message = "error.body.empty") FavoriteGameForm favoriteGameForm) {
         boolean added = us.addFavoriteGame(id, favoriteGameForm.getGameId());
-        if (!added) throw new CustomRuntimeException(Response.Status.BAD_REQUEST, "error.game.already.favorite");
-        return Response.created(
-                uriInfo.getBaseUriBuilder()
-                        .path("users")
-                        .path(String.valueOf(id))
-                        .path("favoritegames")
-                        .path(String.valueOf(favoriteGameForm.getGameId()))
-                        .build()
-        ).build();
+        if (!added) throw new CustomRuntimeException(Response.Status.CONFLICT, "error.game.already.favorite");
+        return Response.noContent().build();
     }
 
     @DELETE
@@ -212,7 +156,7 @@ public class UserController {
     @PreAuthorize("@accessControl.checkAccessedUserIdIsUser(#id)")
     public Response deleteFavoriteGame(@PathParam("id") final long id, @PathParam("gameId") final long gameId) {
         boolean deleted = us.deleteFavoriteGame(id, gameId);
-        return deleted ? Response.ok().build() : Response.status(Response.Status.NOT_FOUND).build();
+        return deleted ? Response.noContent().build() : Response.status(Response.Status.NOT_FOUND).build();
     }
 
     @PUT
@@ -249,7 +193,7 @@ public class UserController {
     public Response getMissionProgresses(@PathParam("id") final long id) {
         List<MissionProgress> progresses = missionService.getMissionProgresses(id);
         if (progresses.isEmpty()) {
-            return Response.status(Response.Status.NOT_FOUND).build();
+            return Response.noContent().build();
         }
         return Response.ok().entity(
                 new GenericEntity<List<MissionProgressResponse>>(

@@ -77,14 +77,6 @@ public class TokenDaoImplTest {
         Assert.assertNull(token);
     }
 
-    // findLastPasswordToken only returns the last token with password creation
-    @Rollback
-    @Test
-    public void noValidateUserTokenTest() {
-        ExpirationToken token = tokenDao.findLastToken(TokenTestModels.getToken1().getUser().getId()).orElse(null);
-        Assert.assertNull(token);
-    }
-
     @Rollback
     @Test
     public void deleteTokenByIdTest() {

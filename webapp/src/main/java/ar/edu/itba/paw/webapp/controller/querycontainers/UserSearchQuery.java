@@ -41,19 +41,15 @@ public class UserSearchQuery extends PaginatedQuery {
     @QueryParam("gamesPlayed")
     private List<Long> gamesPlayed;
 
-    @ExistentUserId(optional = true)
     @QueryParam("following")
     private Long following;
 
-    @ExistentUserId(optional = true)
     @QueryParam("followers")
     private Long followers;
 
-    @ExistentUserId(optional = true)
     @QueryParam("samePreferencesAs")
     private Long samePreferencesAs;
 
-    @ExistentUserId(optional = true)
     @QueryParam("sameGamesPlayedAs")
     private Long sameGamesPlayedAs;
 

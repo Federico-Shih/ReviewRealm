@@ -38,23 +38,9 @@ public class NotificationController {
     }
 
 
-    // TODO: Esto está horrible lol, hay que sacarlo (No lo saco porque se van a preguntar dónde está el endpoint)
     @GET
     @Produces(VndType.APPLICATION_NOTIFICATION_LIST)
-    public Response getAllNotifications(@Context Request request,
-                                        @QueryParam("forUser") Long userId) {
-        if(userId != null){
-            Optional<User> user = userService.getUserById(userId);
-            if(!user.isPresent()){
-                return Response.status(Response.Status.NOT_FOUND).build();
-            }
-            return Response.ok().entity(
-                    new GenericEntity<List<NotificationStatusResponse.NotificationTypeResponse>>(
-                            NotificationStatusResponse.fromEntity(uriInfo, user.get().getDisabledNotifications())
-                    ){}
-            ).build();
-        }
-
+    public Response getAllNotifications(@Context Request request) {
         List<NotificationType> notificationTypeList = this.notificationService.getNotifications();
         return CacheHelper.conditionalCache(
             Response.ok(

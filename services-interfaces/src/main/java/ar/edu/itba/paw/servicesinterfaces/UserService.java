@@ -39,7 +39,7 @@ public interface UserService {
     
     User unfollowUserById(long userId, long otherId);
 
-    User patchUser(long id, String password, Boolean enabled);
+    User patchUser(long id, String password);
 
     boolean userFollowsId(long userId, long otherId);
     

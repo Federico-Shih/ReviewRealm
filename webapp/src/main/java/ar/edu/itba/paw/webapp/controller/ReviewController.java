@@ -151,6 +151,7 @@ public class ReviewController {
     @Path("{reviewId:\\d+}/feedback/{userId:\\d+}")
     @Produces(VndType.APPLICATION_REVIEW_FEEDBACK)
     public Response getReviewFeedback(@PathParam("reviewId") long reviewId, @PathParam("userId") long userId) {
+        if(!userService.getUserById(userId).isPresent()) throw new UserNotFoundException();
         Review review = reviewService.getReviewById(reviewId, userId).orElseThrow(ReviewNotFoundException::new);
         if (review.getFeedback() == null)
             return Response.status(Response.Status.NOT_FOUND).build();

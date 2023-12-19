@@ -13,9 +13,6 @@ public class PatchUserForm {
     @Size(min = 8, max = 100, message = "Size.passwordForm.password")
     private String password;
 
-    @AssertTrue(message = "AssertTrue.patchuserForm.enabled")
-    private Boolean enabled;
-
     @ExistentGenreList(nullable = true)
     private List<Integer> genres;
 
@@ -39,14 +36,6 @@ public class PatchUserForm {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public Boolean getEnabled() {
-        return enabled;
-    }
-
-    public void setEnabled(Boolean enabled) {
-        this.enabled = enabled;
     }
 
     public Long getAvatarId() {

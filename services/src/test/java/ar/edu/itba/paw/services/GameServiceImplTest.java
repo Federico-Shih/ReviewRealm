@@ -208,6 +208,7 @@ public class GameServiceImplTest {
     public void testEditGame(){
         Mockito.when(dto.getGenres()).thenReturn(Arrays.asList(Genre.ACTION.getId(), Genre.ADVENTURE.getId()));
         Mockito.when(dto.getImageData()).thenReturn(new byte[0]);
+        Mockito.when(gameDao.getById(anyLong())).thenReturn(Optional.of(getSuperGameA()));
 
         Mockito.when(gameDao.edit(anyLong(),any(),any(),any(),any(),any(),any(),any())).thenReturn(Optional.of(getSuperGameA()));
 
