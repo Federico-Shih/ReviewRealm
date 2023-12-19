@@ -1,5 +1,5 @@
 <div class="form-container card">
-  <div class="header">
+  <h2>
     {{
       (gameFormType === GameFormType.Suggest
         ? 'game-suggest.title'
@@ -8,10 +8,12 @@
           : 'game-create.title'
       ) | translate
     }}
-  </div>
+  </h2>
+  <mat-divider></mat-divider>
+  <br/>
   <div class="content">
     <form (ngSubmit)="createGame()" [formGroup]="gameForm" class="fields">
-      <mat-form-field class="input-field">
+      <mat-form-field class="input-field" appearance="outline">
         <mat-label>{{ 'game-form.name' | translate }}</mat-label>
         <input
           [placeholder]="'game-form.placeholder.name' | translate"
@@ -37,7 +39,7 @@
           >
         </mat-error>
       </mat-form-field>
-      <mat-form-field class="input-field">
+      <mat-form-field class="input-field" appearance="outline">
         <mat-label>{{ 'game-form.description' | translate }}</mat-label>
         <textarea
           [placeholder]="'game-form.placeholder.description' | translate"
@@ -70,8 +72,7 @@
       </mat-form-field>
       <div class="grid">
         <div class="grid-item">
-          <mat-form-field class="input-field">
-            <!-- developer-->
+          <mat-form-field class="input-field" appearance="outline">
             <mat-label>{{ 'game-form.developer' | translate }}</mat-label>
             <input
               matInput
@@ -105,7 +106,7 @@
           </mat-form-field>
         </div>
         <div class="grid-item">
-          <mat-form-field class="input-field">
+          <mat-form-field class="input-field" appearance="outline">
             <mat-label>{{ 'game-form.publisher' | translate }}</mat-label>
             <input
               matInput
@@ -138,7 +139,7 @@
           </mat-form-field>
         </div>
         <div class="grid-item">
-          <mat-form-field class="input-field">
+          <mat-form-field class="input-field" appearance="outline" >
             <mat-label>{{ 'game-form.release-date' | translate }}</mat-label>
             <input
               matInput
@@ -160,7 +161,7 @@
           </mat-form-field>
         </div>
         <div class="grid-item">
-          <mat-form-field class="input-field">
+          <mat-form-field class="input-field" appearance="outline">
             <!-- image upload-->
             <mat-label>{{ 'game-form.image' | translate }}</mat-label>
             <button mat-icon-button matIconPrefix (click)="imageUpload.click()">
@@ -213,7 +214,7 @@
           <mat-expansion-panel-header>
             <mat-panel-title i18n>
               <mat-icon>sports_esports</mat-icon>
-              {{ 'game-genres-filter' | translate }}
+              <span class="expansion-panel-title">{{ 'game-genres-filter' | translate }}</span>
             </mat-panel-title>
           </mat-expansion-panel-header>
           <div formArrayName="genres">
@@ -228,22 +229,32 @@
       <mat-divider />
       <div class="footer-button">
         <button
+          class="cancel-btn"
+          color="warn"
+          mat-raised-button
+          type="button"
+          [disabled]="!!loading"
+          (click)="cancel()">
+          {{ 'cancel' | translate | uppercase }}
+        </button>
+        <button
           class="submit-btn"
           color="accent"
           i18n
           mat-raised-button
-          type="submit">
-          <span *ngIf="!loading; else loadingSpinner">
-            {{
-              (gameFormType === GameFormType.Suggest
-                ? 'game-suggest.submit'
-                : gameFormType === GameFormType.Edit
-                  ? 'game-edit.submit'
-                  : 'game-create.submit'
-              ) | translate
-            }}
-            <mat-icon>send</mat-icon>
-          </span>
+          type="submit"
+          [disabled]="loading || gameForm.status !== 'VALID'">
+        <span *ngIf="!loading; else loadingSpinner">
+          {{
+          (gameFormType === GameFormType.Suggest
+              ? 'game-suggest.submit'
+              : gameFormType === GameFormType.Edit
+                ? 'game-edit.submit'
+                : 'game-create.submit'
+          ) | translate | uppercase
+          }}
+        </span>
+          <mat-icon iconPositionEnd>send</mat-icon>
           <ng-template #loadingSpinner>
             <mat-spinner diameter="20"></mat-spinner>
           </ng-template>

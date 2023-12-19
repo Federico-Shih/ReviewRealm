@@ -12,6 +12,9 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateService } from '@ngx-translate/core';
 import { FormControl } from '@angular/forms';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import {MatIconModule} from "@angular/material/icon";
+import {MatButtonModule} from "@angular/material/button";
+import {RouterLink} from "@angular/router";
 @Component({
   selector: 'app-game-submissions',
   templateUrl: './game-submissions.component.html',
@@ -112,6 +115,7 @@ export class GameSubmissionsComponent implements OnInit {
       maxHeight: '100vh',
       height: '100%',
       minWidth: '80%',
+      autoFocus: false,
     });
   }
 }
@@ -125,6 +129,9 @@ export class GameSubmissionsComponent implements OnInit {
     AsyncPipe,
     CommonModule,
     MatProgressSpinnerModule,
+    MatIconModule,
+    MatButtonModule,
+    RouterLink,
   ],
   standalone: true,
 })

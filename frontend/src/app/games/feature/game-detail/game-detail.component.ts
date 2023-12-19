@@ -118,7 +118,9 @@ export class GameDetailComponent implements OnInit {
     });
   }
   openDeleteDialog() {
-    const dialogRef = this.dialog.open(GameDeleteDialogComponent);
+    const dialogRef = this.dialog.open(GameDeleteDialogComponent, {
+      width: '60%',
+    });
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         //confirmed

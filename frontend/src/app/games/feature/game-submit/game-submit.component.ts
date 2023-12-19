@@ -11,6 +11,7 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { SharedModule } from '../../../shared/shared.module';
 import { AsyncPipe, CommonModule } from '@angular/common';
 import { TranslateService } from '@ngx-translate/core';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-game-submit',
@@ -40,11 +41,18 @@ export class GameSubmitComponent {
     private readonly router: Router,
     public dialog: MatDialog,
     private snackBar: MatSnackBar,
-    private readonly translate: TranslateService
+    private readonly translate: TranslateService,
+    private readonly location: Location
   ) {}
 
-  createGame(formData: FormData) {
-    const dialogRef = this.dialog.open(GameSubmitDialogComponent);
+  createGame(formData: FormData | null) {
+    if (formData === null) {
+      this.location.back();
+      return;
+    }
+    const dialogRef = this.dialog.open(GameSubmitDialogComponent, {
+      width: '60%',
+    });
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         this.loading$.next(true);
@@ -52,6 +60,7 @@ export class GameSubmitComponent {
           .createGame(`${environment.API_ENDPOINT}/games`, formData)
           .subscribe({
             error: () => {
+              this.loading$.next(false);
               this.snackBar.open(
                 this.translate.instant('errors.unknown'),
                 this.translate.instant('errors.dismiss'),

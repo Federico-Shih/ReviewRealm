@@ -1,10 +1,10 @@
 .form-container {
   height: 96%;
-  width: 96%;
+  width: 70%;
   background-color: var(--color-surface);
   color: white;
-  margin: 2%;
-  padding: 2%;
+  margin: 2% auto;
+  padding: 0.6em 1.8em;
   .header {
     font-size: 2rem;
     margin-bottom: 1rem;
@@ -23,9 +23,11 @@
 }
 .input-field {
   position: relative;
-  margin-bottom: 1rem;
+  margin: 0.5em;
   width: 100%;
-  padding: 0.5rem 0;
+}
+.expansion-panel-title {
+  margin-left: 4px;
 }
 .centered-container {
   width: 100%;
@@ -52,13 +54,7 @@ img {
 .full-width {
   width: 100%;
 }
-.submit-btn {
-  font-size: 1.2rem;
-  height: auto;
-  display: flex;
-  align-items: baseline;
-  justify-content: center;
-}
+
 .card {
   background: var(--color-surface);
   border: 1px solid var(--color-primary-variant-1);
@@ -83,11 +79,14 @@ img {
   align-items: flex-start;
 }
 .footer-button {
-  width: 100%;
   display: flex;
+  flex-direction: row;
   justify-content: flex-end;
+  margin-top: 1em;
 
-  gap: 10px;
+  .cancel-btn {
+    margin-right: 10px;
+  }
 }
 .text-icon {
   display: flex;

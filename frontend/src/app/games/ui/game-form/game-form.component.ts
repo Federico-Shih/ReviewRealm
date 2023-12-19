@@ -15,7 +15,7 @@ import {
 import { Genre } from '../../../shared/data-access/enums/enums.class';
 import { Game } from '../../../shared/data-access/games/games.class';
 import { mapCheckedToType } from '../../../home/utils/mappers';
-import { GameFormType } from '../../../shared/data-access/shared.enums';
+import {GameFormType, ReviewFormType} from '../../../shared/data-access/shared.enums';
 import { TranslateService } from '@ngx-translate/core';
 
 @Component({
@@ -32,7 +32,7 @@ export class GameFormComponent implements OnInit {
   genres: Genre[] = [];
 
   @Output()
-  gameFormEvent = new EventEmitter<FormData>();
+  gameFormEvent = new EventEmitter<FormData | null>();
 
   genreError = false;
 
@@ -134,6 +134,10 @@ export class GameFormComponent implements OnInit {
     }
   }
 
+  cancel() {
+    this.gameFormEvent.emit(null);
+  }
+
   createGame() {
     const selectedGenres = this.gameForm.get('genres')?.value as boolean[];
 
@@ -183,4 +187,5 @@ export class GameFormComponent implements OnInit {
   }
 
   protected readonly GameFormType = GameFormType;
+  protected readonly ReviewFormType = ReviewFormType;
 }

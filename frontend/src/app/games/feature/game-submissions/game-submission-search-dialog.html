@@ -1,6 +1,11 @@
 <mat-dialog-content>
   <div class="dialog">
     <div class="all-container">
+      <div class="close-button">
+        <button mat-icon-button [mat-dialog-close]="false">
+          <mat-icon class="icons" fontIcon="close"/>
+        </button>
+      </div>
       <div>
         <app-search-bar
           (search)="setSearch($event)"

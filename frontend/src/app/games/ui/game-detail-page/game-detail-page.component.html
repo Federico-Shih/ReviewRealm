@@ -1,4 +1,5 @@
-<ng-container *ngIf="game !== null">
+<div class="all-container">
+  <ng-container *ngIf="game !== null">
   <div class="page-header">
     <app-breadcrumbs
       [breadcrumbs]="[
@@ -26,15 +27,15 @@
     <div class="details">
       <span class="title">{{ game.name }}</span>
       <div class="genres-row">
-        <span class="genres-header">{{ 'genres' | translate }}</span>
+        <h2 class="genres-header">{{ 'genres' | translate }}</h2>
         <mat-chip-set class="genres">
-          <mat-chip
+          <span
             *ngFor="let genre of game.genres"
             [queryParams]="{ genres: [genre.id] }"
-            class="chip clickable"
+            class="chip pointer"
             routerLink="/games">
             {{ genre.localized }}
-          </mat-chip>
+          </span>
         </mat-chip-set>
       </div>
 
@@ -57,7 +58,7 @@
     </div>
   </div>
   <div *ngIf="game.reviewCount > 0" class="statistics-section">
-    <span class="header"> {{ 'game-details.statistics' | translate }}</span>
+    <h2 class=""> {{ 'game-details.statistics' | translate }}</h2>
     <div class="statistics-list">
       <div class="stat-card">
         <div class="content">
@@ -79,10 +80,10 @@
           <span class="header">{{
             'game-details.difficulty' | translate
           }}</span>
-          <span class="text">{{ game.averageDifficulty }}</span>
+          <span class="text">{{ 'difficulty.' + (game.averageDifficulty | lowercase) | translate }}</span>
         </div>
       </div>
-      <div *ngIf="game.averageGameTime !== undefined" class="stat-card">
+      <div *ngIf="game.averageGameTime !== undefined && game.averageGameTime > 0.0" class="stat-card">
         <div class="content">
           <span class="header">{{ 'game-details.gametime' | translate }}</span>
           <span class="text">{{
@@ -117,15 +118,15 @@
   <div class="review-section">
     <ng-container *ngIf="!!userReview; else notlogged">
       <div class="review-header">
-        <span class="header">
-          {{ 'game-details.personal-review' | translate }}</span
+        <h2 class="review-header-title">
+          {{ 'game-details.personal-review' | translate }}</h2
         >
-        <button [routerLink]="'/reviews/'+ userReview.id + '/edit'" color="primary" mat-raised-button>
+        <button routerLink="/reviews/{{userReview.id}}/edit" color="accent" mat-raised-button>
           <mat-icon>edit</mat-icon>
           {{ 'edit-own-review' | translate }}
         </button>
       </div>
-      <div class="full-width margin-y-2">
+      <div class="own-review">
         <app-review-card
           [hideActions]="true"
           [review]="userReview"></app-review-card>
@@ -133,28 +134,32 @@
     </ng-container>
     <ng-template #notlogged>
       <div class="review-header">
-        <span class="header">
-          {{ 'game-details.no-personal-review' | translate }}</span
+        <h2 class="review-header-title">
+          {{ 'game-details.no-personal-review' | translate }}</h2
         >
         <button
           routerLink="/reviews/submit/{{ game.id }}"
-          color="primary"
+          color="accent"
           mat-raised-button>
           <mat-icon>add</mat-icon>
           {{ 'new-review' | translate }}
         </button>
       </div>
     </ng-template>
+    <br/>
+    <mat-divider></mat-divider>
+    <br/>
     <div class="review-header">
-      <span class="header" i18n> {{ 'game-details.reviews' | translate }}</span>
+      <h2 class="" i18n> {{ 'game-details.reviews' | translate }}</h2>
     </div>
     <div *ngIf="paginatedReviews !== null" class="full-width">
       <ng-container *ngIf="paginatedReviews.content.length > 0; else noreviews">
         <mat-grid-list
           class="f-row"
-          cols="2"
+          [cols]="breakpoint"
+          (window:resize)="onResize($event)"
           gutterSize="20px"
-          rowHeight="300px">
+          rowHeight="250px">
           <mat-grid-tile
             *ngFor="let review of paginatedReviews.content"
             colspan="1"
@@ -191,3 +196,4 @@
     </div>
   </div>
 </ng-container>
+</div>

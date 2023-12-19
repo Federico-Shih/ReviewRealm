@@ -19,6 +19,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { SharedModule } from '../../../shared/shared.module';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { AsyncPipe, CommonModule } from '@angular/common';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-game-edit',
@@ -65,7 +66,8 @@ export class GameEditComponent implements OnInit {
     private readonly router: Router,
     public dialog: MatDialog,
     private snackBar: MatSnackBar,
-    private readonly translate: TranslateService
+    private readonly translate: TranslateService,
+    private readonly location: Location
   ) {}
   ngOnInit() {
     this.activatedRoute.paramMap.subscribe(params => {
@@ -78,24 +80,41 @@ export class GameEditComponent implements OnInit {
     });
   }
 
-  editGame(formData: FormData) {
-    const dialogRef = this.dialog.open(GameEditDialogComponent);
+  editGame(formData: FormData | null) {
+    if (formData === null) {
+      this.location.back();
+      return;
+    }
+    const dialogRef = this.dialog.open(GameEditDialogComponent, {
+      width: '60%',
+    });
     dialogRef.afterClosed().subscribe(result => {
       if (result && this.game !== null) {
-        console.log(formData);
         this.loading$.next(true);
         this.gameService
           .editGame(this.game.links.self, formData)
-          .subscribe(game => {
-            this.loading$.next(false);
-            this.snackBar.open(
-              this.translate.instant('game.edited'),
-              undefined,
-              {
-                panelClass: ['green-snackbar'],
-              }
-            );
-            this.router.navigate(['/games', `${game.id}`]);
+          .subscribe({
+            next: game => {
+              this.loading$.next(false);
+              this.snackBar.open(
+                  this.translate.instant('game.edited'),
+                  undefined,
+                  {
+                    panelClass: ['green-snackbar'],
+                  }
+              );
+              this.router.navigate(['/games', `${game.id}`]);
+            },
+            error: () => {
+              this.loading$.next(false);
+              this.snackBar.open(
+                  this.translate.instant('errors.unknown'),
+                  this.translate.instant('errors.dismiss'),
+                  {
+                    panelClass: ['red-snackbar'],
+                  }
+              );
+            },
           });
       }
     });
