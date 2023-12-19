@@ -8,7 +8,8 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "lint": "ng lint",
-    "pretty": "npx prettier --write \"src/**/*.ts\" \"src/**/*.scss\" \"src/**/*.html\""
+    "pretty": "npx prettier --write \"src/**/*.ts\" \"src/**/*.scss\" \"src/**/*.html\"",
+    "ci": "ng test --watch=false && ng build"
   },
   "private": true,
   "dependencies": {
