@@ -16,7 +16,9 @@
         height="25"
         style="margin-left: 5px"
         width="25"
-        class="img level-{{ userRank() }}-border" />
+        class="img level-{{ userRank() }}-border"
+        onerror="this.src='./assets/placeholder.jpg'; this.onerror=null;"
+      />
       <div class="profile-card">
         <app-profile-card *ngIf="review.author" [user]="review.author" />
       </div>
@@ -56,6 +58,7 @@
           alt="{{
             'review-card.img-alt' | translate: { game: review.game?.name }
           }}"
+          onerror="this.src='./assets/placeholder.jpg'; this.onerror=null;"
           priority="high" />
       </div>
       <section class="title-container">
