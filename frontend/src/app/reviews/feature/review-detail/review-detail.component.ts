@@ -139,7 +139,9 @@ export class ReviewDetailComponent implements OnInit {
   }
 
   openDeleteDialog() {
-    const dialogRef = this.dialog.open(DeleteConfirmationDialogComponent);
+    const dialogRef = this.dialog.open(DeleteConfirmationDialogComponent, {
+      width: '60%',
+    });
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         //confirmed
@@ -175,7 +177,9 @@ export class ReviewDetailComponent implements OnInit {
   }
 
   openReportDialog() {
-    const dialogRef = this.dialog.open(ReportDialogComponent);
+    const dialogRef = this.dialog.open(ReportDialogComponent, {
+      width: '60%',
+    });
     dialogRef.afterClosed().subscribe(result => {
       if (result != null) {
         this.review$.subscribe(review => {

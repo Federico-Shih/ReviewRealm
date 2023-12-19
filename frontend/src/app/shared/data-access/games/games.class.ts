@@ -101,7 +101,9 @@ export class Game {
     this.reviewCount = reviewCount;
     this.isFavourite = isFavourite;
     this.links = links;
+    if (averageDifficulty === null) averageDifficulty = undefined;
     this.averageDifficulty = averageDifficulty;
+    if (averagePlatform === null) averagePlatform = undefined;
     this.averagePlatform = averagePlatform;
     this.averageGameTime = averageGameTime;
     this.replayability = replayability;

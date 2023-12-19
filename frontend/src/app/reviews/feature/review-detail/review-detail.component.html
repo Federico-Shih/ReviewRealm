@@ -3,12 +3,14 @@
 </ng-container>
 <ng-container
   *ngIf="loadedReview$ | async as review">
-  <app-breadcrumbs
-    *ngIf='review !== null && review.game'
-    [breadcrumbs]="[
+  <div class="breadcrumbs">
+    <app-breadcrumbs
+            *ngIf='review !== null && review.game'
+            [breadcrumbs]="[
       { name: 'review.search' | translate, link: '/' },
       { name: review.game.name, link: null }
     ]"/>
+  </div>
 
   <div *ngIf="review" [style.visibility]="loading ? 'hidden' : 'visible' " class="review-detail">
     <div class="review-section">
