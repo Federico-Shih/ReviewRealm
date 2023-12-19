@@ -1,5 +1,5 @@
 import { Game } from '../../app/shared/data-access/games/games.class';
-import { genresMock1, genresMock2 } from './enums.mock';
+import { genresMock1, genresMock2, genresMock4 } from './enums.mock';
 import {
   Difficulty,
   Platform,
@@ -13,7 +13,6 @@ export const gameMock = Game.fromResponse(
     averageGameTime: 0,
     completability: 0,
     developer: '',
-    favorite: false,
     name: 'GameMock1',
     platform: Platform.PC,
     publishDate: '',
@@ -39,11 +38,34 @@ export const gameMock2 = Game.fromResponse(
     averageGameTime: 0,
     completability: 0,
     developer: '',
-    favorite: false,
     name: 'GameMock2',
     platform: Platform.NINTENDO,
     publishDate: '',
     publisher: '',
+    ratingSum: 0,
+    replayability: 0,
+    reviewCount: 0,
+    links: {
+      self: 'self',
+      genres: 'genres',
+      reviews: 'reviews',
+      image: 'images',
+    },
+  },
+  genresMock2
+);
+export const gameMock3 = Game.fromResponse(
+{
+    id: 1,
+    description: 'description',
+    averageDifficulty: Difficulty.Hard,
+    averageGameTime: 0,
+    completability: 0,
+    developer: 'developer',
+    name: 'GameMock3',
+    platform: Platform.NINTENDO,
+    publishDate: new Date().toISOString(),
+    publisher: 'publisher',
     ratingSum: 0,
     replayability: 0,
     reviewCount: 0,

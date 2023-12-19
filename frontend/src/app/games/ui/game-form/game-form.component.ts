@@ -187,5 +187,4 @@ export class GameFormComponent implements OnInit {
   }
 
   protected readonly GameFormType = GameFormType;
-  protected readonly ReviewFormType = ReviewFormType;
 }

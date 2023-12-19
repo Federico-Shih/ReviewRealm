@@ -4,6 +4,11 @@ export const genresMock1 = [];
 export const genresMock2 = [
   new Genre(1, 'name', 'localized', { self: 'self' }),
 ];
+export const genresMock4 = [
+  new Genre(1, 'name', 'localized', { self: 'self' }),
+  new Genre(2, 'name', 'localized', { self: 'self' }),
+];
+
 export const genresMock3 = [
   new Genre(1, 'name', 'localized', { self: 'self' }),
   new Genre(2, 'name', 'localized', { self: 'self' }),
