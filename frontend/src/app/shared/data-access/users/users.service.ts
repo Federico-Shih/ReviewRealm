@@ -48,8 +48,6 @@ export class UsersService {
             return customExceptionMapper(500, 'Unknown error');
           }
           const user = response.body;
-          console.log("Body de user: ")
-          console.log(user);
           return forkJoin({
             preferences: this.genreService.getGenres(user.links.preferences),
           }).pipe(
@@ -137,6 +135,9 @@ export class UsersService {
               err.status as number,
               err.error as ValidationResponse[]
             );
+          if (err instanceof HttpErrorResponse && err.status === 409) {
+            return customExceptionMapper(409, err.error.message);
+          }
           return customExceptionMapper(500, 'Unknown error');
         }),
         map(responseMapper(User.fromResponse))

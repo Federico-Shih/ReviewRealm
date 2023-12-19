@@ -8,17 +8,19 @@ import { MatCardModule } from '@angular/material/card';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { SharedModule } from '../shared/shared.module';
+import {MatButtonModule} from "@angular/material/button";
 
 @NgModule({
   declarations: [SearchComponent],
-  imports: [
-    CommonModule,
-    SearchRoutingModule,
-    TranslateModule,
-    MatCardModule,
-    MatProgressSpinnerModule,
-    MatGridListModule,
-    SharedModule,
-  ],
+    imports: [
+        CommonModule,
+        SearchRoutingModule,
+        TranslateModule,
+        MatCardModule,
+        MatProgressSpinnerModule,
+        MatGridListModule,
+        SharedModule,
+        MatButtonModule,
+    ],
 })
 export class SearchModule {}

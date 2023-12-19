@@ -51,13 +51,21 @@ a {
 }
 
 .menu-button {
-  margin: 10px;
+  height: 70%;
+  justify-self: flex-end;
+  width: 100%;
+  overflow: hidden;
+  font-size: 1.01rem;
+
+  mat-icon {
+    transform: scale(1.5);
+  }
 }
 
 .action-container {
   display: flex;
   flex-direction: row;
-  gap: 0.5vw;
+  gap: 5px;
   height: 100%;
   align-items: center;
 }
@@ -76,6 +84,7 @@ a div:hover {
   background-color: var(--color-surface);
   padding: 0;
   margin: 0;
+  width: 260px;
 }
 
 @media screen and (max-width: 992px) {
@@ -92,3 +101,13 @@ a div:hover {
   align-items: center;
   margin-left: 20px;
 }
+
+.user-section {
+  width: 250px;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+}
+

@@ -255,6 +255,12 @@
     "image": "This is the Orange Portal",
     "solution": "But don't worry! I left a Blue portal in the main page"
   },
+  "paginator": {
+    "first-page": "First page",
+    "items-per-page": "Items per page",
+    "no-results": "Page 1 of 1",
+    "page-of": "Page {{page}} of {{amountPages}}"
+  },
   "platform": {
     "nintendo": "Nintendo",
     "pc": "PC",
@@ -302,6 +308,8 @@
     "confirm-password-required": "Password confirmation is required.",
     "email": "Email",
     "email-placeholder": "example@email.com",
+    "login-label": "Already have an account?",
+    "login-link": "Log in.",
     "password": "Password",
     "password-minlength": "Password must be at least 8 characters long.",
     "password-mismatch": "Passwords do not match.",
@@ -434,7 +442,8 @@
     "games-title": "Games",
     "noresults": "No results found...",
     "review-title": "Reviews",
-    "users-title": "Users"
+    "users-title": "Users",
+    "view-all": "View more"
   },
   "settings": {
     "avatar": "Profile Avatar",

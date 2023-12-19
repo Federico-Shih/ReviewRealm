@@ -23,8 +23,24 @@
 
 .submit-btn {
   font-size: 1.2rem;
+  margin-top: 5px;
+
+  padding: 10px 0 !important;
+  height: 50px;
+  display: flex;
+  align-items: center;
+
+  span {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
 }
 
 .error {
   color: var(--color-error);
+}
+
+.router-link {
+  color: var(--color-link);
 }

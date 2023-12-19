@@ -119,7 +119,21 @@
         class="error">
         {{ 'register-form.password-mismatch' | translate }}
       </div>
-
+      <div *ngIf="genericError" class="error">
+        {{ genericError }}
+      </div>
+      <span>
+        {{ 'register-form.login-label' | translate }}
+        <a class="router-link" routerLink="/login">
+          {{ 'register-form.login-link' | translate }}
+        </a>
+      </span>
+      <span>
+        {{ 'login-form.forgot-password-label' | translate }}
+        <a class="router-link" routerLink="/login/recover-password">
+          {{ 'login-form.forgot-password' | translate }}
+        </a>
+      </span>
       <button
         class="submit-btn"
         color="accent"

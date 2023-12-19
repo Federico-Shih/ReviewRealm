@@ -1,9 +1,9 @@
-import { Component } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import { AuthenticationDto } from '../../../shared/data-access/authentication/authentication.dtos';
 import { AuthenticationService } from '../../../shared/data-access/authentication/authentication.service';
-import { BehaviorSubject } from 'rxjs';
+import {BehaviorSubject, Subscription} from 'rxjs';
 import { RequestError } from '../../../shared/data-access/shared.models';
-import { Router } from '@angular/router';
+import {NavigationSkipped, Router} from '@angular/router';
 import { Location } from '@angular/common';
 
 @Component({
@@ -11,9 +11,10 @@ import { Location } from '@angular/common';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit, OnDestroy {
   errorMessage$ = new BehaviorSubject<string | null>(null);
   loading$ = new BehaviorSubject(false);
+  eventSuscription: Subscription | null = null;
 
   constructor(
     private readonly authService: AuthenticationService,
@@ -36,5 +37,17 @@ export class LoginComponent {
         this.loading$.next(false);
       },
     });
+  }
+
+  ngOnDestroy(): void {
+    this.eventSuscription?.unsubscribe();
+  }
+
+  ngOnInit(): void {
+    this.eventSuscription = this.router.events.subscribe((event) => {
+      if (event instanceof NavigationSkipped) {
+        this.router.navigate(['/'], { replaceUrl: true });
+      }
+    })
   }
 }

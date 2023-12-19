@@ -16,7 +16,7 @@ import { UserCreateDto } from '../../../shared/data-access/users/users.dtos';
 
 export type UserCreateErrors = Partial<{
   [P in keyof UserCreateDto]: string;
-}>;
+} & { generic: string }>;
 
 @Component({
   selector: 'app-register-form',
@@ -33,6 +33,8 @@ export class RegisterFormComponent implements OnInit {
 
   userCreateErrors: UserCreateErrors | null = {};
 
+  genericError: string | null = null;
+
   @Input() set errors(value: UserCreateErrors | null) {
     this.userCreateErrors = value;
     if (value?.email) {
@@ -40,6 +42,9 @@ export class RegisterFormComponent implements OnInit {
     }
     if (value?.username) {
       this.registerForm.get('username')?.setErrors({ server: value.username });
+    }
+    if (value?.generic) {
+      this.genericError = value.generic;
     }
   }
 

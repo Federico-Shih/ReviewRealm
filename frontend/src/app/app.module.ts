@@ -16,6 +16,8 @@ import {MatTooltipModule} from '@angular/material/tooltip';
 import {MatIconModule} from '@angular/material/icon';
 import {IMAGE_LOADER, ImageLoaderConfig} from '@angular/common';
 import {AcceptLanguageInterceptor} from "./shared/interceptors/AcceptLanguageInterceptor";
+import {MatPaginatorIntl} from "@angular/material/paginator";
+import {MyCustomPaginatorIntl} from "./shared/helpers/paginator-i18n";
 
 
 export function HttpLoaderFactory(http: HttpBackend) {
@@ -65,6 +67,10 @@ export function HttpLoaderFactory(http: HttpBackend) {
         return config.src;
       },
     },
+    {
+      provide: MatPaginatorIntl,
+      useClass: MyCustomPaginatorIntl
+    }
   ],
   bootstrap: [AppComponent],
 })

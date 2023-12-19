@@ -255,6 +255,12 @@
     "image": "¡Éste es el portal Naranja!",
     "solution": "¡Pero no te preocupes, dejé un portal Azul en la página principal!"
   },
+  "paginator": {
+    "first-page": "Primera página",
+    "items-per-page": "Items por página",
+    "no-results": "Página 1 de 1",
+    "page-of": "Página {{page}} de {{amountPages}}"
+  },
   "platform": {
     "nintendo": "Nintendo",
     "pc": "PC",
@@ -303,6 +309,8 @@
     "confirm-password-required": "Confirmar contraseña es requerida.",
     "email": "Correo electrónico",
     "email-placeholder": "ejemplo@email.com",
+    "login-label": "Ya tenés una cuenta?",
+    "login-link": "Iniciar sesión.",
     "password": "Contraseña",
     "password-minlength": "La contraseña debe tener al menos 8 caracteres.",
     "password-mismatch": "Las contraseñas no coinciden.",
@@ -438,7 +446,8 @@
     "games-title": "Juegos",
     "noresults": "No hubo resultados encontrados...",
     "review-title": "Reseñas",
-    "users-title": "Usuarios"
+    "users-title": "Usuarios",
+    "view-all": "Ver más"
   },
   "settings": {
     "avatar": "Avatar de Perfil",

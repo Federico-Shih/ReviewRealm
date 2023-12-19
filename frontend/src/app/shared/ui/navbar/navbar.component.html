@@ -36,28 +36,39 @@
         {{ 'navbar.community-link' | translate }}
       </div>
     </a>
-    <ng-container *ngIf="!isLoggedIn">
-      <a routerLink="/login" routerLinkActive="active">
-        <div id="login-link">
-          {{ 'navbar.login' | translate }}
+    <div class="user-section">
+      <ng-container *ngIf="!loading; else spinner">
+        <ng-container *ngIf="!isLoggedIn" >
+          <a routerLink="/login" routerLinkActive="active">
+            <div id="login-link">
+              {{ 'navbar.login' | translate }}
+            </div>
+          </a>
+          <a routerLink="/register" routerLinkActive="active">
+            <div id="register-link">
+              {{ 'navbar.register' | translate }}
+            </div>
+          </a>
+        </ng-container>
+        <ng-container *ngIf="isLoggedIn">
+          <button
+            id="logged-in-button"
+            [matMenuTriggerFor]="menu"
+            class="menu-button"
+            color="accent"
+            mat-raised-button>
+            {{ 'navbar.welcome' | translate: { value: user?.username } }}
+            <mat-icon>arrow_drop_down</mat-icon>
+          </button>
+        </ng-container>
+      </ng-container>
+      <ng-template #spinner>
+        <div>
+          <mat-spinner color="accent" diameter="30"></mat-spinner>
         </div>
-      </a>
-      <a routerLink="/register" routerLinkActive="active">
-        <div id="register-link">
-          {{ 'navbar.register' | translate }}
-        </div>
-      </a>
-    </ng-container>
-    <button
-      id="logged-in-button"
-      *ngIf="isLoggedIn"
-      [matMenuTriggerFor]="menu"
-      class="menu-button"
-      color="accent"
-      mat-raised-button>
-      {{ 'navbar.welcome' | translate: { value: user?.username } }}
-      <mat-icon>arrow_drop_down</mat-icon>
-    </button>
+      </ng-template>
+    </div>
+
     <mat-menu #menu="matMenu">
       <div class="menu">
         <button mat-menu-item routerLink="/profile/{{ user?.id }}" routerLinkActive="active">
@@ -101,4 +112,6 @@
       </div>
     </mat-menu>
   </section>
+
 </mat-toolbar>
+

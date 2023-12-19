@@ -2,7 +2,9 @@
   (logout)="logout()"
   (search)="search($event)"
   (searchSubmit)="submit()"
-  [user]="loggedInUser$ | async">
+  [user]="loggedInUser$ | async"
+  [loading]="(loggedInUser$ | async) === null"
+>
 </app-navbar>
 <div style="top: 70px; height: calc(100vh - 70px); position: relative">
   <router-outlet></router-outlet>

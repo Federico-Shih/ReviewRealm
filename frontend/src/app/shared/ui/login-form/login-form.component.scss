@@ -27,6 +27,12 @@
 
   padding: 10px 0 !important;
   height: 50px;
+
+  span {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
 }
 
 .btn-label {

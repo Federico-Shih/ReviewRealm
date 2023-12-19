@@ -3,6 +3,12 @@
   margin-bottom: 1rem;
   color: white;
   font-weight: 500;
+  width: 100%;
+  display: flex;
+
+  .spacer {
+    flex: 1;
+  }
 }
 
 .search-results-card {

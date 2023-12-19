@@ -1,11 +1,19 @@
-<div (window:resize)="onResize($event)">
+<div (window:resize)="onResize($event)" *ngIf="search$ | async as search">
   <ng-container *ngIf="combinedResults$ | async as results; else loading">
     <div *ngIf="results.hasResults; else noResults" class="results-container">
       <section *ngIf="results.reviews.content.length > 0">
         <mat-card class="search-results-card">
-          <mat-card-header class="title">{{
-            'search.review-title' | translate
-            }}</mat-card-header>
+          <mat-card-header class="title">
+            <span>
+              {{
+              'search.review-title' | translate
+              }}
+            </span>
+            <div class="spacer"></div>
+            <button (click)="navigateToReview(search)" mat-flat-button color="accent" style="float: right">
+              {{ 'search.view-all' | translate }}
+            </button>
+          </mat-card-header>
           <mat-card-content>
             <mat-grid-list
               [cols]="reviewBreakpoint"
@@ -29,6 +37,10 @@
         <mat-card class="search-results-card">
           <mat-card-header class="title">
             {{ 'search.users-title' | translate }}
+            <div class="spacer"></div>
+            <button (click)="navigateToUsers(search)" mat-flat-button color="accent" style="float: right">
+              {{ 'search.view-all' | translate }}
+            </button>
           </mat-card-header>
           <mat-card-content>
             <mat-grid-list
@@ -53,6 +65,10 @@
         <mat-card class="search-results-card">
           <mat-card-header class="title">
             {{ 'search.games-title' | translate }}
+            <div class="spacer"></div>
+            <button (click)="navigateToGames(search)" mat-flat-button color="accent" style="float: right">
+              {{ 'search.view-all' | translate }}
+            </button>
           </mat-card-header>
           <mat-card-content>
             <mat-grid-list

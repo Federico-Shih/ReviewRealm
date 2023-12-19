@@ -41,13 +41,6 @@ public class PawUserDetailsService implements UserDetailsService {
         this.us = us;
     }
 
-    private Locale getCurrentSessionLocale() {
-        if (httpServletRequest != null) {
-            return httpServletRequest.getLocale();
-        }
-        return null;
-    }
-
     @Transactional
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
@@ -59,10 +52,6 @@ public class PawUserDetailsService implements UserDetailsService {
         roleList.forEach((role -> authorities.add(new SimpleGrantedAuthority(String.format("ROLE_%s", role.getRole())))));
 
         LOGGER.debug("User {} logged in - email: {}", user.getId(), user.getEmail());
-        Locale current = getCurrentSessionLocale();
-        if (current != user.getLanguage()) {
-            us.changeUserLanguage(user.getId(), current);
-        }
         return new PawAuthUserDetails(user.getEmail(), user.getPassword(), user.isEnabled(), NON_EXPIRED, NON_CREDENTIALS_LOCKED, NON_LOCKED,  authorities);
     }
 }

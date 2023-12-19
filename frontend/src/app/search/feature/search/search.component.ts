@@ -2,7 +2,7 @@ import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import { UsersService } from '../../../shared/data-access/users/users.service';
 import { ReviewsService } from '../../../shared/data-access/reviews/reviews.service';
 import { GamesService } from '../../../shared/data-access/games/games.service';
-import { ActivatedRoute } from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import { combineLatest, map, Observable, switchMap } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { ReviewSortType } from '../../../shared/data-access/reviews/reviews.dtos';
@@ -27,9 +27,12 @@ export class SearchComponent implements OnInit {
     const target = event.target as Window;
     if (target === null || target.innerWidth === null) return;
     this.breakpoint =
-      target.innerWidth <= 1100 ? 1 : target.innerWidth <= 2100 ? 2 : 3;
+      target.innerWidth <= 1100 ? 1 : target.innerWidth <= 1800 ? 2 : 3;
     this.reviewBreakpoint = target.innerWidth <= 1100 ? 1 : 2;
   }
+
+  search$ = this.route.queryParamMap.pipe(
+    map(param => param.get('search') || ''));
 
   games$ = this.route.queryParamMap.pipe(
     switchMap(param =>
@@ -58,6 +61,7 @@ export class SearchComponent implements OnInit {
       })
     )
   );
+
   combinedResults$: Observable<{
     games: Paginated<Game>;
     reviews: Paginated<Review>;
@@ -73,11 +77,30 @@ export class SearchComponent implements OnInit {
     }))
   );
 
+  navigateToReview(search: string) {
+    this.router.navigate(['/'], { queryParams: {
+      search
+    }});
+  }
+
+  navigateToGames(search: string) {
+    this.router.navigate(['/games'], { queryParams: {
+      search
+    }});
+  }
+
+  navigateToUsers(search: string) {
+    this.router.navigate(['/community'], { queryParams: {
+      search
+    }});
+  }
+
   constructor(
     private readonly userService: UsersService,
     private readonly reviewService: ReviewsService,
     private readonly gameService: GamesService,
-    private readonly route: ActivatedRoute
+    private readonly route: ActivatedRoute,
+    private readonly router: Router
   ) {}
 
   ngOnInit(): void {
