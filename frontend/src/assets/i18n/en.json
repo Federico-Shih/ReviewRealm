@@ -272,7 +272,11 @@
     "reputation": "Reputation: {{value}}",
     "reviews": "Reviews",
     "unfollow": "Unfollow",
-    "view-more-button": "View More"
+    "view-more-button": "View More",
+    "fan": "Fan of:",
+    "level": "Level",
+    "moderator": "Moderator",
+    "noreviews": "This User Has Not Made Any Reviews!"
   },
   "profile-card": {
     "whoprefers": "who prefers"
@@ -326,7 +330,8 @@
       "spam": "Spam or Self-Promotion",
       "spoiler": "Spoilers without any warnings or in the first lines of the review"
     },
-    "reject": "Reject Report"
+    "reject": "Reject Report",
+    "viewtitle": "Reports"
   },
   "reset-filters": "Reset Filters",
   "review": {

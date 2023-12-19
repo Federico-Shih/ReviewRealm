@@ -76,6 +76,8 @@ export class GameListComponent implements OnInit, AfterViewInit {
     })
   );
 
+  protected breakpoint = 2;
+
   combinedPagination$ = combineLatest({
     gameSearch: this.gameSearchDto$,
     pagination: this.pagination$
@@ -130,6 +132,9 @@ export class GameListComponent implements OnInit, AfterViewInit {
         this.filter.get('excludeNoRating')?.setValue(excludeNoRating || false);
       }
     );
+
+    this.breakpoint =
+      window.innerWidth <= 1100 ? 1 : window.innerWidth <= 2100 ? 2 : 3;
   }
 
   resetFilters() {
@@ -228,5 +233,12 @@ export class GameListComponent implements OnInit, AfterViewInit {
         queryParamsHandling: 'merge',
       });
     }
+  }
+
+  onResize(event: Event) {
+    const target = event.target as Window;
+    if (target === null || target.innerWidth === null) return;
+    this.breakpoint =
+      target.innerWidth <= 1100 ? 1 : target.innerWidth <= 2100 ? 2 : 3;
   }
 }

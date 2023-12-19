@@ -48,8 +48,6 @@ export class UsersService {
             return customExceptionMapper(500, 'Unknown error');
           }
           const user = response.body;
-          console.log("Body de user: ")
-          console.log(user);
           return forkJoin({
             preferences: this.genreService.getGenres(user.links.preferences),
           }).pipe(

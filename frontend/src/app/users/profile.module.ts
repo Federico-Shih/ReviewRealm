@@ -13,6 +13,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatChipsModule } from '@angular/material/chips';
 import { FollowersComponent } from './feature/followers/followers.component';
 import { FollowingComponent } from './feature/following/following.component';
+import {MatTooltipModule} from "@angular/material/tooltip";
 
 @NgModule({
   declarations: [
@@ -22,15 +23,16 @@ import { FollowingComponent } from './feature/following/following.component';
     FollowersComponent,
     FollowingComponent,
   ],
-  imports: [
-    CommonModule,
-    ProfileRoutingModule,
-    MatGridListModule,
-    MatProgressSpinnerModule,
-    SharedModule,
-    MatPaginatorModule,
-    MatButtonModule,
-    MatChipsModule,
-  ],
+    imports: [
+        CommonModule,
+        ProfileRoutingModule,
+        MatGridListModule,
+        MatProgressSpinnerModule,
+        SharedModule,
+        MatPaginatorModule,
+        MatButtonModule,
+        MatChipsModule,
+        MatTooltipModule,
+    ],
 })
 export class ProfileModule {}

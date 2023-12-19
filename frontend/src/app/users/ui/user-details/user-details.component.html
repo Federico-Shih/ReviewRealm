@@ -11,7 +11,7 @@
             {{ userInfo.username }}
           </span>
           <div class="f-row f-ai-center f-gap-2 margin-left-2">
-            <div class="level-badge-container">
+            <div class="level-badge-container" [matTooltip]="'profile.level' | translate" [matTooltipPosition]="'above'">
               <i class="material-icons level-badge-icon level-gold"
                 >sports_esports</i
               >
@@ -21,7 +21,9 @@
             </div>
           </div>
           <ng-container *ngIf="userInfo.role === Role.MODERATOR">
-            <i class="material-icons moderator-badge"> engineering </i>
+            <div [matTooltip]="'profile.moderator' | translate" [matTooltipPosition]="'above'">
+              <i class="material-icons moderator-badge"> engineering </i>
+            </div>
           </ng-container>
         </div>
         <ng-container *ngIf="true">

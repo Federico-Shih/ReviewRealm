@@ -40,6 +40,10 @@ export class ProfileDetailComponent implements OnInit {
 
   loggedUser$ = this.authService.getLoggedUser();
 
+  protected breakpoint = 2;
+  protected breakpointFavgames = 3;
+
+
   combinedUsers$ = combineLatest([this.loggedUser$, this.loadedUser$, this.isFollowing$]);
 
   favgames$: Observable<Paginated<Game>> = this.route.paramMap.pipe(
@@ -68,7 +72,7 @@ export class ProfileDetailComponent implements OnInit {
       const numericId = [Number(params.get('id'))];
       const query: ReviewSearchDto = {
         authors: numericId,
-        pageSize: 10,
+        pageSize: 6,
       };
       return this.reviewService.getReviews(
         `${environment.API_ENDPOINT}/reviews`,
@@ -144,9 +148,29 @@ export class ProfileDetailComponent implements OnInit {
     });
   }
 
+
+
+  onResize(event: Event) {
+    const target = event.target as Window;
+    if (target === null || target.innerWidth === null) return;
+    this.breakpoint =
+      target.innerWidth <= 1100 ? 1 : target.innerWidth <= 2100 ? 2 : 3;
+  }
+
+  onResizeFavGame(event: Event) {
+    const target = event.target as Window;
+    if (target === null || target.innerWidth === null) return;
+    this.breakpointFavgames =
+      target.innerWidth <= 630 ? 1 : target.innerWidth <= 900 ? 2 : 3;
+  }
+
   ngOnInit(): void {
     this.initialReviews$.subscribe(pageInfo =>
       this.userReviews$.next(pageInfo)
     );
+    this.breakpoint =
+      window.innerWidth <= 1100 ? 1 : window.innerWidth <= 2100 ? 2 : 3;
+    this.breakpointFavgames =
+      window.innerWidth <= 630 ? 1 : window.innerWidth <= 900 ? 2 : 3;
   }
 }

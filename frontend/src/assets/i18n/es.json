@@ -262,7 +262,6 @@
     "xbox": "XBox"
   },
   "profile": {
-    "fan": "Fanático de:",
     "favgames": "Juegos Favoritos",
     "follow": "Seguir",
     "followers": "Seguidores: {{value}}",
@@ -273,7 +272,11 @@
     "reputation": "Reputación: {{value}}",
     "reviews": "Reseñas",
     "unfollow": "Dejar de Seguir",
-    "view-more-button": "Ver Más"
+    "view-more-button": "Ver Más",
+    "fan": "Fanático de:",
+    "level": "Nivel",
+    "moderator": "Moderador",
+    "noreviews": "¡Este Usuario No Ha Realizado Ninguna Reseña!"
   },
   "profile-card": {
     "whoprefers": "quien prefiere"
@@ -327,7 +330,8 @@
       "spam": "Spam o Autopromoción",
       "spoiler": "Spoiler sin advertencias o en las primeras líneas de la reseña"
     },
-    "reject": "Anular Reporte"
+    "reject": "Anular Reporte",
+    "viewtitle": "Reportes"
   },
   "reset-filters": "Restablecer Filtros",
   "review": {
@@ -443,9 +447,6 @@
   "settings": {
     "avatar": "Avatar de Perfil",
     "avatarchoose": "¡Seleccione su Avatar!",
-    "avatars": {
-      "choose": "¡Seleccione su Avatar!"
-    },
     "fav-games": "Juegos Favoritos",
     "fav-genres": "Géneros Favoritos",
     "fg": {
@@ -466,7 +467,10 @@
       "save": "Guardar Nueva Configuración"
     },
     "notifications": "Notificaciones de Correo Electrónico",
-    "title": "Configuración de Cuenta"
+    "title": "Configuración de Cuenta",
+    "avatars": {
+      "choose": "¡Seleccione su Avatar!"
+    }
   },
   "submission": {
     "handled": "Sugerencia resuelta."

@@ -123,9 +123,10 @@
     <mat-grid-list
       *ngIf="paginatedGames$ | async as games;"
       [style.display]="loading ? 'none' : 'block'"
-      cols="2"
+      [cols]="breakpoint"
       rowHeight="380px"
-      gutterSize="20px">
+      gutterSize="20px"
+      (window:resize)="onResize($event)">
       <mat-grid-tile *ngIf="games.totalPages === 0" [colspan]="2">
         <span class="no-results-container">
           {{ 'game-search.no-results' | translate }}
