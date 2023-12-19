@@ -19,6 +19,7 @@
       [mat-dialog-close]="true"
       cdkFocusInitial
       class="button accent-button"
+      id="confirm-delete-button"
       mat-raised-button>
       <ng-container *ngIf="isCreation; else isUpdate">
         {{'review.submit.button.create' | translate}}
