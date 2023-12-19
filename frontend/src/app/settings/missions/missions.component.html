@@ -39,6 +39,9 @@
       </span>
       <div>
         <ng-container *ngIf="missionComplete$ | async as completeMission">
+          <ng-container *ngIf="completeMission.length===0">
+            <span class="card-title" i18n>{{ 'missions.nomissions' | translate }}</span>
+          </ng-container>
           <ng-container *ngFor="let mission of completeMission">
             <div>
               <div class="card mission-card-container">

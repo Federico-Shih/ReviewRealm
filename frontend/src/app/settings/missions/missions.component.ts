@@ -17,11 +17,15 @@ export class MissionsComponent {
 
   missionComplete$: Observable<MissionComplete[]> = this.loggedInUser$.pipe(
     switchMap(user => {
-      if (user !== null)
-        return this.missionService.getMissionsComplete(
-          `${environment.API_ENDPOINT}/users/${user.id}/mission-progresses`
-        );
-      this.router.navigate(['/profile']);
+      console.log(user)
+      if (user === null) {
+        this.router.navigate([`/reviews`]);
+        return of([]);
+      }
+      console.log(user.links.missionProgresses)
+      if(user.links.missionProgresses)
+        return this.missionService.getMissionsComplete(user.links.missionProgresses);
+      this.router.navigate([`/profile/${user.id}`]);
       return of([]);
     })
   );

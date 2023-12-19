@@ -219,8 +219,9 @@
     "completedtimes": "Veces Completada: {{value}}",
     "exp": "Experiencia Total: {{value}}",
     "lvl": "NIVEL {{value}}",
-    "yourmissions": "Sus Misiones",
-    "yourprogress": "Tu Progreso"
+    "yourmissions": "Tus Misiones",
+    "yourprogress": "Tu Progreso",
+    "nomissions": "¡Aún no has descubierto ninguna Misión! Sigue buscando..."
   },
   "navbar": {
     "community-link": "Comunidad",

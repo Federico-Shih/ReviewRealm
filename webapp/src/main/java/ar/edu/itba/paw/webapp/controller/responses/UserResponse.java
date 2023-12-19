@@ -179,6 +179,8 @@ public class UserResponse extends BaseResponse {
                         uriInfo.getBaseUriBuilder().path(BASE_PATH).path(String.valueOf(user.getId())).path("notifications").build());
                 userResponse.link("patchUser",
                         uriInfo.getBaseUriBuilder().path(BASE_PATH).path(String.valueOf(user.getId())).build());
+                userResponse.link("missionProgresses",
+                        uriInfo.getBaseUriBuilder().path(BASE_PATH).path(String.valueOf(user.getId())).path("mission-progresses").build());
                 userResponse.link("recommendedReviews",
                         uriInfo.getBaseUriBuilder()
                                 .path(ReviewResponse.BASE_PATH)

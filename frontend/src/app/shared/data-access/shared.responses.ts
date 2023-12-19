@@ -45,6 +45,7 @@ export type UserLinksResponse = {
   favoriteGames: string;
   patchUser?: string;
   updateNotifications?: string;
+  missionProgresses?: string;
   unfollow?: string;
   follow?: string;
   recommendedReviews?: string;
@@ -89,7 +90,6 @@ export type GameResponse = {
   publishDate: string;
   ratingSum: number;
   reviewCount: number;
-  favorite: boolean;
   averageDifficulty?: Difficulty;
   platform?: Platform;
   averageGameTime?: number;

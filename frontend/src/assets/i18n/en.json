@@ -220,7 +220,8 @@
     "exp": "Total Experience: {{value}}",
     "lvl": "LVL. {{value}}",
     "yourmissions": "Your Missions",
-    "yourprogress": "Your Progress"
+    "yourprogress": "Your Progress",
+    "nomissions": "You haven't discovered any Missions! Keep looking..."
   },
   "navbar": {
     "community-link": "Community",

@@ -10,6 +10,7 @@ export class UserLinks {
   favoriteGames: string;
   patchUser?: string;
   updateNotifications?: string;
+  missionProgresses?: string;
   unfollow?: string;
   follow?: string;
   recommendedReviews?: string;
@@ -27,6 +28,7 @@ export class UserLinks {
     reviews: string,
     patchUser?: string,
     updateNotifications?: string,
+    missionProgresses?: string,
     unfollow?: string,
     follow?: string,
     recommendedReviews?: string,
@@ -42,6 +44,7 @@ export class UserLinks {
     this.favoriteGames = favoriteGames;
     this.patchUser = patchUser;
     this.updateNotifications = updateNotifications;
+    this.missionProgresses = missionProgresses;
     this.unfollow = unfollow;
     this.follow = follow;
     this.recommendedReviews = recommendedReviews;
@@ -61,6 +64,7 @@ export class UserLinks {
     unfollow,
     reviews,
     updateNotifications,
+    missionProgresses,
     newReviews,
     recommendedReviews,
     followingReviews,
@@ -75,6 +79,7 @@ export class UserLinks {
       reviews,
       patchUser,
       updateNotifications,
+      missionProgresses,
       unfollow,
       follow,
       recommendedReviews,
