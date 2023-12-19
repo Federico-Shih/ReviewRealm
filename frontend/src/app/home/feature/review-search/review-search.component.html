@@ -223,7 +223,7 @@
         <mat-paginator
           #paginator
           (page)="handlePageEvent($event)"
-          *ngIf="combined.pagination.totalPages !== 0"
+          *ngIf="combined.pagination.totalPages > 1"
           [length]="combined.pagination.totalElements"
           [pageIndex]="(combined.reviewSearch.page || 1) - 1"
           [pageSize]="combined.reviewSearch.pageSize || 10"

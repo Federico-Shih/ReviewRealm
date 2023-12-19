@@ -158,7 +158,7 @@
       <mat-paginator
         #paginator
         (page)="handlePageEvent($event)"
-        *ngIf="combined.pagination.totalPages !== 0"
+        *ngIf="combined.pagination.totalPages > 1"
         [length]="combined.pagination.totalElements"
         [pageIndex]="(combined.gameSearch.page || 1) - 1"
         [pageSize]="combined.gameSearch.pageSize || 10"
