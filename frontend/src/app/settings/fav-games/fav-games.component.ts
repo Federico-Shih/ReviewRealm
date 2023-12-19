@@ -58,7 +58,6 @@ export class FavGamesComponent implements OnInit {
   constructor(
     private readonly gamesService: GamesService,
     private readonly authService: AuthenticationService,
-    private readonly reviewsService: ReviewsService,
     private readonly userService: UsersService,
     private readonly snackbar: MatSnackBar,
     private readonly translate: TranslateService

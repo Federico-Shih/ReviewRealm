@@ -8,9 +8,8 @@ import {
   TOTAL_PAGES_HEADER,
   validationExceptionMapper,
 } from './mapper';
-import { HttpHeaders, HttpResponse } from '@angular/common/http';
+import {HttpErrorResponse, HttpHeaders, HttpResponse} from '@angular/common/http';
 import {
-  ExceptionResponse,
   RequestError,
   ValidationError,
   ValidationResponse,
@@ -98,9 +97,9 @@ describe('Mapper tests', () => {
   describe('exceptionMapper', () => {
     describe('given a 400 response', () => {
       it('should return a RequestError', () => {
-        const response = new HttpResponse<ExceptionResponse>({
+        const response = new HttpErrorResponse({
           status: 400,
-          body: {
+          error: {
             message: 'message',
           },
         });

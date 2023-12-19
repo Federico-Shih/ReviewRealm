@@ -75,9 +75,9 @@ describe('NavbarComponent', () => {
   });
 
   it('given an not logged in user, show login/register button', () => {
-    component.user = null;
+    component.user = undefined;
+    component.loading = false;
     fixture.detectChanges();
-
     expect(
       fixture.debugElement.nativeElement.querySelector('#login-link')
     ).toBeTruthy();
@@ -91,6 +91,7 @@ describe('NavbarComponent', () => {
 
   it('given a logged in user, show menu button', async () => {
     component.user = userMock1;
+    component.loading = false;
     fixture.detectChanges();
     await fixture.whenStable();
     expect(

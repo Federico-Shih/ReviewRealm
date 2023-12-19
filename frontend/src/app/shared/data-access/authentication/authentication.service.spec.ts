@@ -82,6 +82,7 @@ describe('AuthenticationService', () => {
     beforeEach(() => {
       service = TestBed.inject(AuthenticationService);
     });
+
     it('given a valid authentication pair then returned user should be the user', waitForAsync(() => {
       service.login({ username: '', password: '' }).subscribe(user => {
         expect(user).toBe(userMock1);
