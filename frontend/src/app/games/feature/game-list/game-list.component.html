@@ -110,8 +110,10 @@
   </mat-drawer>
   <mat-drawer-content class="drawer-content">
     <div class="searchbar">
-      <button (click)="drawer.toggle()" color="accent" mat-raised-button i18n>
-        {{ 'toggle-filters' | translate }}
+      <button (click)="drawer.toggle()" color="accent"
+              mat-raised-button class="filter-button"
+      >
+        <span><mat-icon>filter_alt</mat-icon></span>
       </button>
       <div>
         <app-search-bar
@@ -119,6 +121,13 @@
           (searchSubmit)="submitSearch()"
           [label]="'navbar.search' | translate"></app-search-bar>
       </div>
+      <button
+        (click)="submitSearch()"
+        class="search-button"
+        color="accent"
+        mat-flat-button>
+        {{ 'review-search.search-label' | translate }}
+      </button>
     </div>
     <mat-grid-list
       *ngIf="paginatedGames$ | async as games;"
