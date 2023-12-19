@@ -41,6 +41,8 @@
   "edit-own-review": "Editar tu Reseña",
   "errors": {
     "dismiss": "Descartar",
+    "reporting": "Error reportando reseña",
+    "review-creating": "Error creando reseña",
     "unknown": "Error desconocido, intente más tarde."
   },
   "fav-games": {
@@ -219,9 +221,9 @@
     "completedtimes": "Veces Completada: {{value}}",
     "exp": "Experiencia Total: {{value}}",
     "lvl": "NIVEL {{value}}",
+    "nomissions": "¡Aún no has descubierto ninguna Misión! Sigue buscando...",
     "yourmissions": "Tus Misiones",
-    "yourprogress": "Tu Progreso",
-    "nomissions": "¡Aún no has descubierto ninguna Misión! Sigue buscando..."
+    "yourprogress": "Tu Progreso"
   },
   "navbar": {
     "community-link": "Comunidad",
@@ -260,7 +262,6 @@
     "xbox": "XBox"
   },
   "profile": {
-    "fan": "Fanático de:",
     "favgames": "Juegos Favoritos",
     "follow": "Seguir",
     "followers": "Seguidores: {{value}}",
@@ -271,7 +272,11 @@
     "reputation": "Reputación: {{value}}",
     "reviews": "Reseñas",
     "unfollow": "Dejar de Seguir",
-    "view-more-button": "Ver Más"
+    "view-more-button": "Ver Más",
+    "fan": "Fanático de:",
+    "level": "Nivel",
+    "moderator": "Moderador",
+    "noreviews": "¡Este Usuario No Ha Realizado Ninguna Reseña!"
   },
   "profile-card": {
     "whoprefers": "quien prefiere"
@@ -285,6 +290,7 @@
   "recommendations": {
     "backtofeed": "Volver a para ti",
     "next": "Siguiente juego",
+    "nomore": "Volver tu Feed",
     "prev": "Anterior juego"
   },
   "recommended": "Recommendado",
@@ -324,12 +330,19 @@
       "spam": "Spam o Autopromoción",
       "spoiler": "Spoiler sin advertencias o en las primeras líneas de la reseña"
     },
-    "reject": "Anular Reporte"
+    "reject": "Anular Reporte",
+    "viewtitle": "Reportes"
   },
   "reset-filters": "Restablecer Filtros",
   "review": {
     "confirm": {
-      "title": "Confirmar la creación de la reseña?"
+      "title": {
+        "create": "Confirmar creación de reseña",
+        "update": "Confirmar actualización de reseña"
+      },
+      "update": {
+        "title": "Confirmar reseña actualizada"
+      }
     },
     "created": "La reseña ha sido creada",
     "delete": "Borrar Reseña",
@@ -351,8 +364,8 @@
     "search": "Buscar Reseñas",
     "submit": {
       "button": {
-        "create": "Crear Reseña",
-        "edit": "Editar Reseña"
+        "create": "Crear reseña",
+        "edit": "Actualizar reseña"
       },
       "completed": {
         "label": "Completado"
@@ -434,9 +447,6 @@
   "settings": {
     "avatar": "Avatar de Perfil",
     "avatarchoose": "¡Seleccione su Avatar!",
-    "avatars": {
-      "choose": "¡Seleccione su Avatar!"
-    },
     "fav-games": "Juegos Favoritos",
     "fav-genres": "Géneros Favoritos",
     "fg": {
@@ -457,7 +467,10 @@
       "save": "Guardar Nueva Configuración"
     },
     "notifications": "Notificaciones de Correo Electrónico",
-    "title": "Configuración de Cuenta"
+    "title": "Configuración de Cuenta",
+    "avatars": {
+      "choose": "¡Seleccione su Avatar!"
+    }
   },
   "submission": {
     "handled": "Sugerencia resuelta."

@@ -4,6 +4,7 @@ export enum UserMediaTypes {
   CREATEUSER = 'application/vnd.user-form.v1+json',
   CREATE_FAVORITE_GAME = 'application/vnd.favorite-game-form.v1+json',
   CHANGE_PASSWORD = 'application/vnd.password-reset.v1+json',
+  EDIT_USER = 'application/vnd.patch-user-form.v1+json',
 }
 
 export type UserSearchDto = Partial<

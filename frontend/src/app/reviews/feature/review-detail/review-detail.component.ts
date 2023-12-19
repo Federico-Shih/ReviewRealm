@@ -8,7 +8,8 @@ import {
 import {
   BehaviorSubject,
   combineLatest,
- distinctUntilChanged, map, Observable, switchMap, tap,} from 'rxjs';
+  distinctUntilChanged, map, Observable, ReplaySubject, switchMap, tap,
+} from 'rxjs';
 import {AuthenticationService} from '../../../shared/data-access/authentication/authentication.service';
 import {DifficultyToLocale, Role,} from '../../../shared/data-access/shared.enums';
 import {environment} from '../../../../environments/environment';
@@ -20,6 +21,8 @@ import {NgForOf} from '@angular/common';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {TranslateService} from '@ngx-translate/core';
 import {getMessageFromReason, ReportReason,} from '../../../shared/data-access/reports/reports.class';
+import {User} from "../../../shared/data-access/users/users.class";
+import {RequestError} from "../../../shared/data-access/shared.models";
 
 @Component({
   selector: 'app-review-detail',
@@ -55,27 +58,33 @@ export class ReviewDetailComponent implements OnInit {
     );
 
   loadedReview$ = new BehaviorSubject<Review | null>(null);
-
   currentUser$ = this.authService.getLoggedUser();
-  userAndReview$ = combineLatest([this.currentUser$, this.loadedReview$]);
-
+  userAndReview$: Observable<[User | null, Review | null]> = combineLatest([this.currentUser$, this.loadedReview$]);
   reviewFeedback$ = new BehaviorSubject<Feedback | null>(null);
   canEdit$ = this.userAndReview$.pipe(
     map(([user, review]) => {
       return user != null && user.id === review?.authorId;
     })
   );
+
   canReport$ = this.userAndReview$.pipe(
     map(([user, review]) => {
       return user != null && user.id !== review?.authorId;
     })
   );
+
   canDelete$ = this.userAndReview$.pipe(
     map(([user, review]) => {
       return (
         user != null &&
         (user.id === review?.authorId || user.role === Role.MODERATOR)
       );
+    })
+  );
+
+  isOwner$ = this.userAndReview$.pipe(
+    map(([user, review]) => {
+      return review !== null && user !== null && review.author?.id === user.id;
     })
   );
 
@@ -105,14 +114,24 @@ export class ReviewDetailComponent implements OnInit {
     });
   }
 
-  giveReviewFeedback(feedback: FeedbackType | null) {
-    this.review$.subscribe(review => {
-      if (!review.links.feedback) return;
-      this.reviewsService
-        .giveFeedback(review.links.feedback, feedback)
-        .pipe(tap(() => this.loadingLike$.next(true)))
-        .subscribe({
-          error: () => {
+  giveReviewFeedback(review: Review, feedback: FeedbackType | null) {
+    if (!review.links.feedback) return;
+    this.loadingLike$.next(true);
+    this.reviewsService
+      .giveFeedback(review.links.feedback, feedback)
+      .subscribe({
+        error: (err) => {
+          this.snackBar.open(
+            this.translate.instant('errors.unknown'),
+            this.translate.instant('errors.dismiss'),
+            {
+              panelClass: ['red-snackbar'],
+            }
+          );
+          this.loadingLike$.next(false);
+        },
+        next: result => {
+          if (!result) {
             this.snackBar.open(
               this.translate.instant('errors.unknown'),
               this.translate.instant('errors.dismiss'),
@@ -120,22 +139,11 @@ export class ReviewDetailComponent implements OnInit {
                 panelClass: ['red-snackbar'],
               }
             );
-            this.loadingLike$.next(false);
-          },
-          next: result => {
-            if (!result) {
-              this.snackBar.open(
-                this.translate.instant('errors.unknown'),
-                this.translate.instant('errors.dismiss'),
-                {
-                  panelClass: ['red-snackbar'],
-                }
-              );
-            }
-            this.loadingLike$.next(false);
-          },
-        });
-    });
+          }
+          this.loadingLike$.next(false);
+          this.reviewFeedback$.next(new Feedback(feedback));
+        },
+      });
   }
 
   openDeleteDialog() {
@@ -145,7 +153,6 @@ export class ReviewDetailComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         //confirmed
-        console.log('deleting');
         this.review$.subscribe(review => {
           if (!review) return;
           this.reviewsService.deleteReview(review.links.self).subscribe({
@@ -188,7 +195,15 @@ export class ReviewDetailComponent implements OnInit {
             .reportReview(review.links.report, review.id, result)
             .subscribe({
               error: err => {
-                if (err.status !== 400 || err.exceptions === null) {
+                if (err instanceof RequestError && err.status === 409) {
+                  this.snackBar.open(
+                    this.translate.instant('errors.reporting'),
+                    err.exceptions?.message,
+                    {
+                      panelClass: ['red-snackbar'],
+                    }
+                  );
+                } else if (err.status !== 400 || err.exceptions === null) {
                   this.snackBar.open(
                     this.translate.instant('errors.unknown'),
                     this.translate.instant('errors.dismiss'),
@@ -248,7 +263,7 @@ export class DeleteConfirmationDialogComponent {}
 })
 export class ReportDialogComponent {
   reportReason: ReportReason = ReportReason.IRRELEVANT;
-  reasons: ReportReason[] = Object.values(ReportReason);
+  reasons: string[] = Object.values(ReportReason);
 
   protected readonly ReasonToLocale = getMessageFromReason;
 }

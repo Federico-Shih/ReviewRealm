@@ -1,4 +1,4 @@
-import { HttpResponse } from '@angular/common/http';
+import {HttpErrorResponse, HttpResponse} from '@angular/common/http';
 import { throwError } from 'rxjs';
 import {
   ExceptionResponse,
@@ -37,8 +37,8 @@ export const splitLinks = (links: string): Map<string, string> => {
 export const arrayResponseMapper =
   <T, K>(fromResponse: (param: T) => K) =>
   (httpResponse: HttpResponse<T[]>): K[] => {
-    const reviewResponse = httpResponse.body as T[];
-    return reviewResponse.map(fromResponse);
+    const arrayResponse = httpResponse.body as T[] ?? [];
+    return arrayResponse.map(fromResponse);
   };
 
 export const paginatedResponseMapper =
@@ -91,8 +91,8 @@ export const paginatedObjectMapper = <T>(
   };
 };
 
-export const exceptionMapper = (error: HttpResponse<ExceptionResponse>) => {
-  return throwError(() => new RequestError(error.status, error.body));
+export const exceptionMapper = (error: HttpErrorResponse) => {
+  return throwError(() => new RequestError(error.status, error.error));
 };
 
 export const validationExceptionMapper = (

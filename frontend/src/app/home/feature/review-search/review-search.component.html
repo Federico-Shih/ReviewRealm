@@ -31,7 +31,7 @@
           (reviewSearchDto$ | async)?.sort || ReviewSortType.CREATED
         "
         [sortTypes]="orderDirections">
-        <section>
+        <section class="filter-container">
           <span class="filter-title">{{ 'filter-title' | translate }}</span>
           <form [formGroup]="filter" class="filters">
             <div class="time-played-filter">
@@ -157,9 +157,7 @@
               </div>
             </mat-expansion-panel>
           </form>
-          <ng-template #genreLoading>
-            <mat-spinner></mat-spinner>
-          </ng-template>
+
         </section>
       </app-filter-drawer>
     </div>
@@ -235,3 +233,6 @@
     </section>
   </mat-drawer-content>
 </mat-drawer-container>
+<ng-template #genreLoading>
+  <app-loading-spinner></app-loading-spinner>
+</ng-template>

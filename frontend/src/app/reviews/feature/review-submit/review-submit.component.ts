@@ -1,5 +1,5 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
+import {BehaviorSubject, Observable, ReplaySubject} from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { ReviewsService } from '../../../shared/data-access/reviews/reviews.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -11,6 +11,7 @@ import { ReviewFormType } from '../../../shared/data-access/shared.enums';
 import { ReviewSubmitDto } from '../../../shared/data-access/reviews/reviews.dtos';
 import { TranslateService } from '@ngx-translate/core';
 import { Location } from '@angular/common';
+import {RequestError} from "../../../shared/data-access/shared.models";
 
 @Component({
   selector: 'app-review-submit',
@@ -18,8 +19,9 @@ import { Location } from '@angular/common';
   styleUrls: ['./review-submit.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ReviewSubmitComponent {
+export class ReviewSubmitComponent implements OnInit {
   loading$ = new BehaviorSubject(false);
+  checkingReview$ = new BehaviorSubject(true);
 
   game$ = this.getGame();
 
@@ -33,6 +35,21 @@ export class ReviewSubmitComponent {
     private readonly translate: TranslateService,
     private readonly location: Location
   ) {}
+
+
+  ngOnInit(): void {
+    this.game$.subscribe((game) => {
+      if (game.links.userReview) {
+        this.reviewService.getReviews(game.links.userReview, {}).subscribe(paginatedReview => {
+          if (paginatedReview.totalElements > 0) {
+            this.router.navigate(['/reviews', paginatedReview.content[0].id]);
+            return;
+          }
+          this.checkingReview$.next(false);
+        });
+      }
+    });
+  }
 
   getGame(): Observable<Game> {
     const gameId = Number(this.route.snapshot.paramMap.get('game_id'));
@@ -51,15 +68,25 @@ export class ReviewSubmitComponent {
     this.reviewService
       .createReview(`${environment.API_ENDPOINT}/reviews`, dto)
       .subscribe({
-        error: () => {
+        error: (err) => {
           this.loading$.next(false);
-          this._snackBar.open(
-            this.translate.instant('errors.unknown'),
-            this.translate.instant('errors.dismiss'),
-            {
-              panelClass: ['red-snackbar'],
-            }
-          );
+          if (err instanceof RequestError && err.status === 409) {
+            this._snackBar.open(
+              err.exceptions?.message || '',
+              this.translate.instant('errors.dismiss'),
+              {
+                panelClass: ['red-snackbar'],
+              }
+            );
+          } else {
+            this._snackBar.open(
+              this.translate.instant('errors.unknown'),
+              this.translate.instant('errors.dismiss'),
+              {
+                panelClass: ['red-snackbar'],
+              }
+            );
+          }
         },
         next: reviewId => {
           this.loading$.next(false);
@@ -76,4 +103,5 @@ export class ReviewSubmitComponent {
   }
 
   protected readonly ReviewFormType = ReviewFormType;
+
 }

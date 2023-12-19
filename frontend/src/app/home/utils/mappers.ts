@@ -57,7 +57,7 @@ export const paramsMapToReviewSearchDto = (
 
   return {
     page: parseInt(params.get('page') || '1') || 1,
-    pageSize: parseInt(params.get('pageSize') || '10') || 10,
+    pageSize: parseInt(params.get('pageSize') || '6') || 10,
     gameGenres: genres.length !== 0 ? genres : undefined,
     excludeAuthors: excludedAuthors.length !== 0 ? excludedAuthors : undefined,
     authorPreferences: authorPrefs.length !== 0 ? authorPrefs : undefined,

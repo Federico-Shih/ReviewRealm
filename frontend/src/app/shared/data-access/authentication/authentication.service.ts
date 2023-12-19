@@ -21,7 +21,7 @@ export const REFRESH_TOKEN_LABEL = 'X-RR-REFRESH';
 
 @Injectable({ providedIn: 'root' })
 export class AuthenticationService {
-  static AUTHENTICATION_ENDPOINT = environment.API_ENDPOINT + '/users';
+  static AUTHENTICATION_ENDPOINT = environment.API_ENDPOINT + '/users?pageSize=1';
   private loggedUser$ = new ReplaySubject<User | null>(1);
 
   constructor(
@@ -113,7 +113,7 @@ export class AuthenticationService {
     const token = authorization.split(' ')[1];
     localStorage.setItem(AUTHORIZATION_TOKEN_LABEL, token);
 
-    const refreshToken = headers.get('X-Refresh')?.split(' ')[1];
+    const refreshToken = (headers.get('X-Refresh') || "").split(" ")[1];
     localStorage.setItem(REFRESH_TOKEN_LABEL, refreshToken || '');
 
     const payload = jwtDecode<UserJwtPayload>(token);

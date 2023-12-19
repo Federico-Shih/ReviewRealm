@@ -1,4 +1,6 @@
 <div (scroll)="nextPage($event)" class="main-container">
+  <span class="header" i18n>{{ 'report.viewtitle' | translate }}</span>
+  <div class="divider-h"></div>
   <div *ngIf="loadingReports$ | async as loadingReports" class="reports">
     <div *ngIf="loadingReports.loading" class="centered-container spinner">
       <mat-spinner />

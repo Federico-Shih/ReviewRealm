@@ -41,6 +41,8 @@
   "edit-own-review": "Edit your Review",
   "errors": {
     "dismiss": "Dismiss",
+    "reporting": "Error reporting review",
+    "review-creating": "Error creating review",
     "unknown": "Unknown error, please try again later."
   },
   "fav-games": {
@@ -219,9 +221,9 @@
     "completedtimes": "Times Completed: {{value}}",
     "exp": "Total Experience: {{value}}",
     "lvl": "LVL. {{value}}",
+    "nomissions": "You haven't discovered any Missions! Keep looking...",
     "yourmissions": "Your Missions",
-    "yourprogress": "Your Progress",
-    "nomissions": "You haven't discovered any Missions! Keep looking..."
+    "yourprogress": "Your Progress"
   },
   "navbar": {
     "community-link": "Community",
@@ -270,7 +272,11 @@
     "reputation": "Reputation: {{value}}",
     "reviews": "Reviews",
     "unfollow": "Unfollow",
-    "view-more-button": "View More"
+    "view-more-button": "View More",
+    "fan": "Fan of:",
+    "level": "Level",
+    "moderator": "Moderator",
+    "noreviews": "This User Has Not Made Any Reviews!"
   },
   "profile-card": {
     "whoprefers": "who prefers"
@@ -284,6 +290,7 @@
   "recommendations": {
     "backtofeed": "Back to for you",
     "next": "Next game",
+    "nomore": "Return to Feed",
     "prev": "Previous game"
   },
   "recommended": "Recommended",
@@ -323,12 +330,16 @@
       "spam": "Spam or Self-Promotion",
       "spoiler": "Spoilers without any warnings or in the first lines of the review"
     },
-    "reject": "Reject Report"
+    "reject": "Reject Report",
+    "viewtitle": "Reports"
   },
   "reset-filters": "Reset Filters",
   "review": {
     "confirm": {
-      "title": "Confirm review creation?"
+      "title": {
+        "create": "Confirm review creation",
+        "update": "Confirm review update"
+      }
     },
     "created": "The review has been created",
     "delete": "Delete Review",
@@ -350,8 +361,8 @@
     "search": "Search Reviews",
     "submit": {
       "button": {
-        "create": "Create Review",
-        "edit": "Edit Review"
+        "create": "Create review",
+        "edit": "Update review"
       },
       "completed": {
         "label": "Completed"

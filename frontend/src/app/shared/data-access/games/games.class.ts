@@ -121,7 +121,7 @@ export class Game {
       response.publishDate,
       response.ratingSum,
       response.reviewCount,
-      response.links.deleteFromFavoriteGames!==undefined,
+      response.links.deleteFromFavoriteGames !== undefined,
       GameLinks.fromResponse(response.links),
       response.averageDifficulty,
       response.platform,

@@ -12,16 +12,14 @@ import ar.edu.itba.paw.webapp.controller.helpers.LocaleHelper;
 import ar.edu.itba.paw.webapp.controller.mediatypes.VndType;
 import ar.edu.itba.paw.webapp.controller.responses.GenreResponse;
 import ar.edu.itba.paw.webapp.exceptions.CustomRuntimeException;
+import org.hibernate.Cache;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Path("genres")
@@ -73,24 +71,25 @@ public class GenreController {
             throw new CustomRuntimeException(Response.Status.BAD_REQUEST, "genres.invalid.filter" );
         }
         User loggedUser = AuthenticationHelper.getLoggedUser(userService);
-        List<Genre> genres;
+        List<Genre> genres = Collections.emptyList();
 
         if(gameId != null){
             Optional<Game> game = gameService.getGameById(gameId, loggedUser != null? loggedUser.getId() : null);
-            if(!game.isPresent()){
-                return Response.noContent().build();
+            if(game.isPresent()){
+                genres = new ArrayList<>(game.get().getGenres());
             }
-            genres = new ArrayList<>(game.get().getGenres());
         } else if(userId != null){
             Optional<User> user = userService.getUserById(userId);
-            if(!user.isPresent()){
-                return Response.noContent().build();
+            if(user.isPresent()){
+                genres = new ArrayList<>(user.get().getPreferences());
             }
-            genres = new ArrayList<>(user.get().getPreferences());
         } else {
             genres = genreService.getGenres();
         }
-        CacheControl cacheControl = CacheHelper.buildCacheControl(gameId != null || userId != null ? 3600 : cacheMaxAge);
+        if (genres.isEmpty()) {
+            return CacheHelper.unconditionalCache(Response.noContent(), 60).build();
+        }
+        CacheControl cacheControl = CacheHelper.buildCacheControl(gameId != null || userId != null ? 60 : cacheMaxAge);
         Response.ResponseBuilder response = Response.ok().entity(
             new GenericEntity<List<GenreResponse>>(
                 genres.stream()
