@@ -74,7 +74,7 @@ public class MissionController {
             ),
             request,
             missions,
-            CacheHelper.buildCacheControl(86400 * 30)
+            CacheHelper.buildCacheControl(60)
         ).build();
     }
 

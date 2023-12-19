@@ -141,7 +141,10 @@
             <span class="popularity-tag"
             >{{ 'review-filter.popularity' | translate }}:</span
             >
-            <span class="popularity-value">{{ review.getPopularity() }}</span>
+            <span class="popularity-value" *ngIf="popularity$ | async as popularity; else popularity0">{{ popularity }}</span>
+            <ng-template #popularity0>
+              <span class="popularity-value">0</span>
+            </ng-template>
           </div>
           <div class="right" *ngIf="(isOwner$ | async) !== true">
             <ng-container *ngIf="reviewFeedback$ | async as feedback">
@@ -149,7 +152,7 @@
               <button
                 mat-icon-button
                 [disabled]="(currentUser$ | async) === null || (loadingLike$ | async) === true"
-                (click)="giveReviewFeedback(review,feedback.isLike()? null : FeedbackType.LIKE)">
+                (click)="giveReviewFeedback(review,feedback.isLike()? null : FeedbackType.LIKE, feedback.feedback)">
                 <mat-icon
                   fontIcon="thumb_up"
                   [class]="
@@ -163,7 +166,7 @@
               <button
                 mat-icon-button
                 [disabled]="(currentUser$ | async) === null || (loadingLike$ | async) === true"
-                (click)="giveReviewFeedback(review, feedback.isDislike() ? null : FeedbackType.DISLIKE)">
+                (click)="giveReviewFeedback(review, feedback.isDislike() ? null : FeedbackType.DISLIKE, feedback.feedback)">
                 <mat-icon
                   fontIcon="thumb_down"
                   [class]="

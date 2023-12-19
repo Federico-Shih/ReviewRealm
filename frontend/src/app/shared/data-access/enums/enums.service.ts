@@ -53,13 +53,13 @@ export class EnumsService {
       );
   }
 
-  getMissions(url: string): Observable<MissionProgress[]> {
+  getMissions(url: string): Observable<Mission[]> {
     return this.http
-      .get<MissionProgressResponse[]>(url, {
+      .get<MissionResponse[]>(url, {
         responseType: 'json',
         observe: 'response',
       })
-      .pipe(map(arrayResponseMapper(MissionProgress.fromResponse)));
+      .pipe(map(arrayResponseMapper(Mission.fromResponse)));
   }
 
   getMission(url: string): Observable<Mission> {

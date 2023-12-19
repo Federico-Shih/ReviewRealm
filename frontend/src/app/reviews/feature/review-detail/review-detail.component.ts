@@ -66,6 +66,7 @@ export class ReviewDetailComponent implements OnInit {
       return user != null && user.id === review?.authorId;
     })
   );
+  popularity$ = new BehaviorSubject(0);
 
   canReport$ = this.userAndReview$.pipe(
     map(([user, review]) => {
@@ -109,12 +110,13 @@ export class ReviewDetailComponent implements OnInit {
           } else {
             this.reviewFeedback$.next(null);
           }
-        })
+        });
+        this.popularity$.next(review.getPopularity());
       }
     });
   }
 
-  giveReviewFeedback(review: Review, feedback: FeedbackType | null) {
+  giveReviewFeedback(review: Review, feedback: FeedbackType | null, previousFeedback: FeedbackType | null) {
     if (!review.links.feedback) return;
     this.loadingLike$.next(true);
     this.reviewsService
@@ -142,6 +144,15 @@ export class ReviewDetailComponent implements OnInit {
           }
           this.loadingLike$.next(false);
           this.reviewFeedback$.next(new Feedback(feedback));
+          if (previousFeedback === null && feedback !== null) {
+            this.popularity$.next(feedback === FeedbackType.LIKE ? this.popularity$.value + 1 : this.popularity$.value - 1);
+          } else if (previousFeedback !== null) {
+            if (feedback === null) {
+              this.popularity$.next(previousFeedback === FeedbackType.LIKE ? this.popularity$.value - 1 : this.popularity$.value + 1);
+            } else if (feedback !== previousFeedback) {
+              this.popularity$.next(feedback === FeedbackType.LIKE ? this.popularity$.value + 2 : this.popularity$.value - 2);
+            }
+          }
         },
       });
   }

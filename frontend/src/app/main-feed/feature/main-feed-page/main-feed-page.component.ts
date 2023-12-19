@@ -142,6 +142,7 @@ export class MainFeedPageComponent implements OnInit {
               totalPages: reviews.totalPages,
               totalElements: reviews.totalElements,
             });
+            this.loadingInfinite$.next(false);
           },
           error: () => {
             this.loadingInfinite$.next(false);
