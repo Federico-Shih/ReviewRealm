@@ -5,7 +5,6 @@ import { NotificationsComponent } from './notifications/notifications.component'
 import { GenresViewComponent } from './genres-view/genres-view.component';
 import { AvatarComponent } from './avatar/avatar.component';
 import { FavGamesComponent } from './fav-games/fav-games.component';
-import { MissionsComponent } from './missions/missions.component';
 
 const routes: Routes = [
   { path: '', component: SettingViewComponent },
@@ -13,7 +12,6 @@ const routes: Routes = [
   { path: 'genres', component: GenresViewComponent },
   { path: 'avatar', component: AvatarComponent },
   { path: 'favgames', component: FavGamesComponent },
-  { path: 'missions', component: MissionsComponent },
 ];
 
 @NgModule({

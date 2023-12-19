@@ -8,8 +8,8 @@
           </span>
           <div class="progress-fontsize">
             <span i18n>{{
-              'missions.exp' | translate: { value: user.xp }
-            }}</span>
+                'missions.exp' | translate: { value: user.xp }
+              }}</span>
           </div>
           <mat-progress-bar
             class="m-t-b"
@@ -23,9 +23,9 @@
         <div class="section">
           <div class="level-container no-wrap">
             <span i18n>{{
-              'missions.lvl'
-                | translate: { value: (user.xp / 100 | number: '1.0-0') }
-            }}</span>
+                'missions.lvl'
+                  | translate: { value: (user.xp / 100 | number: '1.0-0') }
+              }}</span>
           </div>
         </div>
       </div>
@@ -63,7 +63,7 @@
                             100
                         }}"></mat-progress-bar>
                       <span
-                        >{{ mission.progress.progress >= 0 ? mission.progress.progress : 0 }}/{{
+                      >{{ mission.progress.progress >= 0 ? mission.progress.progress : 0 }}/{{
                           mission.missionInfo.target
                         }}</span
                       >
@@ -71,9 +71,9 @@
                   </div>
                   <div>
                     <span i18n>{{
-                      'missions.completedtimes'
-                        | translate: { value: mission.progress.completedTimes }
-                    }}</span>
+                        'missions.completedtimes'
+                          | translate: { value: mission.progress.completedTimes }
+                      }}</span>
                   </div>
                   <div class="mission-data">
                     <ng-container *ngIf="mission.missionInfo.repeatable">

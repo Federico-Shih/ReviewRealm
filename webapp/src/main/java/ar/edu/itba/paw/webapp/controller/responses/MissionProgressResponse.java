@@ -10,8 +10,6 @@ public class MissionProgressResponse {
     private URI mission;
     private String startDate;
     private int completedTimes;
-
-    //TODO:Link self???
     public static MissionProgressResponse fromEntity(UriInfo uriInfo, MissionProgress progress) {
         MissionProgressResponse missionProgress = new MissionProgressResponse();
         missionProgress.progress = progress.getProgress();

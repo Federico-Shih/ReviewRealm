@@ -63,6 +63,12 @@ const routes: Routes = [
       import('./community/community.module').then(m => m.CommunityModule),
   },
   {
+    path: 'missions',
+    loadChildren: () =>
+      import('./missions/missions.module').then(m => m.MissionsModule),
+    canActivate: [isAuthenticatedGuard],
+  },
+  {
     path: 'errors',
     loadChildren: () =>
       import('./errors/errors.module').then(m => m.ErrorsModule),

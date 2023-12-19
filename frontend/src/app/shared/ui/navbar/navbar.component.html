@@ -75,7 +75,7 @@
           <mat-icon>account_circle</mat-icon>
           <span>{{ 'navbar.profile' | translate }}</span>
         </button>
-        <button mat-menu-item routerLink="/settings/missions" routerLinkActive="active">
+        <button mat-menu-item routerLink="/missions" routerLinkActive="active">
           <mat-icon>receipt</mat-icon>
           <span>{{ 'navbar.missions' | translate }}</span>
         </button>
@@ -83,7 +83,7 @@
           <mat-icon>create</mat-icon>
           <span>{{ 'navbar.write-review' | translate }}</span>
         </button>
-        <button *ngIf="user?.role === Role.USER" mat-menu-item routerLink="/games/submit">
+        <button *ngIf="user?.role === Role.USER" mat-menu-item routerLink="/games/submit" routerLinkActive="active">
           <mat-icon>add</mat-icon>
           <span>{{ 'navbar.suggest-game' | translate }}</span>
         </button>
@@ -101,7 +101,7 @@
             <span>{{ 'navbar.reports' | translate }}</span>
           </button>
         </ng-container>
-        <button mat-menu-item routerLink="/settings" routerLinkActive="active">
+        <button mat-menu-item routerLink="/settings" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
           <mat-icon>settings</mat-icon>
           <span>{{ 'navbar.settings' | translate }}</span>
         </button>
