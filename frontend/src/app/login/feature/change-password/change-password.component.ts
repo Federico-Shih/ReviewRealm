@@ -72,7 +72,7 @@ export class ChangePasswordComponent implements OnInit {
   passwordMatch(formGroup: AbstractControl) {
     if (
       formGroup.get('password')?.value ===
-        formGroup.get('confirmPassword')?.value ||
+      formGroup.get('confirmPassword')?.value ||
       formGroup.get('confirmPassword')?.value === '' ||
       formGroup.get('password')?.value === ''
     )
