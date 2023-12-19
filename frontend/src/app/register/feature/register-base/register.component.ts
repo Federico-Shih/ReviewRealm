@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { UserCreateDto } from '../../../shared/data-access/users/users.dtos';
 import { UsersService } from '../../../shared/data-access/users/users.service';
 import { environment } from '../../../../environments/environment';
-import { ValidationError } from '../../../shared/data-access/shared.models';
+import {RequestError, ValidationError} from '../../../shared/data-access/shared.models';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateService } from '@ngx-translate/core';
 import { BehaviorSubject } from 'rxjs';
@@ -28,11 +28,18 @@ export class RegisterComponent {
 
   createUser(userCreateDto: UserCreateDto) {
     this.loading$.next(true);
+    this.userCreateErrors.next({});
     this.userService
       .createUser(environment.API_ENDPOINT + '/users', userCreateDto)
       .subscribe({
         error: err => {
-          if (
+          if (err instanceof RequestError && err.status === 409) {
+            const errorMessages: UserCreateErrors = {
+              generic: err.exceptions?.message,
+            };
+            this.userCreateErrors.next(errorMessages);
+            this.loading$.next(false);
+          } else if (
             !(err instanceof ValidationError) ||
             err.status !== 400 ||
             err.exceptions === null
@@ -44,15 +51,7 @@ export class RegisterComponent {
             this.loading$.next(false);
             return;
           }
-          const errorMessages: UserCreateErrors = err.exceptions.reduce(
-            (acc: UserCreateErrors, curr) => {
-              acc[curr.property as keyof UserCreateErrors] = curr.message;
-              return acc;
-            },
-            {}
-          );
-          this.userCreateErrors.next(errorMessages);
-          this.loading$.next(false);
+
         },
         next: user => {
           this.loading$.next(false);

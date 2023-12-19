@@ -25,10 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.HttpHeaders;
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.Base64;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -91,6 +88,13 @@ public class BasicAuthFilter extends OncePerRequestFilter {
         }
     }
 
+    private Locale getCurrentSessionLocale(HttpServletRequest request) {
+        if (request != null) {
+            return request.getLocale();
+        }
+        return null;
+    }
+
     private void basicAuthentication(String header, HttpServletRequest request, HttpServletResponse response) {
         String username = "";
         final String encodedCredentials = header.split(" ")[1];
@@ -117,8 +121,11 @@ public class BasicAuthFilter extends OncePerRequestFilter {
 
             authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
+            Locale current = getCurrentSessionLocale(request);
+            if (current != fullUser.getLanguage()) {
+                userService.changeUserLanguage(fullUser.getId(), current);
+            }
             SecurityContextHolder.getContext().setAuthentication(authentication);
-
         } catch (Exception exception) {
             if (exception instanceof DisabledException) {
                 userService.resendToken(username);

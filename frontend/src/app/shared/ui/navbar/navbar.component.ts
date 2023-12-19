@@ -9,15 +9,17 @@ import {Role} from '../../data-access/shared.enums';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NavbarComponent {
-  @Input() user: User | null = null;
+  // user undefined === no session
+  @Input() user: User | null | undefined = null;
   @Input() currentRoute: string | null = null;
+  @Input() loading: boolean = true;
 
   @Output() logout = new EventEmitter<void>();
   @Output() search = new EventEmitter<string>();
   @Output() searchSubmit = new EventEmitter();
 
   get isLoggedIn() {
-    return this.user !== null;
+    return this.user !== undefined && this.user !== null;
   }
 
   protected readonly Role = Role;

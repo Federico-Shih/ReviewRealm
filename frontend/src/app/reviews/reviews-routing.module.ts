@@ -24,6 +24,11 @@ const routes: Routes = [
     component: ReviewEditComponent,
     canActivate: [isReviewAuthorGuard],
   },
+  {
+    path: '',
+    redirectTo: '/',
+    pathMatch: 'full'
+  }
 ];
 
 @NgModule({
