@@ -44,7 +44,7 @@
       <mat-divider />
     </div>
     <div class="card">
-      <img alt="{{ game.name }}" src="{{ game.links.image }}" />
+      <img alt="{{ game.name }}" src="{{ game.links.image }}" onerror="this.src='./assets/placeholder.jpg'; this.onerror=null;"/>
       <span class="card-text" i18n>{{
         'publishing.date'
           | translate: { value: game.publishDate.toLocaleDateString() }

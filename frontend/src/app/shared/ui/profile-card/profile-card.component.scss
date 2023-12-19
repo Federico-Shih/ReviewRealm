@@ -91,6 +91,13 @@
   align-items: center;
   font-size: 0.9rem;
 }
+.preference-chips{
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  margin: 5px 0;
+}
 
 .level-container {
   justify-self: flex-end;
@@ -145,6 +152,9 @@
   font-weight: 700;
   padding: 2px 6px;
   white-space: nowrap;
+}
+.flex-wrap{
+  flex-wrap: wrap;
 }
 
 .pointer {

@@ -11,7 +11,7 @@
           class="avatar-button"
           type="submit"
           (click)="changeAvatar(i + 1)">
-          <img class="profile-avatar-card" [src]="avatar" alt="AVATAR" />
+          <img class="profile-avatar-card" onerror="this.src='./assets/placeholder.jpg'; this.onerror=null;" [src]="avatar" alt="AVATAR" />
         </button>
       </div>
     </ng-container>
