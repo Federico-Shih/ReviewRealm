@@ -48,7 +48,7 @@
               <goal>yarn</goal>
             </goals>
             <configuration>
-              <arguments>run build</arguments>
+              <arguments>run ci</arguments>
             </configuration>
           </execution>
         </executions>
@@ -69,24 +69,6 @@
       <plugin>
         <artifactId>maven-resources-plugin</artifactId>
         <version>3.0.2</version>
-        <!--        <executions>-->
-        <!--          <execution>-->
-        <!--            <id>copy-angular-build</id>-->
-        <!--            <goals>-->
-        <!--              <goal>copy-resources</goal>-->
-        <!--            </goals>-->
-        <!--            <phase>prepare-package</phase>-->
-        <!--            <configuration>-->
-        <!--              <outputDirectory>/webapp/target/webapp</outputDirectory>-->
-        <!--              <resources>-->
-        <!--                <resource>-->
-        <!--                  <directory>${frontend-src-dir}/dist</directory>-->
-        <!--                  <filtering>false</filtering>-->
-        <!--                </resource>-->
-        <!--              </resources>-->
-        <!--            </configuration>-->
-        <!--          </execution>-->
-        <!--        </executions>-->
       </plugin>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>

@@ -11,7 +11,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
-import { RouterLink } from '@angular/router';
+import {ActivatedRoute, convertToParamMap, RouterLink} from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatSidenavModule } from '@angular/material/sidenav';
@@ -23,6 +23,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AuthenticationDto } from '../../data-access/authentication/authentication.dtos';
+import {ActivatedRouteMock} from "../../guards/is-review-author.guard.spec";
 
 describe('LoginFormComponent', () => {
   let component: LoginFormComponent;
@@ -33,7 +34,12 @@ describe('LoginFormComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      providers: [],
+      providers: [
+        {
+          provide: ActivatedRoute,
+          useValue: new ActivatedRouteMock(convertToParamMap({ id: '1' })),
+        },
+      ],
       imports: [
         CommonModule,
         HttpClientModule,

@@ -41,7 +41,7 @@ describe('isModeratorGuard', () => {
             component: class {},
           },
           {
-            path: '403',
+            path: 'errors/forbidden',
             component: class {},
           },
         ]),
@@ -75,7 +75,7 @@ describe('isModeratorGuard', () => {
       expect(result).toBeFalsy();
     });
 
-    expect(navigateSpy).toHaveBeenCalledOnceWith(['/403']);
+    expect(navigateSpy).toHaveBeenCalledOnceWith(['/errors/forbidden']);
   }));
 
   it('given logged in but not moderator, return false and navigate', waitForAsync(() => {
@@ -98,7 +98,7 @@ describe('isModeratorGuard', () => {
     ).subscribe(result => {
       expect(result).toBeFalse();
     });
-    expect(navigateSpy).toHaveBeenCalledOnceWith(['/403']);
+    expect(navigateSpy).toHaveBeenCalledOnceWith(['/errors/forbidden']);
   }));
 
   it('given logged in and is moderator, return true', waitForAsync(() => {

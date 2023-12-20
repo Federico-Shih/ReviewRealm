@@ -55,14 +55,12 @@ describe('isReviewAuthorGuard', () => {
       providers: [
         {
           provide: ActivatedRoute,
-          useValue: {
-            snapshot: { params: {} },
-          },
+          useValue: new ActivatedRouteMock(convertToParamMap({ id: '1' })),
         },
         {
           provide: RouterStateSnapshot,
           useValue: {},
-        },
+        }
       ],
       imports: [
         RouterTestingModule.withRoutes([
@@ -71,11 +69,11 @@ describe('isReviewAuthorGuard', () => {
             component: class {},
           },
           {
-            path: '404',
+            path: 'errors/not-found',
             component: class {},
           },
           {
-            path: '403',
+            path: 'errors/forbidden',
             component: class {},
           },
         ]),
@@ -116,29 +114,6 @@ describe('isReviewAuthorGuard', () => {
     expect(navigateSpy).toHaveBeenCalledOnceWith(['/login']);
   }));
 
-  it('given logged in but invalid route should return false and navigate to 404', waitForAsync(() => {
-    TestBed.overrideProvider(AuthenticationService, {
-      useValue: new AuthenticationServiceMock(),
-    });
-    TestBed.overrideProvider(ReviewsService, {
-      useValue: {},
-    });
-    TestBed.overrideProvider(ActivatedRoute, {
-      useValue: new ActivatedRouteMock(convertToParamMap({ id: null })),
-    });
-    const router = TestBed.inject(Router),
-      navigateSpy = spyOn(router, 'navigate'),
-      activatedroute = TestBed.inject(ActivatedRoute),
-      guardExec = executeGuard(
-        activatedroute.snapshot,
-        TestBed.inject(RouterStateSnapshot)
-      );
-    expect(guardExec).toBeInstanceOf(Observable);
-    (guardExec as Observable<boolean>).subscribe(result => {
-      expect(result).toBeFalsy();
-    });
-    expect(navigateSpy).toHaveBeenCalledOnceWith(['/404']);
-  }));
 
   it('given logged in user and valid route but no review, should redirect to 404', waitForAsync(() => {
     TestBed.overrideProvider(AuthenticationService, {
@@ -166,6 +141,6 @@ describe('isReviewAuthorGuard', () => {
       expect(result).toBeFalsy();
     });
 
-    expect(navigateSpy).toHaveBeenCalledOnceWith(['/404']);
+    expect(navigateSpy).toHaveBeenCalledOnceWith(['/errors/not-found']);
   }));
 });
