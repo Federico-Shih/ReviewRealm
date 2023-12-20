@@ -112,7 +112,7 @@ export class GamesService {
       .pipe(
         catchError(exceptionMapper),
         map(response => {
-          return response.status === 200;
+          return response.status === 204;
         })
       );
   }

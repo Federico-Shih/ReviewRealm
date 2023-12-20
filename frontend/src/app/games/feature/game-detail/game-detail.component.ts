@@ -117,16 +117,14 @@ export class GameDetailComponent implements OnInit, OnDestroy {
               );
             },
             next: deleted => {
-              if (deleted) {
-                this.snackBar.open(
-                  this.translate.instant('game.deleted'),
-                  undefined,
-                  {
-                    panelClass: ['red-snackbar'],
-                  }
-                );
-                this.router.navigate(['/games']);
-              }
+              this.snackBar.open(
+                this.translate.instant('game.deleted'),
+                undefined,
+                {
+                  panelClass: ['red-snackbar'],
+                }
+              );
+              this.router.navigate(['/games']);
             },
           });
         });

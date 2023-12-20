@@ -132,7 +132,7 @@ export class ReviewsService {
       .pipe(catchError(exceptionMapper))
       .pipe(
         map(response => {
-          return response.status === 200;
+          return response.status === 204;
         })
       );
   }
