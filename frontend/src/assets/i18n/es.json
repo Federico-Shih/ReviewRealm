@@ -51,6 +51,7 @@
       "add": "Error desconocido a la hora de agregar juego favorito",
       "delete": "Error desconocido borrando juego favorito"
     },
+    "favorite-label": "Juegos favoritos",
     "no-favorites-label": "Todavía no tienes juegos favoritos",
     "no-results-label": "Te quedaste sin juegos para hacer favoritos",
     "selection-label": "Seleccione sus juegos favoritos",
