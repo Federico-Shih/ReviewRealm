@@ -8,9 +8,8 @@ import { isAuthenticatedGuard } from '../shared/guards/is-authenticated.guard';
 import { isReviewAuthorGuard } from '../shared/guards/is-review-author.guard';
 
 const routes: Routes = [
-  { path: ':id', component: ReviewDetailComponent },
   {
-    path: 'submit/search',
+    path: 'submit-search',
     component: ReviewSubmitSearchComponent,
     canActivate: [isAuthenticatedGuard],
   },
@@ -19,6 +18,7 @@ const routes: Routes = [
     component: ReviewSubmitComponent,
     canActivate: [isAuthenticatedGuard],
   },
+  { path: ':id', component: ReviewDetailComponent },
   {
     path: ':id/edit',
     component: ReviewEditComponent,

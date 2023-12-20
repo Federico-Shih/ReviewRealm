@@ -88,9 +88,9 @@ export class GameDetailComponent implements OnInit, OnDestroy {
     this.game$.subscribe({
       next: game => {
         if (game.links.reviewsExcludingUser) {
-          this.infiniteLoadService.loadMore(game.links.reviewsExcludingUser, {pageSize: 1});
+          this.infiniteLoadService.loadMore(game.links.reviewsExcludingUser, {pageSize: 4});
         } else {
-          this.infiniteLoadService.loadMore(game.links.reviews, { pageSize: 1 });
+          this.infiniteLoadService.loadMore(game.links.reviews, { pageSize: 4 });
         }
       },
       error: () => {

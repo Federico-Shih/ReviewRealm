@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
-import {BehaviorSubject, Observable, ReplaySubject, Subscription} from 'rxjs';
+import {BehaviorSubject, Observable, ReplaySubject, Subscription, take, takeLast} from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { ReviewsService } from '../../../shared/data-access/reviews/reviews.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -62,8 +62,8 @@ export class ReviewSubmitComponent implements OnInit {
 
   createReview(dto: ReviewSubmitDto | null) {
     if (dto === null) {
-      this.eventSuscription = this.navigationHistory.previousUrl.subscribe(previousUrl => {
-        this.router.navigate([previousUrl ?? '/'], { replaceUrl: true });
+      this.eventSuscription = this.navigationHistory.previousUrl.pipe(take(1)).subscribe(previousUrl => {
+        this.router.navigate([previousUrl?.split('?')[0] ?? '/']);
       });
       return;
     }

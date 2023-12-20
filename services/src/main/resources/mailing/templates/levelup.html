@@ -38,9 +38,8 @@
             text-decoration: none;
         }
         .container {
-            width: 100%;
+            width: 70%;
             margin: 0 auto;
-            border: 0 solid #fff;
         }
         .goto-button {
             color: #fff;
@@ -90,26 +89,14 @@
             </div>
         </div>
     </div>
-    <table class="container">
-        <tr>
-            <td class="centered">
-                <table>
-                    <tr><td><h3 th:text="#{email.levelup.longtitle (${level})}"></h3></td></tr>
-                    <tr>
-                        <td class="level-container" th:text="#{email.levelup.level (${level})}"></td>
-                    </tr>
-                    <tr class="button-container">
-                        <td class="centered">
-                            <a th:href="@{{base}/profile/{id}(base=${webBaseUrl},id=${userid})}">
+    <div class="container">
+        <h3 th:text="#{email.levelup.longtitle (${level})}"></h3>
+        <div class="level-container" th:text="#{email.levelup.level (${level})}"></div>
+        <a th:href="@{{base}/profile/{id}(base=${webBaseUrl},id=${userid})}">
                         <span class="goto-button" th:text="#{email.levelup.profile}">
                         </span>
-                                </a>
-                            </td>
-                        </tr>
-                </table>
-            </td>
-        </tr>
-    </table>
+        </a>
+    </div>
 </div>
 </body>
 

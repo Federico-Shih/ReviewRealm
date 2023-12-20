@@ -16,7 +16,6 @@ import { Game } from '../../shared/data-access/games/games.class';
 import { environment } from '../../../environments/environment';
 import { AuthenticationService } from '../../shared/data-access/authentication/authentication.service';
 import { User } from '../../shared/data-access/users/users.class';
-import { ReviewsService } from '../../shared/data-access/reviews/reviews.service';
 import { UsersService } from '../../shared/data-access/users/users.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateService } from '@ngx-translate/core';
@@ -148,16 +147,7 @@ export class FavGamesComponent implements OnInit {
                 panelClass: 'green-snackbar',
               }
             );
-          },
-          error: () => {
-            this.snackbar.open(
-              this.translate.instant('fav-games.errors.add'),
-              undefined,
-              {
-                panelClass: 'red-snackbar',
-              }
-            );
-          },
+          }
         });
     }
   }
@@ -181,16 +171,7 @@ export class FavGamesComponent implements OnInit {
                 panelClass: 'green-snackbar',
               }
             );
-          },
-          error: () => {
-            this.snackbar.open(
-              this.translate.instant('fav-games.errors.delete'),
-              undefined,
-              {
-                panelClass: 'red-snackbar',
-              }
-            );
-          },
+          }
         });
     }
   }

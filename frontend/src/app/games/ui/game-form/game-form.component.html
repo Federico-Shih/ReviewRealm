@@ -164,7 +164,7 @@
           <mat-form-field class="input-field" appearance="outline">
             <!-- image upload-->
             <mat-label>{{ 'game-form.image' | translate }}</mat-label>
-            <button mat-icon-button matIconPrefix (click)="imageUpload.click()">
+            <button mat-icon-button type="button" matIconPrefix (click)="imageUpload.click()">
               <mat-icon>image</mat-icon>
             </button>
             <input
@@ -195,7 +195,8 @@
               (change)="handleImage($event)"
               accept="image/gif, image/png, image/jpeg"
               style="display: none"
-              type="file" />
+              type="file"
+            />
           </mat-form-field>
         </div>
       </div>

@@ -176,9 +176,10 @@
           <button
             (click)="showMore(paginatedReviews.links.next)"
             color="accent"
+            [disabled]="loadingReviews === true || loadingReviews === null"
             i18n
             mat-raised-button>
-            <ng-container *ngIf="loadingReviews; else notloading">
+            <ng-container *ngIf="loadingReviews === true; else notloading">
               <mat-spinner diameter="20"></mat-spinner>
             </ng-container>
             <ng-template #notloading>

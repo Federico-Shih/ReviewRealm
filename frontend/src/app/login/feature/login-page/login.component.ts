@@ -39,7 +39,7 @@ export class LoginComponent implements OnInit, OnDestroy {
             if (previousUrl?.includes('login') || previousUrl?.includes('register')) {
               previousUrl = null;
             }
-            this.router.navigate([previousUrl ?? '/'], { replaceUrl: true });
+            this.router.navigate([previousUrl?.split('?')[0] ?? '/'], { replaceUrl: true });
           });
         }
         this.loading$.next(false);
