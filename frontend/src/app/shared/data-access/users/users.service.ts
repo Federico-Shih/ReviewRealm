@@ -241,6 +241,7 @@ export class UsersService {
         `${credentials?.email}:${credentials?.token}`
       )}`;
     }
+    headers['Content-Type'] = UserMediaTypes.EDIT_USER;
     return this.http
       .patch<void>(url, userPatchDto, {
         headers,
