@@ -273,7 +273,8 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     public Optional<Review> getReviewOfUserForGame(long userId, long gameId) {
         ReviewFilter filter = new ReviewFilterBuilder().withGameId(gameId).withAuthors(Arrays.asList(userId)).build();
-        Paginated<Review> review = reviewDao.findAll(Page.with(1,1),filter, null, null);
+        Ordering<ReviewOrderCriteria> ordering = Ordering.defaultOrder(ReviewOrderCriteria.REVIEW_DATE);
+        Paginated<Review> review = reviewDao.findAll(Page.with(1,1),filter, ordering, null);
         return review.getList().stream().findFirst();
     }
 }

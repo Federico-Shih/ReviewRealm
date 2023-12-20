@@ -137,7 +137,13 @@ public class GameHibernateDao implements GameDao, PaginationDao<GameFilter> {
     public Optional<Set<Game>> getGamesReviewedByUser(long userId) {
         User user = em.find(User.class, userId);
         if (user == null) return Optional.empty();
-        return Optional.of(user.getReviews().stream().map(Review::getReviewedGame).collect(Collectors.toSet()));
+        Set<Game> reviewedGames = new HashSet<>();
+        user.getReviews().forEach(review -> {
+            if(!review.getDeleted()){
+                reviewedGames.add(review.getReviewedGame());
+            }
+        });
+        return Optional.of(reviewedGames);
     }
 
     @Override
