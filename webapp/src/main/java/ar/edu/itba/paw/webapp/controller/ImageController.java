@@ -53,8 +53,7 @@ public class ImageController {
         }
         final Response.ResponseBuilder responseBuilder = Response.ok(image.getImage(), image.getMediaType());
         // Uses cache busting
-        CacheHelper.unconditionalCache(responseBuilder, 31536000);
-        return responseBuilder.build();
+        return CacheHelper.unconditionalCache(responseBuilder, 31536000).build();
     }
 
 

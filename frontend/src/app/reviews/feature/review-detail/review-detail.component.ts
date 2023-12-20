@@ -176,17 +176,15 @@ export class ReviewDetailComponent implements OnInit {
                 }
               );
             },
-            next: deleted => {
-              if (deleted) {
-                this.snackBar.open(
-                  this.translate.instant('review.deleted'),
-                  undefined,
-                  {
-                    panelClass: ['red-snackbar'],
-                  }
-                );
-                this.router.navigate(['/']);
-              }
+            next: () => {
+              this.router.navigate(['/games', review.gameId]);
+              this.snackBar.open(
+                this.translate.instant('review.deleted'),
+                undefined,
+                {
+                  panelClass: ['red-snackbar'],
+                }
+              );
             },
           });
         });
