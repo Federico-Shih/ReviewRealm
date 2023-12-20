@@ -51,6 +51,7 @@
       "add": "Unknown error when adding favorite game",
       "delete": "Unknown error deleting favorite game"
     },
+    "favorite-label": "Favorite games",
     "no-favorites-label": "You have no favorite games selected yet!",
     "no-results-label": "There are no more unfavorited games",
     "selection-label": "Select your favorite game",

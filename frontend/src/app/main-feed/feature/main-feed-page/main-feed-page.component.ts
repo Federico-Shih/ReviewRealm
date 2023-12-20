@@ -21,7 +21,7 @@ enum Tabs {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MainFeedPageComponent implements OnInit {
-  static INITIAL_LOAD_COUNT = 10;
+  static INITIAL_LOAD_COUNT = 6;
   static PERCENTAGE_SCROLLED = 0.8;
   tabs = Object.values(Tabs);
   selectedTab = new FormControl(Tabs.FOLLOWING);
