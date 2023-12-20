@@ -98,7 +98,7 @@ public class GameServiceImplTest {
     @Test
     public void testGameReviewDataByGameIdNoReviews(){
         Mockito.when(gameDao.getById(anyLong())).thenReturn(Optional.of(getSuperGameA()));
-        Mockito.when(reviewService.getAllReviewsFromGame(getSuperGameA().getId(),null)).thenReturn(new ArrayList<>());
+        Mockito.when(reviewService.getAllReviewsFromGame(getSuperGameA().getId(),null)).thenReturn(Collections.emptyList());
 
         GameReviewData data = gs.getGameReviewDataByGameId(getSuperGameA().getId());
 
@@ -186,7 +186,7 @@ public class GameServiceImplTest {
     public void testCreateGameNonModerator(){
         Mockito.when(imgService.uploadImage(any(),any())).thenReturn(new Image("a","jpg",new byte[0]));
         Mockito.when(userService.getUserById(anyLong())).thenReturn(Optional.of(user));
-        Mockito.when(user.getRoles()).thenReturn(new HashSet<>());
+        Mockito.when(user.getRoles()).thenReturn(Collections.emptySet());
         Mockito.when(dto.getGenres()).thenReturn(Arrays.asList(Genre.ACTION.getId(), Genre.ADVENTURE.getId()));
 
         Mockito.when(gameDao.create(any(),any(),any(),any(),any(),any(),any(),eq(true),any())).thenReturn(getSuperGameA());

@@ -32,7 +32,6 @@ public class NotificationStatusResponse extends BaseResponse {
     public static List<NotificationTypeResponse> fromEntity(final UriInfo uri, Set<NotificationType> notifications) {
         List<NotificationTypeResponse> setWithNotifications = new ArrayList<>();
         for (NotificationType type : NotificationType.values()) {
-            // No hace falta el switch, no?
             setWithNotifications.add(NotificationTypeResponse.fromEntity(uri, type, !notifications.contains(type)));
         }
         return setWithNotifications;
