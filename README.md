@@ -48,9 +48,17 @@ mvn build
 * Ejecutar la aplicacion con Tomcat Server
 
 
+# Credenciales de prueba
+### User
+- username: fedeshih@gmail.com 
+- password: holahola
+### Moderator
+- username: fshih@itba.edu.ar
+- password: holahola
+
+
 # Project: Review Realm API Docs
 # 📁 Collection: User
-
 
 ## End-point: Get Users
 200: OK
