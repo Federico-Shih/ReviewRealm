@@ -14,7 +14,7 @@ import {RetryWithRefreshInterceptor} from './shared/interceptors/RetryWithRefres
 import {MatButtonModule} from '@angular/material/button';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {MatIconModule} from '@angular/material/icon';
-import {IMAGE_LOADER, ImageLoaderConfig} from '@angular/common';
+import {IMAGE_LOADER, ImageLoaderConfig, LocationStrategy, PathLocationStrategy} from '@angular/common';
 import {AcceptLanguageInterceptor} from "./shared/interceptors/AcceptLanguageInterceptor";
 import {MatPaginatorIntl} from "@angular/material/paginator";
 import {MyCustomPaginatorIntl} from "./shared/helpers/paginator-i18n";
@@ -70,6 +70,10 @@ export function HttpLoaderFactory(http: HttpBackend) {
     {
       provide: MatPaginatorIntl,
       useClass: MyCustomPaginatorIntl
+    },
+    {
+      provide: LocationStrategy,
+      useClass: PathLocationStrategy
     }
   ],
   bootstrap: [AppComponent],
