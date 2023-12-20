@@ -18,7 +18,7 @@ git clone git@bitbucket.org:itba/paw-2023a-04.git
 
 La aplicación utiliza claves para el módulo "Remember Me" y para la configuración de envío de correos electrónicos. Asegúrese de ubicar los siguientes archivos en las rutas correspondientes:
 
-    Remember Me key: Copie el archivo rememberme_key.pem en la siguiente ruta: /webapp/src/main/resources/keys/rememberme_key.pem.
+    Remember Me key: Copie el archivo jwt.pem en la siguiente ruta: /webapp/src/main/resources/keys/jwt.pem.
     Propiedades de correo: Coloque el archivo de propiedades mailing.properties en la siguiente ruta: /webapp/src/main/resources/mailing/mailing.properties.
 
 Asegúrese de proporcionar los valores adecuados en el archivo mailing.properties para la configuración del servidor de correo electrónico.

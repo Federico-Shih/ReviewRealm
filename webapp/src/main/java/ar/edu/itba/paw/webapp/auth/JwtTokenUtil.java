@@ -7,13 +7,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.jackson.io.JacksonSerializer;
 import io.jsonwebtoken.security.Keys;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -27,7 +31,21 @@ public class JwtTokenUtil {
 
     private static final long REFRESH_EXPIRATION_TIME = 1000 * 60 * 60 * 24 * 7;
     private final ObjectMapper objectMapper = new ObjectMapper();
-    private final SecretKey secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+
+
+    public JwtTokenUtil() {
+        try {
+            ClassPathResource resource = new ClassPathResource("keys/jwt.pem");
+            byte[] bytes = IOUtils.toByteArray(resource.getInputStream());
+            secretKey = Keys.hmacShaKeyFor(bytes);
+        } catch (IOException e) {
+            if (secretKey == null) {
+                secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+            }
+        }
+    }
+
+    private SecretKey secretKey = null;
 
     @Context
     private UriInfo uriInfo;
