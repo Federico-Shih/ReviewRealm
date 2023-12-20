@@ -5,6 +5,7 @@ import { AvatarDto } from '../../shared/data-access/users/users.dtos';
 import { Router } from '@angular/router';
 import { AuthenticationService } from '../../shared/data-access/authentication/authentication.service';
 import { map } from 'rxjs';
+import {User} from "../../shared/data-access/users/users.class";
 
 @Component({
   selector: 'app-avatar',
@@ -21,12 +22,11 @@ export class AvatarComponent {
     `${environment.IMAGE_ENDPOINT}/5.png`,
     `${environment.IMAGE_ENDPOINT}/6.png`,
   ];
-  userId: number | null = null;
+  user: User | null = null;
   loggedInUser$ = this.authService
     .getLoggedUser()
-    .pipe(map(user => (user ? user.id : null)))
-    .subscribe(userId => {
-      this.userId = userId;
+    .subscribe(user => {
+      this.user = user;
     });
 
   constructor(
@@ -37,11 +37,12 @@ export class AvatarComponent {
 
   changeAvatar(avatarId: number) {
     const dto: AvatarDto = { avatarId: avatarId };
-
+    if(this.user===null || this.user.links.patchUser===undefined)
+      return;
     this.userService
-      .editUserAvatar(`${environment.API_ENDPOINT}/users/${this.userId}`, dto)
+      .editUserAvatar(this.user.links.patchUser, dto)
       .subscribe(() => {
-        this.router.navigate(['/profile', `${this.userId}`]);
+        this.router.navigate(['/profile', this.user?.id]);
       });
   }
 }

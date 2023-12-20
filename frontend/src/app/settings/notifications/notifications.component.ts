@@ -7,6 +7,7 @@ import { NotificationComplete } from '../../shared/data-access/enums/enums.class
 import { environment } from '../../../environments/environment';
 import { NotificationsDto } from '../../shared/data-access/users/users.dtos';
 import { Router } from '@angular/router';
+import {User} from "../../shared/data-access/users/users.class";
 
 @Component({
   selector: 'app-notifications',
@@ -16,7 +17,8 @@ import { Router } from '@angular/router';
 })
 export class NotificationsComponent implements OnInit {
   loggedInUser$ = this.authService.getLoggedUser();
-  userId: number | null = null;
+
+  user: User | null = null;
 
   currentNotificationSettings$!: Observable<NotificationComplete[]>;
 
@@ -32,11 +34,10 @@ export class NotificationsComponent implements OnInit {
   ngOnInit(): void {
     this.currentNotificationSettings$ = this.loggedInUser$.pipe(
       switchMap(user => {
-        if (user !== null && user.links && user.links.preferences) {
-          this.userId = user.id;
-          // Esta porquería tiene que ser un link
+        if (user !== null && user.links && user.links.updateNotifications) {
+          this.user = user;
           return this.enumService.getNotificationComplete(
-            `${environment.API_ENDPOINT}/users/${this.userId}/notifications`
+            user.links.updateNotifications
           );
         } else {
           return of([]);
@@ -47,7 +48,6 @@ export class NotificationsComponent implements OnInit {
     this.currentNotificationSettings$.subscribe(notifs => {
       notifs.forEach(notif => {
         this.checkboxValues[notif.notifInfo.id] = notif.value.enabled;
-
       });
     });
   }
@@ -58,14 +58,15 @@ export class NotificationsComponent implements OnInit {
       userIFollowWritesReview: this.checkboxValues['userIFollowWritesReview'],
       myReviewIsDeleted: this.checkboxValues['myReviewIsDeleted'],
     };
-
+    if(this.user===null || this.user.links.updateNotifications===undefined)
+      return;
     this.userService
       .editUserNotifications(
-        `${environment.API_ENDPOINT}/users/${this.userId}/notifications`,
+        this.user.links.updateNotifications,
         dto
       )
       .subscribe(() => {
-        this.router.navigate(['/profile', `${this.userId}`]);
+        this.router.navigate(['/profile', `${this.user?.id}`]);
       });
   }
 

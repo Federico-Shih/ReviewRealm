@@ -9,6 +9,7 @@ import { FormArray, FormBuilder, FormControl } from '@angular/forms';
 import { GenresDto } from '../../shared/data-access/users/users.dtos';
 import { Router } from '@angular/router';
 import { mapCheckedToType } from '../../home/utils/mappers';
+import {User} from "../../shared/data-access/users/users.class";
 
 @Component({
   selector: 'app-genres-view',
@@ -18,14 +19,12 @@ import { mapCheckedToType } from '../../home/utils/mappers';
 })
 export class GenresViewComponent{
   loggedInUser$ = this.authService.getLoggedUser();
-
-  userId: number | null = null;
-
+  user: User | null = null;
 
   favgenres$: Observable<Genre[]> = this.loggedInUser$.pipe(
     switchMap(user => {
       if (user !== null && user.links && user.links.preferences) {
-        this.userId = user.id;
+        this.user = user;
 
         return this.genreService.getGenres(user.links.preferences);
       } else {
@@ -69,10 +68,12 @@ export class GenresViewComponent{
 
     const dto: GenresDto = { genres: output };
 
+    if(this.user===null || this.user.links.patchUser===undefined)
+      return;
     this.userService
-      .editUserGenres(`${environment.API_ENDPOINT}/users/${this.userId}`, dto)
+      .editUserGenres(this.user.links.patchUser, dto)
       .subscribe(() => {
-        this.router.navigate(['/profile', `${this.userId}`]);
+        this.router.navigate(['/profile', this.user?.id]);
       });
   }
 }
