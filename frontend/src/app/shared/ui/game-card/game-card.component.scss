@@ -48,11 +48,24 @@
   margin-left: 2%;
 }
 .chip {
-  background: var(--color-surface) !important; //#13112D;
-  border: 1px solid var(--color-primary-variant-1) !important; //#444155
+  background: var(--color-surface);
+  border: 1px solid var(--color-primary-variant-1);
+  border-radius: 14px;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 2px 6px;
+  white-space: nowrap;
+  margin-left: 4px;
+}
+.small-chip {
+  background: #13112d;
+  border: 1px solid #444155;
+  border-radius: 12px;
   font-size: 12px;
   font-weight: 700;
+  padding: 2px 6px;
   white-space: nowrap;
+  margin-left: 4px;
 }
 .title {
   margin-top: 2%;

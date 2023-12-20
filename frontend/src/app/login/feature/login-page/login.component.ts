@@ -3,7 +3,7 @@ import { AuthenticationDto } from '../../../shared/data-access/authentication/au
 import { AuthenticationService } from '../../../shared/data-access/authentication/authentication.service';
 import {BehaviorSubject, Subscription} from 'rxjs';
 import { RequestError } from '../../../shared/data-access/shared.models';
-import {NavigationSkipped, Router} from '@angular/router';
+import {ActivatedRoute, NavigationSkipped, Router} from '@angular/router';
 import { Location } from '@angular/common';
 import {NavigationHistoryService} from "../../../shared/data-access/navigation-history/navigation-history.service";
 
@@ -21,7 +21,8 @@ export class LoginComponent implements OnInit, OnDestroy {
     private readonly authService: AuthenticationService,
     private readonly router: Router,
     private readonly location: Location,
-    private readonly navigationHistoryService: NavigationHistoryService
+    private readonly navigationHistoryService: NavigationHistoryService,
+    private readonly route: ActivatedRoute,
   ) {
   }
 
@@ -30,12 +31,17 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.loading$.next(true);
     this.authService.login(authenticationDto).subscribe({
       next: () => {
-        this.eventSuscription = this.navigationHistoryService.previousUrl.subscribe((previousUrl) => {
-          if (previousUrl?.includes('login') || previousUrl?.includes('register')) {
-            previousUrl = null;
-          }
-          this.router.navigate([previousUrl ?? '/'], { replaceUrl: true });
-        });
+        const redirect = this.route.snapshot.queryParamMap.get('redirect');
+        if (redirect) {
+          this.router.navigate([decodeURIComponent(redirect)], { replaceUrl: true });
+        } else {
+          this.eventSuscription = this.navigationHistoryService.previousUrl.subscribe((previousUrl) => {
+            if (previousUrl?.includes('login') || previousUrl?.includes('register')) {
+              previousUrl = null;
+            }
+            this.router.navigate([previousUrl ?? '/'], { replaceUrl: true });
+          });
+        }
         this.loading$.next(false);
       },
       error: err => {

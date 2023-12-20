@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
-import {BehaviorSubject, Observable, ReplaySubject} from 'rxjs';
+import {BehaviorSubject, Observable, ReplaySubject, Subscription} from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { ReviewsService } from '../../../shared/data-access/reviews/reviews.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -12,6 +12,7 @@ import { ReviewSubmitDto } from '../../../shared/data-access/reviews/reviews.dto
 import { TranslateService } from '@ngx-translate/core';
 import { Location } from '@angular/common';
 import {RequestError} from "../../../shared/data-access/shared.models";
+import {NavigationHistoryService} from "../../../shared/data-access/navigation-history/navigation-history.service";
 
 @Component({
   selector: 'app-review-submit',
@@ -22,7 +23,7 @@ import {RequestError} from "../../../shared/data-access/shared.models";
 export class ReviewSubmitComponent implements OnInit {
   loading$ = new BehaviorSubject(false);
   checkingReview$ = new BehaviorSubject(true);
-
+  eventSuscription: Subscription | null = null;
   game$ = this.getGame();
 
   constructor(
@@ -33,7 +34,8 @@ export class ReviewSubmitComponent implements OnInit {
     private readonly route: ActivatedRoute,
     private _snackBar: MatSnackBar,
     private readonly translate: TranslateService,
-    private readonly location: Location
+    private readonly location: Location,
+    private readonly navigationHistory: NavigationHistoryService,
   ) {}
 
 
@@ -60,8 +62,9 @@ export class ReviewSubmitComponent implements OnInit {
 
   createReview(dto: ReviewSubmitDto | null) {
     if (dto === null) {
-      this.location.back();
-      this.location.back();
+      this.eventSuscription = this.navigationHistory.previousUrl.subscribe(previousUrl => {
+        this.router.navigate([previousUrl ?? '/'], { replaceUrl: true });
+      });
       return;
     }
     this.loading$.next(true);
@@ -101,6 +104,11 @@ export class ReviewSubmitComponent implements OnInit {
         },
       });
   }
+
+  ngOnDestroy(): void {
+    this.eventSuscription?.unsubscribe();
+  }
+
 
   protected readonly ReviewFormType = ReviewFormType;
 

@@ -1,7 +1,7 @@
 .chip-small-inverted {
   background: #ddd7ff;
-  color: #13112d;
-  border: 1px solid #444155;
+  color: var(--color-surface);
+  border: 1px solid var(--color-primary-variant-1);
   border-radius: 12px;
   font-size: 12px;
   font-weight: 700;
@@ -35,8 +35,8 @@
 
 .chip-small {
   display: flex;
-  background: #13112d;
-  border: 1px solid #444155;
+  background: var(--color-surface);
+  border: 1px solid var(--color-primary-variant-1);
   border-radius: 12px;
   font-size: 12px;
   font-weight: 700;

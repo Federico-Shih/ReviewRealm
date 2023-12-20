@@ -18,19 +18,19 @@
             >{{ game.name }}</span
           >
           <mat-chip-set class="genres">
-            <mat-chip
+            <span
               *ngFor="let genre of game.genres?.slice(0, 2)"
               routerLink="/games"
               [queryParams]="{ genres: [genre.id] }"
               class="chip clickable">
               {{ genre.localized }}
-            </mat-chip>
-            <mat-chip
+            </span>
+            <span
               *ngIf="game.genres !== undefined && game.genres.length > 2"
               class="chip clickable"
             >
               +{{ game.genres.length - 2 }}
-            </mat-chip
+            </span
             >
           </mat-chip-set>
           <span class="text" i18n>{{
@@ -81,17 +81,17 @@
           <div class="genres">
             <span class="text" i18n>{{ 'genres' | translate }}</span>
             <mat-chip-set class="chip-margin">
-              <mat-chip
+              <span
                 *ngFor="let genre of game.genres?.slice(0, 2)"
                 routerLink="/games"
                 [queryParams]="{ genres: [genre.id] }"
-                class="chip clickable">
+                class="small-chip clickable">
                 {{ genre.localized }}
-              </mat-chip>
-              <mat-chip
+              </span>
+              <span
                 *ngIf="game.genres !== undefined && game.genres.length > 2"
-                class="chip"
-                >+{{ game.genres.length - 2 }}</mat-chip
+                class="small-chip"
+                >+{{ game.genres.length - 2 }}</span
               >
             </mat-chip-set>
           </div>
@@ -119,17 +119,17 @@
         >
         <div class="genres">
           <mat-chip-set class="chip-margin">
-            <mat-chip
+            <span
               *ngFor="let genre of game.genres?.slice(0, 2)"
               routerLink="/games"
               [queryParams]="{ genres: [genre.id] }"
-              class="chip clickable">
+              class="small-chip clickable">
               {{ genre.localized }}
-            </mat-chip>
-            <mat-chip
+            </span>
+            <span
               *ngIf="game.genres !== undefined && game.genres.length > 2"
-              class="chip"
-            >+{{ game.genres.length - 2 }}</mat-chip
+              class="small-chip"
+            >+{{ game.genres.length - 2 }}</span
             >
           </mat-chip-set>
         </div>
