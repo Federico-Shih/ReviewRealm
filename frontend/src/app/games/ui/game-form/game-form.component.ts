@@ -85,12 +85,10 @@ export class GameFormComponent implements OnInit {
     this.temporaryImage = null;
     this.imageURL = '';
     if (!allowedMediaTypes.includes(image.type)) {
-      console.log('Invalid file type');
       this.gameForm.get('_image')?.setErrors({ 'invalid-file-type': true });
       return;
     }
     if (image.size > maxFileSizeInBytes) {
-      console.log('File size is too large');
       this.gameForm.get('_image')?.setErrors({ 'invalid-file-size': true });
       return;
     }
@@ -161,7 +159,6 @@ export class GameFormComponent implements OnInit {
       !publisher ||
       !date
     ) {
-      console.log('Invalid form');
       return;
     }
     const output = new FormData();

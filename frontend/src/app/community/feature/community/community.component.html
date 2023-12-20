@@ -40,8 +40,8 @@
     </div>
   </div>
   <ng-container *ngIf="currentUser$ | async as currentUser">
-    <ng-container *ngIf="currentUser !== null && search.value?.length === 0">
-      <div class="recommendations-section">
+    <ng-container *ngIf="currentUser !== null">
+      <div class="recommendations-section" [class]="(isShowingSearchResults$ | async) === true? 'hidden':''">
         <div class="panel">
           <h3 class="title">{{ 'community.same-preferences' | translate }}</h3>
           <ng-container
@@ -135,12 +135,15 @@
         </div>
       </div>
       <br />
-      <mat-divider></mat-divider>
-      <h3 class="title">{{ 'community.other-users' | translate }}</h3>
+      <ng-container *ngIf="(isShowingSearchResults$ | async) !== true">
+        <mat-divider/>
+        <h3 class="title">{{ 'community.other-users' | translate }}</h3>
+      </ng-container>
     </ng-container>
   </ng-container>
   <div class="results-section">
     <ng-container *ngIf="users$ | async as users; else loading">
+      <h3 class="title" *ngIf="(isShowingSearchResults$ | async) === true">{{ 'community.results' | translate }}</h3>
       <div
         class="result-list"
         [class]="(loadingResults$ | async) ? 'hidden' : ''">

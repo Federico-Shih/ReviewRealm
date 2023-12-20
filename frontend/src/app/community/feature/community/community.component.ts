@@ -43,16 +43,22 @@ export class CommunityComponent implements OnInit {
   orderBy = new FormControl(UserSortCriteria.LEVEL);
   orderDirection = new FormControl(SortDirection.DESC);
 
+  isShowingSearchResults$ = new BehaviorSubject<boolean>(false);
   loadingResults$ = new BehaviorSubject<boolean>(false);
   loadingSamePreferencesUsers$ = new BehaviorSubject<boolean>(false);
   loadingSameGamesUsers$ = new BehaviorSubject<boolean>(false);
 
-  userSearchDto$: Observable<UserSearchDto> = this.route.queryParamMap.pipe(
-    map(qpm => {
+  orderInfo$ = new BehaviorSubject({
+    orderBy: this.orderBy.value,
+    orderDirection: this.orderDirection.value,
+  })
+
+  userSearchDto$: Observable<UserSearchDto> = combineLatest([this.route.queryParamMap, this.orderInfo$]).pipe(
+    map(([qpm, orderInfo]) => {
       return paramsMapToUserSearchDto(
         qpm,
-        this.orderBy.value?.toString(),
-        this.orderDirection.value?.toString()
+        orderInfo.orderBy?.toString(),
+        orderInfo.orderDirection?.toString()
       );
     })
   );
@@ -60,10 +66,16 @@ export class CommunityComponent implements OnInit {
   users$: Observable<Paginated<User>> = this.userSearchDto$
     .pipe(
       tap(() => {
-        console.log('loading results = true');
         this.loadingResults$.next(true);
       })
     )
+    .pipe(tap(() => {
+      if (this.search.value !== '') {
+        this.isShowingSearchResults$.next(true);
+      } else {
+        this.isShowingSearchResults$.next(false);
+      }
+    }))
     .pipe(
       switchMap(query => {
         return this.userService.getUsers(
@@ -74,7 +86,6 @@ export class CommunityComponent implements OnInit {
     )
     .pipe(
       tap(() => {
-        console.log('loading results = false');
         this.loadingResults$.next(false);
       })
     );
@@ -106,11 +117,11 @@ export class CommunityComponent implements OnInit {
 
   samePreferencesUsers$: Observable<Paginated<User>> = combineLatest([
     this.currentUser$,
-    this.userSearchDto$,
+    this.orderInfo$,
   ])
     .pipe(tap(() => this.loadingSamePreferencesUsers$.next(true)))
     .pipe(
-      switchMap(([user, dto]) => {
+      switchMap(([user, orderInfo]) => {
         if (user) {
           return this.userService.getUsers(
             `${environment.API_ENDPOINT}/users`,
@@ -118,8 +129,8 @@ export class CommunityComponent implements OnInit {
               samePreferencesAs: user.id,
               page: 1,
               pageSize: 3,
-              sort: dto.sort,
-              direction: dto.direction,
+              sort: orderInfo.orderBy || undefined,
+              direction: orderInfo.orderDirection || undefined,
             }
           );
         }
@@ -130,11 +141,11 @@ export class CommunityComponent implements OnInit {
 
   sameGamesUsers$: Observable<Paginated<User>> = combineLatest([
     this.currentUser$,
-    this.userSearchDto$,
+    this.orderInfo$,
   ])
     .pipe(tap(() => this.loadingSameGamesUsers$.next(true)))
     .pipe(
-      switchMap(([user, dto]) => {
+      switchMap(([user, orderInfo]) => {
         if (user) {
           return this.userService.getUsers(
             `${environment.API_ENDPOINT}/users`,
@@ -142,8 +153,8 @@ export class CommunityComponent implements OnInit {
               sameGamesPlayedAs: user.id,
               page: 1,
               pageSize: 3,
-              sort: dto.sort,
-              direction: dto.direction,
+              sort: orderInfo.orderBy || undefined,
+              direction: orderInfo.orderDirection || undefined,
             }
           );
         }
@@ -198,6 +209,10 @@ export class CommunityComponent implements OnInit {
       }
     });
     this.orderBy.valueChanges.subscribe(sort => {
+      this.orderInfo$.next({
+        orderBy: sort,
+        orderDirection: this.orderDirection.value,
+      })
       this.router.navigate([], {
         queryParams: {
           sort: sort,
@@ -206,6 +221,10 @@ export class CommunityComponent implements OnInit {
       });
     });
     this.orderDirection.valueChanges.subscribe(direction => {
+      this.orderInfo$.next({
+        orderBy: this.orderBy.value,
+        orderDirection: direction,
+      })
       this.router.navigate([], {
         queryParams: {
           direction: direction,

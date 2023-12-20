@@ -16,7 +16,7 @@
       mat-flat-button
       routerLink="/for-you">
       <mat-icon>chevron_left</mat-icon>
-      {{ 'recommendations.backtofeed' | translate | uppercase }}
+      <span>{{ 'recommendations.backtofeed' | translate | uppercase }}</span>
     </button>
     <button
       (click)="changeLink(state.gameState.links.prev, false)"
@@ -25,7 +25,7 @@
       color="accent"
       mat-flat-button>
       <mat-icon>chevron_left</mat-icon>
-      {{ 'recommendations.prev' | translate | uppercase }}
+      <span>{{ 'recommendations.prev' | translate | uppercase }}</span>
     </button>
     <button
       (click)="changeLink(state.gameState.links.next, true)"
@@ -33,7 +33,7 @@
       class="right-button"
       color="accent"
       mat-flat-button>
-      {{ 'recommendations.next' | translate | uppercase }}
+      <span>{{ 'recommendations.next' | translate | uppercase }}</span>
       <mat-icon>chevron_right</mat-icon>
     </button>
     <button
@@ -43,7 +43,7 @@
       mat-flat-button
       routerLink="/for-you"
     >
-      {{ 'recommendations.backtofeed' | translate | uppercase }}
+      <span>{{ 'recommendations.backtofeed' | translate | uppercase }}</span>
       <mat-icon>done</mat-icon>
     </button>
   </ng-container>

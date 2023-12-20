@@ -18,13 +18,18 @@
   left: 10px;
   transform: translateY(-50%);
   z-index: 1;
-  font-size: 1.2rem;
+  font-size: 1rem;
   width: 150px;
   height: 70px;
+  opacity: 0.7;
 
   mat-icon {
     transform: scale(1.4);
   }
+}
+
+.left-button:hover {
+  opacity: 1;
 }
 
 .right-button {
@@ -33,11 +38,16 @@
   right: 20px;
   transform: translateY(-50%);
   z-index: 1;
-  font-size: 1.2rem;
+  font-size: 1rem;
   width: 150px;
   height: 70px;
+  opacity: 0.7;
 
   mat-icon {
     transform: scale(1.4);
   }
+}
+
+.right-button:hover {
+  opacity: 1;
 }

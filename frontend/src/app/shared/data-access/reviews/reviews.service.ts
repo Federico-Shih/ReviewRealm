@@ -117,7 +117,6 @@ export class ReviewsService {
       )
       .pipe(catchError((error) => {
         if (error.status === 404) {
-          console.log('no feedback')
           return of(new Feedback(null));
         }
         return exceptionMapper(error);

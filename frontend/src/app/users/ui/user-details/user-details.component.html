@@ -64,14 +64,14 @@
     <div>
       <ng-container *ngIf="loggedUser && loggedUser?.id !== userInfo.id">
         <ng-container *ngIf="isFollowing">
-          <button (click)="onSubmit(true)" [disabled]="loading" color="accent" mat-flat-button>
-            <span *ngIf="!loading">{{ 'profile.unfollow' | translate }}</span>
+          <button (click)="onSubmit(true)" [disabled]="loading" color="primary" mat-flat-button class="follow-btn">
+            <span *ngIf="!loading">{{ 'profile.unfollow' | translate | uppercase }}</span>
             <mat-spinner *ngIf="loading" [diameter]="20"></mat-spinner>
           </button>
         </ng-container>
         <ng-container *ngIf="!isFollowing">
-          <button (click)="onSubmit(false)" [disabled]="loading" color="accent" mat-flat-button>
-            <span *ngIf="!loading">{{ 'profile.follow' | translate }}</span>
+          <button (click)="onSubmit(false)" [disabled]="loading" color="accent" mat-flat-button class="follow-btn">
+            <span *ngIf="!loading">{{ 'profile.follow' | translate | uppercase }}</span>
             <mat-spinner *ngIf="loading" [diameter]="20"></mat-spinner>
           </button>
         </ng-container>

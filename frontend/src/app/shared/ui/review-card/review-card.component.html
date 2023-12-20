@@ -67,7 +67,7 @@
           routerLink="/games/{{ review.game?.id }}">
           <span>{{ review.game?.name }}</span>
         </div>
-        <div *ngIf="review.game && review.game.genres">
+        <div *ngIf="review.game && review.game.genres" class="genres-list">
           <span
             *ngFor="let genre of review.game.genres | slice: 0 : 2"
             class="small-chip pointer"

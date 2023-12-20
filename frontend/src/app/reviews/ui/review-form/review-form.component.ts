@@ -121,7 +121,8 @@ export class ReviewFormComponent implements OnInit {
     const dialogRef: MatDialogRef<ReviewConfirmDialog, boolean> = this.dialog.open(ReviewConfirmDialog, {
       data: {
         isCreation: this.editReview === null
-      }
+      },
+      width: '60%',
     });
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
