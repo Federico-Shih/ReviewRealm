@@ -18,6 +18,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatButtonModule } from '@angular/material/button';
+import {MatTooltipModule} from "@angular/material/tooltip";
 
 @NgModule({
   declarations: [
@@ -27,21 +28,22 @@ import { MatButtonModule } from '@angular/material/button';
     AvatarComponent,
     FavGamesComponent,
   ],
-  imports: [
-    CommonModule,
-    SettingsRoutingModule,
-    TranslateModule,
-    MatRadioModule,
-    NgOptimizedImage,
-    ReactiveFormsModule,
-    SharedModule,
-    MatGridListModule,
-    MatDividerModule,
-    MatIconModule,
-    MatProgressSpinnerModule,
-    MatProgressBarModule,
-    MatCheckboxModule,
-    MatButtonModule,
-  ],
+    imports: [
+        CommonModule,
+        SettingsRoutingModule,
+        TranslateModule,
+        MatRadioModule,
+        NgOptimizedImage,
+        ReactiveFormsModule,
+        SharedModule,
+        MatGridListModule,
+        MatDividerModule,
+        MatIconModule,
+        MatProgressSpinnerModule,
+        MatProgressBarModule,
+        MatCheckboxModule,
+        MatButtonModule,
+        MatTooltipModule,
+    ],
 })
 export class SettingsModule {}

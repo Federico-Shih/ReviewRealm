@@ -47,21 +47,18 @@ export class NotificationsComponent implements OnInit {
     this.currentNotificationSettings$.subscribe(notifs => {
       notifs.forEach(notif => {
         this.checkboxValues[notif.notifInfo.id] = notif.value.enabled;
-        console.log(notif.notifInfo.id);
-        console.log(notif.value);
+
       });
     });
   }
 
   onSubmit() {
-    console.log(this.checkboxValues);
 
     const dto: NotificationsDto = {
       userIFollowWritesReview: this.checkboxValues['userIFollowWritesReview'],
       myReviewIsDeleted: this.checkboxValues['myReviewIsDeleted'],
     };
 
-    console.log(dto);
     this.userService
       .editUserNotifications(
         `${environment.API_ENDPOINT}/users/${this.userId}/notifications`,

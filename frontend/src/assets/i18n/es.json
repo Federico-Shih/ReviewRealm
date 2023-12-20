@@ -57,7 +57,8 @@
       "add": "Se agregó correctamente el juego a tus favoritos",
       "delete": "Juego favorito borrado correctamente"
     },
-    "title": "Tus juegos favoritos"
+    "title": "Tus juegos favoritos",
+    "titlebreadcrumbs": "Favorite Games"
   },
   "filter-drawer": {
     "apply": "Aplicar filtros",

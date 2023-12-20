@@ -117,7 +117,7 @@ export class CommunityComponent implements OnInit {
             {
               samePreferencesAs: user.id,
               page: 1,
-              pageSize: 6,
+              pageSize: 3,
               sort: dto.sort,
               direction: dto.direction,
             }
@@ -141,7 +141,7 @@ export class CommunityComponent implements OnInit {
             {
               sameGamesPlayedAs: user.id,
               page: 1,
-              pageSize: 6,
+              pageSize: 3,
               sort: dto.sort,
               direction: dto.direction,
             }

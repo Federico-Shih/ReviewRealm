@@ -46,10 +46,12 @@
             <span class="rating-text" i18n>{{
               'average-rating' | translate
             }}</span>
-            <span class="big-number">{{
-              (game.ratingSum / game.reviewCount).toFixed(2)
-            }}</span>
-            <span class="small-number">/10</span>
+            <div>
+              <span class="big-number">{{
+                (game.ratingSum / game.reviewCount).toFixed(2)
+              }}</span>
+              <span class="small-number"> /10</span>
+            </div>
           </ng-container>
         </div>
       </div>
