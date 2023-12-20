@@ -31,6 +31,9 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.authService.login(authenticationDto).subscribe({
       next: () => {
         this.eventSuscription = this.navigationHistoryService.previousUrl.subscribe((previousUrl) => {
+          if (previousUrl?.includes('login') || previousUrl?.includes('register')) {
+            previousUrl = null;
+          }
           this.router.navigate([previousUrl ?? '/'], { replaceUrl: true });
         });
         this.loading$.next(false);

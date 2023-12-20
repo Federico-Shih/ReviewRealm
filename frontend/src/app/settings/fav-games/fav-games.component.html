@@ -1,5 +1,11 @@
 <div class="container">
   <div class="main-fav">
+    <app-breadcrumbs
+      *ngIf="loggedInUser$ | async as user"
+      [breadcrumbs]="[
+        { name: 'settings.title' | translate, link: '/profile/' + user.id },
+        { name: 'fav-games.favorite-label' | translate, link: null }
+      ]" />
     <h2 class="center">{{ 'fav-games.title' | translate }}</h2>
     <ng-container *ngIf="favGames$ | async as favGames">
       <div
