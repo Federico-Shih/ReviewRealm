@@ -2,11 +2,10 @@ package ar.edu.itba.paw.services.utils;
 
 import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.models.Game;
-import ar.edu.itba.paw.models.Image;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class GameTestModels {
@@ -57,11 +56,11 @@ public class GameTestModels {
     }
 
     public static Game getSubnautica() {
-        return new Game(SUBNAUTICA_ID, SUBNAUTICA_NAME, SUBNAUTICA_DESCRIPTION, SUPER_GAMEA_STUDIO, SUPER_GAMEA_PUBLISHER, SUBNAUTICA_IS_SUGGESTION, IMAGEID, SUBNAUTICA_RELEASE_DATE, SUBNAUTICA_RATING, SUBNAUTICA_RATING_COUNT, new ArrayList<>());
+        return new Game(SUBNAUTICA_ID, SUBNAUTICA_NAME, SUBNAUTICA_DESCRIPTION, SUPER_GAMEA_STUDIO, SUPER_GAMEA_PUBLISHER, SUBNAUTICA_IS_SUGGESTION, IMAGEID, SUBNAUTICA_RELEASE_DATE, SUBNAUTICA_RATING, SUBNAUTICA_RATING_COUNT, Collections.emptyList());
     }
 
     public static Game getSubnautica2() {
-        return new Game(SUBNAUTICA2_ID, SUBNAUTICA2_NAME, SUBNAUTICA2_DESCRIPTION, SUPER_GAMEA_STUDIO, SUPER_GAMEA_PUBLISHER, SUBNAUTICA2_IS_SUGGESTION, IMAGEID, SUBNAUTICA_RELEASE_DATE, SUBNAUTICA2_RATING, SUBNAUTICA2_RATING_COUNT, new ArrayList<>());
+        return new Game(SUBNAUTICA2_ID, SUBNAUTICA2_NAME, SUBNAUTICA2_DESCRIPTION, SUPER_GAMEA_STUDIO, SUPER_GAMEA_PUBLISHER, SUBNAUTICA2_IS_SUGGESTION, IMAGEID, SUBNAUTICA_RELEASE_DATE, SUBNAUTICA2_RATING, SUBNAUTICA2_RATING_COUNT, Collections.emptyList());
     }
 
     public static Game getGameWithGenres() {

@@ -15,12 +15,11 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Optional;
 
 import static ar.edu.itba.paw.services.utils.GameTestModels.getSuperGameA;
-import static ar.edu.itba.paw.services.utils.ReviewTestModels.*;
 import static ar.edu.itba.paw.services.utils.ReviewTestModels.getReview1;
 import static ar.edu.itba.paw.services.utils.UserTestModels.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -64,7 +63,7 @@ public class ReviewServiceImplTest {
         Mockito.when(userService.isNotificationEnabled(eq(getUser3().getId()), any())).thenReturn(false);
         Mockito.when(gameService.getGameById(anyLong(),anyLong())).thenReturn(Optional.of(getSuperGameA()));
         Mockito.when(userService.getUserById(anyLong())).thenReturn(Optional.of(getUser1()));
-        Mockito.when(reviewDao.findAll(any(), any(), any(), any())).thenReturn(new Paginated<>(1,1,1, 0, new ArrayList<>()));
+        Mockito.when(reviewDao.findAll(any(), any(), any(), any())).thenReturn(new Paginated<>(1,1,1, 0, Collections.emptyList()));
 
         Review review = rs.createReview(
                 getReview1().getTitle(),
@@ -127,7 +126,7 @@ public class ReviewServiceImplTest {
     @Test
     public void testGetUserReviews() {
         Mockito.when(reviewDao.findAll(any(), any(), any(), any()))
-                .thenReturn(new Paginated<>(1, 1, 1, 0, new ArrayList<>()));
+                .thenReturn(new Paginated<>(1, 1, 1, 0, Collections.emptyList()));
 
         Paginated<Review> reviews = rs.getUserReviews(Page.with(1, 1), getUser1().getId(), null);
         Assert.assertEquals(1, reviews.getTotalPages());

@@ -14,6 +14,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Optional;
 
@@ -42,7 +43,7 @@ public class MissionServiceTest {
     @Test
     public void testNewMissionProgress() {
         User user = getUser1();
-        user.setRoles(new HashSet<>());
+        user.setRoles(Collections.emptySet());
         Mockito.when(missionDao.findById(any(), any())).thenReturn(Optional.empty());
         Mockito.when(userDao.findById(anyLong())).thenReturn(Optional.of(user));
         Mockito.when(missionDao.create(any(), any(), anyFloat(), any())).thenReturn(STARTING_MISSION_PROGRESS);
@@ -57,7 +58,7 @@ public class MissionServiceTest {
     @Test
     public void testAdvanceMissionProgress() {
         User user = getUser1();
-        user.setRoles(new HashSet<>());
+        user.setRoles(Collections.emptySet());
         Mockito.when(missionDao.findById(any(), any())).thenReturn(Optional.of(ADVANCED_MISSION_PROGRESS));
         Mockito.when(userDao.findById(anyLong())).thenReturn(Optional.of(user));
         Mockito.when(missionDao.updateProgress(any(), any(), anyFloat())).thenReturn(Optional.of(MORE_ADVANCED_MISSION_PROGRESS));
@@ -72,7 +73,7 @@ public class MissionServiceTest {
     @Test
     public void testCompleteMissionProgress() {
         User user = getUser1();
-        user.setRoles(new HashSet<>());
+        user.setRoles(Collections.emptySet());
         Mockito.when(missionDao.findById(any(), any())).thenReturn(Optional.of(ADVANCED_MISSION_PROGRESS));
         Mockito.when(userDao.findById(anyLong())).thenReturn(Optional.of(user));
         Mockito.when(missionDao.updateProgress(any(), any(), anyFloat())).thenReturn(Optional.of(COMPLETED_MISSION_PROGRESS));
@@ -101,7 +102,7 @@ public class MissionServiceTest {
     @Test
     public void testRepeatableMissionProgress() {
         User user = getUser1();
-        user.setRoles(new HashSet<>());
+        user.setRoles(Collections.emptySet());
         Mockito.when(missionDao.findById(any(), any())).thenReturn(Optional.empty());
         Mockito.when(missionDao.create(any(), any(), anyFloat(), any())).thenReturn(REPEATABLE_START_MISSION_PROGRESS);
         Mockito.when(userDao.findById(anyLong())).thenReturn(Optional.of(user));

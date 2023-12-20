@@ -8,7 +8,6 @@ import ar.edu.itba.paw.dtos.ordering.UserOrderCriteria;
 import ar.edu.itba.paw.dtos.saving.SaveUserDTO;
 import ar.edu.itba.paw.enums.Genre;
 import ar.edu.itba.paw.enums.NotificationType;
-import ar.edu.itba.paw.models.FollowerFollowingCount;
 import ar.edu.itba.paw.models.Game;
 import ar.edu.itba.paw.models.Paginated;
 import ar.edu.itba.paw.models.User;
@@ -270,7 +269,7 @@ public class UserHibernateDao implements UserDao, PaginationDao<UserFilter> {
     @Override
     public Set<Genre> getPreferences(long userId) {
         User user = em.find(User.class, userId);
-        if (user == null) return new HashSet<>();
+        if (user == null) return Collections.emptySet();
         return user.getPreferences();
     }
 

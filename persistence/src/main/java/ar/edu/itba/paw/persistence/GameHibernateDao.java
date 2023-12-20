@@ -117,7 +117,7 @@ public class GameHibernateDao implements GameDao, PaginationDao<GameFilter> {
     public Set<Genre> getGenresByGame(long id) {
         final Game game = em.find(Game.class, id);
         if(game == null || game.getDeleted()) {
-            return new HashSet<>();
+            return Collections.emptySet();
         }
         return game.getGenres();
     }
