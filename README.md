@@ -57,6 +57,31 @@ mvn build
 - password: holahola
 
 
+# Correcciones Sotuyo
+
+- Los archivos de idioma tienen cache no condicional, pero no aplica cache busting. Lo mismo aplica a imágenes estáticas como /assets/review_realm_logo_white_630px.png
+  - Comentario: ver file revving en angular. Hay un plugin que te genera un servicio/pipe que te indica las imagenes con un string y este aplica automaticamente file revving por vos. En React no encontré una solución limpia.
+- Al carga la aplicación hace 3 requests a /genres en paralelo.
+  - Comentario: no hacer varios genres$ | async ya que genres$ es un observable de la llamada a la API. Async pipe aplica la operación de subscribe.
+- Al buscar se hacen 2 requests idénticos en paralelo
+  - Comentario: debe pasar algo similar de lo de arriba. Considerar usar un behavioursubject o signal.
+- Los mails de los usuarios no debieran ser públicos, esto es un problema de privacidad de información sensible.
+  - Comentario: mal diseño de la API.
+- Buen uso de cache no condicional con las imágenes en base
+- Las responses incluyen en cada response el token JWT, esto sólo debiera ser necesario al usar credenciales no-JWT para “loguearse”
+  - Comentario: lo usabamos para verificar la validez de un token JWT. Debería haber dejado que la API falle naturalmente en vez de desloguearte. Cuando falla, el Refresh Token se encargaría de generar una nueva sesión.
+- Usan el header Authorization en las responses. Este es un request header (no response) al que le están dando una semántica nueva. Sería más transparente definir un header propio.
+  - Comentario: nos falto lectura de HTTP evidentemente. Crear X-ReviewRealm-Token header.
+- La API retorna como parte de las entidades links “contextuales”. Por ejemplo, una review incluirá un link a feedback, que incluye el ID del usuario que hizo el request.
+  - Comentario: hablarlo con sotuyo. No encontramos otra forma de borrar el feedback de un usuario. Quiza usar solo POST?
+- No cambian el título al navegar entre páginas, es difícil navegar la history
+  - Comentario:
+![my bad](https://cdn.discordapp.com/attachments/864605621415444490/1186149847414349874/Screen_Shot_2022-09-23_at_10.png?ex=659b6da1&is=6588f8a1&hm=b3105114b62337e68ea1af8106cff8095014859727f842128a1cc00005c6e7b8& "My bad lol")
+- Aunque el frontend pretende levantar el locale del browser en la practica siempre aplica el default es.
+  - Comentario: culpo ngx-translate
+
+Nota final: 7. Comentarios finales: Si lo hubiesemos cocinado por un poco más de tiempo, creo que podría mejorar. Especialmente la API. Pero considerando la dificultad en implementar HATEOAS, el uso de Angular y RxJS y los requisitos de optimización, consideramos que es un muy buen resultado. Cualquier pregunta pasar por discusión. 
+
 # Project: Review Realm API Docs
 # 📁 Collection: User
 
